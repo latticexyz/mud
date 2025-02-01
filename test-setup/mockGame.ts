@@ -1,18 +1,18 @@
 import { execa } from "execa";
-import { anvilRpcUrl } from "./common";
 import { Hex, isHex } from "viem";
 import config from "../test/mock-game-contracts/mud.config";
 import worldAbi from "../test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
+import { getAnvilRpcUrl } from "./common";
 
 export { config, worldAbi };
 
 export async function deployMockGame(): Promise<Hex> {
-  console.log("deploying mock game to", anvilRpcUrl);
+  console.log("deploying mock game to", getAnvilRpcUrl());
   const { stdout, stderr } = await execa(
     "pnpm",
     // skip build because its slow and we do it in global setup
     // if we don't skip build here, it regenerates ABIs which cause the tests to re-run (because we import the ABI here), which re-runs this deploy...
-    ["mud", "deploy", "--rpc", anvilRpcUrl, "--saveDeployment", "false", "--skipBuild"],
+    ["mud", "deploy", "--rpc", getAnvilRpcUrl(), "--saveDeployment", "false", "--skipBuild"],
     {
       cwd: `${__dirname}/../test/mock-game-contracts`,
       env: {

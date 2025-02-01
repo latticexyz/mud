@@ -1,18 +1,21 @@
 /* eslint-disable max-len */
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
 import config from "../mud.config";
-import { testClient } from "../../../test-setup/common";
+import { getTestClient, snapshotAnvilState } from "../../../test-setup/common";
 import { deployMockGame } from "../../../test-setup/mockGame";
 import { summarizeLogs } from "./test/summarizeLogs";
 
 describe("getStoreLogs", async () => {
+  beforeAll(snapshotAnvilState);
+  beforeEach(snapshotAnvilState);
+
   beforeAll(async () => {
     await deployMockGame();
   });
 
   it("fetches only store logs", async () => {
-    const logs = await getStoreLogs(testClient, { fromBlock: "earliest", toBlock: "latest" });
+    const logs = await getStoreLogs(getTestClient(), { fromBlock: "earliest", toBlock: "latest" });
     expect(summarizeLogs(logs)).toMatchInlineSnapshot(`
       [
         "Store_SpliceStaticData  world__InitModuleAddres  ()",
@@ -207,7 +210,7 @@ describe("getStoreLogs", async () => {
   });
 
   it("fetches only store logs for a specific table", async () => {
-    const logs = await getStoreLogs(testClient, {
+    const logs = await getStoreLogs(getTestClient(), {
       fromBlock: "earliest",
       toBlock: "latest",
       tableId: config.tables.store__ResourceIds.tableId,
@@ -253,7 +256,7 @@ describe("getStoreLogs", async () => {
   });
 
   it("fetches only store logs for specific tables", async () => {
-    const logs = await getStoreLogs(testClient, {
+    const logs = await getStoreLogs(getTestClient(), {
       fromBlock: "earliest",
       toBlock: "latest",
       tableId: [config.tables.store__ResourceIds.tableId, config.tables.store__Tables.tableId],

@@ -18,12 +18,12 @@
     "clean": {
       "cache": false
     },
+    "test": {},
+    "test:ci": {
+      "cache": false
+    },
     "@latticexyz/store#clean": {
-      "dependsOn": [
-        "@latticexyz/world#clean",
-        "puppet-modules-test#clean",
-        "mock-game-contracts#clean"
-      ],
+      "dependsOn": ["@latticexyz/world#clean", "puppet-modules-test#clean", "mock-game-contracts#clean"],
       "cache": false
     },
     "@latticexyz/world#clean": {

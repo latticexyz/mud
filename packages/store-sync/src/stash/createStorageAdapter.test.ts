@@ -1,18 +1,22 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { config, deployMockGame } from "../../../../test-setup/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
-import { testClient } from "../../../../test-setup/common";
+import { getTestClient, snapshotAnvilState } from "../../../../test-setup/common";
 import { getBlockNumber } from "viem/actions";
 import { createStash } from "@latticexyz/stash/internal";
 
 describe("createStorageAdapter", async () => {
+  beforeAll(snapshotAnvilState);
+  beforeEach(snapshotAnvilState);
+
   beforeAll(async () => {
     await deployMockGame();
   });
 
   it("sets component values from logs", async () => {
+    const testClient = getTestClient();
     const stash = createStash(config);
     const storageAdapter = createStorageAdapter({ stash });
 

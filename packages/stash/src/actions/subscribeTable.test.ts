@@ -1,13 +1,18 @@
 import { defineStore } from "@latticexyz/store";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createStash } from "../createStash";
 import { subscribeTable } from "./subscribeTable";
 import { setRecord } from "./setRecord";
 
 describe("subscribeTable", () => {
-  it("should notify subscriber of table change", () => {
+  beforeEach(() => {
     vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+    return () => {
+      vi.useRealTimers();
+    };
+  });
 
+  it("should notify subscriber of table change", () => {
     const config = defineStore({
       namespaces: {
         namespace1: {

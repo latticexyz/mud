@@ -1,14 +1,17 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
 import { config, deployMockGame } from "../../../../test-setup/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
-import { testClient } from "../../../../test-setup/common";
+import { getTestClient, snapshotAnvilState } from "../../../../test-setup/common";
 import { getBlockNumber } from "viem/actions";
 import { Address } from "viem";
 
 describe("createStorageAdapter", async () => {
+  beforeAll(snapshotAnvilState);
+  beforeEach(snapshotAnvilState);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let worldAddress: Address;
   beforeAll(async () => {
@@ -16,6 +19,7 @@ describe("createStorageAdapter", async () => {
   });
 
   it("sets component values from logs", async () => {
+    const testClient = getTestClient();
     const useStore = createStore({ tables: config.tables });
     const storageAdapter = createStorageAdapter({ store: useStore });
 

@@ -1,18 +1,21 @@
 /* eslint-disable max-len */
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
 import { flattenStoreLogs } from "./flattenStoreLogs";
-import { testClient } from "../../../test-setup/common";
+import { getTestClient, snapshotAnvilState } from "../../../test-setup/common";
 import { deployMockGame } from "../../../test-setup/mockGame";
 import { summarizeLogs } from "./test/summarizeLogs";
 
 describe("flattenStoreLogs", async () => {
+  beforeAll(snapshotAnvilState);
+  beforeEach(snapshotAnvilState);
+
   beforeAll(async () => {
     await deployMockGame();
   });
 
   it("flattens store logs", async () => {
-    const logs = await getStoreLogs(testClient, { fromBlock: "earliest", toBlock: "latest" });
+    const logs = await getStoreLogs(getTestClient(), { fromBlock: "earliest", toBlock: "latest" });
     const flattenedLogs = flattenStoreLogs(logs);
 
     expect(summarizeLogs(flattenedLogs)).toMatchInlineSnapshot(`

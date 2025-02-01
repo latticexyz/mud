@@ -2,19 +2,20 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    globalSetup: [
-      `${__dirname}/test-setup/global/polyfill.ts`,
-      `${__dirname}/test-setup/global/arktype.ts`,
-      `${__dirname}/test-setup/global/anvil.ts`,
-    ],
-    setupFiles: [`${__dirname}/test-setup/anvil.ts`],
+    globalSetup: [`${__dirname}/test-setup/global/arktype.ts`],
     passWithNoTests: true,
     // Temporarily set a low teardown timeout because anvil hangs otherwise
     // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
     teardownTimeout: 500,
     hookTimeout: 15000,
-    // Temporarily disable file parallelism until we improve MUD config imports (https://github.com/latticexyz/mud/pull/3290)
     fileParallelism: false,
+    env: {
+      // For MacOS users, set up PostgreSQL with
+      //   brew update
+      //   brew install postgresql@14
+      //   /opt/homebrew/opt/postgresql@14/bin/createuser -s postgres
+      DATABASE_URL: process.env.DATABASE_URL || "postgres://postgres@localhost:5432/postgres",
+    },
   },
   server: {
     watch: {

@@ -70,7 +70,7 @@
     "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
+    "test": "vitest",
     "test:ci": "vitest --run"
   },
   "dependencies": {

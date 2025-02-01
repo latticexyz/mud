@@ -19,7 +19,7 @@
     "copy-templates": "tsx ./scripts/copy-templates.ts",
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
-    "test": "pnpm run copy-templates && pnpm vitest --run && pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
+    "test": "shx rm -rf test-project && pnpm run copy-templates && pnpm vitest --run && pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
     "test:ci": "pnpm run test",
     "test:phaser": "bin/cli.js --name test-project --template phaser && pnpm --dir test-project install && shx rm -rf test-project",
     "test:react": "bin/cli.js --name test-project --template react && pnpm --dir test-project install && shx rm -rf test-project",
