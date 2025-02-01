@@ -29,7 +29,7 @@ export function mud(opts: { worldsFile: string }): Plugin {
       const world = worlds[chainId];
       if (world) {
         config.define["import.meta.env.WORLD_ADDRESS"] = JSON.stringify(world.address);
-        config.define["import.meta.env.START_BLOCK"] = world.blockNumber != null ? `${world.blockNumber}n` : undefined;
+        config.define["import.meta.env.START_BLOCK"] = world.blockNumber ?? undefined;
       } else {
         console.log("no world deploy for chain ID", chainId);
       }
