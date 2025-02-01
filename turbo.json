@@ -18,8 +18,11 @@
     "clean": {
       "cache": false
     },
-    "test": {},
+    "test": {
+      "dependsOn": ["mock-game-contracts#build"]
+    },
     "test:ci": {
+      "dependsOn": ["mock-game-contracts#build"],
       "cache": false
     },
     "@latticexyz/store#clean": {
