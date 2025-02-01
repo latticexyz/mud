@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
-import { config, deployMockGame } from "../../../../test-setup/mockGame";
+import { config, deployMockGame } from "mock-game-contracts";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { getBlockNumber } from "viem/actions";
 import { createStash } from "@latticexyz/stash/internal";

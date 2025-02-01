@@ -41,6 +41,9 @@ importers:
       lint-staged:
         specifier: ^15.2.10
         version: 15.2.10
+      mock-game-contracts:
+        specifier: workspace:*
+        version: link:test/mock-game-contracts
       prettier:
         specifier: 3.2.5
         version: 3.2.5

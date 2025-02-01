@@ -2,7 +2,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
 import { flattenStoreLogs } from "./flattenStoreLogs";
-import { deployMockGame } from "../../../test-setup/mockGame";
+import { deployMockGame } from "mock-game-contracts";
 import { summarizeLogs } from "./test/summarizeLogs";
 import { createTestClient, snapshotAnvilState } from "with-anvil";
 
