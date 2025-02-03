@@ -9,7 +9,7 @@ const app = express();
 const PORT = 3001;
 
 const proverUrl = "https://prover.zk.email/api/prove";
-const blueprintId = "2c212de6-07fa-4906-8676-bc907d86e3b2";
+const blueprintId = "547f90a8-abab-40c0-a98e-9406c1766fdd";
 
 const apiKey = process.env.PROVER_API_KEY;
 if (!apiKey) {
@@ -42,13 +42,13 @@ app.post("/", async (req: Request<{}, {}, ProverRequestBody>, res: Response) => 
         blueprintId,
         proofId: uuidv4(),
         zkeyDownloadUrl: "https://pub-701958c97df7428ab5aad0ee45f4027a.r2.dev/zkey.zip",
-        circuitCppDownloadUrl: "https://pub-701958c97df7428ab5aad0ee45f4027a.r2.dev/circuit.zip",
+        circuitCppDownloadUrl: "https://pub-701958c97df7428ab5aad0ee45f4027a.r2.dev/circuit3.zip",
         ...req.body,
       }),
     });
 
     if (!response.ok) {
-      // console.error(await response.text());
+      console.error(await response.text());
       const errorData = await response.json().catch(() => null);
       console.error("Prover API error:", {
         status: response.status,

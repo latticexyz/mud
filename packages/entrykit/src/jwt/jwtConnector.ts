@@ -14,7 +14,7 @@ import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wag
 import { cache } from "./cache";
 import { smartAccountActions } from "permissionless/clients";
 import { getAccount } from "./getAccount";
-import { generateProof } from "./generateProof";
+import { generateProof } from "./generateProofLocal";
 import { defaultClientConfig } from "../common";
 import { createBundlerClient } from "../createBundlerClient";
 import { getBundlerTransport } from "../getBundlerTransport";
@@ -68,13 +68,17 @@ export function jwtConnector({ chainId }: JwtConnectorOptions): CreateJwtConnect
       // supportsSimulation: true,
 
       async generateJwtProof(jwt: string) {
-        const jwtProof = await generateProof(jwt);
-        cache.setState({ jwtProof });
+        try {
+          const jwtProof = await generateProof(jwt);
+          cache.setState({ jwtProof });
 
-        console.log({ jwtProof });
-        const account = await getAccount(client, jwtProof);
-        this.onAccountsChanged([account.address]);
-        this.onConnect?.({ chainId: numberToHex(chainId) });
+          console.log({ jwtProof });
+          const account = await getAccount(client, jwtProof);
+          this.onAccountsChanged([account.address]);
+          this.onConnect?.({ chainId: numberToHex(chainId) });
+        } catch (e) {
+          console.error(e);
+        }
       },
       getSigner() {
         return getSigner();

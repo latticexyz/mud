@@ -67,7 +67,7 @@ const getFactoryAddress = (factoryAddress?: Address): Address => {
   if (factoryAddress) return factoryAddress;
 
   // TODO: set correct one
-  return "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f";
+  return "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44";
 };
 
 export type JwtSmartAccountImplementation = Assign<
@@ -362,8 +362,6 @@ export async function toJwtSmartAccount(parameters: ToJwtSmartAccountParameters)
         chainId,
       });
 
-      console.log({ userOperation });
-
       const userOpHashSig = await signMessage(client, {
         account: signer,
         message: {
@@ -377,13 +375,16 @@ export async function toJwtSmartAccount(parameters: ToJwtSmartAccountParameters)
             name: "jwtProof",
             type: "tuple",
             components: [
-              { name: "domainName", type: "string" },
+              { name: "kid", type: "uint256" },
+              { name: "iss", type: "string" },
+              { name: "azp", type: "string" },
               { name: "publicKeyHash", type: "bytes32" },
               { name: "timestamp", type: "uint256" },
               { name: "maskedCommand", type: "string" },
               { name: "emailNullifier", type: "bytes32" },
               { name: "accountSalt", type: "bytes32" },
               { name: "isCodeExist", type: "bool" },
+              { name: "domainName", type: "string" },
               { name: "proof", type: "bytes" },
             ],
           },
