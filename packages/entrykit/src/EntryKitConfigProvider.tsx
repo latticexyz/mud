@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { createContext, useContext, type ReactNode } from "react";
-import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, midnightTheme } from "@rainbow-me/rainbowkit";
 import { EntryKitConfig } from "./config/output";
 import { Chain } from "viem";
 import { useChains } from "wagmi";
@@ -37,16 +37,7 @@ export function EntryKitConfigProvider({ config, children }: Props) {
         appName: config.appName,
         // TODO: learn more and disclaimer
       }}
-      theme={
-        config.theme === "light"
-          ? lightTheme({ borderRadius: "none" })
-          : config.theme === "dark"
-            ? midnightTheme({ borderRadius: "none" })
-            : {
-                lightMode: lightTheme({ borderRadius: "none" }),
-                darkMode: midnightTheme({ borderRadius: "none" }),
-              }
-      }
+      theme={midnightTheme({ borderRadius: "none" })}
     >
       <Context.Provider value={{ ...config, chain }}>{children}</Context.Provider>
     </RainbowKitProvider>
