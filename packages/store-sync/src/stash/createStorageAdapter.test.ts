@@ -8,7 +8,6 @@ import { createStash } from "@latticexyz/stash/internal";
 import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("createStorageAdapter", async () => {
-  beforeAll(snapshotAnvilState);
   beforeEach(snapshotAnvilState);
 
   beforeAll(async () => {

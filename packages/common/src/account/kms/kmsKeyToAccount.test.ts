@@ -8,11 +8,10 @@ import { waitForTransaction } from "../../test/waitForTransaction";
 import { getTransactionReceipt, sendTransaction, setBalance } from "viem/actions";
 
 describe.skipIf(!process.env.AWS_ENDPOINT_URL)("kmsKeyToAccount", () => {
+  beforeEach(snapshotAnvilState);
+
   let account: KmsAccount;
   let keyId: string;
-
-  beforeAll(snapshotAnvilState);
-  beforeEach(snapshotAnvilState);
 
   beforeAll(async () => {
     const client = new KMSClient({

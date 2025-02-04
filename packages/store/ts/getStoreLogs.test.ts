@@ -7,7 +7,6 @@ import { summarizeLogs } from "./test/summarizeLogs";
 import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("getStoreLogs", async () => {
-  beforeAll(snapshotAnvilState);
   beforeEach(snapshotAnvilState);
 
   beforeAll(async () => {
