@@ -16,5 +16,7 @@ export function baseConfig(opts: Options): Options {
     // previously-built DTS files, which other build tasks
     // depend on
     clean: !opts.watch,
+    // replaces __dirname with import.meta.url in ESM
+    shims: true,
   };
 }
