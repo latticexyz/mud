@@ -55,8 +55,7 @@
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
-    "viem": "2.21.19",
-    "vitest": "0.34.6"
+    "viem": "2.21.19"
   },
   "peerDependencies": {
     "@latticexyz/common": "2.x",

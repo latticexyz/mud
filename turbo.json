@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "out/**", "build/**", "bin/**", ".next/**"]
+      "outputs": ["dist/**", "out/**", "build/**", ".mud/**", ".next/**"]
     },
     "create-mud#build": {
       "dependsOn": ["^build"],
@@ -18,12 +18,15 @@
     "clean": {
       "cache": false
     },
+    "test": {
+      "dependsOn": ["mock-game-contracts#build"]
+    },
+    "test:ci": {
+      "dependsOn": ["mock-game-contracts#build"],
+      "cache": false
+    },
     "@latticexyz/store#clean": {
-      "dependsOn": [
-        "@latticexyz/world#clean",
-        "puppet-modules-test#clean",
-        "mock-game-contracts#clean"
-      ],
+      "dependsOn": ["@latticexyz/world#clean", "puppet-modules-test#clean", "mock-game-contracts#clean"],
       "cache": false
     },
     "@latticexyz/world#clean": {

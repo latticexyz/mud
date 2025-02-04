@@ -2,20 +2,20 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
 import config from "../mud.config";
-import { snapshotAnvilState, testClient } from "../../../test-setup/common";
-import { deployMockGame } from "../../../test-setup/mockGame";
+import { deployMockGame } from "mock-game-contracts";
 import { summarizeLogs } from "./test/summarizeLogs";
+import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("getStoreLogs", async () => {
-  beforeAll(async () => {
-    const resetAnvilState = await snapshotAnvilState();
-    await deployMockGame();
-    return resetAnvilState;
-  });
+  beforeAll(snapshotAnvilState);
   beforeEach(snapshotAnvilState);
 
+  beforeAll(async () => {
+    await deployMockGame();
+  });
+
   it("fetches only store logs", async () => {
-    const logs = await getStoreLogs(testClient, { fromBlock: "earliest", toBlock: "latest" });
+    const logs = await getStoreLogs(createTestClient(), { fromBlock: "earliest", toBlock: "latest" });
     expect(summarizeLogs(logs)).toMatchInlineSnapshot(`
       [
         "Store_SpliceStaticData  world__InitModuleAddres  ()",
@@ -210,7 +210,7 @@ describe("getStoreLogs", async () => {
   });
 
   it("fetches only store logs for a specific table", async () => {
-    const logs = await getStoreLogs(testClient, {
+    const logs = await getStoreLogs(createTestClient(), {
       fromBlock: "earliest",
       toBlock: "latest",
       tableId: config.tables.store__ResourceIds.tableId,
@@ -256,7 +256,7 @@ describe("getStoreLogs", async () => {
   });
 
   it("fetches only store logs for specific tables", async () => {
-    const logs = await getStoreLogs(testClient, {
+    const logs = await getStoreLogs(createTestClient(), {
       fromBlock: "earliest",
       toBlock: "latest",
       tableId: [config.tables.store__ResourceIds.tableId, config.tables.store__Tables.tableId],

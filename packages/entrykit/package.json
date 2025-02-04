@@ -82,7 +82,6 @@
     "vite": "^5.4.1",
     "vite-plugin-dts": "^4.2.4",
     "vite-plugin-externalize-deps": "^0.8.0",
-    "vitest": "0.34.6",
     "wagmi": "2.12.11"
   },
   "peerDependencies": {

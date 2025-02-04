@@ -1,0 +1,11 @@
+{
+  "name": "with-anvil",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/exports/index.ts"
+  },
+  "bin": "src/bin/with-anvil.ts"
+}

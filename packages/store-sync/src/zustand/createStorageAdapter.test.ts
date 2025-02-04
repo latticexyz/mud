@@ -1,21 +1,22 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
-import { config, deployMockGame } from "../../test/mockGame";
+import { config, deployMockGame } from "mock-game-contracts";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
-import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
-import { Address } from "viem";
+import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("createStorageAdapter", async () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let worldAddress: Address;
+  beforeAll(snapshotAnvilState);
+  beforeEach(snapshotAnvilState);
+
   beforeAll(async () => {
-    worldAddress = await deployMockGame();
+    await deployMockGame();
   });
 
   it("sets component values from logs", async () => {
+    const testClient = createTestClient();
     const useStore = createStore({ tables: config.tables });
     const storageAdapter = createStorageAdapter({ store: useStore });
 
