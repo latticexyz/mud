@@ -13,7 +13,7 @@ import { setupTables } from "../postgres/setupTables";
 import { getTables } from "./getTables";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { GetRpcClientOptions } from "@latticexyz/block-logs-stream";
-import { cleanStrings } from "./cleanStrings";
+import { removeNullCharacters } from "./removeNullCharacters";
 
 // Currently assumes one DB per chain ID
 
@@ -94,14 +94,11 @@ export async function createStorageAdapter({
             continue;
           }
 
-          const value = cleanStrings(
-            table.valueSchema,
-            decodeValueArgs(table.valueSchema, {
-              staticData: record.staticData ?? "0x",
-              encodedLengths: record.encodedLengths ?? "0x",
-              dynamicData: record.dynamicData ?? "0x",
-            }),
-          );
+          const value = decodeValueArgs(table.valueSchema, {
+            staticData: record.staticData ?? "0x",
+            encodedLengths: record.encodedLengths ?? "0x",
+            dynamicData: record.dynamicData ?? "0x",
+          });
 
           debug("upserting record", {
             namespace: table.namespace,
@@ -115,13 +112,13 @@ export async function createStorageAdapter({
               __keyBytes: keyBytes,
               __lastUpdatedBlockNumber: blockNumber,
               ...key,
-              ...value,
+              ...removeNullCharacters(table.valueSchema, value),
             })
             .onConflictDoUpdate({
               target: sqlTable.__keyBytes,
               set: {
                 __lastUpdatedBlockNumber: blockNumber,
-                ...value,
+                ...removeNullCharacters(table.valueSchema, value),
               },
             })
             .execute();

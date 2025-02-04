@@ -1,6 +1,6 @@
 import { SchemaToPrimitives, ValueSchema } from "@latticexyz/protocol-parser/internal";
 
-export function cleanStrings<TSchema extends ValueSchema>(
+export function removeNullCharacters<TSchema extends ValueSchema>(
   schema: TSchema,
   value: SchemaToPrimitives<TSchema>,
 ): SchemaToPrimitives<TSchema> {
