@@ -10,17 +10,116 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./indexer-client": "./dist/indexer-client/index.js",
-    "./internal": "./dist/exports/internal.js",
-    "./react": "./dist/exports/react.js",
-    "./postgres": "./dist/postgres/index.js",
-    "./postgres-decoded": "./dist/postgres-decoded/index.js",
-    "./recs": "./dist/recs/index.js",
-    "./sqlite": "./dist/sqlite/index.js",
-    "./trpc-indexer": "./dist/trpc-indexer/index.js",
-    "./world": "./dist/world/index.js",
-    "./zustand": "./dist/zustand/index.js"
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    },
+    "./indexer-client": {
+      "import": {
+        "import": "./dist/indexer-client/index.js",
+        "types": "./dist/indexer-client/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/indexer-client/index.cjs",
+        "types": "./dist/indexer-client/index.d.cts"
+      }
+    },
+    "./internal": {
+      "import": {
+        "import": "./dist/exports/internal.js",
+        "types": "./dist/exports/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/exports/internal.cjs",
+        "types": "./dist/exports/internal.d.cts"
+      }
+    },
+    "./react": {
+      "import": {
+        "import": "./dist/exports/react.js",
+        "types": "./dist/exports/react.d.ts"
+      },
+      "require": {
+        "require": "./dist/exports/react.cjs",
+        "types": "./dist/exports/react.d.cts"
+      }
+    },
+    "./postgres": {
+      "import": {
+        "import": "./dist/postgres/index.js",
+        "types": "./dist/postgres/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/postgres/index.cjs",
+        "types": "./dist/postgres/index.d.cts"
+      }
+    },
+    "./postgres-decoded": {
+      "import": {
+        "import": "./dist/postgres-decoded/index.js",
+        "types": "./dist/postgres-decoded/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/postgres-decoded/index.cjs",
+        "types": "./dist/postgres-decoded/index.d.cts"
+      }
+    },
+    "./recs": {
+      "import": {
+        "import": "./dist/recs/index.js",
+        "types": "./dist/recs/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/recs/index.cjs",
+        "types": "./dist/recs/index.d.cts"
+      }
+    },
+    "./sqlite": {
+      "import": {
+        "import": "./dist/sqlite/index.js",
+        "types": "./dist/sqlite/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/sqlite/index.cjs",
+        "types": "./dist/sqlite/index.d.cts"
+      }
+    },
+    "./trpc-indexer": {
+      "import": {
+        "import": "./dist/trpc-indexer/index.js",
+        "types": "./dist/trpc-indexer/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/trpc-indexer/index.cjs",
+        "types": "./dist/trpc-indexer/index.d.cts"
+      }
+    },
+    "./world": {
+      "import": {
+        "import": "./dist/world/index.js",
+        "types": "./dist/world/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/world/index.cjs",
+        "types": "./dist/world/index.d.cts"
+      }
+    },
+    "./zustand": {
+      "import": {
+        "import": "./dist/zustand/index.js",
+        "types": "./dist/zustand/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/zustand/index.cjs",
+        "types": "./dist/zustand/index.d.cts"
+      }
+    }
   },
   "typesVersions": {
     "*": {
