@@ -16,14 +16,14 @@ abstract contract WithWorld is WithStore, System {
   bytes14 public immutable namespace;
 
   error WithWorld_RootNamespaceNotAllowed();
-  error WithWorld_NamespaceAlreadyExists();
-  error WithWorld_NamespaceDoesNotExists();
-  error WithWorld_CallerHasNoNamespaceAccess();
-  error WithWorld_CallerIsNotWorld();
+  error WithWorld_NamespaceAlreadyExists(bytes14 namespace);
+  error WithWorld_NamespaceDoesNotExists(bytes14 namespace);
+  error WithWorld_CallerHasNoNamespaceAccess(bytes14 namespace, address caller);
+  error WithWorld_CallerIsNotWorld(address caller);
 
   modifier onlyWorld() {
     if (!_callerIsWorld()) {
-      revert WithWorld_CallerIsNotWorld();
+      revert WithWorld_CallerIsNotWorld(msg.sender);
     }
     _;
   }
@@ -31,7 +31,7 @@ abstract contract WithWorld is WithStore, System {
   modifier onlyNamespace() {
     // We use WorldContextConsumer directly as we already know the world is the caller
     if (!_callerIsWorld() || !ResourceAccess.get(getNamespaceId(), WorldContextConsumer._msgSender())) {
-      revert WithWorld_CallerHasNoNamespaceAccess();
+      revert WithWorld_CallerHasNoNamespaceAccess(namespace, _msgSender());
     }
     _;
   }
@@ -49,12 +49,12 @@ abstract contract WithWorld is WithStore, System {
 
     if (registerNamespace) {
       if (namespaceExists) {
-        revert WithWorld_NamespaceAlreadyExists();
+        revert WithWorld_NamespaceAlreadyExists(_namespace);
       }
 
       _world.registerNamespace(namespaceId);
     } else if (!namespaceExists) {
-      revert WithWorld_NamespaceDoesNotExists();
+      revert WithWorld_NamespaceDoesNotExists(_namespace);
     }
   }
 

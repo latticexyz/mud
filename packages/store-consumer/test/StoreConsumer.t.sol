@@ -128,7 +128,7 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(WithWorld.WithWorld_CallerIsNotWorld.selector);
+    vm.expectRevert(abi.encodeWithSelector(WithWorld.WithWorld_CallerIsNotWorld.selector, (alice)));
     mock.onlyCallableByWorld();
 
     vm.prank(alice);
@@ -152,11 +152,11 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector);
+    vm.expectRevert(abi.encodeWithSelector(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector, namespace, alice));
     mock.onlyCallableByNamespace();
 
     vm.prank(alice);
-    vm.expectRevert(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector);
+    vm.expectRevert(abi.encodeWithSelector(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector, namespace, alice));
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
 
     // After granting access to namespace, it should work
