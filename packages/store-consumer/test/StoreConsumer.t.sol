@@ -8,8 +8,9 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
-import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
@@ -60,6 +61,8 @@ contract MockWithWorld is WithWorld, MockStoreConsumer {
 }
 
 contract StoreConsumerTest is Test, GasReporter {
+  using WorldResourceIdInstance for ResourceId;
+
   function testWithStore() public {
     MockWithStore mock = new MockWithStore(address(0xBEEF));
     assertEq(mock.getStoreAddress(), address(0xBEEF));
@@ -100,7 +103,7 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert();
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, systemId.toString(), alice));
     world.call(systemId, abi.encodeCall(mock.callableByAnyone, ()));
 
     // After granting access to namespace, it should work
@@ -125,7 +128,7 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert();
+    vm.expectRevert(WithWorld.WithWorld_CallerIsNotWorld.selector);
     mock.onlyCallableByWorld();
 
     vm.prank(alice);
@@ -149,11 +152,11 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert();
+    vm.expectRevert(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector);
     mock.onlyCallableByNamespace();
 
     vm.prank(alice);
-    vm.expectRevert();
+    vm.expectRevert(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector);
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
 
     // After granting access to namespace, it should work
