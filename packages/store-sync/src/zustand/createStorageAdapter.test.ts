@@ -8,7 +8,6 @@ import { getBlockNumber } from "viem/actions";
 import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("createStorageAdapter", async () => {
-  beforeAll(snapshotAnvilState);
   beforeEach(snapshotAnvilState);
 
   beforeAll(async () => {
