@@ -1,5 +1,9 @@
 import { Options } from "tsup";
 
+/**
+ * Shared tsup config across all packages.
+ * @dev Be careful adjusting this config!
+ */
 export function baseConfig(opts: Options): Options {
   return {
     target: "esnext",
