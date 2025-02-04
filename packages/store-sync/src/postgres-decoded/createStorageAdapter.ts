@@ -13,6 +13,7 @@ import { setupTables } from "../postgres/setupTables";
 import { getTables } from "./getTables";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { GetRpcClientOptions } from "@latticexyz/block-logs-stream";
+import { removeNullCharacters } from "./removeNullCharacters";
 
 // Currently assumes one DB per chain ID
 
@@ -111,13 +112,13 @@ export async function createStorageAdapter({
               __keyBytes: keyBytes,
               __lastUpdatedBlockNumber: blockNumber,
               ...key,
-              ...value,
+              ...removeNullCharacters(table.valueSchema, value),
             })
             .onConflictDoUpdate({
               target: sqlTable.__keyBytes,
               set: {
                 __lastUpdatedBlockNumber: blockNumber,
-                ...value,
+                ...removeNullCharacters(table.valueSchema, value),
               },
             })
             .execute();
