@@ -15,44 +15,48 @@ import { healthcheck } from "../koa-middleware/healthcheck";
 import { helloWorld } from "../koa-middleware/helloWorld";
 import { metrics } from "../koa-middleware/metrics";
 
-const env = parseEnv(
-  z.intersection(
-    frontendEnvSchema,
-    z.object({
-      DATABASE_URL: z.string(),
-      SENTRY_DSN: z.string().optional(),
+// Workaround for:
+//   Top-level await is currently not supported with the "cjs" output format
+(async (): Promise<void> => {
+  const env = parseEnv(
+    z.intersection(
+      frontendEnvSchema,
+      z.object({
+        DATABASE_URL: z.string(),
+        SENTRY_DSN: z.string().optional(),
+      }),
+    ),
+  );
+
+  const database = postgres(env.DATABASE_URL, { prepare: false });
+
+  const server = new Koa();
+
+  if (env.SENTRY_DSN) {
+    server.use(sentry(env.SENTRY_DSN));
+  }
+
+  server.use(cors());
+  server.use(healthcheck());
+  server.use(
+    metrics({
+      isHealthy: () => true,
+      isReady: () => true,
     }),
-  ),
-);
+  );
+  server.use(helloWorld());
+  server.use(apiRoutes(database));
 
-const database = postgres(env.DATABASE_URL, { prepare: false });
-
-const server = new Koa();
-
-if (env.SENTRY_DSN) {
-  server.use(sentry(env.SENTRY_DSN));
-}
-
-server.use(cors());
-server.use(healthcheck());
-server.use(
-  metrics({
-    isHealthy: () => true,
-    isReady: () => true,
-  }),
-);
-server.use(helloWorld());
-server.use(apiRoutes(database));
-
-server.use(
-  createKoaMiddleware({
-    prefix: "/trpc",
-    router: createAppRouter(),
-    createContext: async () => ({
-      queryAdapter: await createQueryAdapter(drizzle(database)),
+  server.use(
+    createKoaMiddleware({
+      prefix: "/trpc",
+      router: createAppRouter(),
+      createContext: async () => ({
+        queryAdapter: await createQueryAdapter(drizzle(database)),
+      }),
     }),
-  }),
-);
+  );
 
-server.listen({ host: env.HOST, port: env.PORT });
-console.log(`postgres indexer frontend listening on http://${env.HOST}:${env.PORT}`);
+  server.listen({ host: env.HOST, port: env.PORT });
+  console.log(`postgres indexer frontend listening on http://${env.HOST}:${env.PORT}`);
+})();
