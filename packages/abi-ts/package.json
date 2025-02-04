@@ -11,8 +11,14 @@
   "type": "module",
   "exports": {
     "./internal": {
-      "import": "./dist/exports/internal.js",
-      "default": "./dist/exports/internal.cjs"
+      "import": {
+        "import": "./dist/exports/internal.js",
+        "types": "./dist/exports/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/exports/internal.cjs",
+        "types": "./dist/exports/internal.d.cts"
+      }
     }
   },
   "typesVersions": {
@@ -23,7 +29,7 @@
     }
   },
   "bin": {
-    "abi-ts": "./bin/abi-ts.cjs"
+    "abi-ts": "./bin/abi-ts.js"
   },
   "files": [
     "bin",
