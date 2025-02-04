@@ -10,7 +10,10 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./internal": "./dist/exports/internal.js"
+    "./internal": {
+      "import": "./dist/exports/internal.js",
+      "default": "./dist/exports/internal.cjs"
+    }
   },
   "typesVersions": {
     "*": {
@@ -20,7 +23,7 @@
     }
   },
   "bin": {
-    "abi-ts": "./bin/abi-ts.js"
+    "abi-ts": "./bin/abi-ts.cjs"
   },
   "files": [
     "bin",
