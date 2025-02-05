@@ -10,6 +10,8 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 
+import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
@@ -19,7 +21,11 @@ import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithWorld, ERC20Beh
 
 contract MockERC20WithInternalStoreBurnable is MockERC20WithInternalStore, ERC20Burnable {}
 
-contract MockERC20WithWorldBurnable is MockERC20WithWorld, ERC20Burnable {}
+contract MockERC20WithWorldBurnable is MockERC20WithWorld, ERC20Burnable {
+  function _msgSender() public view override(Context, MockERC20WithWorld) returns (address sender) {
+    return super._msgSender();
+  }
+}
 
 abstract contract ERC20BurnableTest is ERC20BehaviorTest {
   function testBurnByAccount() public {

@@ -22,6 +22,7 @@ import { ERC20Module } from "../src/experimental/ERC20Module.sol";
 import { ERC20Registry } from "../src/codegen/tables/ERC20Registry.sol";
 
 library TestConstants {
+  bytes16 constant ERC20_SYSTEM_NAME = "erc20system";
   bytes14 constant ERC20_NAMESPACE = "erc20namespace";
 }
 
@@ -37,7 +38,12 @@ contract ERC20ModuleTest is Test, GasReporter {
   }
 
   function testInstall() public {
-    bytes memory args = abi.encode(TestConstants.ERC20_NAMESPACE, "myERC20Token", "MTK");
+    bytes memory args = abi.encode(
+      TestConstants.ERC20_NAMESPACE,
+      TestConstants.ERC20_SYSTEM_NAME,
+      "myERC20Token",
+      "MTK"
+    );
     startGasReport("install erc20 module");
     world.installModule(erc20Module, args);
     endGasReport();
@@ -62,7 +68,12 @@ contract ERC20ModuleTest is Test, GasReporter {
     ResourceId moduleNamespaceId = ModuleConstants.namespaceId();
     world.registerNamespace(moduleNamespaceId);
 
-    bytes memory args = abi.encode(TestConstants.ERC20_NAMESPACE, "myERC20Token", "MTK");
+    bytes memory args = abi.encode(
+      TestConstants.ERC20_NAMESPACE,
+      TestConstants.ERC20_SYSTEM_NAME,
+      "myERC20Token",
+      "MTK"
+    );
 
     // Installing will revert because module namespace already exists
     vm.expectRevert(

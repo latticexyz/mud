@@ -25,7 +25,7 @@ contract SimpleVault is WithWorld {
   constructor(IBaseWorld world, bytes14 namespace) WithWorld(world, namespace, false) {}
 
   // Only accounts with namespace access (e.g. namespace systems) can transfer the ERC20 tokens held by this contract
-  function transferTo(IERC20 token, address to, uint256 amount) external onlyNamespace {
+  function transferTo(IERC20 token, address to, uint256 amount) external onlyWorld {
     require(token.transfer(to, amount), "Transfer failed");
   }
 

@@ -23,7 +23,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return sender The `msg.sender` in the call to the World contract before the World routed the
    * call to the WorldContextConsumer contract.
    */
-  function _msgSender() public view returns (address sender) {
+  function _msgSender() public view virtual returns (address sender) {
     return WorldContextConsumerLib._msgSender();
   }
 
