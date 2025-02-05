@@ -1,5 +1,227 @@
 [
   {
+    "version": "2.2.18",
+    "date": "2025-02-05T23:28:20.207Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTables under internal namespace are now editable.",
+          "type": 0,
+          "commitHash": "6bd1695fe986f90478cfb8fe7fcc00a7a7df3e04",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): enable editing internal namespace tables (#3553)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nIn the Interact tab, functions with tuple arguments can now be submitted. Additionally, function input fields display the tuple name when available and indicate tuple argument types.",
+          "type": 0,
+          "commitHash": "c44207f620a38653497b78db0b71f5de7bc1a940",
+          "authorName": "James Lefrère",
+          "authorEmail": "jlefrere@gmail.com",
+          "title": "chore(explorer): handle tuples in interact form (#3464)"
+        },
+        {
+          "packages": [
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated templates to Node v20.",
+          "type": 0,
+          "commitHash": "491a5acc8ab6d5e1a65a9845160860199b5173fc",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat: bump to node 20 (#3456)"
+        },
+        {
+          "packages": [
+            {
+              "package": "create-mud",
+              "type": "patch"
+            },
+            {
+              "package": "vite-plugin-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue with providing world deploy's start block to Vite app's env.",
+          "type": 0,
+          "commitHash": "7106953abc5baa13ac87123cc58796f788dab05a",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(vite-plugin-mud): start block as number (#3555)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue with how MUD table names were translated SQLite table names when querying.",
+          "type": 0,
+          "commitHash": "4565714f5e9421cc7b2de56fe51db4434c55f5d1",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "fix(explorer): use table name helper from sqlite package (#3542)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`pnpm start:postgres-decoded` now starts both the indexer backend and frontend.",
+          "type": 0,
+          "commitHash": "16710f177b60880b7fa1b2d0be350297a16e2c8c",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "chore(store-indexer): start frontend with decoded backend (#3572)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUsing EntryKit without a configured bundler will now throw an error.\n\nRedstone, Garnet, Rhodolite, and Anvil chains come preconfigured. For other chains, you can a bundler RPC URL to your chain config via\n\n```ts\nimport type { Chain } from \"viem\";\n\nconst chain = {\n  ...\n  rpcUrls: {\n    ...\n    bundler: {\n      http: [\"https://...\"],\n    },\n  },\n} as const satisfies Chain;\n```",
+          "type": 0,
+          "commitHash": "10ce339665bbc3cc175b109a51d216ec1b1bb739",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(entrykit): require bundler (#3570)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-consumer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdates `WithWorld` to be a `System`, so that functions in child contracts that use the `onlyWorld` or `onlyNamespace` modifiers must be called through the world in order to safely support calls from systems.",
+          "type": 0,
+          "commitHash": "5d6fb1b51da1545b911c55e0cd79bc16ed2cd8f5",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "refactor(store-consumer): adapt WithWorld to be a System (#3546)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated table names to pascal case for consistency.",
+          "type": 0,
+          "commitHash": "88949aaf197da3a62782ffd0c29b7dd677425fac",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "refactor(world-module-erc20): change erc20 module table names to pascal case (#3544)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDisplay a loading indicator on the query execution button while refetching a non-live query.",
+          "type": 0,
+          "commitHash": "860224870f7eb070cccbb33b505ee42ba6e7092c",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): loading indicator for refetched query (#3552)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved error handling.",
+          "type": 0,
+          "commitHash": "88af9325733387259f29dfdafd2fdbc23f2ab499",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "refactor(entrykit): improve error handling (#3574)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nClarified `SessionClient` type as using a `SmartAccount` under the hood so that it can be used with smart account-related Viem actions.",
+          "type": 0,
+          "commitHash": "e1db80ad5648a9c77b757cda3930aa134e0f1c97",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(entrykit): session client uses smart account (#3547)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded bundler RPC URL to Garnet chain config.",
+          "type": 0,
+          "commitHash": "10ce339665bbc3cc175b109a51d216ec1b1bb739",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(entrykit): require bundler (#3570)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSince Postgres doesn't support `\\x00` bytes in strings, the decoded postgres indexer now removes `\\x00` bytes from decoded strings.",
+          "type": 0,
+          "commitHash": "df5d3937706cb9465b0539af8f4725be3d84f858",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): skip invalid utf-8 characters in strings before inserting into postgres (#3562)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.17",
     "date": "2025-01-30T10:57:44.407Z",
     "changes": {

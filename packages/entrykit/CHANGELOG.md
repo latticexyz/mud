@@ -1,5 +1,39 @@
 # @latticexyz/entrykit
 
+## 2.2.18
+
+### Patch Changes
+
+- 10ce339: Using EntryKit without a configured bundler will now throw an error.
+
+  Redstone, Garnet, Rhodolite, and Anvil chains come preconfigured. For other chains, you can a bundler RPC URL to your chain config via
+
+  ```ts
+  import type { Chain } from "viem";
+
+  const chain = {
+    ...
+    rpcUrls: {
+      ...
+      bundler: {
+        http: ["https://..."],
+      },
+    },
+  } as const satisfies Chain;
+  ```
+
+- 88af932: Improved error handling.
+- e1db80a: Clarified `SessionClient` type as using a `SmartAccount` under the hood so that it can be used with smart account-related Viem actions.
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/world@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/world-module-callwithsignature@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/paymaster@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes

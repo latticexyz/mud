@@ -1,5 +1,19 @@
 # @latticexyz/store-indexer
 
+## 2.2.18
+
+### Patch Changes
+
+- 16710f1: `pnpm start:postgres-decoded` now starts both the indexer backend and frontend.
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+- Updated dependencies [df5d393]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/store-sync@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes
