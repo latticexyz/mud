@@ -6,6 +6,7 @@ import { Button } from "../../ui/Button";
 import { Balance } from "../../ui/Balance";
 import { useEffect } from "react";
 import { minGasBalance } from "../common";
+import { useShowQueryError } from "../../errors/useShowQueryError";
 
 export type Props = {
   isExpanded: boolean;
@@ -14,7 +15,7 @@ export type Props = {
 };
 
 export function Allowance({ isActive, isExpanded, userAddress }: Props) {
-  const allowance = useAllowance(userAddress);
+  const allowance = useShowQueryError(useAllowance(userAddress));
   const claimGasPass = useClaimGasPass();
 
   useEffect(() => {

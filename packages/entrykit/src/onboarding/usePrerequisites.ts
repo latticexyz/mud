@@ -23,13 +23,14 @@ export function getPrequisitesQueryOptions({
   userAddress: Address | undefined;
   worldAddress: Address;
 }) {
-  const queryKey = ["getPrerequisites", client?.chain.id, userAddress];
+  const queryKey = ["getPrerequisites", client?.uid, userAddress];
   return queryOptions(
     client && userAddress
       ? {
           queryKey,
-          queryFn: async () => {
+          async queryFn() {
             const paymaster = getPaymaster(client.chain);
+
             const { address: sessionAddress } = await queryClient.fetchQuery(
               getSessionAccountQueryOptions({ client, userAddress }),
             );
@@ -60,6 +61,7 @@ export function getPrequisitesQueryOptions({
               complete: hasAllowance && isSpender && hasDelegation,
             };
           },
+          retry: false,
         }
       : { queryKey, enabled: false },
   );
@@ -67,22 +69,22 @@ export function getPrequisitesQueryOptions({
 
 export function usePrerequisites(userAddress: Address | undefined) {
   const queryClient = useQueryClient();
-  const { chainId, worldAddress } = useEntryKitConfig();
   const config = useConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
 
   // TODO: rework this so it uses other hooks so we avoid having to clear two caches when e.g. topping up
 
   const prereqs = useQuery(
     getPrequisitesQueryOptions({
-      config,
       queryClient,
+      config,
       client,
       userAddress,
       worldAddress,
     }),
     queryClient,
   );
-  // console.log("prereqs", prereqs.isFetching, prereqs.isRefetching, prereqs.isFetchedAfterMount);
+  // console.log("prereqs", prereqs.data);
   return prereqs;
 }

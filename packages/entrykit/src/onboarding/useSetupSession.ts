@@ -20,8 +20,9 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
 
   const mutationKey = ["setupSession", client?.chain.id, userClient.account.address];
   return useMutation({
+    retry: 0,
+    throwOnError: true,
     mutationKey,
-    onError: (error) => console.error(error),
     mutationFn: async ({
       sessionClient,
       registerSpender,
@@ -139,6 +140,5 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
         queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
       ]);
     },
-    retry: 0,
   });
 }

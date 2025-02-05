@@ -4,7 +4,6 @@ import { TruncatedHex } from "../ui/TruncatedHex";
 import { Button } from "../ui/Button";
 import { useAccountModal } from "../useAccountModal";
 import { Hex } from "viem";
-import { useEffect } from "react";
 
 export type Props = {
   isActive: boolean;
@@ -13,14 +12,7 @@ export type Props = {
 };
 
 export function Wallet({ isActive, isExpanded, userAddress }: Props) {
-  const { data: ens, error: ensError } = useENS(userAddress);
-
-  useEffect(() => {
-    if (ensError) {
-      console.log("Could not get ENS", ensError);
-    }
-  }, [ensError]);
-
+  const { data: ens } = useENS(userAddress);
   const { disconnect, isPending: disconnectIsPending } = useDisconnect();
   const { closeAccountModal } = useAccountModal();
 
