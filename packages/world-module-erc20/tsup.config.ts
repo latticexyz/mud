@@ -1,14 +1,10 @@
 import { defineConfig } from "tsup";
+import { baseConfig } from "../../tsup.config.base";
 
-export default defineConfig({
+export default defineConfig((opts) => ({
+  ...baseConfig(opts),
   entry: {
     "mud.config": "mud.config.ts",
     internal: "ts/exports/internal.ts",
   },
-  target: "esnext",
-  format: ["esm"],
-  dts: !process.env.TSUP_SKIP_DTS,
-  sourcemap: true,
-  clean: true,
-  minify: true,
-});
+}));
