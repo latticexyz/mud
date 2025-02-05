@@ -1,15 +1,54 @@
 #!/usr/bin/env node
-
-// Load .env file into process.env
+import yargs from "yargs";
+import chalk from "chalk";
+import { hideBin } from "yargs/helpers";
+import { logError } from "./utils/errors";
+import { parseArgs } from "node:util";
 import * as dotenv from "dotenv";
-dotenv.config();
+import { isDefined } from "@latticexyz/common/utils";
 
-async function run() {
-  // Import everything else async so they can pick up env vars in .env
-  const { default: yargs } = await import("yargs");
-  const { default: chalk } = await import("chalk");
-  const { hideBin } = await import("yargs/helpers");
-  const { logError } = await import("./utils/errors");
+// Find `--profile` flag in args
+const args = parseArgs({
+  args: process.argv,
+  options: {
+    profile: { type: "string" },
+  },
+  strict: false,
+  tokens: true,
+});
+
+const foundryProfile = typeof args.values.profile === "string" ? args.values.profile : process.env.FOUNDRY_PROFILE;
+dotenv.config({
+  path: [
+    // because we're not overriding env vars, we want to load the
+    // most specific one first (profile-based env)
+    foundryProfile ? `.env.${foundryProfile}` : undefined,
+    // then the generic one
+    ".env",
+  ].filter(isDefined),
+});
+
+// replace FOUNDRY_PROFILE in env so it's consistent downstream
+process.env.FOUNDRY_PROFILE = foundryProfile;
+// strip `--profile` flag from argv
+process.argv = args.tokens
+  .filter((token) => !(token.kind === "option" && token.name === "profile"))
+  .flatMap((token) => {
+    switch (token.kind) {
+      case "positional":
+        return token.value;
+      case "option":
+        return token.value ? [token.rawName, token.value] : [token.rawName];
+      case "option-terminator":
+        return "--";
+      default:
+        return [];
+    }
+  });
+
+(async function run() {
+  // Some modules (like debug) use `process.env` at import time, so we need to
+  // dynamically import commands to make sure env is populated first.
   const { commands } = await import("./commands");
 
   yargs(hideBin(process.argv))
@@ -40,6 +79,4 @@ async function run() {
     })
     // Useful aliases.
     .alias({ h: "help" }).argv;
-}
-
-run();
+})();
