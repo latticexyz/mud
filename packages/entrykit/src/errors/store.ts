@@ -6,14 +6,23 @@ export const store = createStore<{
   readonly errors: readonly {
     readonly id: number;
     readonly error: Error;
-    readonly retry: () => unknown | Promise<unknown>;
+    readonly dismiss?: () => unknown;
+    readonly retry?: () => unknown | Promise<unknown>;
   }[];
 }>(() => ({
   lastId: 0,
   errors: [],
 }));
 
-export function addError(error: Error, retry: () => unknown | Promise<unknown>) {
+export function addError({
+  error,
+  retry,
+  dismiss,
+}: {
+  error: Error;
+  retry?: () => unknown | Promise<unknown>;
+  dismiss?: () => unknown;
+}) {
   // no need to let users know they rejected
   if (findCause(error, ({ name }) => name === "UserRejectedRequestError")) {
     return;
@@ -32,10 +41,18 @@ export function addError(error: Error, retry: () => unknown | Promise<unknown>) 
         {
           id,
           error,
-          retry: async () => {
-            removeError(error);
-            await retry();
-          },
+          dismiss: dismiss
+            ? () => {
+                removeError(error);
+                dismiss();
+              }
+            : undefined,
+          retry: retry
+            ? async () => {
+                removeError(error);
+                await retry();
+              }
+            : undefined,
         },
       ],
     };

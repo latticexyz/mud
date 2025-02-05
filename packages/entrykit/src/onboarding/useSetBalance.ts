@@ -14,7 +14,6 @@ export function useSetBalance() {
 
   return useMutation({
     retry: 0,
-    throwOnError: true,
     mutationKey: ["setBalance", chainId],
     mutationFn: async (params: SetBalanceParameters) => {
       if (!client) return null;

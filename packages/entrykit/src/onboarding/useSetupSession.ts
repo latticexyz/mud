@@ -21,7 +21,6 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
   const mutationKey = ["setupSession", client?.chain.id, userClient.account.address];
   return useMutation({
     retry: 0,
-    throwOnError: true,
     mutationKey,
     mutationFn: async ({
       sessionClient,

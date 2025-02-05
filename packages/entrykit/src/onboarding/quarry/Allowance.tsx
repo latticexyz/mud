@@ -7,6 +7,7 @@ import { Balance } from "../../ui/Balance";
 import { useEffect } from "react";
 import { minGasBalance } from "../common";
 import { useShowQueryError } from "../../errors/useShowQueryError";
+import { useShowMutationError } from "../../errors/useShowMutationError";
 
 export type Props = {
   isExpanded: boolean;
@@ -16,7 +17,7 @@ export type Props = {
 
 export function Allowance({ isActive, isExpanded, userAddress }: Props) {
   const allowance = useShowQueryError(useAllowance(userAddress));
-  const claimGasPass = useClaimGasPass();
+  const claimGasPass = useShowMutationError(useClaimGasPass());
 
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
@@ -36,9 +37,6 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
     });
     return () => clearTimeout(timer);
   }, [allowance.data, allowance.isSuccess, claimGasPass, isActive, userAddress]);
-
-  // TODO: show error if allowance fails to load
-  // TODO: show claim error
 
   return (
     <div className="flex flex-col gap-4">

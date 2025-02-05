@@ -13,7 +13,6 @@ export function useClaimGasPass() {
   const mutationKey = ["claimGasPass", chain.id];
   return useMutation({
     retry: 0,
-    throwOnError: true,
     mutationKey,
     mutationFn: async (userAddress: Address) => {
       if (chain.id === 31337) {

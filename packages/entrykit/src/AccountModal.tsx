@@ -25,6 +25,17 @@ export function AccountModal() {
             "links:decoration-neutral-500 hover:links:decoration-orange-500",
           )}
         >
+          <div className="absolute top-0 right-0">
+            <DialogClose
+              className={twMerge(
+                "pointer-events-auto leading-none p-2 transition",
+                "text-white/20 hover:text-white/40",
+              )}
+              title="Close"
+            >
+              <CloseIcon className="m-0" />
+            </DialogClose>
+          </div>
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <AccountModalContent />
             <ErrorsOverlay />
@@ -41,18 +52,6 @@ export function AccountModal() {
             </span>
             <span>Powered by MUD</span>
           </a>
-
-          <div className="absolute top-0 right-0">
-            <DialogClose
-              className={twMerge(
-                "pointer-events-auto leading-none p-2 transition",
-                "text-white/20 hover:text-white/40",
-              )}
-              title="Close"
-            >
-              <CloseIcon className="m-0" />
-            </DialogClose>
-          </div>
         </div>
       ) : null}
     </Modal>
