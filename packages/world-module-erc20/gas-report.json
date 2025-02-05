@@ -135,7 +135,7 @@
     "file": "test/ERC20Module.t.sol:ERC20ModuleTest",
     "test": "testInstall",
     "name": "install erc20 module",
-    "gasUsed": 4729741
+    "gasUsed": 4744637
   },
   {
     "file": "test/ERC20Pausable.t.sol:ERC20PausableWithInternalStoreTest",
