@@ -15,7 +15,7 @@ export function getDelegationQueryOptions({
   userAddress: Address | undefined;
   sessionAddress: Address | undefined;
 }) {
-  const queryKey = ["getDelegation", client?.chain.id, worldAddress, userAddress, sessionAddress];
+  const queryKey = ["getDelegation", client?.uid, worldAddress, userAddress, sessionAddress];
   return queryOptions(
     client && userAddress && sessionAddress
       ? {

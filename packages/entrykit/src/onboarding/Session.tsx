@@ -3,6 +3,8 @@ import { useSetupSession } from "./useSetupSession";
 import { ConnectedClient } from "../common";
 import { useEffect } from "react";
 import { useSessionClient } from "../useSessionClient";
+import { useShowQueryError } from "../errors/useShowQueryError";
+import { useShowMutationError } from "../errors/useShowMutationError";
 
 export type Props = {
   isActive: boolean;
@@ -13,8 +15,8 @@ export type Props = {
 };
 
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
-  const sessionClient = useSessionClient(userClient.account.address);
-  const setup = useSetupSession({ userClient });
+  const sessionClient = useShowQueryError(useSessionClient(userClient.account.address));
+  const setup = useShowMutationError(useSetupSession({ userClient }));
   const hasSession = !registerDelegation && !registerDelegation;
 
   useEffect(() => {
