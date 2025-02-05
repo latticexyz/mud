@@ -15,7 +15,7 @@ export function ErrorOverlay({ error, retry }: Props) {
   }, [error]);
 
   return (
-    <div className="absolute inset-0 overflow-clip">
+    <div className="pointer-events-none absolute inset-0 overflow-clip">
       <div
         className={twMerge(
           "absolute inset-0 bg-blue-700/60",
@@ -31,7 +31,7 @@ export function ErrorOverlay({ error, retry }: Props) {
         )}
       >
         {error ? (
-          <div className="w-full max-h-full bg-blue-700 text-white/70 overflow-auto">
+          <div className="pointer-events-auto w-full max-h-full bg-blue-700 text-white/70 overflow-auto">
             <div className="space-y-6 p-8 pb-0">
               <div className="text-white text-lg font-bold sticky top-0 left-0">Oops! It broke :(</div>
               <div className="space-y-2">
