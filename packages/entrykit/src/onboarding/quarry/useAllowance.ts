@@ -11,7 +11,7 @@ export function getAllowanceQueryOptions({
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
 }) {
-  const queryKey = ["getAllowance", client?.chain.id, userAddress];
+  const queryKey = ["getAllowance", client?.uid, userAddress];
   return queryOptions(
     client && userAddress
       ? {

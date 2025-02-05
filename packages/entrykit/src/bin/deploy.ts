@@ -48,6 +48,8 @@ to use a prefunded Anvil account.`,
 
   const chainId = await getChainId(client);
 
+  console.log("Deploying to chain", chainId, "from", account.address, "via", rpcUrl);
+
   // TODO: deployer address flag/env var?
   const deployerAddress = await ensureDeployer(client);
 

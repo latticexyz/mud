@@ -20,7 +20,7 @@ _This contract should only be used for contracts without their own storage, like
 Extract the `msg.sender` from the context appended to the calldata.
 
 ```solidity
-function _msgSender() public view returns (address sender);
+function _msgSender() public view virtual returns (address sender);
 ```
 
 **Returns**

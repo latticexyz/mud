@@ -1,58 +1,59 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { UseQueryResult, queryOptions, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  UndefinedInitialDataOptions,
+  UseQueryResult,
+  queryOptions,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getSessionClient } from "./getSessionClient";
 import { SessionClient } from "./common";
-import { SmartAccount } from "viem/account-abstraction";
-import { useSessionAccount } from "./useSessionAccount";
-import { useEffect } from "react";
+import { getSessionAccountQueryOptions } from "./useSessionAccount";
 
 export function getSessionClientQueryOptions({
-  sessionAccount,
+  queryClient,
   client,
   userAddress,
   worldAddress,
 }: {
-  sessionAccount: SmartAccount | undefined;
+  queryClient: QueryClient;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
   worldAddress: Address;
-}) {
-  const queryKey = ["getSessionClient", client?.uid, userAddress, sessionAccount?.address, worldAddress];
-  return queryOptions(
-    client && userAddress && sessionAccount
+}): UndefinedInitialDataOptions<SessionClient> {
+  const queryKey = ["getSessionClient", client?.uid, userAddress, worldAddress];
+  return queryOptions<SessionClient>(
+    userAddress
       ? {
           queryKey,
-          queryFn: () =>
-            getSessionClient({
+          async queryFn() {
+            const sessionAccount = await queryClient.fetchQuery(getSessionAccountQueryOptions({ client, userAddress }));
+            return await getSessionClient({
               sessionAccount,
-              client,
               userAddress,
               worldAddress,
-            }),
+            });
+          },
           staleTime: Infinity,
+          // TODO: replace with function to retry only connection errors
+          retry: false,
         }
       : { queryKey, enabled: false },
   );
 }
 
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
+  const queryClient = useQueryClient();
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-  const { data: sessionAccount, error: sessionAccountError } = useSessionAccount(userAddress);
-
-  useEffect(() => {
-    if (sessionAccountError) {
-      console.error("Could not get session account", sessionAccountError);
-    }
-  }, [sessionAccountError]);
-
   return useQuery(
     getSessionClientQueryOptions({
-      sessionAccount,
-      userAddress,
+      queryClient,
       client,
+      userAddress,
       worldAddress,
     }),
   );

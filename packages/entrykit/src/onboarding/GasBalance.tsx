@@ -2,12 +2,14 @@ import { Hex } from "viem";
 import { PendingIcon } from "../icons/PendingIcon";
 import { Button } from "../ui/Button";
 import { Balance } from "../ui/Balance";
-import { useBalance } from "wagmi";
+import { useBalance, useWatchBlockNumber } from "wagmi";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import relayChains from "../data/relayChains.json";
 import { useSetBalance } from "./useSetBalance";
 import { RelayChains, minGasBalance } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
+import { useShowMutationError } from "../errors/useShowMutationError";
+import { useShowQueryError } from "../errors/useShowQueryError";
 
 export type Props = {
   isExpanded: boolean;
@@ -18,11 +20,10 @@ export type Props = {
 export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
   const { chain } = useEntryKitConfig();
 
-  // TODO: refetch on block rather than interval?
-  const balance = useBalance({ chainId: chain.id, address: sessionAddress, query: { refetchInterval: 2000 } });
-  const setBalance = useSetBalance();
+  const balance = useShowQueryError(useBalance({ chainId: chain.id, address: sessionAddress }));
+  useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
-  // TODO: show error if balance/setBalance fails?
+  const setBalance = useShowMutationError(useSetBalance());
 
   const relayChain = (relayChains as RelayChains)[chain.id];
 

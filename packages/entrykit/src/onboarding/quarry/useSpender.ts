@@ -13,7 +13,7 @@ export function getSpenderQueryOptions({
   userAddress: Address | undefined;
   sessionAddress: Address | undefined;
 }) {
-  const queryKey = ["getSpender", client?.chain.id, userAddress, sessionAddress];
+  const queryKey = ["getSpender", client?.uid, userAddress, sessionAddress];
   return queryOptions(
     client && userAddress && sessionAddress
       ? {

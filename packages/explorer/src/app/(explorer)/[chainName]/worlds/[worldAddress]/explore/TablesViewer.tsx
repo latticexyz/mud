@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
@@ -67,10 +66,9 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
         },
         sortingFn: (rowA, rowB, columnId) => typeSortingFn(rowA, rowB, columnId, type),
         cell: ({ row }) => {
-          const namespace = table?.namespace;
           const keySchema = getKeySchema(table);
           const value = row.getValue(name);
-          if (!table || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
+          if (!table || Object.keys(keySchema).includes(name)) {
             return value;
           }
 

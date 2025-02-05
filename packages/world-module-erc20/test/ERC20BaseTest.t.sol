@@ -14,6 +14,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { WithStore } from "@latticexyz/store-consumer/src/experimental/WithStore.sol";
 import { WithWorld } from "@latticexyz/store-consumer/src/experimental/WithWorld.sol";
+import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
 
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20 } from "../src/interfaces/IERC20.sol";
@@ -43,12 +44,21 @@ contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {
 
 contract MockERC20WithWorld is WithWorld, MockERC20Base {
   constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
+
+  function _msgSender() public view virtual override(Context, WithWorld) returns (address sender) {
+    return WithWorld._msgSender();
+  }
 }
 
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {
   MockERC20Base token;
 
   function createToken() internal virtual returns (MockERC20Base);
+
+  // Used for validating the addresses in fuzz tests
+  function validAddress(address addr) internal view returns (bool) {
+    return addr != address(0) && addr != StoreSwitch.getStoreAddress();
+  }
 
   // TODO: startGasReport should be marked virtual so we can override
   function startGasReportWithPrefix(string memory name) internal {
@@ -208,7 +218,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testMint(address to, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0), to, amount);
@@ -219,7 +229,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testBurn(address from, uint256 mintAmount, uint256 burnAmount) public {
-    vm.assume(from != address(0));
+    vm.assume(validAddress(from));
     vm.assume(burnAmount <= mintAmount);
 
     token.__mint(from, mintAmount);
@@ -232,7 +242,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testApprove(address to, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
 
     assertTrue(token.approve(to, amount));
 
@@ -240,7 +250,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransfer(address to, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     token.__mint(address(this), amount);
 
     vm.expectEmit(true, true, true, true);
@@ -257,9 +267,9 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferFrom(address spender, address from, address to, uint256 approval, uint256 amount) public {
-    vm.assume(from != address(0));
-    vm.assume(to != address(0));
-    vm.assume(spender != address(0));
+    vm.assume(validAddress(from));
+    vm.assume(validAddress(to));
+    vm.assume(validAddress(spender));
     vm.assume(amount <= approval);
 
     token.__mint(from, amount);
@@ -289,7 +299,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testBurnInsufficientBalanceReverts(address to, uint256 mintAmount, uint256 burnAmount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(mintAmount < type(uint256).max);
     vm.assume(burnAmount > mintAmount);
 
@@ -299,7 +309,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferInsufficientBalanceReverts(address to, uint256 mintAmount, uint256 sendAmount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(mintAmount < type(uint256).max);
     vm.assume(sendAmount > mintAmount);
 
@@ -309,7 +319,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferFromInsufficientAllowanceReverts(address to, uint256 approval, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(approval < type(uint256).max);
     vm.assume(amount > approval);
 
@@ -325,7 +335,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferFromInsufficientBalanceReverts(address to, uint256 mintAmount, uint256 sendAmount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(mintAmount < type(uint256).max);
     vm.assume(sendAmount > mintAmount);
 
