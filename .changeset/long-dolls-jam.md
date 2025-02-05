@@ -16,6 +16,6 @@ const chain = {
     bundler: {
       http: ["https://..."],
     },
-  },  
+  },
 } as const satisfies Chain;
 ```
