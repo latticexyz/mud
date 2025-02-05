@@ -3,8 +3,7 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
 import { PausableTableNames } from "./Constants.sol";
@@ -18,7 +17,7 @@ import { PausableTableNames } from "./Constants.sol";
  * the functions of your contract. Note that they will not be pausable by
  * simply including this module, only once the modifiers are put in place.
  */
-abstract contract Pausable is Context, StoreConsumer {
+abstract contract Pausable is WorldConsumer {
   ResourceId internal immutable pausedId;
 
   /**

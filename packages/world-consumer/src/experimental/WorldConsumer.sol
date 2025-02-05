@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
@@ -9,10 +11,7 @@ import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 
-import { Context } from "./Context.sol";
-import { WithStore } from "./WithStore.sol";
-
-abstract contract WithWorld is WithStore, System {
+abstract contract WorldConsumer is System {
   bytes14 public immutable namespace;
 
   error WithWorld_RootNamespaceNotAllowed();
@@ -20,6 +19,7 @@ abstract contract WithWorld is WithStore, System {
   error WithWorld_NamespaceDoesNotExists(bytes14 namespace);
   error WithWorld_CallerHasNoNamespaceAccess(bytes14 namespace, address caller);
   error WithWorld_CallerIsNotWorld(address caller);
+  error WithWorld_EthCanOnlyBeSentThroughWorld();
 
   modifier onlyWorld() {
     if (!_callerIsWorld()) {
@@ -36,7 +36,9 @@ abstract contract WithWorld is WithStore, System {
     _;
   }
 
-  constructor(IBaseWorld _world, bytes14 _namespace, bool registerNamespace) WithStore(address(_world)) {
+  constructor(IBaseWorld _world, bytes14 _namespace, bool registerNamespace) {
+    StoreSwitch.setStoreAddress(address(_world));
+
     if (_namespace == bytes14(0)) {
       revert WithWorld_RootNamespaceNotAllowed();
     }
@@ -63,18 +65,30 @@ abstract contract WithWorld is WithStore, System {
   }
 
   function getWorld() public view returns (IBaseWorld) {
-    return IBaseWorld(getStore());
+    return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
-  function _msgSender() public view virtual override(Context, WorldContextConsumer) returns (address sender) {
-    return _callerIsWorld() ? WorldContextConsumer._msgSender() : Context._msgSender();
+  function _msgSender() public view virtual override returns (address sender) {
+    return _callerIsWorld() ? WorldContextConsumer._msgSender() : msg.sender;
+  }
+
+  function _msgValue() public view virtual override returns (uint256 value) {
+    if (!_callerIsWorld()) {
+      revert WithWorld_EthCanOnlyBeSentThroughWorld();
+    }
+
+    return WorldContextConsumer._msgValue();
   }
 
   function _callerIsWorld() internal view returns (bool) {
     return msg.sender == address(getWorld());
   }
 
-  function _encodeResourceId(bytes2 typeId, bytes16 name) internal view virtual override returns (ResourceId) {
-    return WorldResourceIdLib.encode(typeId, namespace, name);
+  function _encodeTableId(bytes16 name) internal view returns (ResourceId) {
+    return WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, name);
+  }
+
+  function _encodeOffchainTableId(bytes16 name) internal view returns (ResourceId) {
+    return WorldResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, namespace, name);
   }
 }

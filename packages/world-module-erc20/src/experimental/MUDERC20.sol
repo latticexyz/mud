@@ -3,8 +3,7 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { ERC20Metadata, ERC20MetadataData } from "../codegen/tables/ERC20Metadata.sol";
 import { TotalSupply } from "../codegen/tables/TotalSupply.sol";
@@ -17,7 +16,7 @@ import { IERC20Errors } from "../interfaces/IERC20Errors.sol";
 
 import { ERC20TableNames } from "./Constants.sol";
 
-abstract contract MUDERC20 is Context, IERC20, IERC20Metadata, IERC20Errors, StoreConsumer {
+abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsumer {
   ResourceId internal immutable totalSupplyId;
   ResourceId internal immutable balancesId;
   ResourceId internal immutable allowancesId;

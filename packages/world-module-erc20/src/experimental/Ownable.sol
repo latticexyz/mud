@@ -3,8 +3,7 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { Owner } from "../codegen/tables/Owner.sol";
 import { OwnableTableNames } from "./Constants.sol";
@@ -21,7 +20,7 @@ import { OwnableTableNames } from "./Constants.sol";
  * `onlyOwner`, which can be applied to your functions to restrict their use to
  * the owner.
  */
-abstract contract Ownable is Context, StoreConsumer {
+abstract contract Ownable is WorldConsumer {
   ResourceId internal immutable ownerId;
 
   /**
