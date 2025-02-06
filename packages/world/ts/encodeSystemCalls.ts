@@ -6,11 +6,10 @@ import { internal_normalizeSystemFunctionName } from "./normalizeSystemFunctionN
 
 /** Encode system calls to be passed as arguments into `World.batchCall` */
 export function encodeSystemCalls<abi extends Abi, functionName extends ContractFunctionName<abi>>(
-  abi: abi,
-  systemCalls: readonly Omit<SystemCall<abi, functionName>, "abi">[],
+  systemCalls: readonly SystemCall<abi, functionName>[],
 ): AbiParametersToPrimitiveTypes<ExtractAbiFunction<worldCallAbi, "batchCall">["inputs"]> {
   return [
-    systemCalls.map(({ systemId, functionName, args }) => ({
+    systemCalls.map(({ abi, systemId, functionName, args }) => ({
       systemId,
       callData: encodeFunctionData<abi, functionName>({
         abi,

@@ -110,6 +110,7 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
             userClient,
             sessionClient,
             worldAddress,
+            // TODO: export from world
             systemId: resourceToHex({ type: "system", namespace: "", name: "Registration" }),
             callData: encodeFunctionData({
               abi: IBaseWorldAbi,
