@@ -32,11 +32,11 @@ contract MockWorldConsumer is WorldConsumer {
   }
 
   function grantNamespaceAccess(address to) external {
-    getWorld().grantAccess(getNamespaceId(), to);
+    IBaseWorld(_world()).grantAccess(getNamespaceId(), to);
   }
 
   function transferNamespaceOwnership(address to) external {
-    getWorld().transferOwnership(getNamespaceId(), to);
+    IBaseWorld(_world()).transferOwnership(getNamespaceId(), to);
   }
 
   function callableByAnyone() external view {}

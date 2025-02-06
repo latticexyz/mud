@@ -59,7 +59,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
   function setUp() public {
     token = createToken();
-    StoreSwitch.setStoreAddress(address(token.getWorld()));
+    StoreSwitch.setStoreAddress(token._world());
   }
 
   function testSetUp() public {
