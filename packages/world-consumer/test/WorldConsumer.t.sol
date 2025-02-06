@@ -108,7 +108,7 @@ contract WorldConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, (alice)));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, world, alice));
     mock.onlyCallableByWorld();
 
     vm.prank(alice);
@@ -132,12 +132,12 @@ contract WorldConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, alice));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, world, alice));
     mock.onlyCallableByNamespace();
 
     vm.prank(alice);
     vm.expectRevert(
-      abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerHasNoNamespaceAccess.selector, namespace, alice)
+      abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerHasNoNamespaceAccess.selector, world, namespace, alice)
     );
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
 
@@ -164,7 +164,7 @@ contract WorldConsumerTest is Test, GasReporter {
     vm.deal(alice, 1);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_ValueNotAllowed.selector));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_ValueNotAllowed.selector, world));
     mock.payableFn{ value: 1 }();
 
     vm.prank(alice);

@@ -14,29 +14,31 @@ import { System } from "@latticexyz/world/src/System.sol";
 abstract contract WorldConsumer is System {
   bytes14 public immutable namespace;
 
-  error WorldConsumer_RootNamespaceNotAllowed();
-  error WorldConsumer_NamespaceAlreadyExists(bytes14 namespace);
-  error WorldConsumer_NamespaceDoesNotExists(bytes14 namespace);
-  error WorldConsumer_CallerHasNoNamespaceAccess(bytes14 namespace, address caller);
-  error WorldConsumer_CallerIsNotWorld(address caller);
-  error WorldConsumer_ValueNotAllowed();
+  error WorldConsumer_RootNamespaceNotAllowed(IBaseWorld world);
+  error WorldConsumer_NamespaceAlreadyExists(IBaseWorld world, bytes14 namespace);
+  error WorldConsumer_NamespaceDoesNotExists(IBaseWorld world, bytes14 namespace);
+  error WorldConsumer_CallerHasNoNamespaceAccess(IBaseWorld world, bytes14 namespace, address caller);
+  error WorldConsumer_CallerIsNotWorld(IBaseWorld world, address caller);
+  error WorldConsumer_ValueNotAllowed(IBaseWorld world);
 
   modifier onlyWorld() {
-    if (!_callerIsWorld()) {
-      revert WorldConsumer_CallerIsNotWorld(msg.sender);
+    IBaseWorld world = getWorld();
+    if (address(world) != msg.sender) {
+      revert WorldConsumer_CallerIsNotWorld(world, msg.sender);
     }
     _;
   }
 
   modifier onlyNamespace() {
-    if (!_callerIsWorld()) {
-      revert WorldConsumer_CallerIsNotWorld(msg.sender);
+    IBaseWorld world = getWorld();
+    if (address(world) != msg.sender) {
+      revert WorldConsumer_CallerIsNotWorld(world, msg.sender);
     }
 
     // We use WorldContextConsumer directly as we already know the world is the caller
     address sender = WorldContextConsumer._msgSender();
     if (!ResourceAccess.get(getNamespaceId(), sender)) {
-      revert WorldConsumer_CallerHasNoNamespaceAccess(namespace, sender);
+      revert WorldConsumer_CallerHasNoNamespaceAccess(world, namespace, sender);
     }
 
     _;
@@ -46,7 +48,7 @@ abstract contract WorldConsumer is System {
     StoreSwitch.setStoreAddress(address(_world));
 
     if (_namespace == bytes14(0)) {
-      revert WorldConsumer_RootNamespaceNotAllowed();
+      revert WorldConsumer_RootNamespaceNotAllowed(_world);
     }
 
     namespace = _namespace;
@@ -54,7 +56,7 @@ abstract contract WorldConsumer is System {
     if (registerNamespace) {
       _registerNamespace(_world, _namespace);
     } else {
-      _validateExistingNamespace(_namespace);
+      _validateExistingNamespace(_world, _namespace);
     }
   }
 
@@ -67,19 +69,16 @@ abstract contract WorldConsumer is System {
   }
 
   function _msgSender() public view virtual override returns (address sender) {
-    return _callerIsWorld() ? WorldContextConsumer._msgSender() : msg.sender;
+    return address(getWorld()) == msg.sender ? WorldContextConsumer._msgSender() : msg.sender;
   }
 
   function _msgValue() public view virtual override returns (uint256 value) {
-    if (!_callerIsWorld()) {
-      revert WorldConsumer_ValueNotAllowed();
+    IBaseWorld world = getWorld();
+    if (address(world) != msg.sender) {
+      revert WorldConsumer_ValueNotAllowed(world);
     }
 
     return WorldContextConsumer._msgValue();
-  }
-
-  function _callerIsWorld() internal view returns (bool) {
-    return msg.sender == address(getWorld());
   }
 
   function _encodeTableId(bytes16 name) internal view returns (ResourceId) {
@@ -93,15 +92,15 @@ abstract contract WorldConsumer is System {
   function _registerNamespace(IBaseWorld _world, bytes14 _namespace) internal {
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
     if (ResourceIds.getExists(namespaceId)) {
-      revert WorldConsumer_NamespaceAlreadyExists(_namespace);
+      revert WorldConsumer_NamespaceAlreadyExists(_world, _namespace);
     }
     _world.registerNamespace(namespaceId);
   }
 
-  function _validateExistingNamespace(bytes14 _namespace) internal view {
+  function _validateExistingNamespace(IBaseWorld _world, bytes14 _namespace) internal view {
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
     if (!ResourceIds.getExists(namespaceId)) {
-      revert WorldConsumer_NamespaceDoesNotExists(_namespace);
+      revert WorldConsumer_NamespaceDoesNotExists(_world, _namespace);
     }
   }
 }
