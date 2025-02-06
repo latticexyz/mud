@@ -48,6 +48,8 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
+  console.log("tableData", tableData);
+
   const [, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
   const [, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
   const [pagination, setPagination] = useState({
@@ -61,7 +63,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   }, [pagination, setPage, setPageSize]);
 
   // TODO: fetch actual total rows
-  const TOTAL_ROWS = 120;
+  const TOTAL_ROWS = 30;
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
@@ -152,65 +154,63 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
       </div>
 
       <div
-        className={cn("rounded-md border", {
+        className={cn("relative rounded-md border", {
           "border-red-400": isError,
         })}
       >
         {isPending && (
-          <div className="flex h-24 items-center justify-center">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
             <LoaderIcon className="h-5 w-5 animate-spin" />
           </div>
         )}
-        {!isPending && (
-          <div className="relative w-full overflow-auto">
-            <Table>
-              <TableHeader>
-                {!isError &&
-                  reactTable.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(header.column.columnDef.header, header.getContext())}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-              </TableHeader>
-              <TableBody>
-                {!isError && reactTable.getRowModel().rows?.length ? (
-                  reactTable.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={tableColumns.length}
-                      className={cn("h-24 text-center", {
-                        "text-red-400": isError,
-                      })}
-                    >
-                      {isError ? (
-                        <div className="flex items-center justify-center gap-x-2">
-                          <TriangleAlertIcon /> Query error: {error.message}
-                        </div>
-                      ) : (
-                        "No results."
-                      )}
-                    </TableCell>
+        <div className="relative w-full overflow-auto">
+          <Table>
+            <TableHeader>
+              {!isError &&
+                reactTable.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+                ))}
+            </TableHeader>
+            <TableBody>
+              {!isError && reactTable.getRowModel().rows?.length ? (
+                reactTable.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={tableColumns.length}
+                    className={cn("h-24 text-center", {
+                      "text-red-400": isError,
+                    })}
+                  >
+                    {isError ? (
+                      <div className="flex items-center justify-center gap-x-2">
+                        <TriangleAlertIcon /> Query error: {error.message}
+                      </div>
+                    ) : (
+                      "No results."
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
