@@ -78,17 +78,6 @@ export async function getRpcUrl(profile?: string): Promise<string> {
 }
 
 /**
- * Execute a cast command
- * @param args The arguments to pass to cast
- * @returns Stdout of the command
- */
-export async function cast(args: string[], options?: { profile?: string }): Promise<string> {
-  return execLog("cast", args, {
-    env: { FOUNDRY_PROFILE: options?.profile },
-  });
-}
-
-/**
  * Start an anvil chain
  * @param args The arguments to pass to anvil
  * @returns Stdout of the command
