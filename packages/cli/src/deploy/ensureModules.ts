@@ -40,10 +40,10 @@ export async function ensureModules({
         pRetry(
           async () => {
             try {
-              // append module's ABI so that we can decode any custom errors
-              const abi = [...worldAbi, ...mod.abi];
               const moduleAddress = mod.prepareDeploy(deployerAddress, libraryMap).address;
 
+              // TODO: fix strong types for world ABI etc
+              // TODO: add return types to get better type safety
               const params = (() => {
                 if (mod.installStrategy === "root") {
                   return {
@@ -87,7 +87,8 @@ export async function ensureModules({
               return await writeContract(client, {
                 chain: client.chain ?? null,
                 address: worldDeploy.address,
-                abi,
+                // append module's ABI so that we can decode any custom errors
+                abi: [...worldAbi, ...mod.abi],
                 ...params,
               });
             } catch (error) {
