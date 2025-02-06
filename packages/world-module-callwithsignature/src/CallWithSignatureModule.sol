@@ -14,7 +14,7 @@ import { DELEGATION_SYSTEM_ID } from "./constants.sol";
 contract CallWithSignatureModule is Module {
   CallWithSignatureSystem private immutable callWithSignatureSystem = new CallWithSignatureSystem();
 
-  function installRoot(bytes memory encodedArgs) public {
+  function installRoot(bytes memory encodedArgs) public override {
     requireNotInstalled(__self, encodedArgs);
 
     IBaseWorld world = IBaseWorld(_world());
@@ -40,9 +40,5 @@ contract CallWithSignatureModule is Module {
       )
     );
     if (!success) revertWithBytes(data);
-  }
-
-  function install(bytes memory) public pure {
-    revert Module_NonRootInstallNotSupported();
   }
 }

@@ -132,11 +132,7 @@ contract TimerModule is Module {
   ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("timer"));
   ResourceId private immutable timerSystemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "timer", "TimerSystem");
 
-  function installRoot(bytes memory) public pure override {
-    revert Module_RootInstallNotSupported();
-  }
-
-  function install(bytes memory) public {
+  function install(bytes memory) public override {
     IWorld world = IWorld(_world());
 
     // Register the namespace.
@@ -210,15 +206,7 @@ We need these identifiers to register the namespace and `System`s.
 There is no point wasting gas on recalculating these values either, so it's best to do it once.
 
 ```solidity
-function installRoot(bytes memory) public pure override {
-  revert Module_RootInstallNotSupported();
-}
-```
-
-We do _not_ need root privileges, so it's best if we [don't have them](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
-
-```solidity
-  function install(bytes memory) public {
+  function install(bytes memory) public override {
     IWorld world = IWorld(_world());
 
     // Register the namespace.

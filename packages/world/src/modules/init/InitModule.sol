@@ -69,14 +69,6 @@ contract InitModule is Module {
   }
 
   /**
-   * @notice Non-root installation of the module.
-   * @dev Installation is only supported at root level, so this function will always revert.
-   */
-  function install(bytes memory) public pure {
-    revert Module_NonRootInstallNotSupported();
-  }
-
-  /**
    * @notice Register World's tables.
    * @dev This internal function registers various tables and sets initial permissions.
    */

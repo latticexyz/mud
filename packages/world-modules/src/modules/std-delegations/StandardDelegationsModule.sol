@@ -24,7 +24,7 @@ contract StandardDelegationsModule is Module {
   SystemboundDelegationControl private immutable systemboundDelegationControl = new SystemboundDelegationControl();
   TimeboundDelegationControl private immutable timeboundDelegationControl = new TimeboundDelegationControl();
 
-  function installRoot(bytes memory) public {
+  function installRoot(bytes memory) public override {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register tables
@@ -47,9 +47,5 @@ contract StandardDelegationsModule is Module {
       abi.encodeCall(world.registerSystem, (TIMEBOUND_DELEGATION, timeboundDelegationControl, true))
     );
     if (!success) revertWithBytes(returnData);
-  }
-
-  function install(bytes memory) public pure {
-    revert Module_NonRootInstallNotSupported();
   }
 }
