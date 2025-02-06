@@ -19,7 +19,7 @@ abstract contract WorldConsumer is System {
   error WithWorld_NamespaceDoesNotExists(bytes14 namespace);
   error WithWorld_CallerHasNoNamespaceAccess(bytes14 namespace, address caller);
   error WithWorld_CallerIsNotWorld(address caller);
-  error WithWorld_EthCanOnlyBeSentThroughWorld();
+  error WithWorld_DirectEthNotAllowed();
 
   modifier onlyWorld() {
     if (!_callerIsWorld()) {
@@ -29,10 +29,16 @@ abstract contract WorldConsumer is System {
   }
 
   modifier onlyNamespace() {
-    // We use WorldContextConsumer directly as we already know the world is the caller
-    if (!_callerIsWorld() || !ResourceAccess.get(getNamespaceId(), WorldContextConsumer._msgSender())) {
-      revert WithWorld_CallerHasNoNamespaceAccess(namespace, _msgSender());
+    if (!_callerIsWorld()) {
+      revert WithWorld_CallerIsNotWorld(msg.sender);
     }
+
+    // We use WorldContextConsumer directly as we already know the world is the caller
+    address sender = WorldContextConsumer._msgSender();
+    if (!ResourceAccess.get(getNamespaceId(), sender)) {
+      revert WithWorld_CallerHasNoNamespaceAccess(namespace, sender);
+    }
+
     _;
   }
 
@@ -45,18 +51,10 @@ abstract contract WorldConsumer is System {
 
     namespace = _namespace;
 
-    ResourceId namespaceId = getNamespaceId();
-
-    bool namespaceExists = ResourceIds.getExists(namespaceId);
-
     if (registerNamespace) {
-      if (namespaceExists) {
-        revert WithWorld_NamespaceAlreadyExists(_namespace);
-      }
-
-      _world.registerNamespace(namespaceId);
-    } else if (!namespaceExists) {
-      revert WithWorld_NamespaceDoesNotExists(_namespace);
+      _registerNamespace(_world, _namespace);
+    } else {
+      _validateExistingNamespace(_namespace);
     }
   }
 
@@ -74,7 +72,7 @@ abstract contract WorldConsumer is System {
 
   function _msgValue() public view virtual override returns (uint256 value) {
     if (!_callerIsWorld()) {
-      revert WithWorld_EthCanOnlyBeSentThroughWorld();
+      revert WithWorld_DirectEthNotAllowed();
     }
 
     return WorldContextConsumer._msgValue();
@@ -90,5 +88,20 @@ abstract contract WorldConsumer is System {
 
   function _encodeOffchainTableId(bytes16 name) internal view returns (ResourceId) {
     return WorldResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, namespace, name);
+  }
+
+  function _registerNamespace(IBaseWorld _world, bytes14 _namespace) internal {
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
+    if (ResourceIds.getExists(namespaceId)) {
+      revert WithWorld_NamespaceAlreadyExists(_namespace);
+    }
+    _world.registerNamespace(namespaceId);
+  }
+
+  function _validateExistingNamespace(bytes14 _namespace) internal view {
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
+    if (!ResourceIds.getExists(namespaceId)) {
+      revert WithWorld_NamespaceDoesNotExists(_namespace);
+    }
   }
 }
