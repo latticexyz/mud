@@ -1,4 +1,6 @@
 import { useParams } from "next/navigation";
+import { Parser } from "node-sql-parser";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -19,16 +21,33 @@ export type TData = {
   queryDuration: number;
 };
 
+const sqlParser = new Parser();
+
 export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
   const decodedQuery = decodeURIComponent(query ?? "");
+  const [page] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(5));
 
   return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
+    queryKey: ["tableData", chainName, worldAddress, decodedQuery, page, pageSize],
     queryFn: async () => {
       const startTime = performance.now();
       const indexer = indexerForChainId(chainId);
+      const offset = page * pageSize;
+      const limit = pageSize;
+      const ast = sqlParser.astify(decodedQuery);
+
+      let formattedQuery = decodedQuery;
+      if (!("limit" in ast) || !ast.limit) {
+        formattedQuery = `${formattedQuery} LIMIT ${limit}`;
+      }
+
+      if (!("offset" in ast) || !ast.offset) {
+        formattedQuery = `${formattedQuery} OFFSET ${offset}`;
+      }
+
       const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
@@ -37,7 +56,7 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         body: stringify([
           {
             address: worldAddress as Hex,
-            query: decodedQuery,
+            query: formattedQuery,
           },
         ]),
       });

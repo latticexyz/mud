@@ -52,7 +52,6 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const handleSubmit = form.handleSubmit((data) => {
     if (validateQuery(data.query)) {
       setQuery(data.query);
-
       setIsUserTriggeredRefetch(true);
       refetch().finally(() => setIsUserTriggeredRefetch(false));
     }
@@ -61,34 +60,6 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   useEffect(() => {
     form.reset({ query });
   }, [query, form]);
-
-  // useEffect(() => {
-  //   const offset = page * pageSize;
-  //   const limit = pageSize;
-  //   const decodedQuery = decodeURIComponent(query);
-
-  //   const ast = sqlParser.astify(decodedQuery);
-  //   console.log(ast);
-
-  //   // Only modify if we have a valid AST array with at least one query
-  //   if ("limit" in ast) {
-  //     ast.limit = {
-  //       seperator: "offset",
-  //       value: [
-  //         { type: "number", value: limit },
-  //         { type: "number", value: offset },
-  //       ],
-  //     };
-
-  //     // Generate the new SQL query from the modified AST
-  //     const updatedQuery = sqlParser.sqlify(ast, {
-  //       database: "Postgresql",
-  //     });
-
-  //     // TODO: temporary fix for double-quotes while testing
-  //     setQuery(updatedQuery.replace('"world__FunctionSelector"', "world__FunctionSelector"));
-  //   }
-  // }, [table, page, pageSize, setQuery, query]);
 
   const updateHeight = () => {
     if (editorRef.current) {
@@ -129,10 +100,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                       id: "executeSQL",
                       label: "Execute SQL command",
                       keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
-                      run: () => {
-                        console.log("EXECUTING SQL COMMAND");
-                        handleSubmit();
-                      },
+                      run: handleSubmit,
                     });
 
                     updateHeight();

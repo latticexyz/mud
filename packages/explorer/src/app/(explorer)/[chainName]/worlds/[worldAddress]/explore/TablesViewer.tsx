@@ -47,9 +47,6 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
-
-  console.log("tableData", tableData);
-
   const [, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
   const [, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
   const [pagination, setPagination] = useState({
@@ -215,7 +212,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
             <SelectValue>{pagination.pageSize}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+            {[5, 10, 20, 30, 40, 50, 100].map((pageSize) => (
               <SelectItem key={pageSize} value={pageSize.toString()}>
                 {pageSize}
               </SelectItem>
