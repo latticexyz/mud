@@ -4,19 +4,21 @@ import { worldCallAbi } from "./worldCallAbi";
 import { internal_normalizeSystemFunctionName } from "./normalizeSystemFunctionName";
 
 export type SystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>> = {
-  /**
-   * System ABI
-   */
-  readonly abi: abi;
-  /**
-   * System's resource ID
-   */
-  readonly systemId: Hex;
-  /**
-   * System function name to call
-   */
-  readonly functionName: functionName;
-} & Pick<EncodeFunctionDataParameters<abi, functionName>, "args">;
+  [k in ContractFunctionName<abi>]: {
+    /**
+     * System's resource ID
+     */
+    readonly systemId: Hex;
+    /**
+     * System ABI
+     */
+    readonly abi: abi;
+    /**
+     * System function name to call
+     */
+    readonly functionName: k;
+  } & Pick<EncodeFunctionDataParameters<abi, k>, "args">;
+}[functionName];
 
 /** Encode a system call to be passed as arguments into `World.call` */
 export function encodeSystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>>({
