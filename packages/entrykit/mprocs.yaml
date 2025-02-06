@@ -2,8 +2,6 @@ scrollback: 10000
 procs:
   client:
     shell: pnpm vite dev playground
-  prover-proxy:
-    shell: pnpm proxy
   anvil:
     shell: anvil --block-time 2 --load-state playground/anvil-state.json
 

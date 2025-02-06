@@ -36,7 +36,6 @@
     "clean:js": "shx rm -rf dist",
     "data:relay-chains": "tsx src/scripts/get-relay-chains.ts",
     "dev": "tsup --watch",
-    "proxy": "tsx ./playground/proxy.ts",
     "playground": "mprocs",
     "playground:deploy": "mprocs --config mprocs.deploy.yaml",
     "test": "tsc --noEmit && vitest",

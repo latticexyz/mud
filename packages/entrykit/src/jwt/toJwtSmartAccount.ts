@@ -7,7 +7,6 @@ import {
   decodeFunctionData,
   encodeFunctionData,
   encodeAbiParameters,
-  recoverMessageAddress,
 } from "viem";
 import {
   type SmartAccount,
