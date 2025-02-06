@@ -1,5 +1,29 @@
 [
   {
+    "version": "2.2.19",
+    "date": "2025-02-06T11:26:05.805Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved fee handling for known chains.",
+          "type": 0,
+          "commitHash": "900ac35deebfa260bafb1697d15e95eef855cd69",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(entrykit): improve fee handling (#3577)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.18",
     "date": "2025-02-05T23:28:20.207Z",
     "changes": {

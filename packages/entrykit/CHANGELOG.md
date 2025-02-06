@@ -1,5 +1,18 @@
 # @latticexyz/entrykit
 
+## 2.2.19
+
+### Patch Changes
+
+- 900ac35: Improved fee handling for known chains.
+  - @latticexyz/common@2.2.19
+  - @latticexyz/config@2.2.19
+  - @latticexyz/paymaster@2.2.19
+  - @latticexyz/protocol-parser@2.2.19
+  - @latticexyz/store@2.2.19
+  - @latticexyz/world@2.2.19
+  - @latticexyz/world-module-callwithsignature@2.2.19
+
 ## 2.2.18
 
 ### Patch Changes

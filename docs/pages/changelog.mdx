@@ -1,3 +1,15 @@
+## Version 2.2.19
+
+Release date: Thu Feb 06 2025
+
+### Patch changes
+
+**[fix(entrykit): improve fee handling (#3577)](https://github.com/latticexyz/mud/commit/900ac35deebfa260bafb1697d15e95eef855cd69)** (@latticexyz/entrykit)
+
+Improved fee handling for known chains.
+
+---
+
 ## Version 2.2.18
 
 Release date: Wed Feb 05 2025
