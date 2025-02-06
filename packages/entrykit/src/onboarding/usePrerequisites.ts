@@ -58,7 +58,8 @@ export function getPrequisitesQueryOptions({
               isSpender,
               hasGasBalance,
               hasDelegation,
-              complete: hasAllowance && isSpender && hasDelegation,
+              // we intentionally don't enforce an allowance/gas balance here
+              complete: isSpender && hasDelegation,
             };
           },
           retry: false,
