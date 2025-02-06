@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { Hex } from "viem";
 import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
@@ -21,6 +21,7 @@ export function Explorer() {
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
+  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
 
   const { data: tables } = useTablesQuery();
   const table = tables?.find(({ tableId }) => tableId === selectedTableId);
@@ -30,13 +31,13 @@ export function Explorer() {
       const tableName = constructTableName(table, worldAddress as Hex, chainId);
 
       if (indexer.type === "sqlite") {
-        setQuery(`SELECT * FROM "${tableName}";`);
+        setQuery(`SELECT * FROM "${tableName}" LIMIT 10 OFFSET 0;`);
       } else {
         const columns = Object.keys(table.schema).map((column) => `"${column}"`);
-        setQuery(`SELECT ${columns.join(", ")} FROM "${tableName}";`);
+        setQuery(`SELECT ${columns.join(", ")} FROM ${tableName} LIMIT ${pageSize} OFFSET 0;`);
       }
     }
-  }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type]);
+  }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type, pageSize]);
 
   return (
     <div className="space-y-4">
