@@ -1,3 +1,83 @@
+## Version 2.2.18
+
+Release date: Wed Feb 05 2025
+
+### Patch changes
+
+**[fix(explorer): enable editing internal namespace tables (#3553)](https://github.com/latticexyz/mud/commit/6bd1695fe986f90478cfb8fe7fcc00a7a7df3e04)** (@latticexyz/explorer)
+
+Tables under internal namespace are now editable.
+
+**[chore(explorer): handle tuples in interact form (#3464)](https://github.com/latticexyz/mud/commit/c44207f620a38653497b78db0b71f5de7bc1a940)** (@latticexyz/explorer)
+
+In the Interact tab, functions with tuple arguments can now be submitted. Additionally, function input fields display the tuple name when available and indicate tuple argument types.
+
+**[feat: bump to node 20 (#3456)](https://github.com/latticexyz/mud/commit/491a5acc8ab6d5e1a65a9845160860199b5173fc)** (create-mud)
+
+Updated templates to Node v20.
+
+**[fix(vite-plugin-mud): start block as number (#3555)](https://github.com/latticexyz/mud/commit/7106953abc5baa13ac87123cc58796f788dab05a)** (create-mud, vite-plugin-mud)
+
+Fixed an issue with providing world deploy's start block to Vite app's env.
+
+**[fix(explorer): use table name helper from sqlite package (#3542)](https://github.com/latticexyz/mud/commit/4565714f5e9421cc7b2de56fe51db4434c55f5d1)** (@latticexyz/explorer)
+
+Fixed an issue with how MUD table names were translated SQLite table names when querying.
+
+**[chore(store-indexer): start frontend with decoded backend (#3572)](https://github.com/latticexyz/mud/commit/16710f177b60880b7fa1b2d0be350297a16e2c8c)** (@latticexyz/store-indexer)
+
+`pnpm start:postgres-decoded` now starts both the indexer backend and frontend.
+
+**[fix(entrykit): require bundler (#3570)](https://github.com/latticexyz/mud/commit/10ce339665bbc3cc175b109a51d216ec1b1bb739)** (@latticexyz/entrykit)
+
+Using EntryKit without a configured bundler will now throw an error.
+
+Redstone, Garnet, Rhodolite, and Anvil chains come preconfigured. For other chains, you can a bundler RPC URL to your chain config via
+
+```ts
+import type { Chain } from "viem";
+
+const chain = {
+  ...
+  rpcUrls: {
+    ...
+    bundler: {
+      http: ["https://..."],
+    },
+  },
+} as const satisfies Chain;
+```
+
+**[refactor(store-consumer): adapt WithWorld to be a System (#3546)](https://github.com/latticexyz/mud/commit/5d6fb1b51da1545b911c55e0cd79bc16ed2cd8f5)** (@latticexyz/store-consumer, @latticexyz/store, @latticexyz/world-module-erc20, @latticexyz/world)
+
+Updates `WithWorld` to be a `System`, so that functions in child contracts that use the `onlyWorld` or `onlyNamespace` modifiers must be called through the world in order to safely support calls from systems.
+
+**[refactor(world-module-erc20): change erc20 module table names to pascal case (#3544)](https://github.com/latticexyz/mud/commit/88949aaf197da3a62782ffd0c29b7dd677425fac)** (@latticexyz/world-module-erc20)
+
+Updated table names to pascal case for consistency.
+
+**[feat(explorer): loading indicator for refetched query (#3552)](https://github.com/latticexyz/mud/commit/860224870f7eb070cccbb33b505ee42ba6e7092c)** (@latticexyz/explorer)
+
+Display a loading indicator on the query execution button while refetching a non-live query.
+
+**[refactor(entrykit): improve error handling (#3574)](https://github.com/latticexyz/mud/commit/88af9325733387259f29dfdafd2fdbc23f2ab499)** (@latticexyz/entrykit)
+
+Improved error handling.
+
+**[fix(entrykit): session client uses smart account (#3547)](https://github.com/latticexyz/mud/commit/e1db80ad5648a9c77b757cda3930aa134e0f1c97)** (@latticexyz/entrykit)
+
+Clarified `SessionClient` type as using a `SmartAccount` under the hood so that it can be used with smart account-related Viem actions.
+
+**[fix(entrykit): require bundler (#3570)](https://github.com/latticexyz/mud/commit/10ce339665bbc3cc175b109a51d216ec1b1bb739)** (@latticexyz/common)
+
+Added bundler RPC URL to Garnet chain config.
+
+**[fix(store-sync): skip invalid utf-8 characters in strings before inserting into postgres (#3562)](https://github.com/latticexyz/mud/commit/df5d3937706cb9465b0539af8f4725be3d84f858)** (@latticexyz/store-sync)
+
+Since Postgres doesn't support `\x00` bytes in strings, the decoded postgres indexer now removes `\x00` bytes from decoded strings.
+
+---
+
 ## Version 2.2.17
 
 Release date: Thu Jan 30 2025

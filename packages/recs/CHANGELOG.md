@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.18
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.18
+- @latticexyz/utils@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes

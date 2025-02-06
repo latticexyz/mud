@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.18
+
+### Patch Changes
+
+- Updated dependencies [5d6fb1b]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/recs@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes

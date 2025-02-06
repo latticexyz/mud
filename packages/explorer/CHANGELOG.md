@@ -1,5 +1,27 @@
 # @latticexyz/explorer
 
+## 2.2.18
+
+### Patch Changes
+
+- 6bd1695: Tables under internal namespace are now editable.
+- c44207f: In the Interact tab, functions with tuple arguments can now be submitted. Additionally, function input fields display the tuple name when available and indicate tuple argument types.
+- 4565714: Fixed an issue with how MUD table names were translated SQLite table names when querying.
+- 8602248: Display a loading indicator on the query execution button while refetching a non-live query.
+- Updated dependencies [16710f1]
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+- Updated dependencies [df5d393]
+  - @latticexyz/store-indexer@2.2.18
+  - @latticexyz/store@2.2.18
+  - @latticexyz/world@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/store-sync@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes

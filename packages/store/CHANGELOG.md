@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.2.18
+
+### Patch Changes
+
+- 5d6fb1b: Updates `WithWorld` to be a `System`, so that functions in child contracts that use the `onlyWorld` or `onlyNamespace` modifiers must be called through the world in order to safely support calls from systems.
+- Updated dependencies [10ce339]
+  - @latticexyz/common@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes

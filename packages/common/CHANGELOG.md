@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.18
+
+### Patch Changes
+
+- 10ce339: Added bundler RPC URL to Garnet chain config.
+  - @latticexyz/schema-type@2.2.18
+
 ## 2.2.17
 
 ### Patch Changes
