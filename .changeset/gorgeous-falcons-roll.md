@@ -4,7 +4,7 @@
 
 The base `Module` contract now includes default implementations of `install` and `installRoot` that immediately revert, avoiding the need to implement these manually in each module.
 
-You may need to update your install methods with `override` when using this new base contract.
+If you've written a module, you may need to update your install methods with `override` when using this new base contract.
 
 ```diff
 -function install(bytes memory) public {
