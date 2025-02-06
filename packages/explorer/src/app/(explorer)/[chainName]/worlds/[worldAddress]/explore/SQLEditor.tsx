@@ -100,7 +100,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                       id: "executeSQL",
                       label: "Execute SQL command",
                       keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
-                      run: handleSubmit,
+                      run: () => handleSubmit(),
                     });
 
                     updateHeight();

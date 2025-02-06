@@ -37,14 +37,17 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
       const indexer = indexerForChainId(chainId);
       const offset = page * pageSize;
       const limit = pageSize;
-      const ast = sqlParser.astify(decodedQuery);
+      let ast = sqlParser.astify(decodedQuery);
 
-      let formattedQuery = decodedQuery;
+      if (Array.isArray(ast) && ast.length > 0 && typeof ast[0] === "object") {
+        ast = ast[0];
+      }
+
+      let formattedQuery = decodedQuery.endsWith(";") ? decodedQuery.slice(0, -1) : decodedQuery;
       if (!("limit" in ast) || !ast.limit) {
         formattedQuery = `${formattedQuery} LIMIT ${limit}`;
       }
-
-      if (!("offset" in ast) || !ast.offset) {
+      if (!("limit" in ast) || !ast.limit || ast.limit?.seperator === "") {
         formattedQuery = `${formattedQuery} OFFSET ${offset}`;
       }
 

@@ -47,11 +47,11 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
-  const [, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(7));
   const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
+    pageIndex: page,
+    pageSize,
   });
 
   useEffect(() => {
