@@ -7,6 +7,7 @@ export type Step = {
   content: (props: { isActive: boolean; isExpanded: boolean }) => ReactNode;
 };
 
+// TODO: move to chain config?
 export const minGasBalance = parseEther("0.01");
 
 export type RelayChain = {

@@ -20,9 +20,8 @@ export async function getSessionClient({
     throw new Error("Session account client had no associated chain.");
   }
 
-  const bundlerTransport = getBundlerTransport(client.chain);
   const bundlerClient = createBundlerClient({
-    transport: bundlerTransport,
+    transport: getBundlerTransport(client.chain),
     client,
     account: sessionAccount,
   });
