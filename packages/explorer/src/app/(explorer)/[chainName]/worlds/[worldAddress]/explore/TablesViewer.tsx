@@ -61,7 +61,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   }, [pagination, setPage, setPageSize]);
 
   // TODO: fetch actual total rows
-  const TOTAL_ROWS = 22;
+  const TOTAL_ROWS = 120;
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
@@ -226,15 +226,13 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
           <p className="text-sm text-muted-foreground">Rows per page</p>
           <Select
             value={pagination.pageSize.toString()}
-            onValueChange={(value) => {
-              reactTable.setPageSize(Number(value));
-            }}
+            onValueChange={(value) => reactTable.setPageSize(Number(value))}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue>{pagination.pageSize}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[2, 5, 10, 20, 30, 40, 50].map((pageSize) => (
                 <SelectItem key={pageSize} value={pageSize.toString()}>
                   {pageSize}
                 </SelectItem>
