@@ -1,7 +1,8 @@
 import { existsSync } from "fs";
 import path from "path";
-import chalk from "chalk";
-import { getScriptDirectory, forge } from "@latticexyz/common/foundry";
+import { getScriptDirectory } from "@latticexyz/common/foundry";
+import { execa } from "execa";
+import { printCommand } from "./printCommand";
 
 export async function postDeploy(
   postDeployScript: string,
@@ -19,24 +20,25 @@ export async function postDeploy(
     return;
   }
 
-  console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
-
-  await forge(
-    [
-      "script",
-      postDeployScript,
-      "--broadcast",
-      "--sig",
-      "run(address)",
-      worldAddress,
-      "--rpc-url",
-      rpc,
-      "-vvv",
-      kms ? "--aws" : "",
-      ...userOptions,
-    ],
-    {
-      profile: profile,
-    },
+  await printCommand(
+    execa(
+      "forge",
+      [
+        "script",
+        postDeployScript,
+        ["--sig", "run(address)", worldAddress],
+        ["--rpc-url", rpc],
+        "--broadcast",
+        "-vvv",
+        kms ? ["--aws"] : [],
+        ...userOptions,
+      ].flat(),
+      {
+        stdio: "inherit",
+        env: {
+          FOUNDRY_PROFILE: profile ?? process.env.FOUNDRY_PROFILE,
+        },
+      },
+    ),
   );
 }
