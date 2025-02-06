@@ -1,4 +1,4 @@
-import { execa, Options } from "execa";
+import { execa } from "execa";
 
 export interface ForgeConfig {
   // project
@@ -75,40 +75,4 @@ export async function getRpcUrl(profile?: string): Promise<string> {
     (await getForgeConfig(profile)).eth_rpc_url ||
     "http://127.0.0.1:8545"
   );
-}
-
-/**
- * Start an anvil chain
- * @param args The arguments to pass to anvil
- * @returns Stdout of the command
- */
-export async function anvil(args: string[]): Promise<string> {
-  return execLog("anvil", args);
-}
-
-/**
- * Executes the given command, returns the stdout, and logs the command to the console.
- * Throws an error if the command fails.
- * @param command The command to execute
- * @param args The arguments to pass to the command
- * @returns The stdout of the command
- */
-async function execLog(command: string, args: string[], options?: Options): Promise<string> {
-  const commandString = `${command} ${args.join(" ")}`;
-  try {
-    console.log(`running "${commandString}"`);
-    const { stdout } = await execa(command, args, {
-      ...options,
-      stdout: "pipe",
-      stderr: "pipe",
-      lines: false,
-      encoding: "utf8",
-    });
-    return stdout;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    let errorMessage = error?.stderr || error?.message || "";
-    errorMessage += `\nError running "${commandString}"`;
-    throw new Error(errorMessage);
-  }
 }
