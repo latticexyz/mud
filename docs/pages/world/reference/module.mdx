@@ -78,3 +78,38 @@ function requireNotInstalled(address moduleAddress, bytes memory encodedArgs) in
 | --------------- | --------- | ------------------------------------------------------ |
 | `moduleAddress` | `address` | The address of the module.                             |
 | `encodedArgs`   | `bytes`   | The ABI encoded arguments for the module installation. |
+
+#### installRoot
+
+Installs the module as a root module.
+
+_This function is invoked by the World contract during `installRootModule` process.
+The module expects to be called via the World contract and thus installs itself on the `msg.sender`._
+
+```solidity
+function installRoot(bytes memory encodedArgs) public virtual;
+```
+
+**Parameters**
+
+| Name          | Type    | Description                                                                   |
+| ------------- | ------- | ----------------------------------------------------------------------------- |
+| `encodedArgs` | `bytes` | The ABI encoded arguments that may be needed during the installation process. |
+
+#### install
+
+Installs the module.
+
+_This function is invoked by the World contract during `installModule` process.
+The module expects to be called via the World contract and thus installs itself on the `msg.sender`.
+Logic might differ from `installRoot`, for example, this might accept namespace parameters._
+
+```solidity
+function install(bytes memory encodedArgs) public virtual;
+```
+
+**Parameters**
+
+| Name          | Type    | Description                                                                   |
+| ------------- | ------- | ----------------------------------------------------------------------------- |
+| `encodedArgs` | `bytes` | The ABI encoded arguments that may be needed during the installation process. |
