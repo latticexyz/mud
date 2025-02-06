@@ -44,6 +44,10 @@ contract MockWorldConsumer is WorldConsumer {
   function onlyCallableByWorld() external view onlyWorld {}
 
   function onlyCallableByNamespace() external view onlyNamespace {}
+
+  function payableFn() external payable returns (uint256 value) {
+    return _msgValue();
+  }
 }
 
 contract WorldConsumerTest is Test, GasReporter {
@@ -104,7 +108,7 @@ contract WorldConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WithWorld_CallerIsNotWorld.selector, (alice)));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, (alice)));
     mock.onlyCallableByWorld();
 
     vm.prank(alice);
@@ -128,12 +132,12 @@ contract WorldConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WithWorld_CallerIsNotWorld.selector, alice));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, alice));
     mock.onlyCallableByNamespace();
 
     vm.prank(alice);
     vm.expectRevert(
-      abi.encodeWithSelector(WorldConsumer.WithWorld_CallerHasNoNamespaceAccess.selector, namespace, alice)
+      abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerHasNoNamespaceAccess.selector, namespace, alice)
     );
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
 
@@ -141,5 +145,31 @@ contract WorldConsumerTest is Test, GasReporter {
     world.grantAccess(namespaceId, alice);
     vm.prank(alice);
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
+  }
+
+  function testMsgValue() public {
+    IBaseWorld world = createWorld();
+    StoreSwitch.setStoreAddress(address(world));
+
+    bytes16 systemName = "mySystem";
+    bytes14 namespace = "myNamespace";
+    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
+    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
+    mock.transferNamespaceOwnership(address(this));
+
+    // Register the mock as a system with PUBLIC access
+    world.registerSystem(systemId, mock, true);
+
+    address alice = address(0x1234);
+    vm.deal(alice, 1);
+
+    vm.prank(alice);
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_ValueNotAllowed.selector));
+    mock.payableFn{ value: 1 }();
+
+    vm.prank(alice);
+    bytes memory result = world.call{ value: 1 }(systemId, abi.encodeCall(mock.payableFn, ()));
+    uint256 value = abi.decode(result, (uint256));
+    assertEq(value, 1);
   }
 }

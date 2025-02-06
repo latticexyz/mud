@@ -14,7 +14,7 @@ The advantage of doing this, rather than creating a separate [ERC-20 contract](h
 
 The token contract can be seen as a hybrid system contract which contains functions directly callable from outside the world (ERC20 functions like `transfer`, `balanceOf`, etc), and restricted functions that must be called as a system function through the World (`mint`, `pause`, etc).
 
-The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20WithWorld.sol) with the following features:
+The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20PausableBurnable.sol) with the following features:
 
 - ERC20Burnable: Allows users to burn their tokens (or the ones approved to them) using the `burn` and `burnFrom` function.
 - ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses and systems with access to the token's namespace. Must be done through a World call.
