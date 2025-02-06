@@ -62,9 +62,6 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
     setPageSize(pagination.pageSize);
   }, [pagination, setPage, setPageSize]);
 
-  // TODO: fetch actual total rows
-  const TOTAL_ROWS = 30;
-
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
@@ -117,7 +114,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
       },
     },
     manualPagination: true,
-    rowCount: TOTAL_ROWS,
+    pageCount: -1,
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
@@ -132,8 +129,6 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
       pagination,
     },
   });
-
-  console.log(pagination);
 
   return (
     <div
@@ -213,70 +208,38 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm">
-          {tableData && (
-            <>
-              <span className="text-muted-foreground">Total</span> {TOTAL_ROWS}
-            </>
-          )}
-        </div>
+      <div className="flex items-center justify-end space-x-2 pb-4">
+        <p className="text-sm text-muted-foreground">Rows per page:</p>
+        <Select value={pagination.pageSize.toString()} onValueChange={(value) => reactTable.setPageSize(Number(value))}>
+          <SelectTrigger className="h-8 w-[70px]">
+            <SelectValue>{pagination.pageSize}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+              <SelectItem key={pageSize} value={pageSize.toString()}>
+                {pageSize}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <div className="flex items-center space-x-2">
-          <p className="text-sm text-muted-foreground">Rows per page</p>
-          <Select
-            value={pagination.pageSize.toString()}
-            onValueChange={(value) => reactTable.setPageSize(Number(value))}
+        <div className="flex items-center justify-end space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => reactTable.previousPage()}
+            disabled={!reactTable.getCanPreviousPage()}
           >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue>{pagination.pageSize}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {[2, 5, 10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => reactTable.previousPage()}
-              disabled={!reactTable.getCanPreviousPage()}
-              className="h-8 w-8 p-0 hover:bg-accent"
-            >
-              <ChevronLeftIcon className="h-4 w-4" />
-            </Button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.ceil(TOTAL_ROWS / pagination.pageSize) }, (_, i) => (
-                <Button
-                  key={i}
-                  variant={pagination.pageIndex === i ? "outline" : "ghost"}
-                  size="sm"
-                  onClick={() => reactTable.setPageIndex(i)}
-                  className={cn("h-8 w-8 p-0 hover:bg-transparent", {
-                    "hover:bg-accent": pagination.pageIndex !== i,
-                  })}
-                >
-                  {i + 1}
-                </Button>
-              ))}
-            </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => reactTable.nextPage()}
-              disabled={!reactTable.getCanNextPage()}
-              className="h-8 w-8 p-0 hover:bg-accent"
-            >
-              <ChevronRightIcon className="h-4 w-4" />
-            </Button>
-          </div>
+            <ChevronLeftIcon className="mr-1 h-4 w-4" /> Prev
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => reactTable.nextPage()}
+            disabled={!reactTable.getCanNextPage() || !tableData || tableData.rows.length < pagination.pageSize}
+          >
+            Next <ChevronRightIcon className="ml-1 h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>
