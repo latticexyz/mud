@@ -33,9 +33,7 @@ const commandModule: CommandModule<typeof testOptions, TestOptions> = {
       printCommand(
         execa("anvil", ["--quiet", ["--port", String(opts.port)], ["--block-base-fee-per-gas", "0"]].flat(), {
           stdio: "inherit",
-          env: {
-            FOUNDRY_PROFILE: opts.profile ?? process.env.FOUNDRY_PROFILE,
-          },
+          env: { FOUNDRY_PROFILE: opts.profile ?? process.env.FOUNDRY_PROFILE },
         }),
       );
     }

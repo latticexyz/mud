@@ -78,25 +78,6 @@ export async function getRpcUrl(profile?: string): Promise<string> {
 }
 
 /**
- * Execute a forge command
- * @param args The arguments to pass to forge
- * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }
- */
-export async function forge(
-  args: string[],
-  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string },
-): Promise<void> {
-  const execOptions = {
-    env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },
-    stdout: "inherit",
-    stderr: "pipe",
-    cwd: options?.cwd,
-  } satisfies Options;
-
-  await (options?.silent ? execa("forge", args, execOptions) : execLog("forge", args, execOptions));
-}
-
-/**
  * Execute a cast command
  * @param args The arguments to pass to cast
  * @returns Stdout of the command
