@@ -5,6 +5,7 @@ import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useJwtConnector } from "../src/useJwtConnector";
+import { PendingIcon } from "./icons/PendingIcon";
 
 declare const window: {
   google: any;
@@ -14,11 +15,11 @@ const clientId = "188183665112-uafieilii1f4rklscv0b7gj6e42lao42.apps.googleuserc
 
 export function ConnectWallet() {
   const userAccount = useAccount();
-  const { openConnectModal, connectModalOpen } = useConnectModal();
-  const [hasAutoOpened, setHasAutoOpened] = useState(false);
+  const { openConnectModal } = useConnectModal();
   const [generatingProof, setGeneratingProof] = useState(false);
   const jwtConnector = useJwtConnector();
   const buttonRef = useRef<HTMLDivElement>(null);
+  const googleRendered = useRef(false);
 
   const jwtSigner = jwtConnector.getSigner();
 
@@ -32,7 +33,8 @@ export function ConnectWallet() {
   );
 
   useEffect(() => {
-    if (!window.google || !jwtSigner || !buttonRef.current) return;
+    if (googleRendered.current || !window.google || !jwtSigner || !buttonRef.current) return;
+    googleRendered.current = true;
 
     window.google.accounts.id.cancel();
     window.google.accounts.id.initialize({
@@ -42,22 +44,20 @@ export function ConnectWallet() {
       nonce: jwtSigner.address,
     });
     window.google.accounts.id.renderButton(buttonRef.current, {
-      theme: "outline",
-      size: "large",
-      shape: "rectangular",
+      theme: "icon",
+      width: "200",
     });
-  }, [jwtSigner, handleCredentialResponse, buttonRef.current]);
-
-  // automatically open connect modal once
-  // TODO: remove this once we have more than "connect wallet" as an option
-  useEffect(() => {
-    if (!connectModalOpen && !hasAutoOpened) {
-      openConnectModal?.();
-      setHasAutoOpened(true);
-    }
-  }, [connectModalOpen, hasAutoOpened, openConnectModal]);
+  }, [jwtSigner, handleCredentialResponse]);
 
   // TODO: show error states?
+
+  const onClick = () => {
+    if (!buttonRef.current) {
+      return;
+    }
+
+    (buttonRef.current.querySelector("div[role=button]") as HTMLDivElement).click();
+  };
 
   return (
     <div
@@ -67,24 +67,35 @@ export function ConnectWallet() {
         {/* TODO: render appImage if available? */}
         <AppInfo />
       </div>
-      <div className="self-center flex flex-col gap-2 w-60">
+      <div className="flex justify-center w-full">
         {generatingProof ? (
-          <div className="text-center py-2">Generating proof...</div>
+          <div className="flex items-center justify-center gap-2">
+            <PendingIcon />
+            Generating proof...
+          </div>
         ) : (
-          <>
-            <div ref={buttonRef} />
+          <div className="flex flex-col gap-4 w-[220px] ">
+            <div role="button" ref={buttonRef} className="hidden" />
+            <Button
+              variant="secondary"
+              className="w-full flex justify-center"
+              disabled={userAccount.status === "connecting"}
+              onClick={onClick}
+              autoFocus={true}
+            >
+              Sign in with Google
+            </Button>
 
             <Button
               key="create"
               variant="secondary"
-              className="self-auto flex justify-center"
+              className="w-full flex justify-center"
               disabled={userAccount.status === "connecting"}
               onClick={openConnectModal}
-              autoFocus
             >
               Connect wallet
             </Button>
-          </>
+          </div>
         )}
       </div>
     </div>
