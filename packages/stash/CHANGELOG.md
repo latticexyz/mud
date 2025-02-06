@@ -1,5 +1,15 @@
 # @latticexyz/stash
 
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/common@2.2.19
+- @latticexyz/config@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/store@2.2.19
+
 ## 2.2.18
 
 ### Patch Changes

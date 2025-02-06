@@ -1,5 +1,7 @@
 # vite-plugin-mud
 
+## 2.2.19
+
 ## 2.2.18
 
 ### Patch Changes
