@@ -23,7 +23,7 @@ contract PuppetModule is Module {
   PuppetDelegationControl private immutable puppetDelegationControl = new PuppetDelegationControl();
   PuppetFactorySystem private immutable puppetFactorySystem = new PuppetFactorySystem();
 
-  function installRoot(bytes memory) public {
+  function installRoot(bytes memory) public override {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace
@@ -48,7 +48,7 @@ contract PuppetModule is Module {
     if (!success) revertWithBytes(returnData);
   }
 
-  function install(bytes memory) public {
+  function install(bytes memory) public override {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace

@@ -103,8 +103,4 @@ contract KeysInTableModule is Module {
       )
     );
   }
-
-  function install(bytes memory) public pure {
-    revert Module_NonRootInstallNotSupported();
-  }
 }

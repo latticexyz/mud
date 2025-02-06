@@ -22,11 +22,7 @@ contract MetadataModule is Module {
 
   MetadataSystem private immutable metadataSystem = new MetadataSystem();
 
-  function installRoot(bytes memory) public pure {
-    revert Module_RootInstallNotSupported();
-  }
-
-  function install(bytes memory args) public {
+  function install(bytes memory args) public override {
     // naive check to ensure this is only installed once
     // TODO: update this + deployer to be idempotent
     requireNotInstalled(__self, args);

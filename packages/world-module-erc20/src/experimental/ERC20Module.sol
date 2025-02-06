@@ -18,7 +18,7 @@ contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
   error ERC20Module_NamespaceAlreadyExists(bytes14 namespace);
 
-  function install(bytes memory encodedArgs) public {
+  function install(bytes memory encodedArgs) public override {
     // TODO: we should probably check just for namespace, not for all args
     requireNotInstalled(__self, encodedArgs);
 
@@ -51,10 +51,6 @@ contract ERC20Module is Module {
     world.transferOwnership(namespaceId, _msgSender());
 
     ERC20RegistryLib.register(world, namespaceId, address(token));
-  }
-
-  function installRoot(bytes memory) public pure {
-    revert Module_RootInstallNotSupported();
   }
 }
 
