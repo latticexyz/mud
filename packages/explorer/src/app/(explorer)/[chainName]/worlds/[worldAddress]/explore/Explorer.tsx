@@ -1,10 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { parseAsString, useQueryState } from "nuqs";
 import { Hex } from "viem";
 import { useEffect, useState } from "react";
-import { PaginationState } from "@tanstack/react-table";
 import { useChain } from "../../../../hooks/useChain";
 import { usePrevious } from "../../../../hooks/usePrevious";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
@@ -13,19 +12,14 @@ import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
+import { usePaginationQueryState } from "./hooks/usePaginationQueryState";
 
 export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
   const [isLiveQuery, setIsLiveQuery] = useState(false);
-  const [{ pageSize }] = useQueryState(
-    "pagination",
-    parseAsJson<PaginationState>().withDefault({
-      pageIndex: 0,
-      pageSize: 10,
-    }),
-  );
+  const [{ pageSize }] = usePaginationQueryState();
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
