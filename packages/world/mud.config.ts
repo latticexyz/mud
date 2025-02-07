@@ -1,16 +1,16 @@
 import { defineWorld } from "./ts/config/v2/world";
 
-/**
- * @internal
- */
-export const configInput = {
-  namespace: "world", // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
-  codegen: {
-    worldImportPath: "./src",
-    worldgenDirectory: "interfaces",
-    worldInterfaceName: "IBaseWorld",
-    generateSystemLibraries: true,
-  },
+// Ideally we'd use a single multi-namespace config here, but we don't want
+// to break imports from this package because the source location changed.
+//
+// Once we have more nuanced control over source paths and codegen for each
+// namespace, then we could probably migrate to multi-namespace config.
+//
+// Or some way to deeply merge multiple configs while retaining strong types.
+
+/** @internal */
+export const tablesConfig = defineWorld({
+  namespace: "world",
   userTypes: {
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
@@ -111,6 +111,17 @@ export const configInput = {
       key: [],
     },
   },
+});
+
+/** @internal */
+export const systemsConfig = defineWorld({
+  namespace: "",
+  codegen: {
+    worldImportPath: "./src",
+    worldgenDirectory: "interfaces",
+    worldInterfaceName: "IBaseWorld",
+    generateSystemLibraries: true,
+  },
   systems: {
     AccessManagementSystem: {
       name: "AccessManagement",
@@ -135,6 +146,6 @@ export const configInput = {
       name: "Registration",
     },
   },
-} as const;
+});
 
-export default defineWorld(configInput);
+export default tablesConfig;
