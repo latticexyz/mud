@@ -79,12 +79,4 @@ abstract contract WorldConsumer is System {
 
     return WorldContextConsumer._msgValue();
   }
-
-  function _encodeTableId(bytes16 name) internal view returns (ResourceId) {
-    return WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, name);
-  }
-
-  function _encodeOffchainTableId(bytes16 name) internal view returns (ResourceId) {
-    return WorldResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, namespace, name);
-  }
 }

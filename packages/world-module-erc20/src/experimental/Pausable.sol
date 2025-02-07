@@ -2,7 +2,9 @@
 // Adapted from OpenZeppelin Contracts [utils/Pausable.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/f989fff93168606c726bc5e831ef50dd6e543f45/contracts/utils/Pausable.sol)
 pragma solidity >=0.8.24;
 
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
@@ -44,7 +46,7 @@ abstract contract Pausable is WorldConsumer {
    * @dev Initializes the contract in unpaused state.
    */
   constructor() {
-    pausedId = _encodeTableId(PausableTableNames.PAUSED);
+    pausedId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, PausableTableNames.PAUSED);
     PausedTable.register(pausedId);
     PausedTable.set(pausedId, false);
   }
