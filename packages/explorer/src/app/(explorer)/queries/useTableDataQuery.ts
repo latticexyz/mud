@@ -1,5 +1,4 @@
 import { useParams } from "next/navigation";
-import { parseAsInteger, useQueryState } from "nuqs";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -24,11 +23,9 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
   const decodedQuery = decodeURIComponent(query ?? "");
-  const [page] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(5));
 
   return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, decodedQuery, page, pageSize],
+    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const startTime = performance.now();
       const indexer = indexerForChainId(chainId);
