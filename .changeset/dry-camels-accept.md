@@ -2,7 +2,7 @@
 "@latticexyz/world": patch
 ---
 
-Added experimental system libraries for World systems for easier ergonomics when interacting with core systems.
+Added experimental system libraries for World systems for better ergonomics when interacting with core systems.
 
 Note that these libraries are marked experimental as we may make breaking changes to their interfaces.
 
