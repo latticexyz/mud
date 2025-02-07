@@ -12,867 +12,6 @@ that are dynamically registered in the World during deployment.
 
 _._
 
-## Store
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/Store.sol)
-
-**Inherits:**
-[IStore](/store/reference/store#istore), [StoreKernel](/store/reference/store-core#storekernel)
-
-This contract integrates the core storage functionalities and provides an interface for data storage.
-
-_This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
-but not write methods._
-
-#### registerTable
-
-[Usage Sample](/store/tables#manually-register-a-table)
-
-```solidity
-function registerTable(
-  ResourceId tableId,
-  FieldLayout fieldLayout,
-  Schema keySchema,
-  Schema valueSchema,
-  string[] calldata keyNames,
-  string[] calldata fieldNames
-) external;
-```
-
-#### registerStoreHook
-
-```solidity
-function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
-```
-
-#### unregisterStoreHook
-
-```solidity
-function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
-```
-
-#### grantAccess
-
-[Usage Sample](/world/namespaces-access-control#modifying-access-control)
-
-Grant access to the resource at the given resource ID.
-
-_Requires the caller to own the namespace._
-
-```solidity
-function grantAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name         | Type         | Description                                    |
-| ------------ | ------------ | ---------------------------------------------- |
-| `resourceId` | `ResourceId` | The ID of the resource to grant access to.     |
-| `grantee`    | `address`    | The address to which access should be granted. |
-
-#### revokeAccess
-
-[Usage Sample](/world/namespaces-access-control#modifying-access-control)
-
-Revoke access from the resource at the given resource ID.
-
-_Requires the caller to own the namespace._
-
-```solidity
-function revokeAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name         | Type         | Description                                      |
-| ------------ | ------------ | ------------------------------------------------ |
-| `resourceId` | `ResourceId` | The ID of the resource to revoke access from.    |
-| `grantee`    | `address`    | The address from which access should be revoked. |
-
-#### transferOwnership
-
-Transfer ownership of the given namespace to newOwner and manages the access.
-
-_Requires the caller to own the namespace. Revoke ResourceAccess for previous owner and grant to newOwner._
-
-```solidity
-function transferOwnership(ResourceId namespaceId, address newOwner) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type         | Description                                           |
-| ------------- | ------------ | ----------------------------------------------------- |
-| `namespaceId` | `ResourceId` | The ID of the namespace to transfer ownership.        |
-| `newOwner`    | `address`    | The address to which ownership should be transferred. |
-
-#### renounceOwnership
-
-Renounces ownership of the given namespace
-
-_Requires the caller to own the namespace. Revoke ResourceAccess for previous owner_
-
-```solidity
-function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type         | Description                                    |
-| ------------- | ------------ | ---------------------------------------------- |
-| `namespaceId` | `ResourceId` | The ID of the namespace to transfer ownership. |
-
-#### transferBalanceToNamespace
-
-Transfer balance to another namespace in the World.
-
-_Requires the caller to have access to the source namespace and ensures the destination namespace type is valid._
-
-```solidity
-function transferBalanceToNamespace(
-  ResourceId fromNamespaceId,
-  ResourceId toNamespaceId,
-  uint256 amount
-) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name              | Type         | Description                                                   |
-| ----------------- | ------------ | ------------------------------------------------------------- |
-| `fromNamespaceId` | `ResourceId` | The source namespace from which the balance will be deducted. |
-| `toNamespaceId`   | `ResourceId` | The target namespace where the balance will be added.         |
-| `amount`          | `uint256`    | The amount to transfer.                                       |
-
-#### transferBalanceToAddress
-
-[Usage Sample](/world/balance)
-
-Transfer balance out of the World to a specific address.
-
-_Requires the caller to have access to the source namespace and ensures sufficient balance before transfer._
-
-```solidity
-function transferBalanceToAddress(
-  ResourceId fromNamespaceId,
-  address toAddress,
-  uint256 amount
-) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name              | Type         | Description                                                   |
-| ----------------- | ------------ | ------------------------------------------------------------- |
-| `fromNamespaceId` | `ResourceId` | The source namespace from which the balance will be deducted. |
-| `toAddress`       | `address`    | The target address where the balance will be sent.            |
-| `amount`          | `uint256`    | The amount to transfer.                                       |
-
-#### batchCall
-
-Make batch calls to multiple systems into a single transaction.
-
-_Iterates through an array of system calls, executes them, and returns an array of return data._
-
-```solidity
-function batchCall(SystemCallData[] calldata systemCalls) public onlyDelegatecall returns (bytes[] memory returnDatas);
-```
-
-**Parameters**
-
-| Name          | Type               | Description                                                                   |
-| ------------- | ------------------ | ----------------------------------------------------------------------------- |
-| `systemCalls` | `SystemCallData[]` | An array of SystemCallData that contains systemId and callData for each call. |
-
-**Returns**
-
-| Name          | Type      | Description                                                        |
-| ------------- | --------- | ------------------------------------------------------------------ |
-| `returnDatas` | `bytes[]` | An array of bytes containing the return data for each system call. |
-
-#### batchCallFrom
-
-Make batch calls from specific addresses to multiple systems in a single transaction.
-
-_Iterates through an array of system calls with specified 'from' addresses, executes them, and returns an array of return data._
-
-```solidity
-function batchCallFrom(
-  SystemCallFromData[] calldata systemCalls
-) public onlyDelegatecall returns (bytes[] memory returnDatas);
-```
-
-**Parameters**
-
-| Name          | Type                   | Description                                                                              |
-| ------------- | ---------------------- | ---------------------------------------------------------------------------------------- |
-| `systemCalls` | `SystemCallFromData[]` | An array of SystemCallFromData that contains from, systemId, and callData for each call. |
-
-**Returns**
-
-| Name          | Type      | Description                                                        |
-| ------------- | --------- | ------------------------------------------------------------------ |
-| `returnDatas` | `bytes[]` | An array of bytes containing the return data for each system call. |
-
-#### installModule
-
-Installs a module into the World under a specified namespace.
-
-_Validates the given module against the IModule interface and delegates the installation process.
-The module is then registered in the InstalledModules table._
-
-```solidity
-function installModule(IModule module, bytes memory encodedArgs) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type      | Description                                        |
-| ------------- | --------- | -------------------------------------------------- |
-| `module`      | `IModule` | The module to be installed.                        |
-| `encodedArgs` | `bytes`   | The ABI encoded arguments for module installation. |
-
-## ModuleInstallationSystem
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol)
-
-**Inherits:**
-[System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
-
-_A system contract to handle the installation of (non-root) modules in the World._
-
-### Functions
-
-#### installModule
-
-Installs a module into the World under a specified namespace.
-
-_Validates the given module against the IModule interface and delegates the installation process.
-The module is then registered in the InstalledModules table._
-
-```solidity
-function installModule(IModule module, bytes memory encodedArgs) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type      | Description                                        |
-| ------------- | --------- | -------------------------------------------------- |
-| `module`      | `IModule` | The module to be installed.                        |
-| `encodedArgs` | `bytes`   | The ABI encoded arguments for module installation. |
-
-#### registerNamespace
-
-[Usage Sample](/world/systems#registering-systems)
-
-Registers a new namespace
-
-_Creates a new namespace resource with the given ID_
-
-```solidity
-function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type         | Description                                 |
-| ------------- | ------------ | ------------------------------------------- |
-| `namespaceId` | `ResourceId` | The unique identifier for the new namespace |
-
-#### registerSystemHook
-
-Registers a new system hook
-
-_Adds a new hook for the system at the provided system ID_
-
-```solidity
-function registerSystemHook(
-  ResourceId systemId,
-  ISystemHook hookAddress,
-  uint8 enabledHooksBitmap
-) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                 | Type          | Description                               |
-| -------------------- | ------------- | ----------------------------------------- |
-| `systemId`           | `ResourceId`  | The ID of the system                      |
-| `hookAddress`        | `ISystemHook` | The address of the hook being registered  |
-| `enabledHooksBitmap` | `uint8`       | Bitmap indicating which hooks are enabled |
-
-#### unregisterSystemHook
-
-Unregisters a system hook
-
-_Removes a hook for the system at the provided system ID_
-
-```solidity
-function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type          | Description                                |
-| ------------- | ------------- | ------------------------------------------ |
-| `systemId`    | `ResourceId`  | The ID of the system                       |
-| `hookAddress` | `ISystemHook` | The address of the hook being unregistered |
-
-#### registerSystem
-
-[Usage Sample](/world/systems#registering-systems)
-
-Registers a system
-
-_Registers or upgrades a system at the given ID
-If the namespace doesn't exist yet, it is registered.
-The system is granted access to its namespace, so it can write to any
-table in the same namespace.
-If publicAccess is true, no access control check is performed for calling the system.
-This function doesn't check whether a system already exists at the given selector,
-making it possible to upgrade systems._
-
-```solidity
-function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name           | Type         | Description                                         |
-| -------------- | ------------ | --------------------------------------------------- |
-| `systemId`     | `ResourceId` | The unique identifier for the system                |
-| `system`       | `System`     | The system being registered                         |
-| `publicAccess` | `bool`       | Flag indicating if access control check is bypassed |
-
-#### registerFunctionSelector
-
-Registers a new World function selector
-
-_Creates a mapping between a World function and its associated system function_
-
-```solidity
-function registerFunctionSelector(
-  ResourceId systemId,
-  string memory systemFunctionSignature
-) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
-```
-
-**Parameters**
-
-| Name                      | Type         | Description                          |
-| ------------------------- | ------------ | ------------------------------------ |
-| `systemId`                | `ResourceId` | The system ID                        |
-| `systemFunctionSignature` | `string`     | The signature of the system function |
-
-**Returns**
-
-| Name                    | Type     | Description                        |
-| ----------------------- | -------- | ---------------------------------- |
-| `worldFunctionSelector` | `bytes4` | The selector of the World function |
-
-#### registerRootFunctionSelector
-
-[Usage Sample](/world/function-selectors#root-function-selectors)
-
-Registers a root World function selector
-
-_Creates a mapping for a root World function without namespace or name prefix_
-
-```solidity
-function registerRootFunctionSelector(
-  ResourceId systemId,
-  string memory worldFunctionSignature,
-  string memory systemFunctionSignature
-) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
-```
-
-**Parameters**
-
-| Name                      | Type         | Description                          |
-| ------------------------- | ------------ | ------------------------------------ |
-| `systemId`                | `ResourceId` | The system ID                        |
-| `worldFunctionSignature`  | `string`     | The signature of the World function  |
-| `systemFunctionSignature` | `string`     | The signature of the system function |
-
-**Returns**
-
-| Name                    | Type     | Description                        |
-| ----------------------- | -------- | ---------------------------------- |
-| `worldFunctionSelector` | `bytes4` | The selector of the World function |
-
-#### registerDelegation
-
-Registers a delegation for the caller
-
-_Creates a new delegation from the caller to the specified delegatee_
-
-```solidity
-function registerDelegation(
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData
-) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                  | Type         | Description                                |
-| --------------------- | ------------ | ------------------------------------------ |
-| `delegatee`           | `address`    | The address of the delegatee               |
-| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
-| `initCallData`        | `bytes`      | The initialization data for the delegation |
-
-#### unregisterDelegation
-
-Unregisters a delegation
-
-_Deletes the new delegation from the caller to the specified delegatee_
-
-```solidity
-function unregisterDelegation(address delegatee) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name        | Type      | Description                  |
-| ----------- | --------- | ---------------------------- |
-| `delegatee` | `address` | The address of the delegatee |
-
-#### registerNamespaceDelegation
-
-Registers a delegation for a namespace
-
-_Sets up a new delegation control for a specific namespace_
-
-```solidity
-function registerNamespaceDelegation(
-  ResourceId namespaceId,
-  ResourceId delegationControlId,
-  bytes memory initCallData
-) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                  | Type         | Description                                |
-| --------------------- | ------------ | ------------------------------------------ |
-| `namespaceId`         | `ResourceId` | The ID of the namespace                    |
-| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
-| `initCallData`        | `bytes`      | The initialization data for the delegation |
-
-#### unregisterNamespaceDelegation
-
-Unregisters a delegation for a namespace
-
-_Deletes the delegation control for a specific namespace_
-
-```solidity
-function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type         | Description             |
-| ------------- | ------------ | ----------------------- |
-| `namespaceId` | `ResourceId` | The ID of the namespace |
-
-#### registerNamespace
-
-Registers a new namespace
-
-_Creates a new namespace resource with the given ID_
-
-```solidity
-function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type         | Description                                 |
-| ------------- | ------------ | ------------------------------------------- |
-| `namespaceId` | `ResourceId` | The unique identifier for the new namespace |
-
-#### registerSystemHook
-
-Registers a new system hook
-
-_Adds a new hook for the system at the provided system ID_
-
-```solidity
-function registerSystemHook(
-  ResourceId systemId,
-  ISystemHook hookAddress,
-  uint8 enabledHooksBitmap
-) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                 | Type          | Description                               |
-| -------------------- | ------------- | ----------------------------------------- |
-| `systemId`           | `ResourceId`  | The ID of the system                      |
-| `hookAddress`        | `ISystemHook` | The address of the hook being registered  |
-| `enabledHooksBitmap` | `uint8`       | Bitmap indicating which hooks are enabled |
-
-#### unregisterSystemHook
-
-Unregisters a system hook
-
-_Removes a hook for the system at the provided system ID_
-
-```solidity
-function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type          | Description                                |
-| ------------- | ------------- | ------------------------------------------ |
-| `systemId`    | `ResourceId`  | The ID of the system                       |
-| `hookAddress` | `ISystemHook` | The address of the hook being unregistered |
-
-#### registerSystem
-
-Registers a system
-
-_Registers or upgrades a system at the given ID
-If the namespace doesn't exist yet, it is registered.
-The system is granted access to its namespace, so it can write to any
-table in the same namespace.
-If publicAccess is true, no access control check is performed for calling the system.
-This function doesn't check whether a system already exists at the given selector,
-making it possible to upgrade systems._
-
-```solidity
-function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name           | Type         | Description                                         |
-| -------------- | ------------ | --------------------------------------------------- |
-| `systemId`     | `ResourceId` | The unique identifier for the system                |
-| `system`       | `System`     | The system being registered                         |
-| `publicAccess` | `bool`       | Flag indicating if access control check is bypassed |
-
-#### registerFunctionSelector
-
-Registers a new World function selector
-
-_Creates a mapping between a World function and its associated system function_
-
-```solidity
-function registerFunctionSelector(
-  ResourceId systemId,
-  string memory systemFunctionSignature
-) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
-```
-
-**Parameters**
-
-| Name                      | Type         | Description                          |
-| ------------------------- | ------------ | ------------------------------------ |
-| `systemId`                | `ResourceId` | The system ID                        |
-| `systemFunctionSignature` | `string`     | The signature of the system function |
-
-**Returns**
-
-| Name                    | Type     | Description                        |
-| ----------------------- | -------- | ---------------------------------- |
-| `worldFunctionSelector` | `bytes4` | The selector of the World function |
-
-#### registerRootFunctionSelector
-
-Registers a root World function selector
-
-_Creates a mapping for a root World function without namespace or name prefix_
-
-```solidity
-function registerRootFunctionSelector(
-  ResourceId systemId,
-  string memory worldFunctionSignature,
-  string memory systemFunctionSignature
-) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
-```
-
-**Parameters**
-
-| Name                      | Type         | Description                          |
-| ------------------------- | ------------ | ------------------------------------ |
-| `systemId`                | `ResourceId` | The system ID                        |
-| `worldFunctionSignature`  | `string`     | The signature of the World function  |
-| `systemFunctionSignature` | `string`     | The signature of the system function |
-
-**Returns**
-
-| Name                    | Type     | Description                        |
-| ----------------------- | -------- | ---------------------------------- |
-| `worldFunctionSelector` | `bytes4` | The selector of the World function |
-
-#### registerDelegation
-
-Registers a delegation for the caller
-
-_Creates a new delegation from the caller to the specified delegatee_
-
-```solidity
-function registerDelegation(
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData
-) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                  | Type         | Description                                |
-| --------------------- | ------------ | ------------------------------------------ |
-| `delegatee`           | `address`    | The address of the delegatee               |
-| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
-| `initCallData`        | `bytes`      | The initialization data for the delegation |
-
-#### unregisterDelegation
-
-Unregisters a delegation
-
-_Deletes the new delegation from the caller to the specified delegatee_
-
-```solidity
-function unregisterDelegation(address delegatee) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name        | Type      | Description                  |
-| ----------- | --------- | ---------------------------- |
-| `delegatee` | `address` | The address of the delegatee |
-
-#### registerNamespaceDelegation
-
-Registers a delegation for a namespace
-
-_Sets up a new delegation control for a specific namespace_
-
-```solidity
-function registerNamespaceDelegation(
-  ResourceId namespaceId,
-  ResourceId delegationControlId,
-  bytes memory initCallData
-) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                  | Type         | Description                                |
-| --------------------- | ------------ | ------------------------------------------ |
-| `namespaceId`         | `ResourceId` | The ID of the namespace                    |
-| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
-| `initCallData`        | `bytes`      | The initialization data for the delegation |
-
-#### unregisterNamespaceDelegation
-
-Unregisters a delegation for a namespace
-
-_Deletes the delegation control for a specific namespace_
-
-```solidity
-function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name          | Type         | Description             |
-| ------------- | ------------ | ----------------------- |
-| `namespaceId` | `ResourceId` | The ID of the namespace |
-
-### Errors
-
-#### Store_TableAlreadyExists
-
-Error raised if the provided table already exists.
-
-```solidity
-error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
-```
-
-**Parameters**
-
-| Name            | Type         | Description                                                                            |
-| --------------- | ------------ | -------------------------------------------------------------------------------------- |
-| `tableId`       | `ResourceId` | The ID of the table.                                                                   |
-| `tableIdString` | `string`     | The stringified ID of the table (for easier debugging if cleartext tableIds are used). |
-
-#### Store_TableNotFound
-
-Error raised if the provided table cannot be found.
-
-```solidity
-error Store_TableNotFound(ResourceId tableId, string tableIdString);
-```
-
-**Parameters**
-
-| Name            | Type         | Description                                                                            |
-| --------------- | ------------ | -------------------------------------------------------------------------------------- |
-| `tableId`       | `ResourceId` | The ID of the table.                                                                   |
-| `tableIdString` | `string`     | The stringified ID of the table (for easier debugging if cleartext tableIds are used). |
-
-#### Store_InvalidResourceType
-
-Error raised if the provided resource ID cannot be found.
-
-```solidity
-error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
-```
-
-**Parameters**
-
-| Name               | Type         | Description                                         |
-| ------------------ | ------------ | --------------------------------------------------- |
-| `expected`         | `bytes2`     | The expected resource type.                         |
-| `resourceId`       | `ResourceId` | The resource ID.                                    |
-| `resourceIdString` | `string`     | The stringified resource ID (for easier debugging). |
-
-#### Store_InvalidBounds
-
-Error raised if the provided slice bounds are invalid.
-
-```solidity
-error Store_InvalidBounds(uint256 start, uint256 end);
-```
-
-**Parameters**
-
-| Name    | Type      | Description                                                                   |
-| ------- | --------- | ----------------------------------------------------------------------------- |
-| `start` | `uint256` | The start index within the dynamic field for the slice operation (inclusive). |
-| `end`   | `uint256` | The end index within the dynamic field for the slice operation (exclusive).   |
-
-#### Store_IndexOutOfBounds
-
-Error raised if the provided index is out of bounds.
-
-_Raised if the start index is larger than the previous length of the field._
-
-```solidity
-error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
-```
-
-**Parameters**
-
-| Name            | Type      | Description |
-| --------------- | --------- | ----------- |
-| `length`        | `uint256` | FIXME       |
-| `accessedIndex` | `uint256` | FIXME       |
-
-#### Store_InvalidStaticDataLength
-
-Error raised if the provided static data length is invalid.
-
-```solidity
-error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
-```
-
-**Parameters**
-
-| Name       | Type      | Description          |
-| ---------- | --------- | -------------------- |
-| `expected` | `uint256` | The expected length. |
-| `received` | `uint256` | The provided length. |
-
-#### Store_InvalidKeyNamesLength
-
-Error raised if the provided key names length is invalid.
-
-```solidity
-error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
-```
-
-**Parameters**
-
-| Name       | Type      | Description          |
-| ---------- | --------- | -------------------- |
-| `expected` | `uint256` | The expected length. |
-| `received` | `uint256` | The provided length. |
-
-#### Store_InvalidFieldNamesLength
-
-Error raised if the provided field names length is invalid.
-
-```solidity
-error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
-```
-
-**Parameters**
-
-| Name       | Type      | Description          |
-| ---------- | --------- | -------------------- |
-| `expected` | `uint256` | The expected length. |
-| `received` | `uint256` | The provided length. |
-
-#### Store_InvalidValueSchemaLength
-
-Error raised if the provided value schema length is invalid.
-
-```solidity
-error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
-```
-
-**Parameters**
-
-| Name       | Type      | Description          |
-| ---------- | --------- | -------------------- |
-| `expected` | `uint256` | The expected length. |
-| `received` | `uint256` | The provided length. |
-
-#### Store_InvalidValueSchemaStaticLength
-
-Error raised if the provided schema static length is invalid.
-
-```solidity
-error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
-```
-
-**Parameters**
-
-| Name       | Type      | Description          |
-| ---------- | --------- | -------------------- |
-| `expected` | `uint256` | The expected length. |
-| `received` | `uint256` | The provided length. |
-
-#### Store_InvalidValueSchemaDynamicLength
-
-Error raised if the provided schema dynamic length is invalid.
-
-```solidity
-error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
-```
-
-**Parameters**
-
-| Name       | Type      | Description          |
-| ---------- | --------- | -------------------- |
-| `expected` | `uint256` | The expected length. |
-| `received` | `uint256` | The provided length. |
-
-#### Store_InvalidSplice
-
-Error raised if the provided splice is invalid.
-
-_Raised if the splice total length of the field is changed but the splice is not at the end of the field._
-
-```solidity
-error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
-```
-
-**Parameters**
-
-| Name               | Type     | Description                                                |
-| ------------------ | -------- | ---------------------------------------------------------- |
-| `startWithinField` | `uint40` | The start index within the field for the splice operation. |
-| `deleteCount`      | `uint40` | The number of bytes to delete in the splice operation.     |
-| `fieldLength`      | `uint40` | The field length for the splice operation.                 |
-
 ## IWorldCall
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
@@ -1259,44 +398,206 @@ event HelloWorld(bytes32 indexed worldVersion);
 | -------------- | --------- | ---------------------------------- |
 | `worldVersion` | `bytes32` | The protocol version of the World. |
 
-## IWorldFactory
+## IRegistrationSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldFactory.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IRegistrationSystem.sol)
 
-_This interface defines the contract responsible for deploying and keeping track
-of World contract instances._
+## IAccessManagementSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IAccessManagementSystem.sol)
 
 ### Functions
 
-#### deployWorld
+#### grantAccess
 
-Deploys a new World contract.
-
-_The deployment of the World contract will result in the `WorldDeployed` event being emitted._
+[Usage Sample](/world/namespaces-access-control#modifying-access-control)
 
 ```solidity
-function deployWorld(bytes memory salt) external returns (address worldAddress);
+function grantAccess(ResourceId resourceId, address grantee) external;
 ```
 
-**Returns**
+#### revokeAccess
 
-| Name           | Type      | Description                                       |
-| -------------- | --------- | ------------------------------------------------- |
-| `worldAddress` | `address` | The address of the newly deployed World contract. |
-
-### Events
-
-#### WorldDeployed
-
-_Emitted when a new World contract is deployed._
+[Usage Sample](/world/namespaces-access-control#modifying-access-control)
 
 ```solidity
-event WorldDeployed(address indexed newContract, uint256 salt);
+function revokeAccess(ResourceId resourceId, address grantee) external;
 ```
 
-**Parameters**
+#### transferOwnership
 
-| Name          | Type      | Description                                                        |
-| ------------- | --------- | ------------------------------------------------------------------ |
-| `newContract` | `address` | The address of the newly deployed World contract.                  |
-| `salt`        | `uint256` | User defined salt for deterministic world addresses across chains. |
+```solidity
+function transferOwnership(ResourceId namespaceId, address newOwner) external;
+```
+
+#### renounceOwnership
+
+```solidity
+function renounceOwnership(ResourceId namespaceId) external;
+```
+
+## IBalanceTransferSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IBalanceTransferSystem.sol)
+
+### Functions
+
+#### transferBalanceToNamespace
+
+```solidity
+function transferBalanceToNamespace(ResourceId fromNamespaceId, ResourceId toNamespaceId, uint256 amount) external;
+```
+
+#### transferBalanceToAddress
+
+[Usage Sample](/world/balance)
+
+```solidity
+function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount) external;
+```
+
+## IBatchCallSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IBatchCallSystem.sol)
+
+### Functions
+
+#### batchCall
+
+```solidity
+function batchCall(SystemCallData[] memory systemCalls) external returns (bytes[] memory returnDatas);
+```
+
+#### batchCallFrom
+
+```solidity
+function batchCallFrom(SystemCallFromData[] memory systemCalls) external returns (bytes[] memory returnDatas);
+```
+
+## IModuleInstallationSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IModuleInstallationSystem.sol)
+
+### Functions
+
+#### installModule
+
+```solidity
+function installModule(IModule module, bytes memory encodedArgs) external;
+```
+
+## IStoreRegistrationSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IStoreRegistrationSystem.sol)
+
+### Functions
+
+#### registerTable
+
+[Usage Sample](/store/tables#manually-register-a-table)
+
+```solidity
+function registerTable(
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] memory keyNames,
+  string[] memory fieldNames
+) external;
+```
+
+#### registerStoreHook
+
+```solidity
+function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
+```
+
+#### unregisterStoreHook
+
+```solidity
+function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
+```
+
+## IWorldRegistrationSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IWorldRegistrationSystem.sol)
+
+### Functions
+
+#### registerNamespace
+
+[Usage Sample](/world/systems#registering-systems)
+
+```solidity
+function registerNamespace(ResourceId namespaceId) external;
+```
+
+#### registerSystemHook
+
+```solidity
+function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
+```
+
+#### unregisterSystemHook
+
+```solidity
+function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) external;
+```
+
+#### registerSystem
+
+[Usage Sample](/world/systems#registering-systems)
+
+```solidity
+function registerSystem(ResourceId systemId, System system, bool publicAccess) external;
+```
+
+#### registerFunctionSelector
+
+```solidity
+function registerFunctionSelector(
+  ResourceId systemId,
+  string memory systemFunctionSignature
+) external returns (bytes4 worldFunctionSelector);
+```
+
+#### registerRootFunctionSelector
+
+[Usage Sample](/world/function-selectors#root-function-selectors)
+
+```solidity
+function registerRootFunctionSelector(
+  ResourceId systemId,
+  string memory worldFunctionSignature,
+  string memory systemFunctionSignature
+) external returns (bytes4 worldFunctionSelector);
+```
+
+#### registerDelegation
+
+```solidity
+function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) external;
+```
+
+#### unregisterDelegation
+
+```solidity
+function unregisterDelegation(address delegatee) external;
+```
+
+#### registerNamespaceDelegation
+
+```solidity
+function registerNamespaceDelegation(
+  ResourceId namespaceId,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) external;
+```
+
+#### unregisterNamespaceDelegation
+
+```solidity
+function unregisterNamespaceDelegation(ResourceId namespaceId) external;
+```
