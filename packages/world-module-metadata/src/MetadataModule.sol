@@ -7,9 +7,11 @@ import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/constants.sol";
 
 import { MetadataSystem } from "./MetadataSystem.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
+import { DelegatorContext, DelegatorContextInstance } from "./DelegatorContext.sol";
 
 /**
  * @title MetadataModule
@@ -19,24 +21,29 @@ import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
  */
 contract MetadataModule is Module {
   using WorldResourceIdInstance for ResourceId;
+  using DelegatorContextInstance for DelegatorContext;
 
   MetadataSystem private immutable metadataSystem = new MetadataSystem();
 
   function install(bytes memory args) public override {
-    // naive check to ensure this is only installed once
-    // TODO: update this + deployer to be idempotent
-    requireNotInstalled(__self, args);
-
-    IBaseWorld world = IBaseWorld(_world());
+    DelegatorContext memory world = DelegatorContext(IBaseWorld(_world()), _msgSender());
 
     ResourceId namespace = ResourceTag._tableId.getNamespaceId();
     if (!ResourceIds.getExists(namespace)) {
       world.registerNamespace(namespace);
     }
-    AccessControl.requireOwner(namespace, address(this));
 
     if (!ResourceIds.getExists(ResourceTag._tableId)) {
-      ResourceTag.register();
+      // TODO: add a `ResourceTag.getTableDef()` that returns a struct that can be used to register?
+      world.registerTable(
+        ResourceTag._tableId,
+        ResourceTag._fieldLayout,
+        ResourceTag._keySchema,
+        ResourceTag._valueSchema,
+        // wish we made field names bytes32[] so they could be defined as constants :(
+        ResourceTag.getKeyNames(),
+        ResourceTag.getFieldNames()
+      );
     }
 
     ResourceId metadataSystemId = WorldResourceIdLib.encode(
@@ -51,7 +58,5 @@ contract MetadataModule is Module {
       world.registerFunctionSelector(metadataSystemId, "setResourceTag(bytes32,bytes32,bytes)");
       world.registerFunctionSelector(metadataSystemId, "deleteResourceTag(bytes32,bytes32)");
     }
-
-    world.transferOwnership(namespace, _msgSender());
   }
 }
