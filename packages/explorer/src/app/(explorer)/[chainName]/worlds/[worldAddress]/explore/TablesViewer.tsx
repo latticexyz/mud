@@ -33,6 +33,8 @@ import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTable
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
+import { PAGE_SIZE_OPTIONS } from "./consts";
+import { getLimitOffset } from "./utils/getLimitOffset";
 import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
@@ -153,6 +155,16 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     },
   });
 
+  // Pagination is only enabled if the query has a LIMIT and OFFSET that are divisible by the page size
+  const isPaginationEnabled = useMemo(() => {
+    if (!query) return false;
+
+    const { limit, offset } = getLimitOffset(query);
+    if (limit == null || offset == null) return false;
+
+    return PAGE_SIZE_OPTIONS.includes(limit) && offset % pagination.pageSize === 0;
+  }, [pagination.pageSize, query]);
+
   return (
     <div
       className={cn("space-y-4", {
@@ -237,12 +249,13 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
           <Select
             value={pagination.pageSize.toString()}
             onValueChange={(value) => reactTable.setPageSize(Number(value))}
+            disabled={!isPaginationEnabled}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue>{pagination.pageSize}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {[5, 10, 20, 30, 40, 50, 100].map((pageSize) => (
+              {PAGE_SIZE_OPTIONS.map((pageSize) => (
                 <SelectItem key={pageSize} value={pageSize.toString()}>
                   {pageSize}
                 </SelectItem>
@@ -257,7 +270,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
             variant="outline"
             size="sm"
             onClick={() => reactTable.setPageIndex(0)}
-            disabled={!reactTable.getCanPreviousPage()}
+            disabled={!isPaginationEnabled || !reactTable.getCanPreviousPage()}
           >
             <ChevronsLeftIcon className="mr-1 h-4 w-4" />
           </Button>
@@ -265,7 +278,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
             variant="outline"
             size="sm"
             onClick={() => reactTable.previousPage()}
-            disabled={!reactTable.getCanPreviousPage()}
+            disabled={!isPaginationEnabled || !reactTable.getCanPreviousPage()}
           >
             <ChevronLeftIcon className="mr-1 h-4 w-4" /> Prev
           </Button>
@@ -273,7 +286,12 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
             variant="outline"
             size="sm"
             onClick={() => reactTable.nextPage()}
-            disabled={!reactTable.getCanNextPage() || !tableData || tableData.rows.length < pagination.pageSize}
+            disabled={
+              !isPaginationEnabled ||
+              !reactTable.getCanNextPage() ||
+              !tableData ||
+              tableData.rows.length < pagination.pageSize
+            }
           >
             Next <ChevronRightIcon className="ml-1 h-4 w-4" />
           </Button>
