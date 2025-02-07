@@ -8,11 +8,11 @@ import { ResourceId } from "../../../WorldResourceId.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
-import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IWorldCall } from "../../IWorldKernel.sol";
-import { SystemCall } from "../../SystemCall.sol";
-import { WorldContextConsumerLib } from "../../WorldContext.sol";
-import { Systems } from "../../codegen/tables/Systems.sol";
+import { revertWithBytes } from "../../../revertWithBytes.sol";
+import { IWorldCall } from "../../../IWorldKernel.sol";
+import { SystemCall } from "../../../SystemCall.sol";
+import { WorldContextConsumerLib } from "../../../WorldContext.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 

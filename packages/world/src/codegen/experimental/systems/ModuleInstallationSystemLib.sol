@@ -5,11 +5,11 @@ pragma solidity >=0.8.24;
 
 import { ModuleInstallationSystem } from "../../../modules/init/implementations/ModuleInstallationSystem.sol";
 import { IModule } from "../../../IModule.sol";
-import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IWorldCall } from "../../IWorldKernel.sol";
-import { SystemCall } from "../../SystemCall.sol";
-import { WorldContextConsumerLib } from "../../WorldContext.sol";
-import { Systems } from "../../codegen/tables/Systems.sol";
+import { revertWithBytes } from "../../../revertWithBytes.sol";
+import { IWorldCall } from "../../../IWorldKernel.sol";
+import { SystemCall } from "../../../SystemCall.sol";
+import { WorldContextConsumerLib } from "../../../WorldContext.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 

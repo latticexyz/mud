@@ -7,11 +7,11 @@ import { WorldRegistrationSystem } from "../../../modules/init/implementations/W
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ISystemHook } from "../../../ISystemHook.sol";
 import { System } from "../../../System.sol";
-import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IWorldCall } from "../../IWorldKernel.sol";
-import { SystemCall } from "../../SystemCall.sol";
-import { WorldContextConsumerLib } from "../../WorldContext.sol";
-import { Systems } from "../../codegen/tables/Systems.sol";
+import { revertWithBytes } from "../../../revertWithBytes.sol";
+import { IWorldCall } from "../../../IWorldKernel.sol";
+import { SystemCall } from "../../../SystemCall.sol";
+import { WorldContextConsumerLib } from "../../../WorldContext.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 type WorldRegistrationSystemType is bytes32;
