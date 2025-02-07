@@ -19,7 +19,7 @@ contract ERC20PausableBurnable is MUDERC20, ERC20Pausable, ERC20Burnable {
     string memory symbol
   ) WorldConsumer(world, namespace, true) MUDERC20(name, symbol) {
     // Transfer namespace ownership to the creator
-    world.transferOwnership(getNamespaceId(), _msgSender());
+    world.transferOwnership(namespaceId, _msgSender());
   }
 
   function mint(address to, uint256 value) public onlyNamespace {

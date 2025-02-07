@@ -32,11 +32,11 @@ contract MockWorldConsumer is WorldConsumer {
   }
 
   function grantNamespaceAccess(address to) external {
-    IBaseWorld(_world()).grantAccess(getNamespaceId(), to);
+    IBaseWorld(_world()).grantAccess(namespaceId, to);
   }
 
   function transferNamespaceOwnership(address to) external {
-    IBaseWorld(_world()).transferOwnership(getNamespaceId(), to);
+    IBaseWorld(_world()).transferOwnership(namespaceId, to);
   }
 
   function callableByAnyone() external view {}
@@ -56,12 +56,15 @@ contract WorldConsumerTest is Test, GasReporter {
   function testWorldConsumer() public {
     IBaseWorld world = createWorld();
     bytes14 namespace = "myNamespace";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
     MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
     assertEq(mock.getStoreAddress(), address(world));
+    assertEq(mock.namespace(), namespace);
+    assertEq(mock.namespaceId().unwrap(), namespaceId.unwrap());
 
     StoreSwitch.setStoreAddress(address(world));
 
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     assertTrue(ResourceIds.getExists(namespaceId), "Namespace not registered");
   }
 

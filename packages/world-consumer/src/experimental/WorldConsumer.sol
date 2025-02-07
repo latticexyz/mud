@@ -13,6 +13,7 @@ import { System } from "@latticexyz/world/src/System.sol";
 
 abstract contract WorldConsumer is System {
   bytes14 public immutable namespace;
+  ResourceId public immutable namespaceId;
 
   error WorldConsumer_RootNamespaceNotAllowed(address worldAddress);
   error WorldConsumer_NamespaceAlreadyExists(address worldAddress, bytes14 namespace);
@@ -37,7 +38,7 @@ abstract contract WorldConsumer is System {
 
     // We use WorldContextConsumer directly as we already know the world is the caller
     address sender = WorldContextConsumer._msgSender();
-    if (!ResourceAccess.get(getNamespaceId(), sender)) {
+    if (!ResourceAccess.get(namespaceId, sender)) {
       revert WorldConsumer_CallerHasNoNamespaceAccess(world, namespace, sender);
     }
 
@@ -53,8 +54,7 @@ abstract contract WorldConsumer is System {
     }
 
     namespace = _namespace;
-
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
+    namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
     bool namespaceExists = ResourceIds.getExists(namespaceId);
 
     if (registerNamespace) {
@@ -65,10 +65,6 @@ abstract contract WorldConsumer is System {
     } else if (!namespaceExists) {
       revert WorldConsumer_NamespaceDoesNotExists(worldAddress, _namespace);
     }
-  }
-
-  function getNamespaceId() public view returns (ResourceId) {
-    return WorldResourceIdLib.encodeNamespace(namespace);
   }
 
   function _msgSender() public view virtual override returns (address sender) {
