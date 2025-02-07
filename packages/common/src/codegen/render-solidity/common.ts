@@ -26,7 +26,6 @@ export function renderArguments(args: (string | undefined)[]): string {
   return args
     .filter(isDefined)
     .filter((arg) => arg !== "")
-    .map((arg) => arg.replace(/ calldata /, " memory "))
     .join(", ");
 }
 

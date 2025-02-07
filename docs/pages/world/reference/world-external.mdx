@@ -465,13 +465,13 @@ function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress,
 #### batchCall
 
 ```solidity
-function batchCall(SystemCallData[] memory systemCalls) external returns (bytes[] memory returnDatas);
+function batchCall(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 ```
 
 #### batchCallFrom
 
 ```solidity
-function batchCallFrom(SystemCallFromData[] memory systemCalls) external returns (bytes[] memory returnDatas);
+function batchCallFrom(SystemCallFromData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 ```
 
 ## IModuleInstallationSystem
@@ -502,8 +502,8 @@ function registerTable(
   FieldLayout fieldLayout,
   Schema keySchema,
   Schema valueSchema,
-  string[] memory keyNames,
-  string[] memory fieldNames
+  string[] calldata keyNames,
+  string[] calldata fieldNames
 ) external;
 ```
 
