@@ -11,7 +11,7 @@ import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/const
 
 import { MetadataSystem } from "./MetadataSystem.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
-import { DelegatorContext, DelegatorContextInstance } from "./DelegatorContext.sol";
+import { DelegatorContext, DelegatedRegistrationSystemLib } from "./DelegatorContext.sol";
 
 /**
  * @title MetadataModule
@@ -21,7 +21,7 @@ import { DelegatorContext, DelegatorContextInstance } from "./DelegatorContext.s
  */
 contract MetadataModule is Module {
   using WorldResourceIdInstance for ResourceId;
-  using DelegatorContextInstance for DelegatorContext;
+  using DelegatedRegistrationSystemLib for DelegatorContext;
 
   MetadataSystem private immutable metadataSystem = new MetadataSystem();
 

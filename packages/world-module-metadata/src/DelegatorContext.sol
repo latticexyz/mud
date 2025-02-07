@@ -16,7 +16,7 @@ struct DelegatorContext {
   address delegator;
 }
 
-library DelegatorContextInstance {
+library DelegatedRegistrationSystemLib {
   function registerNamespace(DelegatorContext memory context, ResourceId namespace) internal {
     context.world.callFrom(
       context.delegator,
