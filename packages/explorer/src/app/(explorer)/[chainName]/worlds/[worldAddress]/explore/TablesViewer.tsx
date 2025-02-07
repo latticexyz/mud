@@ -13,6 +13,8 @@ import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
+  OnChangeFn,
+  PaginationState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -51,41 +53,34 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
   const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
   const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: page,
     pageSize,
   });
 
   // Sync pagination state when URL params change
   useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
+    setPagination(() => ({
       pageIndex: page,
       pageSize: pageSize,
     }));
   }, [page, pageSize]);
 
-  const setPagination2 = useCallback(
+  const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
     (updater) => {
-      if (typeof updater === "function") {
-        // Handle functional update
-        const newPagination = updater(pagination);
-        const { pageIndex, pageSize } = newPagination;
-        setPage(pageIndex);
-        setPageSize(pageSize);
+      const newPaginationState = typeof updater === "function" ? updater(pagination) : updater;
+      const { pageIndex: newPageIndex, pageSize: newPageSize } = newPaginationState;
+      setPage(newPageIndex);
+      setPageSize(newPageSize);
 
-        const decodedQuery = decodeURIComponent(query);
-        const updatedQuery = decodedQuery.replace(
-          /LIMIT\s+\d+\s+OFFSET\s+\d+/i,
-          `LIMIT ${pageSize} OFFSET ${pageIndex * pageSize}`,
-        );
-        setQuery(updatedQuery);
-      } else {
-        // Handle direct object update
-        const { pageIndex, pageSize } = updater;
-        setPage(pageIndex);
-        setPageSize(pageSize);
-      }
+      const decodedQuery = decodeURIComponent(query);
+      const updatedQuery = decodedQuery.replace(
+        /LIMIT\s+\d+\s+OFFSET\s+\d+/i,
+        `LIMIT ${newPageSize} OFFSET ${newPageIndex * newPageSize}`,
+      );
+      setQuery(updatedQuery);
+
+      return newPaginationState;
     },
     [pagination, setPage, setPageSize, query, setQuery],
   );
@@ -144,7 +139,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     manualPagination: true,
     pageCount: -1,
     onSortingChange: setSorting,
-    onPaginationChange: setPagination2,
+    onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
