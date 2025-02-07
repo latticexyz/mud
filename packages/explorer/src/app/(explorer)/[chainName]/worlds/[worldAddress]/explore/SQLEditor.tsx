@@ -30,6 +30,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const [, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
 
   const validateQuery = useQueryValidator(table);
   const {
@@ -60,6 +61,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
       if (limit == null || offset == null) {
         setPage(0);
       } else if (PAGE_SIZE_OPTIONS.includes(limit) && (offset === 0 || offset % limit === 0)) {
+        setPageSize(limit);
         setPage(offset / limit);
       } else {
         setPage(0);
