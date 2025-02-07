@@ -110,16 +110,6 @@ export const configInput = {
       key: [],
     },
   },
-  excludeSystems: [
-    // Worldgen currently does not support systems inheriting logic
-    // from other contracts, so all parts of RegistrationSystem are named
-    // System too to be included in the IBaseWorld interface.
-    // However, IStoreRegistrationSystem overlaps with IStore if
-    // included in IBaseWorld, so it needs to be excluded from worldgen.
-    // TODO: add support for inheritance to worldgen
-    // (see: https://github.com/latticexyz/mud/issues/631)
-    "StoreRegistrationSystem",
-  ],
 } as const;
 
 export default defineWorld(configInput);
