@@ -9,6 +9,7 @@ export const configInput = {
     worldImportPath: "./src",
     worldgenDirectory: "interfaces",
     worldInterfaceName: "IBaseWorld",
+    generateSystemLibraries: true,
   },
   userTypes: {
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
@@ -108,6 +109,30 @@ export const configInput = {
         value: "address",
       },
       key: [],
+    },
+  },
+  systems: {
+    AccessManagementSystem: {
+      name: "AccessManagement",
+    },
+    BalanceTransferSystem: {
+      name: "BalanceTransfer",
+    },
+    BatchCallSystem: {
+      name: "BatchCall",
+    },
+    RegistrationSystem: {
+      name: "Registration",
+    },
+    // abstract systems that are deployed as part of RegistrationSystem
+    ModuleInstallationSystem: {
+      name: "Registration",
+    },
+    StoreRegistrationSystem: {
+      name: "Registration",
+    },
+    WorldRegistrationSystem: {
+      name: "Registration",
     },
   },
 } as const;
