@@ -47,8 +47,8 @@ library StoreRegistrationSystemLib {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+    string[] memory keyNames,
+    string[] memory fieldNames
   ) internal {
     return
       CallWrapper(self.toResourceId(), address(0)).registerTable(
@@ -80,8 +80,8 @@ library StoreRegistrationSystemLib {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+    string[] memory keyNames,
+    string[] memory fieldNames
   ) internal {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert StoreRegistrationSystemLib_CallingFromRootSystem();
@@ -132,8 +132,8 @@ library StoreRegistrationSystemLib {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+    string[] memory keyNames,
+    string[] memory fieldNames
   ) internal {
     bytes memory systemCall = abi.encodeCall(
       _registerTable_ResourceId_FieldLayout_Schema_Schema_stringArray_stringArray.registerTable,
@@ -210,8 +210,8 @@ interface _registerTable_ResourceId_FieldLayout_Schema_Schema_stringArray_string
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+    string[] memory keyNames,
+    string[] memory fieldNames
   ) external;
 }
 

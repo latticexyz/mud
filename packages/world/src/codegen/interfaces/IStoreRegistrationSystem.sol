@@ -19,8 +19,8 @@ interface IStoreRegistrationSystem {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+    string[] memory keyNames,
+    string[] memory fieldNames
   ) external;
 
   function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
