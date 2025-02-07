@@ -38,7 +38,7 @@ import { createDelegation } from "./createDelegation.sol";
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract provides functions related to registering resources other than tables in the World.
  */
-contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
+abstract contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   using WorldResourceIdInstance for ResourceId;
 
   /**

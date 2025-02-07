@@ -1,9 +1,8 @@
 import path from "node:path";
 import { resolveConfigPath } from "@latticexyz/config/node";
 import { tablegen } from "@latticexyz/store/codegen";
-import { defineWorld } from "../config/v2/world";
 import { worldgen } from "../node";
-import config, { configInput } from "../../mud.config";
+import config, { systemsConfig } from "../../mud.config";
 
 /**
  * To avoid circular dependencies, we run a very similar `build` step as `cli` package here.
@@ -17,9 +16,8 @@ const rootDir = path.dirname(configPath);
 
 await Promise.all([
   tablegen({ rootDir, config }),
-  worldgen({
-    rootDir,
-    // use root namespace to generate the core system interfaces
-    config: defineWorld({ ...configInput, namespace: "" }),
-  }),
+  // until we get finer-grained control of for namespaces (source path, codegen)
+  // or being able to merge configs with strong types, we need to use a separate
+  // config for systems to maintain source locations
+  worldgen({ rootDir, config: systemsConfig }),
 ]);

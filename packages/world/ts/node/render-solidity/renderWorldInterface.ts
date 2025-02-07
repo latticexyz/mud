@@ -20,7 +20,7 @@ export function renderWorldInterface({
   const imports = [
     ...(interfaceName === "IBaseWorld"
       ? [
-          { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
+          { symbol: "IStoreKernel", path: `${storeImportPath}/IStoreKernel.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}/IWorldKernel.sol` },
         ]
       : [

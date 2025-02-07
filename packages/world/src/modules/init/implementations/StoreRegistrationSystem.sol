@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { IStoreRegistration } from "@latticexyz/store/src/IStoreRegistration.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
@@ -25,7 +26,7 @@ import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract provides functionality for the registration of store-related resources within the World framework.
  */
-contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
+abstract contract StoreRegistrationSystem is System, IWorldErrors, IStoreRegistration, LimitedCallContext {
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -44,8 +45,8 @@ contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+    string[] memory keyNames,
+    string[] memory fieldNames
   ) public virtual onlyDelegatecall {
     // Require the name to not be the namespace's root name
     if (tableId.getName() == ROOT_NAME) {
