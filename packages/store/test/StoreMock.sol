@@ -127,8 +127,8 @@ contract StoreMock is Store {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] memory keyNames,
-    string[] memory fieldNames
+    string[] calldata keyNames,
+    string[] calldata fieldNames
   ) public virtual {
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }

@@ -11,7 +11,7 @@ import { SystemCallData, SystemCallFromData } from "../../modules/init/types.sol
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IBatchCallSystem {
-  function batchCall(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
+  function batchCall(SystemCallData[] memory systemCalls) external returns (bytes[] memory returnDatas);
 
-  function batchCallFrom(SystemCallFromData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
+  function batchCallFrom(SystemCallFromData[] memory systemCalls) external returns (bytes[] memory returnDatas);
 }
