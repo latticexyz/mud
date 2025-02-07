@@ -2,6 +2,7 @@ import {
   ArrowUpDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronsLeftIcon,
   KeyIcon,
   LoaderIcon,
   TriangleAlertIcon,
@@ -206,21 +207,35 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
       </div>
 
       <div className="flex items-center justify-end space-x-2 pb-4">
-        <p className="text-sm text-muted-foreground">Rows per page:</p>
-        <Select value={pagination.pageSize.toString()} onValueChange={(value) => reactTable.setPageSize(Number(value))}>
-          <SelectTrigger className="h-8 w-[70px]">
-            <SelectValue>{pagination.pageSize}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {[5, 10, 20, 30, 40, 50, 100].map((pageSize) => (
-              <SelectItem key={pageSize} value={pageSize.toString()}>
-                {pageSize}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="mr-4 flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">Per page:</p>
+          <Select
+            value={pagination.pageSize.toString()}
+            onValueChange={(value) => reactTable.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue>{pagination.pageSize}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50, 100].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="flex items-center justify-end space-x-2">
+          <span className="mr-2 text-sm text-muted-foreground">Page {pagination.pageIndex + 1}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => reactTable.setPageIndex(0)}
+            disabled={!reactTable.getCanPreviousPage()}
+          >
+            <ChevronsLeftIcon className="mr-1 h-4 w-4" />
+          </Button>
           <Button
             variant="outline"
             size="sm"
