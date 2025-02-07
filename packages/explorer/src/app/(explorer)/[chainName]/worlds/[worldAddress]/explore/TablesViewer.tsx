@@ -8,7 +8,7 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { parseAsInteger, parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
@@ -42,23 +42,53 @@ type Props = {
   isLiveQuery: boolean;
 };
 
-export function TablesViewer({ table, query, isLiveQuery }: Props) {
+export function TablesViewer({ table, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
+  const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(7));
+  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
+  const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const [pagination, setPagination] = useState({
     pageIndex: page,
     pageSize,
   });
 
+  // Sync pagination state when URL params change
   useEffect(() => {
-    setPage(pagination.pageIndex);
-    setPageSize(pagination.pageSize);
-  }, [pagination, setPage, setPageSize]);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: page,
+      pageSize: pageSize,
+    }));
+  }, [page, pageSize]);
+
+  const setPagination2 = useCallback(
+    (updater) => {
+      if (typeof updater === "function") {
+        // Handle functional update
+        const newPagination = updater(pagination);
+        const { pageIndex, pageSize } = newPagination;
+        setPage(pageIndex);
+        setPageSize(pageSize);
+
+        const decodedQuery = decodeURIComponent(query);
+        const updatedQuery = decodedQuery.replace(
+          /LIMIT\s+\d+\s+OFFSET\s+\d+/i,
+          `LIMIT ${pageSize} OFFSET ${pageIndex * pageSize}`,
+        );
+        setQuery(updatedQuery);
+      } else {
+        // Handle direct object update
+        const { pageIndex, pageSize } = updater;
+        setPage(pageIndex);
+        setPageSize(pageSize);
+      }
+    },
+    [pagination, setPage, setPageSize, query, setQuery],
+  );
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
@@ -114,7 +144,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
     manualPagination: true,
     pageCount: -1,
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    onPaginationChange: setPagination2,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -227,7 +257,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
         </div>
 
         <div className="flex items-center justify-end space-x-2">
-          <span className="mr-2 text-sm text-muted-foreground">Page {pagination.pageIndex + 1}</span>
+          <span className="mr-1 text-sm text-muted-foreground">Page {pagination.pageIndex + 1}</span>
           <Button
             variant="outline"
             size="sm"

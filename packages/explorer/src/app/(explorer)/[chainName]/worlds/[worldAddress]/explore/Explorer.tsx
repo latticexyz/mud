@@ -18,10 +18,10 @@ export function Explorer() {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
   const [isLiveQuery, setIsLiveQuery] = useState(false);
+  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
-  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
 
   const { data: tables } = useTablesQuery();
   const table = tables?.find(({ tableId }) => tableId === selectedTableId);
@@ -44,7 +44,7 @@ export function Explorer() {
       {indexer.type !== "sqlite" && (
         <SQLEditor table={table} isLiveQuery={isLiveQuery} setIsLiveQuery={setIsLiveQuery} />
       )}
-      <TablesViewer table={table} query={query} isLiveQuery={isLiveQuery} />
+      <TablesViewer table={table} isLiveQuery={isLiveQuery} />
     </div>
   );
 }

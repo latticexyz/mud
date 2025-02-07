@@ -1,5 +1,4 @@
 import { useParams } from "next/navigation";
-import { Parser } from "node-sql-parser";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
@@ -21,8 +20,6 @@ export type TData = {
   queryDuration: number;
 };
 
-const sqlParser = new Parser();
-
 export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
@@ -35,22 +32,6 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
     queryFn: async () => {
       const startTime = performance.now();
       const indexer = indexerForChainId(chainId);
-      const offset = page * pageSize;
-      const limit = pageSize;
-      let ast = sqlParser.astify(decodedQuery);
-
-      if (Array.isArray(ast) && ast.length > 0 && typeof ast[0] === "object") {
-        ast = ast[0];
-      }
-
-      let formattedQuery = decodedQuery.endsWith(";") ? decodedQuery.slice(0, -1) : decodedQuery;
-      if (!("limit" in ast) || !ast.limit) {
-        formattedQuery = `${formattedQuery} LIMIT ${limit}`;
-      }
-      if (!("limit" in ast) || !ast.limit || ast.limit?.seperator === "") {
-        formattedQuery = `${formattedQuery} OFFSET ${offset}`;
-      }
-
       const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
@@ -59,7 +40,7 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         body: stringify([
           {
             address: worldAddress as Hex,
-            query: formattedQuery,
+            query: decodedQuery,
           },
         ]),
       });
