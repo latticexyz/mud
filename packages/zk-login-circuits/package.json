@@ -1,0 +1,27 @@
+{
+  "name": "@latticexyz/zk-login-circuits",
+  "version": "2.2.19",
+  "description": "Noir circuits for zk login",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/zk-login-circuits"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "target"
+  ],
+
+  "scripts": {
+    "build": "pnpm run build:circuit && pnpm run build:contract && pnpm run build:js",
+    "build:circuit": "nargo compile --skip-underconstrained-check",
+    "build:contract": "bb write_vk -b ./target/zklogin.json && bb contract",
+    "build:js": "tsup"
+  },
+
+}

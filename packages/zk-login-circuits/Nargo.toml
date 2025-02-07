@@ -1,0 +1,7 @@
+[package]
+name = "zklogin"
+type = "bin"
+authors = [""]
+
+[dependencies]
+jwt = { tag = "v0.3.0", git = "https://github.com/zkemail/noir-jwt" }
