@@ -32,6 +32,7 @@ contract MetadataModule is Module {
     if (!ResourceIds.getExists(namespace)) {
       world.registerNamespace(namespace);
     }
+    AccessControl.requireOwner(namespace, world.delegator);
 
     if (!ResourceIds.getExists(ResourceTag._tableId)) {
       // TODO: add a `ResourceTag.getTableDef()` that returns a struct that can be used to register?
