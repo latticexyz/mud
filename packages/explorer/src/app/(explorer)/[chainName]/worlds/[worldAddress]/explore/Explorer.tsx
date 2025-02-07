@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { parseAsString, useQueryState } from "nuqs";
+import { useQueryState } from "nuqs";
 import { Hex } from "viem";
 import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
@@ -12,7 +12,8 @@ import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
-import { usePaginationQueryState } from "./hooks/usePaginationQueryState";
+import { usePaginationQueryState } from "./hooks/usePaginationState";
+import { useSQLQueryState } from "./hooks/useSQLQueryState";
 
 export function Explorer() {
   const { worldAddress } = useParams();
@@ -20,7 +21,7 @@ export function Explorer() {
   const indexer = indexerForChainId(chainId);
   const [isLiveQuery, setIsLiveQuery] = useState(false);
   const [{ pageSize }] = usePaginationQueryState();
-  const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
+  const { query, setQuery } = useSQLQueryState();
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
   const { data: tables } = useTablesQuery();
