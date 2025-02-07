@@ -2,18 +2,18 @@
 
 import { CommandIcon, CornerDownLeft, LoaderIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { parseAsJson, useQueryState } from "nuqs";
+import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import Editor from "@monaco-editor/react";
-import { PaginationState } from "@tanstack/react-table";
 import { Tooltip } from "../../../../../../components/Tooltip";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
 import { cn } from "../../../../../../utils";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { PAGE_SIZE_OPTIONS, monacoOptions } from "./consts";
+import { usePaginationQueryState } from "./hooks/usePaginationQueryState";
 import { useMonacoSuggestions } from "./useMonacoSuggestions";
 import { useQueryValidator } from "./useQueryValidator";
 import { getLimitOffset } from "./utils/getLimitOffset";
@@ -30,13 +30,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
-  const [pagination, setPagination] = useQueryState(
-    "pagination",
-    parseAsJson<PaginationState>().withDefault({
-      pageIndex: 0,
-      pageSize: 10,
-    }),
-  );
+  const [pagination, setPagination] = usePaginationQueryState();
 
   const validateQuery = useQueryValidator(table);
   const {

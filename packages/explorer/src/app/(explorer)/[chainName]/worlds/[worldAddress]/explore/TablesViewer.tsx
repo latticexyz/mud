@@ -34,6 +34,7 @@ import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
 import { PAGE_SIZE_OPTIONS } from "./consts";
+import { usePaginationQueryState } from "./hooks/usePaginationQueryState";
 import { getLimitOffset } from "./utils/getLimitOffset";
 import { typeSortingFn } from "./utils/typeSortingFn";
 
@@ -52,15 +53,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
+  const [pagination, setPagination] = usePaginationQueryState();
   const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
-  const [pagination, setPagination] = useQueryState(
-    "pagination",
-    parseAsJson<PaginationState>().withDefault({
-      pageIndex: 0,
-      pageSize: 10,
-    }),
-  );
 
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
     (updater) => {
@@ -77,7 +72,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
 
       return newPaginationState;
     },
-    [pagination, query, setQuery],
+    [pagination, setPagination, query, setQuery],
   );
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
