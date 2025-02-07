@@ -45,8 +45,8 @@ abstract contract StoreRegistrationSystem is System, IWorldErrors, IStoreRegistr
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] memory keyNames,
-    string[] memory fieldNames
+    string[] calldata keyNames,
+    string[] calldata fieldNames
   ) public virtual onlyDelegatecall {
     // Require the name to not be the namespace's root name
     if (tableId.getName() == ROOT_NAME) {
