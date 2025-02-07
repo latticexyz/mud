@@ -49,9 +49,9 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   });
   const currentQuery = form.watch("query");
 
-  const handleSubmit = form.handleSubmit((data) => {
-    if (validateQuery(data.query)) {
-      setQuery(data.query);
+  const handleSubmit = form.handleSubmit(({ query }) => {
+    if (validateQuery(query)) {
+      setQuery(query);
       setIsUserTriggeredRefetch(true);
       refetch().finally(() => setIsUserTriggeredRefetch(false));
     }

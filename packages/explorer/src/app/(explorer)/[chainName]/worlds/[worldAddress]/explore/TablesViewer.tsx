@@ -173,10 +173,11 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     >
       <div className="flex w-1/2 items-center gap-4">
         <Input
+          type="search"
           placeholder="Filter..."
           value={globalFilter}
           onChange={(event) => reactTable.setGlobalFilter(event.target.value)}
-          className="max-w-sm rounded border px-2 py-1"
+          className="max-w-xs rounded border px-2 py-1"
           disabled={!tableData}
         />
 

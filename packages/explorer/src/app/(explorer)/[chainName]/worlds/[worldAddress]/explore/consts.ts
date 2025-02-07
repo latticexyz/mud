@@ -1,5 +1,7 @@
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 
+export const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100];
+
 export const monacoOptions: editor.IStandaloneEditorConstructionOptions = {
   fontSize: 14,
   fontWeight: "normal",
@@ -94,5 +96,3 @@ export const suggestedSQLKeywords = [
   "EXCEPT",
 ] as const;
 export type SuggestedSQLKeyword = (typeof suggestedSQLKeywords)[number];
-
-export const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100];
