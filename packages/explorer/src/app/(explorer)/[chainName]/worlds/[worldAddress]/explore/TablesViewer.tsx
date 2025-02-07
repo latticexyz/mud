@@ -54,7 +54,8 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
   const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
-  const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
+  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
+  const isLoading = isPending || (isFetching && !isLiveQuery);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: page,
     pageSize,
@@ -189,11 +190,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
           "border-red-400": isError,
         })}
       >
-        {isPending && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
-            <LoaderIcon className="h-5 w-5 animate-spin" />
-          </div>
-        )}
         <div className="relative w-full overflow-auto">
           <Table>
             <TableHeader>
@@ -212,7 +208,12 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   </TableRow>
                 ))}
             </TableHeader>
-            <TableBody>
+            <TableBody className="relative">
+              {isLoading && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+                  <LoaderIcon className="h-5 w-5 animate-spin" />
+                </div>
+              )}
               {!isError && reactTable.getRowModel().rows?.length ? (
                 reactTable.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>

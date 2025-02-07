@@ -22,7 +22,6 @@ export function Explorer() {
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
-
   const { data: tables } = useTablesQuery();
   const table = tables?.find(({ tableId }) => tableId === selectedTableId);
 
