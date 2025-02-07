@@ -32,7 +32,7 @@ export function Explorer() {
         setQuery(`SELECT * FROM "${tableName}";`);
       } else {
         const columns = Object.keys(table.schema).map((column) => `"${column}"`);
-        setQuery(`SELECT ${columns.join(", ")} FROM ${tableName} LIMIT ${pageSize} OFFSET 0;`);
+        setQuery(`SELECT ${columns.join(", ")} FROM "${tableName}" LIMIT ${pageSize} OFFSET 0;`);
       }
     }
   }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type, pageSize]);
