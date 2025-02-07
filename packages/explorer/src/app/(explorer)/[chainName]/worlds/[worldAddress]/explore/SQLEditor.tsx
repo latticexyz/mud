@@ -2,11 +2,12 @@
 
 import { CommandIcon, CornerDownLeft, LoaderIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { parseAsJson, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import Editor from "@monaco-editor/react";
+import { PaginationState } from "@tanstack/react-table";
 import { Tooltip } from "../../../../../../components/Tooltip";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
@@ -29,8 +30,13 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
-  const [, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
+  const [pagination, setPagination] = useQueryState(
+    "pagination",
+    parseAsJson<PaginationState>().withDefault({
+      pageIndex: 0,
+      pageSize: 10,
+    }),
+  );
 
   const validateQuery = useQueryValidator(table);
   const {
@@ -59,12 +65,20 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
       // Set the page based on the query
       const { limit, offset } = getLimitOffset(query);
       if (limit == null || offset == null) {
-        setPage(0);
+        setPagination({
+          ...pagination,
+          pageIndex: 0,
+        });
       } else if (PAGE_SIZE_OPTIONS.includes(limit) && (offset === 0 || offset % limit === 0)) {
-        setPageSize(limit);
-        setPage(offset / limit);
+        setPagination({
+          pageSize: limit,
+          pageIndex: offset / limit,
+        });
       } else {
-        setPage(0);
+        setPagination({
+          ...pagination,
+          pageIndex: 0,
+        });
       }
 
       setIsUserTriggeredRefetch(true);

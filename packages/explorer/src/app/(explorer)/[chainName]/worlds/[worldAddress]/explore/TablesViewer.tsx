@@ -7,8 +7,8 @@ import {
   LoaderIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { parseAsInteger, parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
@@ -52,40 +52,32 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
   const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: page,
-    pageSize,
-  });
-
-  // Sync pagination state when URL params change
-  useEffect(() => {
-    setPagination(() => ({
-      pageIndex: page,
-      pageSize: pageSize,
-    }));
-  }, [page, pageSize]);
+  const [pagination, setPagination] = useQueryState(
+    "pagination",
+    parseAsJson<PaginationState>().withDefault({
+      pageIndex: 0,
+      pageSize: 10,
+    }),
+  );
 
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
     (updater) => {
       const newPaginationState = typeof updater === "function" ? updater(pagination) : updater;
       const { pageIndex: newPageIndex, pageSize: newPageSize } = newPaginationState;
-      setPage(newPageIndex);
-      setPageSize(newPageSize);
+      setPagination(newPaginationState);
 
       const decodedQuery = decodeURIComponent(query);
       const updatedQuery = decodedQuery.replace(
         /LIMIT\s+\d+\s+OFFSET\s+\d+/i,
         `LIMIT ${newPageSize} OFFSET ${newPageIndex * newPageSize}`,
       );
-      setQuery(updatedQuery);
+      setQuery(encodeURIComponent(updatedQuery));
 
       return newPaginationState;
     },
-    [pagination, setPage, setPageSize, query, setQuery],
+    [pagination, query, setQuery],
   );
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
