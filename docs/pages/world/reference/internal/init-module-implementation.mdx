@@ -107,6 +107,35 @@ function installModule(IModule module, bytes memory encodedArgs) public onlyDele
 | `module`      | `IModule` | The module to be installed.                        |
 | `encodedArgs` | `bytes`   | The ABI encoded arguments for module installation. |
 
+## ModuleInstallationSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol)
+
+**Inherits:**
+[System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
+
+_A system contract to handle the installation of (non-root) modules in the World._
+
+### Functions
+
+#### installModule
+
+Installs a module into the World under a specified namespace.
+
+_Validates the given module against the IModule interface and delegates the installation process.
+The module is then registered in the InstalledModules table._
+
+```solidity
+function installModule(IModule module, bytes memory encodedArgs) public onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name          | Type      | Description                                        |
+| ------------- | --------- | -------------------------------------------------- |
+| `module`      | `IModule` | The module to be installed.                        |
+| `encodedArgs` | `bytes`   | The ABI encoded arguments for module installation. |
+
 ## BalanceTransferSystem
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BalanceTransferSystem.sol)
@@ -163,6 +192,86 @@ function transferBalanceToAddress(
 | `fromNamespaceId` | `ResourceId` | The source namespace from which the balance will be deducted. |
 | `toAddress`       | `address`    | The target address where the balance will be sent.            |
 | `amount`          | `uint256`    | The amount to transfer.                                       |
+
+## StoreRegistrationSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/StoreRegistrationSystem.sol)
+
+**Inherits:**
+[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), IStoreRegistration, [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
+
+_This contract provides functionality for the registration of store-related resources within the World framework._
+
+### Functions
+
+#### registerTable
+
+Register a table within the World framework.
+
+_Registers a table with the specified configuration. If the namespace for the table does not exist, it's created.
+Existing namespaces require the caller to be the owner for table registration._
+
+```solidity
+function registerTable(
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] calldata keyNames,
+  string[] calldata fieldNames
+) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name          | Type          | Description                                      |
+| ------------- | ------------- | ------------------------------------------------ |
+| `tableId`     | `ResourceId`  | The resource ID of the table.                    |
+| `fieldLayout` | `FieldLayout` | The field layout structure for the table.        |
+| `keySchema`   | `Schema`      | The schema for the keys of the table.            |
+| `valueSchema` | `Schema`      | The schema for the values within the table.      |
+| `keyNames`    | `string[]`    | The names associated with the keys in the table. |
+| `fieldNames`  | `string[]`    | The names of the fields in the table.            |
+
+#### registerStoreHook
+
+Register a storage hook for a specified table.
+
+_The caller must be the owner of the namespace to which the table belongs.
+The hook must conform to the IStoreHook interface._
+
+```solidity
+function registerStoreHook(
+  ResourceId tableId,
+  IStoreHook hookAddress,
+  uint8 enabledHooksBitmap
+) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name                 | Type         | Description                                                          |
+| -------------------- | ------------ | -------------------------------------------------------------------- |
+| `tableId`            | `ResourceId` | The resource ID of the table for which the hook is being registered. |
+| `hookAddress`        | `IStoreHook` | The address of the storage hook contract.                            |
+| `enabledHooksBitmap` | `uint8`      | A bitmap indicating which hook functionalities are enabled.          |
+
+#### unregisterStoreHook
+
+Unregister a previously registered storage hook for a specified table.
+
+_The caller must be the owner of the namespace to which the table belongs._
+
+```solidity
+function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name          | Type         | Description                                                             |
+| ------------- | ------------ | ----------------------------------------------------------------------- |
+| `tableId`     | `ResourceId` | The resource ID of the table from which the hook is being unregistered. |
+| `hookAddress` | `IStoreHook` | The address of the storage hook contract.                               |
 
 ## StoreRegistrationSystem
 
@@ -426,6 +535,226 @@ function registerFunctionSelector(
 #### registerRootFunctionSelector
 
 [Usage Sample](/world/function-selectors#root-function-selectors)
+
+Registers a root World function selector
+
+_Creates a mapping for a root World function without namespace or name prefix_
+
+```solidity
+function registerRootFunctionSelector(
+  ResourceId systemId,
+  string memory worldFunctionSignature,
+  string memory systemFunctionSignature
+) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
+```
+
+**Parameters**
+
+| Name                      | Type         | Description                          |
+| ------------------------- | ------------ | ------------------------------------ |
+| `systemId`                | `ResourceId` | The system ID                        |
+| `worldFunctionSignature`  | `string`     | The signature of the World function  |
+| `systemFunctionSignature` | `string`     | The signature of the system function |
+
+**Returns**
+
+| Name                    | Type     | Description                        |
+| ----------------------- | -------- | ---------------------------------- |
+| `worldFunctionSelector` | `bytes4` | The selector of the World function |
+
+#### registerDelegation
+
+Registers a delegation for the caller
+
+_Creates a new delegation from the caller to the specified delegatee_
+
+```solidity
+function registerDelegation(
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) public onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name                  | Type         | Description                                |
+| --------------------- | ------------ | ------------------------------------------ |
+| `delegatee`           | `address`    | The address of the delegatee               |
+| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
+| `initCallData`        | `bytes`      | The initialization data for the delegation |
+
+#### unregisterDelegation
+
+Unregisters a delegation
+
+_Deletes the new delegation from the caller to the specified delegatee_
+
+```solidity
+function unregisterDelegation(address delegatee) public onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name        | Type      | Description                  |
+| ----------- | --------- | ---------------------------- |
+| `delegatee` | `address` | The address of the delegatee |
+
+#### registerNamespaceDelegation
+
+Registers a delegation for a namespace
+
+_Sets up a new delegation control for a specific namespace_
+
+```solidity
+function registerNamespaceDelegation(
+  ResourceId namespaceId,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) public onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name                  | Type         | Description                                |
+| --------------------- | ------------ | ------------------------------------------ |
+| `namespaceId`         | `ResourceId` | The ID of the namespace                    |
+| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
+| `initCallData`        | `bytes`      | The initialization data for the delegation |
+
+#### unregisterNamespaceDelegation
+
+Unregisters a delegation for a namespace
+
+_Deletes the delegation control for a specific namespace_
+
+```solidity
+function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name          | Type         | Description             |
+| ------------- | ------------ | ----------------------- |
+| `namespaceId` | `ResourceId` | The ID of the namespace |
+
+## WorldRegistrationSystem
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
+
+**Inherits:**
+[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
+
+_This contract provides functions related to registering resources other than tables in the World._
+
+### Functions
+
+#### registerNamespace
+
+Registers a new namespace
+
+_Creates a new namespace resource with the given ID_
+
+```solidity
+function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name          | Type         | Description                                 |
+| ------------- | ------------ | ------------------------------------------- |
+| `namespaceId` | `ResourceId` | The unique identifier for the new namespace |
+
+#### registerSystemHook
+
+Registers a new system hook
+
+_Adds a new hook for the system at the provided system ID_
+
+```solidity
+function registerSystemHook(
+  ResourceId systemId,
+  ISystemHook hookAddress,
+  uint8 enabledHooksBitmap
+) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name                 | Type          | Description                               |
+| -------------------- | ------------- | ----------------------------------------- |
+| `systemId`           | `ResourceId`  | The ID of the system                      |
+| `hookAddress`        | `ISystemHook` | The address of the hook being registered  |
+| `enabledHooksBitmap` | `uint8`       | Bitmap indicating which hooks are enabled |
+
+#### unregisterSystemHook
+
+Unregisters a system hook
+
+_Removes a hook for the system at the provided system ID_
+
+```solidity
+function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name          | Type          | Description                                |
+| ------------- | ------------- | ------------------------------------------ |
+| `systemId`    | `ResourceId`  | The ID of the system                       |
+| `hookAddress` | `ISystemHook` | The address of the hook being unregistered |
+
+#### registerSystem
+
+Registers a system
+
+_Registers or upgrades a system at the given ID
+If the namespace doesn't exist yet, it is registered.
+The system is granted access to its namespace, so it can write to any
+table in the same namespace.
+If publicAccess is true, no access control check is performed for calling the system.
+This function doesn't check whether a system already exists at the given selector,
+making it possible to upgrade systems._
+
+```solidity
+function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall;
+```
+
+**Parameters**
+
+| Name           | Type         | Description                                         |
+| -------------- | ------------ | --------------------------------------------------- |
+| `systemId`     | `ResourceId` | The unique identifier for the system                |
+| `system`       | `System`     | The system being registered                         |
+| `publicAccess` | `bool`       | Flag indicating if access control check is bypassed |
+
+#### registerFunctionSelector
+
+Registers a new World function selector
+
+_Creates a mapping between a World function and its associated system function_
+
+```solidity
+function registerFunctionSelector(
+  ResourceId systemId,
+  string memory systemFunctionSignature
+) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
+```
+
+**Parameters**
+
+| Name                      | Type         | Description                          |
+| ------------------------- | ------------ | ------------------------------------ |
+| `systemId`                | `ResourceId` | The system ID                        |
+| `systemFunctionSignature` | `string`     | The signature of the system function |
+
+**Returns**
+
+| Name                    | Type     | Description                        |
+| ----------------------- | -------- | ---------------------------------- |
+| `worldFunctionSelector` | `bytes4` | The selector of the World function |
+
+#### registerRootFunctionSelector
 
 Registers a root World function selector
 
