@@ -9,19 +9,19 @@
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testBurn",
     "name": "world_burn",
-    "gasUsed": 70733
+    "gasUsed": 70710
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testMint",
     "name": "world_mint",
-    "gasUsed": 109497
+    "gasUsed": 109431
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testTransfer",
     "name": "world_transfer",
-    "gasUsed": 82465
+    "gasUsed": 82487
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
@@ -39,25 +39,25 @@
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testBurn",
     "name": "world_burn",
-    "gasUsed": 70734
+    "gasUsed": 70711
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testBurnByAccount",
     "name": "world_burn",
-    "gasUsed": 71142
+    "gasUsed": 71099
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testMint",
     "name": "world_mint",
-    "gasUsed": 109475
+    "gasUsed": 109497
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testTransfer",
     "name": "world_transfer",
-    "gasUsed": 82465
+    "gasUsed": 82487
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
@@ -69,6 +69,6 @@
     "file": "test/ERC20Module.t.sol:ERC20ModuleTest",
     "test": "testInstall",
     "name": "install erc20 module",
-    "gasUsed": 4832201
+    "gasUsed": 4798590
   }
 ]
