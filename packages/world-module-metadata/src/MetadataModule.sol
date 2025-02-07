@@ -41,7 +41,6 @@ contract MetadataModule is Module {
         ResourceTag._fieldLayout,
         ResourceTag._keySchema,
         ResourceTag._valueSchema,
-        // wish we made field names bytes32[] so they could be defined as constants :(
         ResourceTag.getKeyNames(),
         ResourceTag.getFieldNames()
       );
