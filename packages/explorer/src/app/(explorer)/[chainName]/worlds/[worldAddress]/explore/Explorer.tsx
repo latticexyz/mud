@@ -33,7 +33,7 @@ export function Explorer() {
         setQuery(`SELECT * FROM "${tableName}";`);
       } else {
         const columns = Object.keys(table.schema).map((column) => `"${column}"`);
-        setQuery(`SELECT ${columns.join(", ")} FROM ${tableName};`);
+        setQuery(`SELECT ${columns.join(", ")} FROM "${tableName}";`);
       }
     }
   }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type]);

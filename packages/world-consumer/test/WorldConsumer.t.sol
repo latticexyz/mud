@@ -18,39 +18,25 @@ import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { StoreCore } from "@latticexyz/store/src/Store.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { StoreConsumer } from "../src/experimental/StoreConsumer.sol";
-import { WithStore } from "../src/experimental/WithStore.sol";
-import { WithWorld } from "../src/experimental/WithWorld.sol";
+import { WorldConsumer } from "../src/experimental/WorldConsumer.sol";
 
-abstract contract MockStoreConsumer is StoreConsumer {
-  function getStoreAddress() public view virtual returns (address) {
-    return StoreSwitch.getStoreAddress();
-  }
-
-  function encodeResourceId(bytes2 typeId, bytes16 name) public view returns (ResourceId) {
-    return _encodeResourceId(typeId, name);
-  }
-}
-
-contract MockWithStore is WithStore, MockStoreConsumer {
-  constructor(address store) WithStore(store) {}
-}
-
-contract MockWithInternalStore is MockWithStore(address(this)) {}
-
-contract MockWithWorld is WithWorld, MockStoreConsumer {
+contract MockWorldConsumer is WorldConsumer {
   constructor(
     IBaseWorld world,
     bytes14 namespace,
     bool registerNamespace
-  ) WithWorld(world, namespace, registerNamespace) {}
+  ) WorldConsumer(world, namespace, registerNamespace) {}
+
+  function getStoreAddress() public view virtual returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
 
   function grantNamespaceAccess(address to) external {
-    getWorld().grantAccess(getNamespaceId(), to);
+    IBaseWorld(_world()).grantAccess(namespaceId, to);
   }
 
   function transferNamespaceOwnership(address to) external {
-    getWorld().transferOwnership(getNamespaceId(), to);
+    IBaseWorld(_world()).transferOwnership(namespaceId, to);
   }
 
   function callableByAnyone() external view {}
@@ -58,30 +44,27 @@ contract MockWithWorld is WithWorld, MockStoreConsumer {
   function onlyCallableByWorld() external view onlyWorld {}
 
   function onlyCallableByNamespace() external view onlyNamespace {}
+
+  function payableFn() external payable returns (uint256 value) {
+    return _msgValue();
+  }
 }
 
-contract StoreConsumerTest is Test, GasReporter {
+contract WorldConsumerTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
-  function testWithStore() public {
-    MockWithStore mock = new MockWithStore(address(0xBEEF));
-    assertEq(mock.getStoreAddress(), address(0xBEEF));
-  }
-
-  function testWithStoreInternal() public {
-    MockWithInternalStore mock = new MockWithInternalStore();
-    assertEq(mock.getStoreAddress(), address(mock));
-  }
-
-  function testWithWorld() public {
+  function testWorldConsumer() public {
     IBaseWorld world = createWorld();
     bytes14 namespace = "myNamespace";
-    MockWithWorld mock = new MockWithWorld(world, namespace, true);
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
+    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
     assertEq(mock.getStoreAddress(), address(world));
+    assertEq(mock.namespace(), namespace);
+    assertEq(mock.namespaceId().unwrap(), namespaceId.unwrap());
 
     StoreSwitch.setStoreAddress(address(world));
 
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     assertTrue(ResourceIds.getExists(namespaceId), "Namespace not registered");
   }
 
@@ -94,7 +77,7 @@ contract StoreConsumerTest is Test, GasReporter {
     bytes14 namespace = "myNamespace";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWithWorld mock = new MockWithWorld(world, namespace, true);
+    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
     mock.transferNamespaceOwnership(address(this));
 
     // Register the mock as a system with PRIVATE access
@@ -119,7 +102,7 @@ contract StoreConsumerTest is Test, GasReporter {
     bytes16 systemName = "mySystem";
     bytes14 namespace = "myNamespace";
     ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWithWorld mock = new MockWithWorld(world, namespace, true);
+    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
     mock.transferNamespaceOwnership(address(this));
 
     // Register the mock as a system with PUBLIC access
@@ -128,7 +111,7 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WithWorld.WithWorld_CallerIsNotWorld.selector, (alice)));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, world, alice));
     mock.onlyCallableByWorld();
 
     vm.prank(alice);
@@ -143,7 +126,7 @@ contract StoreConsumerTest is Test, GasReporter {
     bytes14 namespace = "myNamespace";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWithWorld mock = new MockWithWorld(world, namespace, true);
+    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
     mock.transferNamespaceOwnership(address(this));
 
     // Register the mock as a system with PUBLIC access
@@ -152,16 +135,44 @@ contract StoreConsumerTest is Test, GasReporter {
     address alice = address(0x1234);
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector, namespace, alice));
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, world, alice));
     mock.onlyCallableByNamespace();
 
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(WithWorld.WithWorld_CallerHasNoNamespaceAccess.selector, namespace, alice));
+    vm.expectRevert(
+      abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerHasNoNamespaceAccess.selector, world, namespace, alice)
+    );
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
 
     // After granting access to namespace, it should work
     world.grantAccess(namespaceId, alice);
     vm.prank(alice);
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
+  }
+
+  function testMsgValue() public {
+    IBaseWorld world = createWorld();
+    StoreSwitch.setStoreAddress(address(world));
+
+    bytes16 systemName = "mySystem";
+    bytes14 namespace = "myNamespace";
+    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
+    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
+    mock.transferNamespaceOwnership(address(this));
+
+    // Register the mock as a system with PUBLIC access
+    world.registerSystem(systemId, mock, true);
+
+    address alice = address(0x1234);
+    vm.deal(alice, 1);
+
+    vm.prank(alice);
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_ValueNotAllowed.selector, world));
+    mock.payableFn{ value: 1 }();
+
+    vm.prank(alice);
+    bytes memory result = world.call{ value: 1 }(systemId, abi.encodeCall(mock.payableFn, ()));
+    uint256 value = abi.decode(result, (uint256));
+    assertEq(value, 1);
   }
 }

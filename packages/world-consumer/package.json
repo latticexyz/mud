@@ -1,7 +1,7 @@
 {
-  "name": "@latticexyz/store-consumer",
+  "name": "@latticexyz/world-consumer",
   "version": "2.2.19",
-  "description": "Store Consumer Contracts",
+  "description": "World Consumer Contracts",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",

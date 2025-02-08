@@ -48,8 +48,8 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/store-consumer": "workspace:*",
-    "@latticexyz/world": "workspace:*"
+    "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-consumer": "workspace:*"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
