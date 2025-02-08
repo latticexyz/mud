@@ -3,7 +3,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import { RainbowKitProvider, midnightTheme } from "@rainbow-me/rainbowkit";
 import { EntryKitConfig } from "./config/output";
 import { Chain } from "viem";
-import { useChains } from "wagmi";
+import { useChains, useClient } from "wagmi";
 import { getBundlerTransport } from "./getBundlerTransport";
 
 type ContextValue = EntryKitConfig & {
@@ -29,7 +29,9 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   if (!chain) throw new Error(`Could not find configured chain for chain ID ${config.chainId}.`);
 
   // This throws when no we can't find a bundler to talk to, so use it to validate the chain.
-  getBundlerTransport(chain);
+  const client = useClient({ chainId: config.chainId });
+  if (!client) throw new Error(`Could not get client for chain ID ${config.chainId}.`);
+  getBundlerTransport(client);
 
   return (
     <RainbowKitProvider
