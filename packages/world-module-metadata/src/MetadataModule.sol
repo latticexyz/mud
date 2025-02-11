@@ -8,8 +8,8 @@ import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@lattic
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/constants.sol";
-import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/systems/WorldRegistrationSystemLib.sol";
-import { storeRegistrationSystem } from "@latticexyz/world/src/codegen/systems/StoreRegistrationSystemLib.sol";
+import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol";
+import { storeRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/StoreRegistrationSystemLib.sol";
 
 import { MetadataSystem } from "./MetadataSystem.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
