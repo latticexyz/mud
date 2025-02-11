@@ -7,7 +7,7 @@ export function getBundlerTransport(client: Client<Transport, Chain>) {
   const bundlerHttpUrl = client.chain.rpcUrls.bundler?.http[0];
   // TODO: bundler websocket
   const bundlerTransport = bundlerHttpUrl
-    ? http(bundlerHttpUrl)
+    ? alto(http(bundlerHttpUrl))
     : client.chain.id === 31337
       ? userOpExecutor({
           executor: createClient({
@@ -22,4 +22,35 @@ export function getBundlerTransport(client: Client<Transport, Chain>) {
     throw new Error(`Chain ${client.chain.id} config did not include a bundler RPC URL.`);
   }
   return bundlerTransport;
+}
+
+export function alto<transport extends Transport>(createTransport: transport): transport {
+  return ((opts) => {
+    const transport = createTransport(opts);
+    const request: typeof transport.request = async (req) => {
+      if (req.method === "eth_sendUserOperation") {
+        const { transactionHash, userOpHash } = await transport.request({
+          ...req,
+          method: "pimlico_sendUserOperationNow",
+        });
+        return userOpHash;
+      }
+
+      if (req.method === "eth_estimateUserOperationGas") {
+        try {
+          return await transport.request(req);
+        } catch (error) {
+          // fill in missing error data from alto so viem can parse the error
+          error.data ??= error.details;
+          throw error;
+        }
+      }
+
+      return transport.request(req);
+    };
+    return {
+      ...transport,
+      request,
+    };
+  }) as transport;
 }

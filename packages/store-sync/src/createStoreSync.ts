@@ -1,6 +1,6 @@
 import { MUDChain } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
+import { GetTransactionReceiptErrorType, Hex, decodeErrorResult, hexToString, parseEventLogs } from "viem";
 import { entryPoint07Abi } from "viem/account-abstraction";
 import {
   StorageAdapter,
@@ -45,6 +45,7 @@ import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
+import { worldAbi } from "mock-game-contracts";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -367,6 +368,8 @@ export async function createStoreSync({
           });
           if (userOpEvents.length) {
             debug("tx receipt appears to be a user op, using user op status instead");
+            // TODO: remove this check since non-wiresaw bundlers will likely have multiple user ops
+            // TODO: cache and look up specific user op hash(es) for this tx
             if (userOpEvents.length > 1) {
               const issueLink = `https://github.com/latticexyz/mud/issues/new${new URLSearchParams({
                 title: "waitForTransaction found more than one user op",
@@ -377,6 +380,10 @@ export async function createStoreSync({
                 `Receipt for transaction ${tx} had more than one \`UserOperationEvent\`. This may have unexpected behavior.\n\nIf you encounter this, please open an issue:\n${issueLink}`,
               );
             }
+
+            // console.log(userOpEvents[0]);
+            // console.log(hexToString(userOpEvents[0].data));
+            // console.log(decodeErrorResult({ abi: worldAbi, data: userOpEvents[0].data }));
 
             return {
               status: userOpEvents[0].args.success ? "success" : "reverted",

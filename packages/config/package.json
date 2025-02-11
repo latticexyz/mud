@@ -47,7 +47,7 @@
     "tsx": "^4.19.1"
   },
   "devDependencies": {
-    "viem": "2.21.19"
+    "viem": "2.23.0"
   },
   "peerDependencies": {
     "viem": "2.x"
