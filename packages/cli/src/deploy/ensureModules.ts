@@ -7,6 +7,7 @@ import pRetry from "p-retry";
 import { LibraryMap } from "./getLibraryMap";
 import { ensureContractsDeployed } from "@latticexyz/common/internal";
 import { encodeSystemCalls } from "@latticexyz/world/internal";
+import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.config";
 
 export async function ensureModules({
   client,
@@ -117,11 +118,10 @@ export async function ensureModules({
 // TODO: export from world
 const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
 
-// TODO: export from world
-// world/src/modules/init/constants.sol
-const registrationSystemId = resourceToHex({ type: "system", namespace: "", name: "Registration" });
+const registrationSystemId = worldSystemsConfig.systems.RegistrationSystem.systemId;
 
 // world/src/modules/init/RegistrationSystem.sol
+// TODO: import from world once we fix strongly typed JSON imports
 const registrationSystemAbi = [
   {
     type: "function",

@@ -123,6 +123,7 @@ export const systemsConfig = defineWorld({
     generateSystemLibraries: true,
     systemLibrariesDirectory: "experimental/systems",
   },
+  // Keep aligned with src/modules/init/constants.sol
   systems: {
     AccessManagementSystem: {
       name: "AccessManagement",
