@@ -17,20 +17,22 @@ export function renderWorldInterface({
   worldImportPath,
   imports: initialImports,
 }: RenderWorldOptions) {
-  const imports = [
-    ...(interfaceName === "IBaseWorld"
+  const imports =
+    interfaceName === "IBaseWorld"
       ? [
           { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}/IWorldKernel.sol` },
+          // filter out IStoreRegistrationSystem as it's already included as part of IStore
+          // and having both causes compiler conflicts because of overlapping functions
+          ...initialImports.filter(({ symbol }) => symbol !== "IStoreRegistrationSystem"),
         ]
       : [
           {
             symbol: "IBaseWorld",
             path: `${worldImportPath}/codegen/interfaces/IBaseWorld.sol`,
           },
-        ]),
-    ...initialImports,
-  ];
+          ...initialImports,
+        ];
 
   const importSymbols = imports.map(({ symbol }) => symbol);
 

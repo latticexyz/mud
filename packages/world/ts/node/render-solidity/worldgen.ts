@@ -129,7 +129,9 @@ export async function worldgen({
           errors,
           imports: [systemImport, ...libraryImports],
           storeImportPath,
-          worldImportPath,
+          worldImportPath: config.codegen.worldImportPath.startsWith(".")
+            ? "./" + path.relative(path.dirname(system.libraryPath), path.join(rootDir, config.codegen.worldImportPath))
+            : config.codegen.worldImportPath,
         });
         // write to file
         await formatAndWriteSolidity(systemLibrary, system.libraryPath, "Generated system library");
