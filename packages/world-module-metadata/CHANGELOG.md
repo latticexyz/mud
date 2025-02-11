@@ -1,5 +1,20 @@
 # @latticexyz/world-module-metadata
 
+## 2.2.20
+
+### Patch Changes
+
+- 3915759: Removed unsupported install methods as these now automatically revert in the base `Module` contract.
+- 3187081: Metadata module has been updated to install via delegation, making it easier for later module upgrades and to demonstrate modules installed via delegation.
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
 ## 2.2.19
 
 ### Patch Changes

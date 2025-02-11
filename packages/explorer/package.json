@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.2.19",
+  "version": "2.2.20",
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
   "exports": {

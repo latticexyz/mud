@@ -1,5 +1,25 @@
 # @latticexyz/explorer
 
+## 2.2.20
+
+### Patch Changes
+
+- 3067075: Table names in SQL queries are now automatically enclosed in double quotes by default, allowing support for special characters.
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/store-sync@2.2.20
+  - @latticexyz/store-indexer@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
 ## 2.2.19
 
 ### Patch Changes

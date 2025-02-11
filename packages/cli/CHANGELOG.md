@@ -1,5 +1,33 @@
 # Change Log
 
+## 2.2.20
+
+### Patch Changes
+
+- 3187081: Added `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.
+- b790181: Fixed forge/anvil/cast output for all CLI commands.
+- 3187081: Metadata module has been updated to install via delegation, making it easier for later module upgrades and to demonstrate modules installed via delegation.
+- Updated dependencies [3915759]
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world-module-callwithsignature@2.2.20
+  - @latticexyz/world-module-metadata@2.2.20
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/store-sync@2.2.20
+  - @latticexyz/abi-ts@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/gas-report@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+  - @latticexyz/utils@2.2.20
+
 ## 2.2.19
 
 ### Patch Changes

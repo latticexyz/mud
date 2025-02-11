@@ -1,5 +1,68 @@
 # Change Log
 
+## 2.2.20
+
+### Patch Changes
+
+- 3187081: Added `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.
+- 06e48e0: Added experimental system libraries for World systems for better ergonomics when interacting with core systems.
+
+  Note that these libraries are marked experimental as we may make breaking changes to their interfaces.
+
+  ```solidity
+  import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol";
+
+  // equivalent to `IBaseWorld(_world()).registerNamespace("hello")` but directly routed through `world.call` for better gas.
+  worldRegistrationSystem.registerNamespace("hello");
+
+  // and makes delegation use cases easier
+  worldRegistrationSystem.callFrom(_msgSender()).registerNamespace("hello");
+  ```
+
+- 3915759: The base `Module` contract now includes default implementations of `install` and `installRoot` that immediately revert, avoiding the need to implement these manually in each module.
+
+  If you've written a module, you may need to update your install methods with `override` when using this new base contract.
+
+  ```diff
+  -function install(bytes memory) public {
+  +function install(bytes memory) public override {
+  ```
+
+  ```diff
+  -function installRoot(bytes memory) public {
+  +function installRoot(bytes memory) public override {
+  ```
+
+- 3187081: Updated `encodeSystemCalls` and `encodeSystemCallsFrom` to include the `abi` in each call so that different systems/ABIs can be called in batch. Types have been improved to properly hint/narrow the expected arguments for each call.
+
+  ```diff
+  -encodeSystemCalls(abi, [{
+  +encodeSystemCalls([{
+  +  abi,
+     systemId: '0x...',
+     functionName: '...',
+     args: [...],
+   }]);
+  ```
+
+  ```diff
+  -encodeSystemCallsFrom(from, abi, [{
+  +encodeSystemCallsFrom(from, [{
+  +  abi,
+     systemId: '0x...',
+     functionName: '...',
+     args: [...],
+   }]);
+  ```
+
+- Updated dependencies [06e48e0]
+  - @latticexyz/store@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
 ## 2.2.19
 
 ### Patch Changes

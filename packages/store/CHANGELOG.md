@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.20
+
+### Patch Changes
+
+- 06e48e0: Updated `IStoreRegistration` interface to allow calling `registerTable` with `keyNames` and `fieldNames` from `memory` rather than `calldata` so this can be called with names returned by table libraries.
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
 ## 2.2.19
 
 ### Patch Changes

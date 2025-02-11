@@ -1,3 +1,99 @@
+## Version 2.2.20
+
+Release date: Tue Feb 11 2025
+
+### Patch changes
+
+**[feat(explorer): wrap table names in double quotes by default (#3588)](https://github.com/latticexyz/mud/commit/306707570ec5fd27877d674502aa381d7fd89662)** (@latticexyz/explorer)
+
+Table names in SQL queries are now automatically enclosed in double quotes by default, allowing support for special characters.
+
+**[feat(world-consumer): convert store-consumer package into world-consumer (#3584)](https://github.com/latticexyz/mud/commit/b774ab28b3de6cefcbfce5e1bb6fcb68b9374abf)** (@latticexyz/world-module-erc20)
+
+Migrated from `store-consumer` to `world-consumer`.
+
+**[refactor(world): add default-reverting methods to Module (#3581)](https://github.com/latticexyz/mud/commit/391575967cd09bd527d819222232a54a7d722fc2)** (@latticexyz/world-module-callwithsignature, @latticexyz/world-module-erc20, @latticexyz/world-module-metadata, @latticexyz/world-modules)
+
+Removed unsupported install methods as these now automatically revert in the base `Module` contract.
+
+**[feat: install module with delegation (#3586)](https://github.com/latticexyz/mud/commit/31870811b975d44f4b5d14ae69fd623914237584)** (@latticexyz/cli, @latticexyz/world)
+
+Added `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.
+
+**[feat(world): generate system libs (#3587)](https://github.com/latticexyz/mud/commit/06e48e0239a5c7994ce73b4d2752860743fec4b0)** (@latticexyz/world)
+
+Added experimental system libraries for World systems for better ergonomics when interacting with core systems.
+
+Note that these libraries are marked experimental as we may make breaking changes to their interfaces.
+
+```solidity
+import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol";
+
+// equivalent to `IBaseWorld(_world()).registerNamespace("hello")` but directly routed through `world.call` for better gas.
+worldRegistrationSystem.registerNamespace("hello");
+
+// and makes delegation use cases easier
+worldRegistrationSystem.callFrom(_msgSender()).registerNamespace("hello");
+```
+
+**[refactor(world): add default-reverting methods to Module (#3581)](https://github.com/latticexyz/mud/commit/391575967cd09bd527d819222232a54a7d722fc2)** (@latticexyz/world)
+
+The base `Module` contract now includes default implementations of `install` and `installRoot` that immediately revert, avoiding the need to implement these manually in each module.
+
+If you've written a module, you may need to update your install methods with `override` when using this new base contract.
+
+```diff
+-function install(bytes memory) public {
++function install(bytes memory) public override {
+```
+
+```diff
+-function installRoot(bytes memory) public {
++function installRoot(bytes memory) public override {
+```
+
+**[fix(cli): use execa directly instead of custom foundry wrappers (#3582)](https://github.com/latticexyz/mud/commit/b7901812d4035faa3ec9bb75f31ffe7af398bdf2)** (@latticexyz/cli)
+
+Fixed forge/anvil/cast output for all CLI commands.
+
+**[feat: install module with delegation (#3586)](https://github.com/latticexyz/mud/commit/31870811b975d44f4b5d14ae69fd623914237584)** (@latticexyz/cli, @latticexyz/world-module-metadata)
+
+Metadata module has been updated to install via delegation, making it easier for later module upgrades and to demonstrate modules installed via delegation.
+
+**[feat(world): generate system libs (#3587)](https://github.com/latticexyz/mud/commit/06e48e0239a5c7994ce73b4d2752860743fec4b0)** (@latticexyz/store)
+
+Updated `IStoreRegistration` interface to allow calling `registerTable` with `keyNames` and `fieldNames` from `memory` rather than `calldata` so this can be called with names returned by table libraries.
+
+**[feat: install module with delegation (#3586)](https://github.com/latticexyz/mud/commit/31870811b975d44f4b5d14ae69fd623914237584)** (@latticexyz/world)
+
+Updated `encodeSystemCalls` and `encodeSystemCallsFrom` to include the `abi` in each call so that different systems/ABIs can be called in batch. Types have been improved to properly hint/narrow the expected arguments for each call.
+
+```diff
+-encodeSystemCalls(abi, [{
++encodeSystemCalls([{
++  abi,
+   systemId: '0x...',
+   functionName: '...',
+   args: [...],
+ }]);
+```
+
+```diff
+-encodeSystemCallsFrom(from, abi, [{
++encodeSystemCallsFrom(from, [{
++  abi,
+   systemId: '0x...',
+   functionName: '...',
+   args: [...],
+ }]);
+```
+
+**[feat(world-consumer): convert store-consumer package into world-consumer (#3584)](https://github.com/latticexyz/mud/commit/b774ab28b3de6cefcbfce5e1bb6fcb68b9374abf)** (@latticexyz/world-consumer)
+
+Renamed `store-consumer` package to `world-consumer`. The `world-consumer` package now only includes a single `WorldConsumer` contract that is bound to a `World`.
+
+---
+
 ## Version 2.2.19
 
 Release date: Thu Feb 06 2025
