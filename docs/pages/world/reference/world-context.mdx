@@ -34,7 +34,7 @@ function _msgSender() public view virtual returns (address sender);
 Extract the `msg.value` from the context appended to the calldata.
 
 ```solidity
-function _msgValue() public pure returns (uint256 value);
+function _msgValue() public view virtual returns (uint256 value);
 ```
 
 **Returns**

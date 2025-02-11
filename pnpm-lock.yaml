@@ -1018,31 +1018,6 @@ importers:
         specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
-  packages/store-consumer:
-    dependencies:
-      '@latticexyz/schema-type':
-        specifier: workspace:*
-        version: link:../schema-type
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
-      '@latticexyz/world':
-        specifier: workspace:*
-        version: link:../world
-    devDependencies:
-      '@latticexyz/abi-ts':
-        specifier: workspace:*
-        version: link:../abi-ts
-      '@latticexyz/gas-report':
-        specifier: workspace:*
-        version: link:../gas-report
-      forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262
-        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262
-      solhint:
-        specifier: ^3.3.7
-        version: 3.3.7
-
   packages/store-indexer:
     dependencies:
       '@koa/cors':
@@ -1350,6 +1325,31 @@ importers:
         specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
+  packages/world-consumer:
+    dependencies:
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+    devDependencies:
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262
+      solhint:
+        specifier: ^3.3.7
+        version: 3.3.7
+
   packages/world-module-callwithsignature:
     dependencies:
       '@latticexyz/schema-type':
@@ -1386,12 +1386,12 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      '@latticexyz/store-consumer':
-        specifier: workspace:*
-        version: link:../store-consumer
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@latticexyz/world-consumer':
+        specifier: workspace:*
+        version: link:../world-consumer
     devDependencies:
       '@latticexyz/abi-ts':
         specifier: workspace:*

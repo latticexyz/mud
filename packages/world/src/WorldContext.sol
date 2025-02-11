@@ -32,7 +32,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return value The `msg.value` in the call to the World contract before the World routed the
    * call to the WorldContextConsumer contract.
    */
-  function _msgValue() public pure returns (uint256 value) {
+  function _msgValue() public view virtual returns (uint256 value) {
     return WorldContextConsumerLib._msgValue();
   }
 

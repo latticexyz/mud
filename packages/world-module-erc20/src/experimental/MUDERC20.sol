@@ -3,8 +3,9 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 import { ERC20Metadata, ERC20MetadataData } from "../codegen/tables/ERC20Metadata.sol";
 import { TotalSupply } from "../codegen/tables/TotalSupply.sol";
@@ -17,7 +18,7 @@ import { IERC20Errors } from "../interfaces/IERC20Errors.sol";
 
 import { ERC20TableNames } from "./Constants.sol";
 
-abstract contract MUDERC20 is Context, IERC20, IERC20Metadata, IERC20Errors, StoreConsumer {
+abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsumer {
   ResourceId internal immutable totalSupplyId;
   ResourceId internal immutable balancesId;
   ResourceId internal immutable allowancesId;
@@ -25,10 +26,10 @@ abstract contract MUDERC20 is Context, IERC20, IERC20Metadata, IERC20Errors, Sto
 
   constructor(string memory _name, string memory _symbol) {
     // Needs to be inlined in the constructor
-    totalSupplyId = _encodeTableId(ERC20TableNames.TOTAL_SUPPLY);
-    balancesId = _encodeTableId(ERC20TableNames.BALANCES);
-    allowancesId = _encodeTableId(ERC20TableNames.ALLOWANCES);
-    metadataId = _encodeTableId(ERC20TableNames.METADATA);
+    totalSupplyId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.TOTAL_SUPPLY);
+    balancesId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.BALANCES);
+    allowancesId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.ALLOWANCES);
+    metadataId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.METADATA);
 
     // Register each table
     TotalSupply.register(totalSupplyId);

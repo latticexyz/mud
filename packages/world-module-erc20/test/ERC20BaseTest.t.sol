@@ -9,12 +9,9 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-
-import { WithStore } from "@latticexyz/store-consumer/src/experimental/WithStore.sol";
-import { WithWorld } from "@latticexyz/store-consumer/src/experimental/WithWorld.sol";
-import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
 
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20 } from "../src/interfaces/IERC20.sol";
@@ -28,8 +25,8 @@ library TestConstants {
 }
 
 // Mock to include mint and burn functions
-abstract contract MockERC20Base is MUDERC20 {
-  constructor() MUDERC20("Token", "TKN") {}
+contract MockERC20Base is MUDERC20 {
+  constructor() WorldConsumer(createWorld(), TestConstants.ERC20_NAMESPACE, true) MUDERC20("Token", "TKN") {}
 
   function __mint(address to, uint256 amount) public {
     _mint(to, amount);
@@ -37,16 +34,6 @@ abstract contract MockERC20Base is MUDERC20 {
 
   function __burn(address from, uint256 amount) public {
     _burn(from, amount);
-  }
-}
-
-contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {}
-
-contract MockERC20WithWorld is WithWorld, MockERC20Base {
-  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
-
-  function _msgSender() public view virtual override(Context, WithWorld) returns (address sender) {
-    return WithWorld._msgSender();
   }
 }
 
@@ -65,14 +52,14 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
     startGasReport(reportNameWithPrefix(name));
   }
 
-  function reportNameWithPrefix(string memory name) private view returns (string memory) {
-    string memory prefix = token.getStore() == address(token) ? "internal_" : "world_";
+  function reportNameWithPrefix(string memory name) private pure returns (string memory) {
+    string memory prefix = "world_";
     return string.concat(prefix, name);
   }
 
   function setUp() public {
     token = createToken();
-    StoreSwitch.setStoreAddress(token.getStore());
+    StoreSwitch.setStoreAddress(token._world());
   }
 
   function testSetUp() public {
@@ -349,26 +336,15 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
     vm.expectRevert(abi.encodeWithSelector(ERC20InsufficientBalance.selector, from, mintAmount, sendAmount));
     token.transferFrom(from, to, sendAmount);
   }
-}
 
-abstract contract ERC20WithInternalStoreBehaviorTest is ERC20BehaviorTest {}
-
-// Concrete tests for basic internal store ERC20 behavior
-contract ERC20WithInternalStoreTest is ERC20WithInternalStoreBehaviorTest {
-  function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20WithInternalStore();
-  }
-}
-
-abstract contract ERC20WithWorldBehaviorTest is ERC20BehaviorTest {
   function testNamespaceAccess() public {
     assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE), address(token)));
   }
 }
 
 // Concrete tests for basic namespace ERC20 behavior
-contract ERC20WithWorldTest is ERC20WithWorldBehaviorTest {
+contract ERC20Test is ERC20BehaviorTest {
   function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20WithWorld();
+    return new MockERC20Base();
   }
 }

@@ -14,7 +14,7 @@ The advantage of doing this, rather than creating a separate [ERC-20 contract](h
 
 The token contract can be seen as a hybrid system contract which contains functions directly callable from outside the world (ERC20 functions like `transfer`, `balanceOf`, etc), and restricted functions that must be called as a system function through the World (`mint`, `pause`, etc).
 
-The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20WithWorld.sol) with the following features:
+The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20PausableBurnable.sol) with the following features:
 
 - ERC20Burnable: Allows users to burn their tokens (or the ones approved to them) using the `burn` and `burnFrom` function.
 - ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses and systems with access to the token's namespace. Must be done through a World call.
@@ -70,7 +70,7 @@ import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
 import { ERC20Registry } from "@latticexyz/world-module-erc20/src/codegen/index.sol";
-import { ERC20WithWorld as ERC20 } from "@latticexyz/world-module-erc20/src/examples/ERC20WithWorld.sol";
+import { ERC20PausableBurnable as ERC20 } from "@latticexyz/world-module-erc20/src/examples/ERC20PausableBurnable.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
@@ -98,7 +98,7 @@ contract ManageERC20 is Script {
 
     // Get the ERC-20 token address
     ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));
-    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20Registry");
     address tokenAddress = ERC20Registry.getTokenAddress(erc20RegistryResource, namespaceResource);
     ResourceId tokenSystem = SystemRegistry.get(tokenAddress);
     console.log("Token address", tokenAddress);
@@ -142,7 +142,7 @@ contract ManageERC20 is Script {
 ```solidity
     // Get the ERC-20 token address
     ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));
-    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20Registry");
     address tokenAddress = ERC20Registry.getTokenAddress(erc20RegistryResource, namespaceResource);
     ResourceId tokenSystem = SystemRegistry.get(tokenAddress);
     console.log("Token address", tokenAddress);

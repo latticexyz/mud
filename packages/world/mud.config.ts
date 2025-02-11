@@ -121,6 +121,7 @@ export const systemsConfig = defineWorld({
     worldgenDirectory: "interfaces",
     worldInterfaceName: "IBaseWorld",
     generateSystemLibraries: true,
+    systemLibrariesDirectory: "experimental/systems",
   },
   systems: {
     AccessManagementSystem: {

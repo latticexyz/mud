@@ -5,7 +5,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 
-import { WithWorld } from "../experimental/WithWorld.sol";
+import { WorldConsumer } from "../experimental/WorldConsumer.sol";
 
 interface IERC20 {
   function transfer(address to, uint256 value) external returns (bool);
@@ -19,10 +19,10 @@ interface IERC20 {
  * @dev Simple example of a Vault that allows accounts with namespace access to transfer its tokens out
  * IMPORTANT: this contract expects an existing namespace
  */
-contract SimpleVault is WithWorld {
+contract SimpleVault is WorldConsumer {
   error SimpleVault_TransferFailed();
 
-  constructor(IBaseWorld world, bytes14 namespace) WithWorld(world, namespace, false) {}
+  constructor(IBaseWorld world, bytes14 namespace) WorldConsumer(world, namespace, false) {}
 
   // Only accounts with namespace access (e.g. namespace systems) can transfer the ERC20 tokens held by this contract
   function transferTo(IERC20 token, address to, uint256 amount) external onlyWorld {
