@@ -12,6 +12,7 @@ export const defaultClientConfig = {
   pollingInterval: 250,
 } as const satisfies Pick<ClientConfig, "pollingInterval">;
 
+// TODO: move to world
 export const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
 
 export const worldTables = worldConfig.namespaces.world.tables;

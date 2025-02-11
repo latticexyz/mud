@@ -5,12 +5,12 @@ import { createAsyncErrorHandler } from "./asyncErrors";
 import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
 import { rpcHttpUrl } from "./setup/constants";
 import { waitForInitialSync } from "./data/waitForInitialSync";
-import { createBurnerAccount, resourceToHex, transportObserver } from "@latticexyz/common";
+import { createBurnerAccount, hexToResource, resourceToHex, transportObserver } from "@latticexyz/common";
 import { http, createWalletClient, ClientConfig, encodeFunctionData, toHex } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
-import worldConfig from "@latticexyz/world/mud.config";
+import worldConfig, { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.config";
 import { callWithSignatureTypes } from "@latticexyz/world-module-callwithsignature/internal";
 import { getWorld } from "./data/getWorld";
 import { callWithSignature } from "./data/callWithSignature";
@@ -59,7 +59,8 @@ describe("callWithSignature", async () => {
     });
 
     const worldContract = await getWorld(page);
-    const systemId = resourceToHex({ type: "system", namespace: "", name: "Registration" });
+    const systemId = worldSystemsConfig.systems.RegistrationSystem.systemId;
+    const systemResource = hexToResource(systemId);
 
     // Declare delegation parameters
     const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
@@ -84,8 +85,8 @@ describe("callWithSignature", async () => {
       primaryType: "Call",
       message: {
         signer: delegator.address,
-        systemNamespace: "",
-        systemName: "Registration",
+        systemNamespace: systemResource.namespace,
+        systemName: systemResource.name,
         callData,
         nonce,
       },

@@ -7,6 +7,9 @@ import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/constants.sol";
+import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol";
+import { storeRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/StoreRegistrationSystemLib.sol";
 
 import { MetadataSystem } from "./MetadataSystem.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
@@ -23,20 +26,22 @@ contract MetadataModule is Module {
   MetadataSystem private immutable metadataSystem = new MetadataSystem();
 
   function install(bytes memory args) public override {
-    // naive check to ensure this is only installed once
-    // TODO: update this + deployer to be idempotent
-    requireNotInstalled(__self, args);
-
-    IBaseWorld world = IBaseWorld(_world());
-
     ResourceId namespace = ResourceTag._tableId.getNamespaceId();
     if (!ResourceIds.getExists(namespace)) {
-      world.registerNamespace(namespace);
+      worldRegistrationSystem.callFrom(_msgSender()).registerNamespace(namespace);
     }
-    AccessControl.requireOwner(namespace, address(this));
+    AccessControl.requireOwner(namespace, _msgSender());
 
     if (!ResourceIds.getExists(ResourceTag._tableId)) {
-      ResourceTag.register();
+      // TODO: add a `ResourceTag.getTableDef()` that returns a struct that can be used to register?
+      storeRegistrationSystem.callFrom(_msgSender()).registerTable(
+        ResourceTag._tableId,
+        ResourceTag._fieldLayout,
+        ResourceTag._keySchema,
+        ResourceTag._valueSchema,
+        ResourceTag.getKeyNames(),
+        ResourceTag.getFieldNames()
+      );
     }
 
     ResourceId metadataSystemId = WorldResourceIdLib.encode(
@@ -46,12 +51,19 @@ contract MetadataModule is Module {
     );
     // TODO: add support for upgrading system and registering new function selectors
     if (!ResourceIds.getExists(metadataSystemId)) {
-      world.registerSystem(metadataSystemId, metadataSystem, true);
-      world.registerFunctionSelector(metadataSystemId, "getResourceTag(bytes32,bytes32)");
-      world.registerFunctionSelector(metadataSystemId, "setResourceTag(bytes32,bytes32,bytes)");
-      world.registerFunctionSelector(metadataSystemId, "deleteResourceTag(bytes32,bytes32)");
+      worldRegistrationSystem.callFrom(_msgSender()).registerSystem(metadataSystemId, metadataSystem, true);
+      worldRegistrationSystem.callFrom(_msgSender()).registerFunctionSelector(
+        metadataSystemId,
+        "getResourceTag(bytes32,bytes32)"
+      );
+      worldRegistrationSystem.callFrom(_msgSender()).registerFunctionSelector(
+        metadataSystemId,
+        "setResourceTag(bytes32,bytes32,bytes)"
+      );
+      worldRegistrationSystem.callFrom(_msgSender()).registerFunctionSelector(
+        metadataSystemId,
+        "deleteResourceTag(bytes32,bytes32)"
+      );
     }
-
-    world.transferOwnership(namespace, _msgSender());
   }
 }
