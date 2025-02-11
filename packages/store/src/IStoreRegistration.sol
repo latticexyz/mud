@@ -17,8 +17,8 @@ interface IStoreRegistration {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
-    string[] memory keyNames,
-    string[] memory fieldNames
+    string[] calldata keyNames,
+    string[] calldata fieldNames
   ) external;
 
   // Register hook to be called when a record or field is set or deleted

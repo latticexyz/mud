@@ -20,7 +20,7 @@ export function renderWorldInterface({
   const imports =
     interfaceName === "IBaseWorld"
       ? [
-          { symbol: "IStoreKernel", path: `${storeImportPath}/IStoreKernel.sol` },
+          { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}/IWorldKernel.sol` },
           // filter out IStoreRegistrationSystem as it's already included as part of IStore
           // and having both causes compiler conflicts because of overlapping functions
