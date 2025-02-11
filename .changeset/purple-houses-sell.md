@@ -13,3 +13,13 @@ Updated `encodeSystemCalls` and `encodeSystemCallsFrom` to include the `abi` in 
    args: [...],
  }]);
 ```
+
+```diff
+-encodeSystemCallsFrom(from, abi, [{
++encodeSystemCallsFrom(from, [{
++  abi,
+   systemId: '0x...',
+   functionName: '...',
+   args: [...],
+ }]);
+```
