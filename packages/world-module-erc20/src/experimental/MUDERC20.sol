@@ -2,6 +2,7 @@
 // Adapted from OpenZeppelin Contracts [token/ERC20/ERC20.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/f989fff93168606c726bc5e831ef50dd6e543f45/contracts/token/ERC20/ERC20.sol)
 pragma solidity >=0.8.24;
 
+import { console } from "forge-std/console.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -19,10 +20,10 @@ import { IERC20Errors } from "../interfaces/IERC20Errors.sol";
 import { ERC20TableNames } from "./Constants.sol";
 
 abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsumer {
-  ResourceId internal immutable totalSupplyId;
-  ResourceId internal immutable balancesId;
-  ResourceId internal immutable allowancesId;
-  ResourceId internal immutable metadataId;
+  ResourceId private immutable totalSupplyId;
+  ResourceId private immutable balancesId;
+  ResourceId private immutable allowancesId;
+  ResourceId private immutable metadataId;
 
   constructor(ResourceId _totalSupplyId, ResourceId _balancesId, ResourceId _allowancesId, ResourceId _metadataId) {
     totalSupplyId = _totalSupplyId;
@@ -283,6 +284,7 @@ abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsume
   }
 
   function _getSymbol() internal view returns (string memory) {
+    console.logBytes32(metadataId.unwrap());
     return ERC20Metadata.getSymbol(metadataId);
   }
 

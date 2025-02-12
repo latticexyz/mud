@@ -18,7 +18,7 @@ import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
  * simply including this module, only once the modifiers are put in place.
  */
 abstract contract Pausable is WorldConsumer {
-  ResourceId internal immutable pausedId;
+  ResourceId private immutable pausedId;
 
   /**
    * @dev Emitted when the pause is triggered by `account`.

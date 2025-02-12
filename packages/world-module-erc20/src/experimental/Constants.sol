@@ -27,10 +27,6 @@ library ERC20TableNames {
   bytes16 internal constant METADATA = "Metadata";
 }
 
-library OwnableTableNames {
-  bytes16 internal constant OWNER = "Owner";
-}
-
 library PausableTableNames {
   bytes16 internal constant PAUSED = "Paused";
 }

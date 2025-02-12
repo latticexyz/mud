@@ -7,6 +7,7 @@ import { console } from "forge-std/console.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
@@ -24,13 +25,24 @@ import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
 import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 
-library TestConstants {
-  bytes14 constant ERC20_NAMESPACE = "mockerc20ns";
-}
+bytes14 constant namespace = "mockerc20ns";
+
+ResourceId constant totalSupplyId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("TotalSupply")))
+);
+ResourceId constant balancesId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Balances")))
+);
+ResourceId constant allowancesId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Allowances")))
+);
+ResourceId constant metadataId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Metadata")))
+);
 
 // Mock to include mint and burn functions
 contract MockERC20Base is MUDERC20 {
-  constructor() WorldConsumer(createWorld()) MUDERC20(TestConstants.ERC20_NAMESPACE) {}
+  constructor(IBaseWorld world) WorldConsumer(world) MUDERC20(totalSupplyId, balancesId, allowancesId, metadataId) {}
 
   function initialize() public virtual {
     MUDERC20._init("Token", "TKN");
@@ -48,7 +60,7 @@ contract MockERC20Base is MUDERC20 {
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {
   MockERC20Base token;
 
-  function createToken() internal virtual returns (MockERC20Base);
+  function createToken(IBaseWorld world) internal virtual returns (MockERC20Base);
 
   // Used for validating the addresses in fuzz tests
   function validAddress(address addr) internal view returns (bool) {
@@ -66,20 +78,18 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function setUp() public {
-    token = createToken();
-    address world = token._world();
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE);
-    IBaseWorld(world).registerNamespace(namespaceId);
-    IBaseWorld(world).grantAccess(namespaceId, address(token));
+    IBaseWorld world = createWorld();
+    token = createToken(world);
 
-    // Register tables and set metadata
-    (bool success, bytes memory returnData) = address(token).delegatecall(abi.encodeCall(MockERC20Base.initialize, ()));
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
-    if (!success) {
-      revertWithBytes(returnData);
-    }
+    world.registerNamespace(namespaceId);
 
-    StoreSwitch.setStoreAddress(world);
+    world.grantAccess(namespaceId, address(token));
+
+    token.initialize();
+
+    StoreSwitch.setStoreAddress(address(world));
   }
 
   function testSetUp() public {
@@ -358,13 +368,13 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testNamespaceAccess() public {
-    assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE), address(token)));
+    assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(namespace), address(token)));
   }
 }
 
 // Concrete tests for basic namespace ERC20 behavior
 contract ERC20Test is ERC20BehaviorTest {
-  function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20Base();
+  function createToken(IBaseWorld world) internal virtual override returns (MockERC20Base) {
+    return new MockERC20Base(world);
   }
 }

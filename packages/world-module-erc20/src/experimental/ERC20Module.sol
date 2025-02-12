@@ -12,6 +12,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 
 import { ERC20Registry } from "../codegen/tables/ERC20Registry.sol";
 import { ERC20PausableBurnable } from "../examples/ERC20PausableBurnable.sol";
+import { MUDERC20 } from "../experimental/MUDERC20.sol";
 import { ModuleConstants, ERC20TableNames, PausableTableNames } from "./Constants.sol";
 
 import { ERC20Metadata, ERC20MetadataData } from "../codegen/tables/ERC20Metadata.sol";
@@ -52,13 +53,15 @@ contract ERC20Module is Module {
     // Grant access to the token so it can register and write to tables after transferring ownership
     world.grantAccess(namespaceId, address(token));
 
-    // Set metadata and paused state
-    token.initialize(name, symbol);
-
     // Register token as a system so its functions can be called through the world
     world.registerSystem(systemId, token, true);
 
+    // Set metadata and paused state by calling initialize (onlyNamespaceOwner)
+    world.call(systemId, abi.encodeCall(ERC20PausableBurnable.initialize, (name, symbol)));
+
     ERC20ModuleLib.registerToken(world, namespaceId, address(token));
+
+    world.transferOwnership(namespaceId, _msgSender());
   }
 }
 
@@ -77,7 +80,7 @@ library ERC20ModuleLib {
     ERC20Metadata.register(metadataId);
     Paused.register(pausedId);
 
-    return new ERC20PausableBurnable(world, namespace);
+    return new ERC20PausableBurnable(world, namespace, totalSupplyId, balancesId, allowancesId, metadataId, pausedId);
   }
 
   function registerToken(IBaseWorld world, ResourceId namespaceId, address token) public {
