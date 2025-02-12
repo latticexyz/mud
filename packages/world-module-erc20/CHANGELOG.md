@@ -1,5 +1,22 @@
 # @latticexyz/world-module-erc20
 
+## 2.2.20
+
+### Patch Changes
+
+- b774ab2: Migrated from `store-consumer` to `world-consumer`.
+- 3915759: Removed unsupported install methods as these now automatically revert in the base `Module` contract.
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+- Updated dependencies [b774ab2]
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/world-consumer@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
 ## 2.2.19
 
 ### Patch Changes
