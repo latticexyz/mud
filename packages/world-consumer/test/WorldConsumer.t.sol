@@ -21,29 +21,26 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { WorldConsumer } from "../src/experimental/WorldConsumer.sol";
 
 contract MockWorldConsumer is WorldConsumer {
-  constructor(
-    IBaseWorld world,
-    bytes14 namespace,
-    bool registerNamespace
-  ) WorldConsumer(world, namespace, registerNamespace) {}
+  bytes14 immutable namespace;
+  constructor(IBaseWorld world, bytes14 _namespace) WorldConsumer(world) {
+    namespace = _namespace;
+  }
 
   function getStoreAddress() public view virtual returns (address) {
     return StoreSwitch.getStoreAddress();
   }
 
   function grantNamespaceAccess(address to) external {
-    IBaseWorld(_world()).grantAccess(namespaceId, to);
-  }
-
-  function transferNamespaceOwnership(address to) external {
-    IBaseWorld(_world()).transferOwnership(namespaceId, to);
+    IBaseWorld(_world()).grantAccess(WorldResourceIdLib.encodeNamespace(namespace), to);
   }
 
   function callableByAnyone() external view {}
 
   function onlyCallableByWorld() external view onlyWorld {}
 
-  function onlyCallableByNamespace() external view onlyNamespace {}
+  function onlyCallableByNamespace() external view onlyNamespace(namespace) {}
+
+  function onlyCallableByNamespaceOwner() external view onlyNamespaceOwner(namespace) {}
 
   function payableFn() external payable returns (uint256 value) {
     return _msgValue();
@@ -53,33 +50,33 @@ contract MockWorldConsumer is WorldConsumer {
 contract WorldConsumerTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
-  function testWorldConsumer() public {
-    IBaseWorld world = createWorld();
-    bytes14 namespace = "myNamespace";
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+  bytes14 constant namespace = "myNamespace";
+  bytes16 constant systemName = "mySystem";
 
-    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
-    assertEq(mock.getStoreAddress(), address(world));
-    assertEq(mock.namespace(), namespace);
-    assertEq(mock.namespaceId().unwrap(), namespaceId.unwrap());
+  ResourceId systemId;
+  ResourceId namespaceId;
 
+  IBaseWorld world;
+  MockWorldConsumer mock;
+
+  function setUp() public {
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
-    assertTrue(ResourceIds.getExists(namespaceId), "Namespace not registered");
+    namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    world.registerNamespace(namespaceId);
+
+    systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
+
+    mock = new MockWorldConsumer(world, namespace);
+  }
+
+  function testWorldConsumer() public view {
+    assertEq(mock.getStoreAddress(), address(world));
   }
 
   // Test internal MUD access control
   function testAccessControl() public {
-    IBaseWorld world = createWorld();
-    StoreSwitch.setStoreAddress(address(world));
-
-    bytes16 systemName = "mySystem";
-    bytes14 namespace = "myNamespace";
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
-    mock.transferNamespaceOwnership(address(this));
-
     // Register the mock as a system with PRIVATE access
     world.registerSystem(systemId, mock, false);
 
@@ -96,15 +93,6 @@ contract WorldConsumerTest is Test, GasReporter {
   }
 
   function testOnlyWorld() public {
-    IBaseWorld world = createWorld();
-    StoreSwitch.setStoreAddress(address(world));
-
-    bytes16 systemName = "mySystem";
-    bytes14 namespace = "myNamespace";
-    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
-    mock.transferNamespaceOwnership(address(this));
-
     // Register the mock as a system with PUBLIC access
     world.registerSystem(systemId, mock, true);
 
@@ -119,16 +107,6 @@ contract WorldConsumerTest is Test, GasReporter {
   }
 
   function testOnlyNamespace() public {
-    IBaseWorld world = createWorld();
-    StoreSwitch.setStoreAddress(address(world));
-
-    bytes16 systemName = "mySystem";
-    bytes14 namespace = "myNamespace";
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
-    mock.transferNamespaceOwnership(address(this));
-
     // Register the mock as a system with PUBLIC access
     world.registerSystem(systemId, mock, true);
 
@@ -150,16 +128,37 @@ contract WorldConsumerTest is Test, GasReporter {
     world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespace, ()));
   }
 
+  function testOnlyNamespaceOwner() public {
+    // Register the mock as a system with PUBLIC access
+    world.registerSystem(systemId, mock, true);
+
+    address alice = address(0x1234);
+
+    vm.prank(alice);
+    vm.expectRevert(abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotWorld.selector, world, alice));
+    mock.onlyCallableByNamespaceOwner();
+
+    vm.prank(alice);
+    vm.expectRevert(
+      abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotNamespaceOwner.selector, world, namespace, alice)
+    );
+    world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespaceOwner, ()));
+
+    // After granting access to namespace, it should not work
+    world.grantAccess(namespaceId, alice);
+    vm.prank(alice);
+    vm.expectRevert(
+      abi.encodeWithSelector(WorldConsumer.WorldConsumer_CallerIsNotNamespaceOwner.selector, world, namespace, alice)
+    );
+    world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespaceOwner, ()));
+
+    // After transfering namespace ownership, it should work
+    world.transferOwnership(namespaceId, alice);
+    vm.prank(alice);
+    world.call(systemId, abi.encodeCall(mock.onlyCallableByNamespaceOwner, ()));
+  }
+
   function testMsgValue() public {
-    IBaseWorld world = createWorld();
-    StoreSwitch.setStoreAddress(address(world));
-
-    bytes16 systemName = "mySystem";
-    bytes14 namespace = "myNamespace";
-    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
-    MockWorldConsumer mock = new MockWorldConsumer(world, namespace, true);
-    mock.transferNamespaceOwnership(address(this));
-
     // Register the mock as a system with PUBLIC access
     world.registerSystem(systemId, mock, true);
 
