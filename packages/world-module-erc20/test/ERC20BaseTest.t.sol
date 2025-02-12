@@ -13,6 +13,7 @@ import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAcc
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -71,7 +72,12 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
     IBaseWorld(world).registerNamespace(namespaceId);
     IBaseWorld(world).grantAccess(namespaceId, address(token));
 
-    token.initialize();
+    // Register tables and set metadata
+    (bool success, bytes memory returnData) = address(token).delegatecall(abi.encodeCall(MockERC20Base.initialize, ()));
+
+    if (!success) {
+      revertWithBytes(returnData);
+    }
 
     StoreSwitch.setStoreAddress(world);
   }

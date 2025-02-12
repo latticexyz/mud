@@ -2,13 +2,11 @@
 // Adapted from OpenZeppelin Contracts [utils/Pausable.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/f989fff93168606c726bc5e831ef50dd6e543f45/contracts/utils/Pausable.sol)
 pragma solidity >=0.8.24;
 
-import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
-import { PausableTableNames } from "./Constants.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -66,15 +64,14 @@ abstract contract Pausable is WorldConsumer {
     _;
   }
 
-  constructor(bytes14 namespace) {
-    pausedId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, PausableTableNames.PAUSED);
+  constructor(ResourceId _pausedId) {
+    pausedId = _pausedId;
   }
 
   /**
    * @dev Initializes the contract in unpaused state.
    */
   function _init() internal {
-    PausedTable.register(pausedId);
     PausedTable.set(pausedId, false);
   }
 

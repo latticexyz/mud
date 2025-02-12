@@ -24,11 +24,11 @@ abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsume
   ResourceId internal immutable allowancesId;
   ResourceId internal immutable metadataId;
 
-  constructor(bytes14 namespace) {
-    totalSupplyId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.TOTAL_SUPPLY);
-    balancesId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.BALANCES);
-    allowancesId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.ALLOWANCES);
-    metadataId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, ERC20TableNames.METADATA);
+  constructor(ResourceId _totalSupplyId, ResourceId _balancesId, ResourceId _allowancesId, ResourceId _metadataId) {
+    totalSupplyId = _totalSupplyId;
+    balancesId = _balancesId;
+    allowancesId = _allowancesId;
+    metadataId = _metadataId;
   }
 
   /**
@@ -145,12 +145,6 @@ abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsume
   }
 
   function _init(string memory _name, string memory _symbol) internal {
-    // Register each table
-    TotalSupply.register(totalSupplyId);
-    Balances.register(balancesId);
-    Allowances.register(allowancesId);
-    ERC20Metadata.register(metadataId);
-
     _setMetadata(_name, _symbol, 18);
   }
 
