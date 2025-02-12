@@ -12,10 +12,15 @@ import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
 import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 import { Pausable, ERC20Pausable } from "../src/experimental/ERC20Pausable.sol";
-import { MockERC20Base, ERC20BehaviorTest } from "./ERC20BaseTest.t.sol";
+import { TestConstants, MockERC20Base, ERC20BehaviorTest } from "./ERC20BaseTest.t.sol";
 
 // Mock to include mint and burn functions
-contract MockERC20Pausable is MockERC20Base, ERC20Pausable {
+contract MockERC20Pausable is MockERC20Base, ERC20Pausable(TestConstants.ERC20_NAMESPACE) {
+  function initialize() public override {
+    MockERC20Base.initialize();
+    Pausable._init();
+  }
+
   function pause() public {
     _pause();
   }

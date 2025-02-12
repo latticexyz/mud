@@ -62,9 +62,6 @@ contract ERC20ModuleTest is Test, GasReporter {
     // Module should transfer token namespace ownership to the creator
     assertEq(NamespaceOwner.get(erc20NamespaceId), address(this), "Token did not transfer ownership");
 
-    assertEq(WorldConsumer(token).namespace(), TestConstants.ERC20_NAMESPACE);
-    assertEq(WorldConsumer(token).namespaceId().unwrap(), erc20NamespaceId.unwrap());
-
     vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installModule(erc20Module, args);
   }

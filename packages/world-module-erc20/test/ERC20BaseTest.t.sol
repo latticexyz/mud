@@ -6,9 +6,12 @@ import { console } from "forge-std/console.sol";
 
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -26,7 +29,11 @@ library TestConstants {
 
 // Mock to include mint and burn functions
 contract MockERC20Base is MUDERC20 {
-  constructor() WorldConsumer(createWorld(), TestConstants.ERC20_NAMESPACE, true) MUDERC20("Token", "TKN") {}
+  constructor() WorldConsumer(createWorld()) MUDERC20(TestConstants.ERC20_NAMESPACE) {}
+
+  function initialize() public virtual {
+    MUDERC20._init("Token", "TKN");
+  }
 
   function __mint(address to, uint256 amount) public {
     _mint(to, amount);
@@ -59,7 +66,14 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
   function setUp() public {
     token = createToken();
-    StoreSwitch.setStoreAddress(token._world());
+    address world = token._world();
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE);
+    IBaseWorld(world).registerNamespace(namespaceId);
+    IBaseWorld(world).grantAccess(namespaceId, address(token));
+
+    token.initialize();
+
+    StoreSwitch.setStoreAddress(world);
   }
 
   function testSetUp() public {

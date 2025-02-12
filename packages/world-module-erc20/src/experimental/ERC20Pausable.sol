@@ -6,6 +6,8 @@ import { Pausable } from "./Pausable.sol";
 import { MUDERC20 } from "./MUDERC20.sol";
 
 abstract contract ERC20Pausable is MUDERC20, Pausable {
+  constructor(bytes14 namespace) Pausable(namespace) {}
+
   function _update(address from, address to, uint256 value) internal virtual override whenNotPaused {
     super._update(from, to, value);
   }

@@ -43,15 +43,6 @@ abstract contract Pausable is WorldConsumer {
   error ExpectedPause();
 
   /**
-   * @dev Initializes the contract in unpaused state.
-   */
-  constructor() {
-    pausedId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, PausableTableNames.PAUSED);
-    PausedTable.register(pausedId);
-    PausedTable.set(pausedId, false);
-  }
-
-  /**
    * @dev Modifier to make a function callable only when the contract is not paused.
    *
    * Requirements:
@@ -73,6 +64,18 @@ abstract contract Pausable is WorldConsumer {
   modifier whenPaused() {
     _requirePaused();
     _;
+  }
+
+  constructor(bytes14 namespace) {
+    pausedId = WorldResourceIdLib.encode(RESOURCE_TABLE, namespace, PausableTableNames.PAUSED);
+  }
+
+  /**
+   * @dev Initializes the contract in unpaused state.
+   */
+  function _init() internal {
+    PausedTable.register(pausedId);
+    PausedTable.set(pausedId, false);
   }
 
   /**

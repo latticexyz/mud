@@ -39,10 +39,15 @@ contract ERC20Module is Module {
 
     IBaseWorld world = IBaseWorld(_world());
 
-    ERC20PausableBurnable token = new ERC20PausableBurnable(world, namespace, name, symbol);
+    world.registerNamespace(namespaceId);
 
-    // Grant access to the token so it can write to tables after transferring ownership
+    ERC20PausableBurnable token = new ERC20PausableBurnable(world, namespace);
+
+    // Grant access to the token so it can register and write to tables after transferring ownership
     world.grantAccess(namespaceId, address(token));
+
+    // Register tables and set metadata
+    token.initialize(name, symbol);
 
     // Register token as a system so its functions can be called through the world
     world.registerSystem(systemId, token, true);
