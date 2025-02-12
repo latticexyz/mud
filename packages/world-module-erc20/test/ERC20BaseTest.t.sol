@@ -45,7 +45,7 @@ contract MockERC20Base is MUDERC20 {
   constructor(IBaseWorld world) WorldConsumer(world) MUDERC20(totalSupplyId, balancesId, allowancesId, metadataId) {}
 
   function initialize() public virtual {
-    MUDERC20._init("Token", "TKN");
+    _MUDERC20_init("Token", "TKN");
   }
 
   function __mint(address to, uint256 amount) public {

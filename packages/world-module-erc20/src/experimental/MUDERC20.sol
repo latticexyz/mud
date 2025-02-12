@@ -2,7 +2,6 @@
 // Adapted from OpenZeppelin Contracts [token/ERC20/ERC20.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/f989fff93168606c726bc5e831ef50dd6e543f45/contracts/token/ERC20/ERC20.sol)
 pragma solidity >=0.8.24;
 
-import { console } from "forge-std/console.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -145,7 +144,7 @@ abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsume
     return true;
   }
 
-  function _init(string memory _name, string memory _symbol) internal {
+  function _MUDERC20_init(string memory _name, string memory _symbol) internal {
     _setMetadata(_name, _symbol, 18);
   }
 
@@ -284,7 +283,6 @@ abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsume
   }
 
   function _getSymbol() internal view returns (string memory) {
-    console.logBytes32(metadataId.unwrap());
     return ERC20Metadata.getSymbol(metadataId);
   }
 

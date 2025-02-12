@@ -26,7 +26,7 @@ contract MockERC20Pausable is MockERC20Base, ERC20Pausable(pausedId) {
 
   function initialize() public override {
     MockERC20Base.initialize();
-    Pausable._init();
+    _Pausable_init();
   }
 
   function pause() public {

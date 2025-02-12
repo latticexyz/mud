@@ -71,7 +71,7 @@ abstract contract Pausable is WorldConsumer {
   /**
    * @dev Initializes the contract in unpaused state.
    */
-  function _init() internal {
+  function _Pausable_init() internal {
     PausedTable.set(pausedId, false);
   }
 

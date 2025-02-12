@@ -31,8 +31,8 @@ contract ERC20PausableBurnable is MUDERC20, ERC20Pausable, ERC20Burnable {
   }
 
   function initialize(string memory name, string memory symbol) external onlyNamespaceOwner(namespace) {
-    MUDERC20._init(name, symbol);
-    Pausable._init();
+    _MUDERC20_init(name, symbol);
+    _Pausable_init();
   }
 
   function mint(address to, uint256 value) public onlyNamespace(namespace) {
