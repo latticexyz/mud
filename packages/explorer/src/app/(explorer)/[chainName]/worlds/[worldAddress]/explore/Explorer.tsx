@@ -20,7 +20,7 @@ export function Explorer() {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
   const [isLiveQuery, setIsLiveQuery] = useState(false);
-  const [{ pageSize }] = usePaginationState();
+  const [{ pageSize }, setPagination] = usePaginationState();
   const { query, setQuery } = useSQLQueryState();
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
@@ -35,9 +35,24 @@ export function Explorer() {
       } else {
         const columns = Object.keys(table.schema).map((column) => `"${column}"`);
         setQuery(`SELECT ${columns.join(", ")} FROM "${tableName}" LIMIT ${pageSize} OFFSET 0;`);
+        setPagination({
+          pageIndex: 0,
+          pageSize,
+        });
       }
     }
-  }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type, pageSize]);
+  }, [
+    chainId,
+    setQuery,
+    selectedTableId,
+    table,
+    worldAddress,
+    prevSelectedTableId,
+    query,
+    indexer.type,
+    pageSize,
+    setPagination,
+  ]);
 
   return (
     <div className="space-y-4">
