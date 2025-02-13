@@ -12,7 +12,7 @@ import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
-import { usePaginationQueryState } from "./hooks/usePaginationState";
+import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 
 export function Explorer() {
@@ -20,7 +20,7 @@ export function Explorer() {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
   const [isLiveQuery, setIsLiveQuery] = useState(false);
-  const [{ pageSize }] = usePaginationQueryState();
+  const [{ pageSize }] = usePaginationState();
   const { query, setQuery } = useSQLQueryState();
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);

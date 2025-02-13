@@ -34,7 +34,7 @@ import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
 import { PAGE_SIZE_OPTIONS } from "./consts";
-import { usePaginationQueryState } from "./hooks/usePaginationState";
+import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { getLimitOffset } from "./utils/getLimitOffset";
 import { typeSortingFn } from "./utils/typeSortingFn";
@@ -54,7 +54,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const { query, setQuery } = useSQLQueryState();
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
-  const [pagination, setPagination] = usePaginationQueryState();
+  const [pagination, setPagination] = usePaginationState();
   const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
 

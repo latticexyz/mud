@@ -12,7 +12,7 @@ import { Form, FormField } from "../../../../../../components/ui/Form";
 import { cn } from "../../../../../../utils";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { PAGE_SIZE_OPTIONS, monacoOptions } from "./consts";
-import { usePaginationQueryState } from "./hooks/usePaginationState";
+import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { useMonacoSuggestions } from "./useMonacoSuggestions";
 import { useQueryValidator } from "./useQueryValidator";
@@ -29,7 +29,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
-  const [pagination, setPagination] = usePaginationQueryState();
+  const [pagination, setPagination] = usePaginationState();
   const { query, setQuery } = useSQLQueryState();
 
   const validateQuery = useQueryValidator(table);
