@@ -66,7 +66,7 @@
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.28.5",
-    "koa": ">=2.15.4",
+    "koa": "^2.15.4",
     "koa-compose": "^4.1.0",
     "postgres": "3.3.5",
     "prom-client": "^15.1.2",
