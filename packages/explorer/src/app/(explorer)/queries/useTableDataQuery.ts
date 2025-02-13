@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
@@ -83,6 +83,7 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         queryDuration: data.queryDuration,
       };
     },
+    placeholderData: keepPreviousData,
     retry: false,
     enabled: !!table && !!query,
     refetchInterval: (query) => {

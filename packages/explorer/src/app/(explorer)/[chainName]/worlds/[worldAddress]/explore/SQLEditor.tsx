@@ -2,7 +2,6 @@
 
 import { CommandIcon, CornerDownLeft, LoaderIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
@@ -12,9 +11,12 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
 import { cn } from "../../../../../../utils";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
-import { monacoOptions } from "./consts";
+import { PAGE_SIZE_OPTIONS, monacoOptions } from "./consts";
+import { usePaginationState } from "./hooks/usePaginationState";
+import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { useMonacoSuggestions } from "./useMonacoSuggestions";
 import { useQueryValidator } from "./useQueryValidator";
+import { getLimitOffset } from "./utils/getLimitOffset";
 
 type Props = {
   table?: Table;
@@ -27,7 +29,9 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
-  const [query, setQuery] = useQueryState("query", { defaultValue: "" });
+  const [pagination, setPagination] = usePaginationState();
+  const [query, setQuery] = useSQLQueryState();
+
   const validateQuery = useQueryValidator(table);
   const {
     data: tableData,
@@ -48,9 +52,28 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   });
   const currentQuery = form.watch("query");
 
-  const handleSubmit = form.handleSubmit((data) => {
-    if (validateQuery(data.query)) {
-      setQuery(data.query);
+  const handleSubmit = form.handleSubmit(({ query }) => {
+    if (validateQuery(query)) {
+      setQuery(query);
+
+      // Set the page based on the query
+      const { limit, offset } = getLimitOffset(query);
+      if (limit == null || offset == null) {
+        setPagination({
+          ...pagination,
+          pageIndex: 0,
+        });
+      } else if (PAGE_SIZE_OPTIONS.includes(limit) && (offset === 0 || offset % limit === 0)) {
+        setPagination({
+          pageSize: limit,
+          pageIndex: offset / limit,
+        });
+      } else {
+        setPagination({
+          ...pagination,
+          pageIndex: 0,
+        });
+      }
 
       setIsUserTriggeredRefetch(true);
       refetch().finally(() => setIsUserTriggeredRefetch(false));
@@ -100,10 +123,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                       id: "executeSQL",
                       label: "Execute SQL command",
                       keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
-                      run: () => {
-                        console.log("EXECUTING SQL COMMAND");
-                        handleSubmit();
-                      },
+                      run: () => handleSubmit(),
                     });
 
                     updateHeight();

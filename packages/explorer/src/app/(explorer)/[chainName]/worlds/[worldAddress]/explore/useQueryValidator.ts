@@ -9,6 +9,9 @@ import { constructTableName } from "../../../../utils/constructTableName";
 import { useMonacoErrorMarker } from "./useMonacoErrorMarker";
 
 const sqlParser = new Parser();
+const opt = {
+  database: "Postgresql",
+};
 
 function findErrorPosition(query: string, target: string) {
   const lines = query.split("\n");
@@ -52,7 +55,7 @@ export function useQueryValidator(table?: Table) {
 
       const decodedQuery = formatQuery(decodeURIComponent(query));
       try {
-        const ast = sqlParser.astify(decodedQuery);
+        const ast = sqlParser.astify(decodedQuery, opt);
         if ("columns" in ast && Array.isArray(ast.columns)) {
           for (const column of ast.columns) {
             const columnName = column.expr.column;
