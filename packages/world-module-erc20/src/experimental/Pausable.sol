@@ -18,7 +18,7 @@ import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
  * simply including this module, only once the modifiers are put in place.
  */
 abstract contract Pausable is WorldConsumer {
-  ResourceId private immutable pausedId;
+  ResourceId private immutable _pausedId;
 
   /**
    * @dev Emitted when the pause is triggered by `account`.
@@ -64,22 +64,22 @@ abstract contract Pausable is WorldConsumer {
     _;
   }
 
-  constructor(ResourceId _pausedId) {
-    pausedId = _pausedId;
+  constructor(ResourceId pausedId) {
+    _pausedId = pausedId;
   }
 
   /**
    * @dev Initializes the contract in unpaused state.
    */
   function _Pausable_init() internal {
-    PausedTable.set(pausedId, false);
+    PausedTable.set(_pausedId, false);
   }
 
   /**
    * @dev Returns true if the contract is paused, and false otherwise.
    */
   function paused() public view virtual returns (bool) {
-    return PausedTable.get(pausedId);
+    return PausedTable.get(_pausedId);
   }
 
   /**
@@ -108,7 +108,7 @@ abstract contract Pausable is WorldConsumer {
    * - The contract must not be paused.
    */
   function _pause() internal virtual whenNotPaused {
-    PausedTable.set(pausedId, true);
+    PausedTable.set(_pausedId, true);
     emit Paused(_msgSender());
   }
 
@@ -120,7 +120,7 @@ abstract contract Pausable is WorldConsumer {
    * - The contract must be paused.
    */
   function _unpause() internal virtual whenPaused {
-    PausedTable.set(pausedId, false);
+    PausedTable.set(_pausedId, false);
     emit Unpaused(_msgSender());
   }
 }

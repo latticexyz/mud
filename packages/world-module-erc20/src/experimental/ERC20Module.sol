@@ -80,7 +80,16 @@ library ERC20ModuleLib {
     ERC20Metadata.register(metadataId);
     Paused.register(pausedId);
 
-    return new ERC20PausableBurnable(world, namespace, totalSupplyId, balancesId, allowancesId, metadataId, pausedId);
+    return
+      new ERC20PausableBurnable({
+        world: world,
+        namespace: namespace,
+        totalSupplyId: totalSupplyId,
+        balancesId: balancesId,
+        allowancesId: allowancesId,
+        metadataId: metadataId,
+        pausedId: pausedId
+      });
   }
 
   function registerToken(IBaseWorld world, ResourceId namespaceId, address token) public {

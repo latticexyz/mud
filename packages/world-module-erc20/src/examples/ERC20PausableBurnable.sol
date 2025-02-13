@@ -15,35 +15,35 @@ import { MUDERC20 } from "../experimental/MUDERC20.sol";
 contract ERC20PausableBurnable is MUDERC20, ERC20Pausable, ERC20Burnable {
   error ERC20PausableBurnable_AlreadyInitialized();
 
-  bytes14 immutable namespace;
+  bytes14 private immutable _namespace;
 
   constructor(
     IBaseWorld world,
-    bytes14 _namespace,
-    ResourceId _totalSupplyId,
-    ResourceId _balancesId,
-    ResourceId _allowancesId,
-    ResourceId _metadataId,
-    ResourceId _pausedId
-  ) WorldConsumer(world) MUDERC20(_totalSupplyId, _balancesId, _allowancesId, _metadataId) ERC20Pausable(_pausedId) {
+    bytes14 namespace,
+    ResourceId totalSupplyId,
+    ResourceId balancesId,
+    ResourceId allowancesId,
+    ResourceId metadataId,
+    ResourceId pausedId
+  ) WorldConsumer(world) MUDERC20(totalSupplyId, balancesId, allowancesId, metadataId) ERC20Pausable(pausedId) {
     // Namespace used for access control
-    namespace = _namespace;
+    _namespace = namespace;
   }
 
-  function initialize(string memory name, string memory symbol) external onlyNamespaceOwner(namespace) {
+  function initialize(string memory name, string memory symbol) external onlyNamespaceOwner(_namespace) {
     _MUDERC20_init(name, symbol);
     _Pausable_init();
   }
 
-  function mint(address to, uint256 value) public onlyNamespace(namespace) {
+  function mint(address to, uint256 value) public onlyNamespace(_namespace) {
     _mint(to, value);
   }
 
-  function pause() public onlyNamespace(namespace) {
+  function pause() public onlyNamespace(_namespace) {
     _pause();
   }
 
-  function unpause() public onlyNamespace(namespace) {
+  function unpause() public onlyNamespace(_namespace) {
     _unpause();
   }
 

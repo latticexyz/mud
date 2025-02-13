@@ -19,16 +19,16 @@ import { IERC20Errors } from "../interfaces/IERC20Errors.sol";
 import { ERC20TableNames } from "./Constants.sol";
 
 abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsumer {
-  ResourceId private immutable totalSupplyId;
-  ResourceId private immutable balancesId;
-  ResourceId private immutable allowancesId;
-  ResourceId private immutable metadataId;
+  ResourceId private immutable _totalSupplyId;
+  ResourceId private immutable _balancesId;
+  ResourceId private immutable _allowancesId;
+  ResourceId private immutable _metadataId;
 
-  constructor(ResourceId _totalSupplyId, ResourceId _balancesId, ResourceId _allowancesId, ResourceId _metadataId) {
-    totalSupplyId = _totalSupplyId;
-    balancesId = _balancesId;
-    allowancesId = _allowancesId;
-    metadataId = _metadataId;
+  constructor(ResourceId totalSupplyId, ResourceId balancesId, ResourceId allowancesId, ResourceId metadataId) {
+    _totalSupplyId = totalSupplyId;
+    _balancesId = balancesId;
+    _allowancesId = allowancesId;
+    _metadataId = metadataId;
   }
 
   /**
@@ -279,43 +279,43 @@ abstract contract MUDERC20 is IERC20, IERC20Metadata, IERC20Errors, WorldConsume
   }
 
   function _getName() internal view returns (string memory) {
-    return ERC20Metadata.getName(metadataId);
+    return ERC20Metadata.getName(_metadataId);
   }
 
   function _getSymbol() internal view returns (string memory) {
-    return ERC20Metadata.getSymbol(metadataId);
+    return ERC20Metadata.getSymbol(_metadataId);
   }
 
   function _getDecimals() internal view returns (uint8) {
-    return ERC20Metadata.getDecimals(metadataId);
+    return ERC20Metadata.getDecimals(_metadataId);
   }
 
   function _getTotalSupply() internal view returns (uint256) {
-    return TotalSupply.get(totalSupplyId);
+    return TotalSupply.get(_totalSupplyId);
   }
 
   function _getBalance(address account) internal view returns (uint256) {
-    return Balances.get(balancesId, account);
+    return Balances.get(_balancesId, account);
   }
 
   function _getAllowance(address owner, address spender) internal view returns (uint256) {
-    return Allowances.get(allowancesId, owner, spender);
+    return Allowances.get(_allowancesId, owner, spender);
   }
 
   function _setTotalSupply(uint256 value) internal virtual {
-    TotalSupply.set(totalSupplyId, value);
+    TotalSupply.set(_totalSupplyId, value);
   }
 
   function _setBalance(address account, uint256 value) internal virtual {
-    Balances.set(balancesId, account, value);
+    Balances.set(_balancesId, account, value);
   }
 
   function _setAllowance(address owner, address spender, uint256 value) internal virtual {
-    Allowances.set(allowancesId, owner, spender, value);
+    Allowances.set(_allowancesId, owner, spender, value);
   }
 
   function _setMetadata(string memory _name, string memory _symbol, uint8 _decimals) internal virtual {
     ERC20MetadataData memory metadata = ERC20MetadataData(_decimals, _name, _symbol);
-    ERC20Metadata.set(metadataId, metadata);
+    ERC20Metadata.set(_metadataId, metadata);
   }
 }
