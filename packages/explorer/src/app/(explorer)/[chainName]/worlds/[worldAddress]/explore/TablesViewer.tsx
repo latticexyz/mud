@@ -51,7 +51,7 @@ type Props = {
 export function TablesViewer({ table, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const { query, setQuery } = useSQLQueryState();
+  const [query, setQuery] = useSQLQueryState();
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [pagination, setPagination] = usePaginationState();

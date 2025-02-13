@@ -30,7 +30,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
   const [pagination, setPagination] = usePaginationState();
-  const { query, setQuery } = useSQLQueryState();
+  const [query, setQuery] = useSQLQueryState();
 
   const validateQuery = useQueryValidator(table);
   const {

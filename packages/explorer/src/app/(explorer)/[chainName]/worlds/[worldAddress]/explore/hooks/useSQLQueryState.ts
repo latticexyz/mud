@@ -1,9 +1,8 @@
 import { parseAsString, useQueryState } from "nuqs";
 
-export function useSQLQueryState() {
+type UseSQLQueryStateReturn = [string, (value: string) => void];
+
+export function useSQLQueryState(): UseSQLQueryStateReturn {
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
-  return {
-    query: decodeURIComponent(query),
-    setQuery: (value: string) => setQuery(encodeURIComponent(value)),
-  };
+  return [decodeURIComponent(query), (value: string) => setQuery(encodeURIComponent(value))];
 }

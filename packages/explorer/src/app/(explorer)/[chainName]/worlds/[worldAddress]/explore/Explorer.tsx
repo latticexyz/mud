@@ -21,7 +21,7 @@ export function Explorer() {
   const indexer = indexerForChainId(chainId);
   const [isLiveQuery, setIsLiveQuery] = useState(false);
   const [{ pageSize }, setPagination] = usePaginationState();
-  const { query, setQuery } = useSQLQueryState();
+  const [query, setQuery] = useSQLQueryState();
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
   const { data: tables } = useTablesQuery();
