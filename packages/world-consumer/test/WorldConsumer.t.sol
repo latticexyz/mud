@@ -30,10 +30,6 @@ contract MockWorldConsumer is WorldConsumer {
     return StoreSwitch.getStoreAddress();
   }
 
-  function grantNamespaceAccess(address to) external {
-    IBaseWorld(_world()).grantAccess(WorldResourceIdLib.encodeNamespace(namespace), to);
-  }
-
   function callableByAnyone() external view {}
 
   function onlyCallableByWorld() external view onlyWorld {}
