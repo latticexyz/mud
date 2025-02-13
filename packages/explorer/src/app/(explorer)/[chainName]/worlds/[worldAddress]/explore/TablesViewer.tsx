@@ -69,7 +69,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
         /LIMIT\s+\d+\s+OFFSET\s+\d+/i,
         `LIMIT ${newPageSize} OFFSET ${newPageIndex * newPageSize}`,
       );
-      setQuery(encodeURIComponent(updatedQuery));
+      setQuery(updatedQuery);
 
       return newPaginationState;
     },
