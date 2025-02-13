@@ -18,7 +18,12 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
+import { ERC20Metadata } from "../src/codegen/tables/ERC20Metadata.sol";
+import { TotalSupply } from "../src/codegen/tables/TotalSupply.sol";
+import { Balances } from "../src/codegen/tables/Balances.sol";
+import { Allowances } from "../src/codegen/tables/Allowances.sol";
+import { Paused } from "../src/codegen/tables/Paused.sol";
+
 import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
@@ -39,6 +44,7 @@ ResourceId constant allowancesId = ResourceId.wrap(
 ResourceId constant metadataId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Metadata")))
 );
+ResourceId constant pausedId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Paused"))));
 
 // Mock to include mint and burn functions
 contract MockERC20Base is MUDERC20 {
@@ -79,17 +85,25 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
   function setUp() public {
     IBaseWorld world = createWorld();
-    token = createToken(world);
+
+    StoreSwitch.setStoreAddress(address(world));
 
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
     world.registerNamespace(namespaceId);
 
+    // Register each table
+    TotalSupply.register(totalSupplyId);
+    Balances.register(balancesId);
+    Allowances.register(allowancesId);
+    ERC20Metadata.register(metadataId);
+    Paused.register(pausedId);
+
+    token = createToken(world);
+
     world.grantAccess(namespaceId, address(token));
 
     token.initialize();
-
-    StoreSwitch.setStoreAddress(address(world));
   }
 
   function testSetUp() public {

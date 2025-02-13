@@ -20,6 +20,7 @@ import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAcc
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { ModuleConstants } from "../src/experimental/Constants.sol";
+import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 import { ERC20Module } from "../src/experimental/ERC20Module.sol";
 import { ERC20Registry } from "../src/codegen/tables/ERC20Registry.sol";
 
@@ -61,6 +62,9 @@ contract ERC20ModuleTest is Test, GasReporter {
 
     // Module should transfer token namespace ownership to the creator
     assertEq(NamespaceOwner.get(erc20NamespaceId), address(this), "Token did not transfer ownership");
+
+    assertEq(MUDERC20(token).name(), "myERC20Token");
+    assertEq(MUDERC20(token).symbol(), "MTK");
 
     vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installModule(erc20Module, args);
