@@ -17,11 +17,13 @@ import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 import { ERC20Burnable } from "../src/experimental/ERC20Burnable.sol";
 import { MockERC20Base, ERC20BehaviorTest } from "./ERC20BaseTest.t.sol";
 
-contract MockERC20Burnable is MockERC20Base, ERC20Burnable {}
+contract MockERC20Burnable is MockERC20Base, ERC20Burnable {
+  constructor(IBaseWorld world) MockERC20Base(world) {}
+}
 
 contract ERC20BurnableTest is ERC20BehaviorTest {
-  function createToken() internal override returns (MockERC20Base) {
-    return new MockERC20Burnable();
+  function createToken(IBaseWorld world) internal override returns (MockERC20Base) {
+    return new MockERC20Burnable(world);
   }
 
   function testBurnByAccount() public {

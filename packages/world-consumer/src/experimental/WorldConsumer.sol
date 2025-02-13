@@ -6,65 +6,54 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 
 abstract contract WorldConsumer is System {
-  bytes14 public immutable namespace;
-  ResourceId public immutable namespaceId;
-
   error WorldConsumer_RootNamespaceNotAllowed(address worldAddress);
-  error WorldConsumer_NamespaceAlreadyExists(address worldAddress, bytes14 namespace);
-  error WorldConsumer_NamespaceDoesNotExists(address worldAddress, bytes14 namespace);
   error WorldConsumer_CallerHasNoNamespaceAccess(address worldAddress, bytes14 namespace, address caller);
+  error WorldConsumer_CallerIsNotNamespaceOwner(address worldAddress, bytes14 namespace, address caller);
   error WorldConsumer_CallerIsNotWorld(address worldAddress, address caller);
   error WorldConsumer_ValueNotAllowed(address worldAddress);
 
   modifier onlyWorld() {
     address world = _world();
-    if (world != msg.sender) {
-      revert WorldConsumer_CallerIsNotWorld(world, msg.sender);
-    }
+    checkWorldIsCaller(world);
     _;
   }
 
-  modifier onlyNamespace() {
+  modifier onlyNamespace(bytes14 namespace) {
     address world = _world();
-    if (world != msg.sender) {
-      revert WorldConsumer_CallerIsNotWorld(world, msg.sender);
-    }
+    checkWorldIsCaller(world);
 
     // We use WorldContextConsumer directly as we already know the world is the caller
     address sender = WorldContextConsumer._msgSender();
-    if (!ResourceAccess.get(namespaceId, sender)) {
+    if (!ResourceAccess.get(WorldResourceIdLib.encodeNamespace(namespace), sender)) {
       revert WorldConsumer_CallerHasNoNamespaceAccess(world, namespace, sender);
     }
 
     _;
   }
 
-  constructor(IBaseWorld _world, bytes14 _namespace, bool registerNamespace) {
+  modifier onlyNamespaceOwner(bytes14 namespace) {
+    address world = _world();
+    checkWorldIsCaller(world);
+
+    // We use WorldContextConsumer directly as we already know the world is the caller
+    address sender = WorldContextConsumer._msgSender();
+    if (NamespaceOwner.get(WorldResourceIdLib.encodeNamespace(namespace)) != sender) {
+      revert WorldConsumer_CallerIsNotNamespaceOwner(world, namespace, sender);
+    }
+
+    _;
+  }
+
+  constructor(IBaseWorld _world) {
     address worldAddress = address(_world);
     StoreSwitch.setStoreAddress(worldAddress);
-
-    if (_namespace == bytes14(0)) {
-      revert WorldConsumer_RootNamespaceNotAllowed(worldAddress);
-    }
-
-    namespace = _namespace;
-    namespaceId = WorldResourceIdLib.encodeNamespace(_namespace);
-    bool namespaceExists = ResourceIds.getExists(namespaceId);
-
-    if (registerNamespace) {
-      if (namespaceExists) {
-        revert WorldConsumer_NamespaceAlreadyExists(worldAddress, _namespace);
-      }
-      _world.registerNamespace(namespaceId);
-    } else if (!namespaceExists) {
-      revert WorldConsumer_NamespaceDoesNotExists(worldAddress, _namespace);
-    }
   }
 
   function _msgSender() public view virtual override returns (address sender) {
@@ -78,5 +67,11 @@ abstract contract WorldConsumer is System {
     }
 
     return WorldContextConsumer._msgValue();
+  }
+
+  function checkWorldIsCaller(address world) internal view {
+    if (world != msg.sender) {
+      revert WorldConsumer_CallerIsNotWorld(world, msg.sender);
+    }
   }
 }

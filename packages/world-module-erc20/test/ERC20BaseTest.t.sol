@@ -6,27 +6,53 @@ import { console } from "forge-std/console.sol";
 
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
+import { ERC20Metadata } from "../src/codegen/tables/ERC20Metadata.sol";
+import { TotalSupply } from "../src/codegen/tables/TotalSupply.sol";
+import { Balances } from "../src/codegen/tables/Balances.sol";
+import { Allowances } from "../src/codegen/tables/Allowances.sol";
+import { Paused } from "../src/codegen/tables/Paused.sol";
+
 import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
 import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 
-library TestConstants {
-  bytes14 constant ERC20_NAMESPACE = "mockerc20ns";
-}
+bytes14 constant namespace = "mockerc20ns";
+
+ResourceId constant totalSupplyId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("TotalSupply")))
+);
+ResourceId constant balancesId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Balances")))
+);
+ResourceId constant allowancesId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Allowances")))
+);
+ResourceId constant metadataId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Metadata")))
+);
+ResourceId constant pausedId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Paused"))));
 
 // Mock to include mint and burn functions
 contract MockERC20Base is MUDERC20 {
-  constructor() WorldConsumer(createWorld(), TestConstants.ERC20_NAMESPACE, true) MUDERC20("Token", "TKN") {}
+  constructor(IBaseWorld world) WorldConsumer(world) MUDERC20(totalSupplyId, balancesId, allowancesId, metadataId) {}
+
+  function initialize() public virtual {
+    _MUDERC20_init("Token", "TKN");
+  }
 
   function __mint(address to, uint256 amount) public {
     _mint(to, amount);
@@ -40,7 +66,7 @@ contract MockERC20Base is MUDERC20 {
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {
   MockERC20Base token;
 
-  function createToken() internal virtual returns (MockERC20Base);
+  function createToken(IBaseWorld world) internal virtual returns (MockERC20Base);
 
   // Used for validating the addresses in fuzz tests
   function validAddress(address addr) internal view returns (bool) {
@@ -58,8 +84,26 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function setUp() public {
-    token = createToken();
-    StoreSwitch.setStoreAddress(token._world());
+    IBaseWorld world = createWorld();
+
+    StoreSwitch.setStoreAddress(address(world));
+
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
+    world.registerNamespace(namespaceId);
+
+    // Register each table
+    TotalSupply.register(totalSupplyId);
+    Balances.register(balancesId);
+    Allowances.register(allowancesId);
+    ERC20Metadata.register(metadataId);
+    Paused.register(pausedId);
+
+    token = createToken(world);
+
+    world.grantAccess(namespaceId, address(token));
+
+    token.initialize();
   }
 
   function testSetUp() public {
@@ -338,13 +382,13 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testNamespaceAccess() public {
-    assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE), address(token)));
+    assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(namespace), address(token)));
   }
 }
 
 // Concrete tests for basic namespace ERC20 behavior
 contract ERC20Test is ERC20BehaviorTest {
-  function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20Base();
+  function createToken(IBaseWorld world) internal virtual override returns (MockERC20Base) {
+    return new MockERC20Base(world);
   }
 }
