@@ -16,6 +16,14 @@ function parseStaticArray(abiType: string) {
   };
 }
 
+function parseDynamicArray(abiType: string) {
+  const matches = abiType.match(/^(\w+)\[\]$/);
+  if (!matches) return null;
+  return {
+    elementType: matches[1],
+  };
+}
+
 /**
  * Resolve an abi or user type into a SchemaType and RenderType
  */
@@ -45,6 +53,32 @@ export function resolveAbiOrUserType(
   }
 
   // user types
+  const dynamicArray = parseDynamicArray(abiOrUserType);
+  if (dynamicArray) {
+    // Handle user type dynamic arrays
+    const elementUserType = userTypes.find((type) => type.name === dynamicArray.elementType);
+    if (!elementUserType) {
+      throw new Error(`User type "${dynamicArray.elementType}" not found`);
+    }
+    const userType = getUserTypeInfo(elementUserType);
+    const schemaType = AbiTypeToSchemaType[`${elementUserType.abiType}[]`];
+    const typeId = `${elementUserType.name}[]`;
+    console.log(userType.renderType.enumName);
+    return {
+      schemaType,
+      renderType: {
+        typeId,
+        typeWithLocation: `${typeId} memory`,
+        enumName: SchemaType[schemaType],
+        staticByteLength: 0,
+        isDynamic: true,
+        typeWrap: "castTo",
+        typeUnwrap: "castFrom",
+        internalTypeId: `${elementUserType.abiType}[]`,
+      },
+    };
+  }
+
   const userType = userTypes.find((type) => type.name === abiOrUserType);
   if (!userType) {
     throw new Error(`User type "${abiOrUserType}" not found`);

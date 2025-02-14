@@ -29,6 +29,12 @@ export default defineStore({
       },
       key: ["tableId"],
     },
+    SomeTable: {
+      schema: {
+        resources: "ResourceId[]",
+      },
+      key: [],
+    },
     ResourceIds: {
       schema: {
         resourceId: "ResourceId",

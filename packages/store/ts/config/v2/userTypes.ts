@@ -7,7 +7,14 @@ import { hasOwnKey, isObject } from "./generics";
 export type extractInternalType<userTypes extends UserTypes> = { [key in keyof userTypes]: userTypes[key]["type"] };
 
 export function extractInternalType<userTypes extends UserTypes>(userTypes: userTypes): extractInternalType<userTypes> {
-  return mapObject(userTypes, (userType) => userType.type);
+  const baseTypes = mapObject(userTypes, (userType) => userType.type);
+  const arrayTypes = Object.fromEntries(
+    Object.entries(baseTypes)
+      .map(([key, value]) => [`${key}[]`, `${value}[]`])
+      .filter(([_, value]) => isSchemaAbiType(value)),
+  );
+
+  return { ...baseTypes, ...arrayTypes };
 }
 
 export function isUserTypes(userTypes: unknown): userTypes is UserTypes {

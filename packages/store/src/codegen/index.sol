@@ -5,5 +5,6 @@ pragma solidity >=0.8.24;
 
 import { StoreHooks } from "./tables/StoreHooks.sol";
 import { Tables, TablesData } from "./tables/Tables.sol";
+import { SomeTable } from "./tables/SomeTable.sol";
 import { ResourceIds } from "./tables/ResourceIds.sol";
 import { Hooks } from "./tables/Hooks.sol";
