@@ -12,6 +12,7 @@ import { resourceToHex } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { callWithSignature } from "../utils/callWithSignature";
 import { getPaymaster } from "../getPaymaster";
+import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.config";
 
 export function useSetupSession({ userClient }: { userClient: ConnectedClient }) {
   const queryClient = useQueryClient();
@@ -110,7 +111,7 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
             userClient,
             sessionClient,
             worldAddress,
-            systemId: resourceToHex({ type: "system", namespace: "", name: "Registration" }),
+            systemId: worldSystemsConfig.systems.RegistrationSystem.systemId,
             callData: encodeFunctionData({
               abi: IBaseWorldAbi,
               functionName: "registerDelegation",

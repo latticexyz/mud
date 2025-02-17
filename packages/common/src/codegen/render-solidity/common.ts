@@ -2,6 +2,7 @@ import { ImportDatum, StaticResourceData, RenderKeyTuple, RenderType } from "./t
 import { resourceToHex } from "../../resourceToHex";
 import { hexToResource } from "../../hexToResource";
 import { renderImportPath } from "./renderImportPath";
+import { isDefined } from "../../utils";
 
 /**
  * Common header for all codegenerated solidity files
@@ -22,8 +23,10 @@ export function renderList<T>(list: T[], renderItem: (item: T, index: number) =>
  * Renders a comma-separated list of arguments for solidity functions, ignoring empty and undefined ones
  */
 export function renderArguments(args: (string | undefined)[]): string {
-  const filteredArgs = args.filter((arg) => arg !== undefined && arg !== "") as string[];
-  return internalRenderList(",", filteredArgs, (arg) => arg);
+  return args
+    .filter(isDefined)
+    .filter((arg) => arg !== "")
+    .join(", ");
 }
 
 interface RenderedCommonData {

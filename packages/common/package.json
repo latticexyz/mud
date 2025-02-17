@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.2.19",
+  "version": "2.2.20",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "viem": "2.23.0"
+    "viem": "2.23.2"
   },
   "peerDependencies": {
     "@aws-sdk/client-kms": "3.x",

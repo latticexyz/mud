@@ -74,8 +74,6 @@ export async function ensureResourceTags<const value>({
   });
   if (pendingTags.length === 0) return [];
 
-  // TODO: check if metadata namespace exists, if we own it, and if so transfer ownership to the module before reinstalling
-  //       (https://github.com/latticexyz/mud/issues/3035)
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
@@ -85,7 +83,7 @@ export async function ensureResourceTags<const value>({
       {
         optional: true,
         name: "MetadataModule",
-        installAsRoot: false,
+        installStrategy: "delegation",
         installData: "0x",
         prepareDeploy: createPrepareDeploy(metadataModuleArtifact.bytecode, metadataModuleArtifact.placeholders),
         deployedBytecodeSize: metadataModuleArtifact.deployedBytecodeSize,

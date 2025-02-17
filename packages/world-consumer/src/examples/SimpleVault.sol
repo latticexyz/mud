@@ -17,15 +17,18 @@ interface IERC20 {
 /**
  * @title SimpleVault (NOT AUDITED)
  * @dev Simple example of a Vault that allows accounts with namespace access to transfer its tokens out
- * IMPORTANT: this contract expects an existing namespace
  */
 contract SimpleVault is WorldConsumer {
   error SimpleVault_TransferFailed();
 
-  constructor(IBaseWorld world, bytes14 namespace) WorldConsumer(world, namespace, false) {}
+  bytes14 immutable namespace;
+
+  constructor(IBaseWorld world, bytes14 _namespace) WorldConsumer(world) {
+    namespace = _namespace;
+  }
 
   // Only accounts with namespace access (e.g. namespace systems) can transfer the ERC20 tokens held by this contract
-  function transferTo(IERC20 token, address to, uint256 amount) external onlyWorld {
+  function transferTo(IERC20 token, address to, uint256 amount) external onlyNamespace(namespace) {
     require(token.transfer(to, amount), "Transfer failed");
   }
 

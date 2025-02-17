@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.2.19",
+  "version": "2.2.20",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -47,7 +47,7 @@
     "tsx": "^4.19.1"
   },
   "devDependencies": {
-    "viem": "2.23.0"
+    "viem": "2.23.2"
   },
   "peerDependencies": {
     "viem": "2.x"

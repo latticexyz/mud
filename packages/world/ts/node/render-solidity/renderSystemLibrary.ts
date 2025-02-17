@@ -152,11 +152,11 @@ function renderErrors(errors: ContractInterfaceError[]) {
 function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, userTypeName: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const allParameters = [`${userTypeName} self`, ...parameters];
+  const args = [`${userTypeName} self`, ...parameters].map((arg) => arg.replace(/ calldata /, " memory "));
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(allParameters)}
+      ${renderArguments(args)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
@@ -177,11 +177,11 @@ function renderCallWrapperFunction(
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const functionArguments = [`CallWrapper memory self`, ...parameters];
+  const args = [`CallWrapper memory self`, ...parameters].map((arg) => arg.replace(/ calldata /, " memory "));
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(functionArguments)}
+      ${renderArguments(args)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
@@ -230,11 +230,11 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
     return "";
   }
 
-  const functionArguments = ["RootCallWrapper memory self", ...parameters];
+  const args = ["RootCallWrapper memory self", ...parameters].map((arg) => arg.replace(/ calldata /, " memory "));
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(functionArguments)}
+      ${renderArguments(args)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
@@ -265,10 +265,12 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
 function renderFunctionInterface(contractFunction: ContractInterfaceFunction) {
   const { name, parameters } = contractFunction;
 
+  const args = parameters.map((arg) => arg.replace(/ calldata /, " memory "));
+
   return `
     interface ${functionInterfaceName(contractFunction)} {
       function ${name}(
-        ${renderArguments(parameters)}
+        ${renderArguments(args)}
       ) external;
     }
   `;

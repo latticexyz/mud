@@ -1,5 +1,189 @@
 [
   {
+    "version": "2.2.20",
+    "date": "2025-02-11T11:38:20.747Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTable names in SQL queries are now automatically enclosed in double quotes by default, allowing support for special characters.",
+          "type": 0,
+          "commitHash": "306707570ec5fd27877d674502aa381d7fd89662",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): wrap table names in double quotes by default (#3588)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            }
+          ],
+          "description": "\nMigrated from `store-consumer` to `world-consumer`.",
+          "type": 0,
+          "commitHash": "b774ab28b3de6cefcbfce5e1bb6fcb68b9374abf",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "feat(world-consumer): convert store-consumer package into world-consumer (#3584)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-module-callwithsignature",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-modules",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRemoved unsupported install methods as these now automatically revert in the base `Module` contract.",
+          "type": 0,
+          "commitHash": "391575967cd09bd527d819222232a54a7d722fc2",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "refactor(world): add default-reverting methods to Module (#3581)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.",
+          "type": 0,
+          "commitHash": "31870811b975d44f4b5d14ae69fd623914237584",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat: install module with delegation (#3586)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental system libraries for World systems for better ergonomics when interacting with core systems.\n\nNote that these libraries are marked experimental as we may make breaking changes to their interfaces.\n\n```solidity\nimport { worldRegistrationSystem } from \"@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol\";\n\n// equivalent to `IBaseWorld(_world()).registerNamespace(\"hello\")` but directly routed through `world.call` for better gas.\nworldRegistrationSystem.registerNamespace(\"hello\");\n\n// and makes delegation use cases easier\nworldRegistrationSystem.callFrom(_msgSender()).registerNamespace(\"hello\");\n```",
+          "type": 0,
+          "commitHash": "06e48e0239a5c7994ce73b4d2752860743fec4b0",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world): generate system libs (#3587)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe base `Module` contract now includes default implementations of `install` and `installRoot` that immediately revert, avoiding the need to implement these manually in each module.\n\nIf you've written a module, you may need to update your install methods with `override` when using this new base contract.\n\n```diff\n-function install(bytes memory) public {\n+function install(bytes memory) public override {\n```\n\n```diff\n-function installRoot(bytes memory) public {\n+function installRoot(bytes memory) public override {\n```",
+          "type": 0,
+          "commitHash": "391575967cd09bd527d819222232a54a7d722fc2",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "refactor(world): add default-reverting methods to Module (#3581)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed forge/anvil/cast output for all CLI commands.",
+          "type": 0,
+          "commitHash": "b7901812d4035faa3ec9bb75f31ffe7af398bdf2",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(cli): use execa directly instead of custom foundry wrappers (#3582)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            }
+          ],
+          "description": "\nMetadata module has been updated to install via delegation, making it easier for later module upgrades and to demonstrate modules installed via delegation.",
+          "type": 0,
+          "commitHash": "31870811b975d44f4b5d14ae69fd623914237584",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat: install module with delegation (#3586)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated `IStoreRegistration` interface to allow calling `registerTable` with `keyNames` and `fieldNames` from `memory` rather than `calldata` so this can be called with names returned by table libraries.",
+          "type": 0,
+          "commitHash": "06e48e0239a5c7994ce73b4d2752860743fec4b0",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world): generate system libs (#3587)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated `encodeSystemCalls` and `encodeSystemCallsFrom` to include the `abi` in each call so that different systems/ABIs can be called in batch. Types have been improved to properly hint/narrow the expected arguments for each call.\n\n```diff\n-encodeSystemCalls(abi, [{\n+encodeSystemCalls([{\n+  abi,\n   systemId: '0x...',\n   functionName: '...',\n   args: [...],\n }]);\n```\n\n```diff\n-encodeSystemCallsFrom(from, abi, [{\n+encodeSystemCallsFrom(from, [{\n+  abi,\n   systemId: '0x...',\n   functionName: '...',\n   args: [...],\n }]);\n```",
+          "type": 0,
+          "commitHash": "31870811b975d44f4b5d14ae69fd623914237584",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat: install module with delegation (#3586)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-consumer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRenamed `store-consumer` package to `world-consumer`. The `world-consumer` package now only includes a single `WorldConsumer` contract that is bound to a `World`.",
+          "type": 0,
+          "commitHash": "b774ab28b3de6cefcbfce5e1bb6fcb68b9374abf",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "feat(world-consumer): convert store-consumer package into world-consumer (#3584)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.19",
     "date": "2025-02-06T11:26:05.805Z",
     "changes": {

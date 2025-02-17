@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.2.19",
+  "version": "2.2.20",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -49,7 +49,7 @@
     "@latticexyz/gas-report": "workspace:*",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "viem": "2.23.0"
+    "viem": "2.23.2"
   },
   "peerDependencies": {
     "viem": "2.x"

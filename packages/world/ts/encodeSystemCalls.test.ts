@@ -11,8 +11,9 @@ describe("SystemCalls", () => {
     const grantee = "0x943728592c20aed37a35c15235466f7a7cd00bd0";
 
     expect(
-      encodeSystemCalls(AccessManagementSystemAbi, [
+      encodeSystemCalls([
         {
+          abi: AccessManagementSystemAbi,
           systemId: resourceToHex({ type: "system", namespace: "", name: "" }),
           functionName: "grantAccess",
           args: [resourceId, grantee],
@@ -39,8 +40,9 @@ describe("SystemCalls", () => {
     const fieldNames = ["field1", "field2"];
 
     expect(
-      encodeSystemCalls(StoreRegistrationSystem, [
+      encodeSystemCalls([
         {
+          abi: StoreRegistrationSystem,
           systemId: resourceToHex({ type: "system", namespace: "", name: "" }),
           functionName: "registerTable",
           args: [tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames],

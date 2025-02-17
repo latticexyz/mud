@@ -1,8 +1,5 @@
 export function exportTableData(content: string, filename: string, contentType: string) {
   const blob = new Blob([content], { type: contentType });
-
-  console.log("filename", filename);
-
   const link = document.createElement("a");
   if (link.download === undefined) {
     console.warn("Browser does not support HTML5 download attribute");
