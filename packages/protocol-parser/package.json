@@ -43,7 +43,7 @@
     "abitype": "1.0.6"
   },
   "devDependencies": {
-    "viem": "2.21.19"
+    "viem": "2.23.2"
   },
   "peerDependencies": {
     "viem": "2.x"
