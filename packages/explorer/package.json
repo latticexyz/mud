@@ -95,7 +95,7 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "2.21.19"
+    "viem": "2.23.2"
   },
   "peerDependencies": {
     "viem": "2.x"
