@@ -1,3 +1,25 @@
+## Version 2.2.21
+
+Release date: Mon Feb 17 2025
+
+### Patch changes
+
+**[feat(explorer): tables viewer pagination (#3426)](https://github.com/latticexyz/mud/commit/581228bd857077023efdb496a9a44fa62ff89936)** (@latticexyz/explorer)
+
+The Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.
+
+**[refactor(world-consumer): remove namespace (#3597)](https://github.com/latticexyz/mud/commit/041031d271b62a7f41f7c6dc0098c1c0ae222bd5)** (@latticexyz/world-consumer, @latticexyz/world-module-erc20)
+
+`WorldConsumer` now doesn't store a single namespace. Instead, child contracts can keep track of namespaces and use the `onlyNamespace(namespace)` and `onlyNamespaceOwner(namespace)` modifiers for access control.
+
+ERC20 module was adapted to use this new version of `WorldConsumer`.
+
+**[chore(store-indexer): bump koa (#3599)](https://github.com/latticexyz/mud/commit/8b83c6b7481219898ab0f8e9c1afd88591646396)** (@latticexyz/store-indexer)
+
+Bumped Koa dependency for vulnerability fix.
+
+---
+
 ## Version 2.2.20
 
 Release date: Tue Feb 11 2025
