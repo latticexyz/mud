@@ -1,5 +1,16 @@
 # @latticexyz/store-indexer
 
+## 2.2.21
+
+### Patch Changes
+
+- 8b83c6b: Bumped Koa dependency for vulnerability fix.
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/common@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

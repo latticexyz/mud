@@ -1,5 +1,17 @@
 # @latticexyz/entrykit
 
+## 2.2.21
+
+### Patch Changes
+
+- @latticexyz/common@2.2.21
+- @latticexyz/config@2.2.21
+- @latticexyz/paymaster@2.2.21
+- @latticexyz/protocol-parser@2.2.21
+- @latticexyz/store@2.2.21
+- @latticexyz/world@2.2.21
+- @latticexyz/world-module-callwithsignature@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

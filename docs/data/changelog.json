@@ -1,5 +1,61 @@
 [
   {
+    "version": "2.2.21",
+    "date": "2025-02-17T12:35:52.853Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.",
+          "type": 0,
+          "commitHash": "581228bd857077023efdb496a9a44fa62ff89936",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): tables viewer pagination (#3426)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-consumer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`WorldConsumer` now doesn't store a single namespace. Instead, child contracts can keep track of namespaces and use the `onlyNamespace(namespace)` and `onlyNamespaceOwner(namespace)` modifiers for access control.\n\nERC20 module was adapted to use this new version of `WorldConsumer`.",
+          "type": 0,
+          "commitHash": "041031d271b62a7f41f7c6dc0098c1c0ae222bd5",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "refactor(world-consumer): remove namespace (#3597)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBumped Koa dependency for vulnerability fix.",
+          "type": 0,
+          "commitHash": "8b83c6b7481219898ab0f8e9c1afd88591646396",
+          "authorName": "CCP Red Dragon",
+          "authorEmail": "181853434+CCP-Red-Dragon@users.noreply.github.com",
+          "title": "chore(store-indexer): bump koa (#3599)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.20",
     "date": "2025-02-11T11:38:20.747Z",
     "changes": {
