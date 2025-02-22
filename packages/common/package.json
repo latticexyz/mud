@@ -10,16 +10,106 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./actions": "./dist/actions.js",
-    "./chains": "./dist/chains.js",
-    "./codegen": "./dist/codegen.js",
-    "./errors": "./dist/errors.js",
-    "./foundry": "./dist/foundry.js",
-    "./type-utils": "./dist/type-utils.js",
-    "./utils": "./dist/utils.js",
-    "./kms": "./dist/kms.js",
-    "./internal": "./dist/internal.js",
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    },
+    "./actions": {
+      "import": {
+        "import": "./dist/actions.js",
+        "types": "./dist/actions.d.ts"
+      },
+      "require": {
+        "require": "./dist/actions.cjs",
+        "types": "./dist/actions.d.cts"
+      }
+    },
+    "./chains": {
+      "import": {
+        "import": "./dist/chains.js",
+        "types": "./dist/chains.d.ts"
+      },
+      "require": {
+        "require": "./dist/chains.cjs",
+        "types": "./dist/chains.d.cts"
+      }
+    },
+    "./codegen": {
+      "import": {
+        "import": "./dist/codegen.js",
+        "types": "./dist/codegen.d.ts"
+      },
+      "require": {
+        "require": "./dist/codegen.cjs",
+        "types": "./dist/codegen.d.cts"
+      }
+    },
+    "./errors": {
+      "import": {
+        "import": "./dist/errors.js",
+        "types": "./dist/errors.d.ts"
+      },
+      "require": {
+        "require": "./dist/errors.cjs",
+        "types": "./dist/errors.d.cts"
+      }
+    },
+    "./foundry": {
+      "import": {
+        "import": "./dist/foundry.js",
+        "types": "./dist/foundry.d.ts"
+      },
+      "require": {
+        "require": "./dist/foundry.cjs",
+        "types": "./dist/foundry.d.cts"
+      }
+    },
+    "./type-utils": {
+      "import": {
+        "import": "./dist/type-utils.js",
+        "types": "./dist/type-utils.d.ts"
+      },
+      "require": {
+        "require": "./dist/type-utils.cjs",
+        "types": "./dist/type-utils.d.cts"
+      }
+    },
+    "./utils": {
+      "import": {
+        "import": "./dist/utils.js",
+        "types": "./dist/utils.d.ts"
+      },
+      "require": {
+        "require": "./dist/utils.cjs",
+        "types": "./dist/utils.d.cts"
+      }
+    },
+    "./kms": {
+      "import": {
+        "import": "./dist/kms.js",
+        "types": "./dist/kms.d.ts"
+      },
+      "require": {
+        "require": "./dist/kms.cjs",
+        "types": "./dist/kms.d.cts"
+      }
+    },
+    "./internal": {
+      "import": {
+        "import": "./dist/internal.js",
+        "types": "./dist/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/internal.cjs",
+        "types": "./dist/internal.d.cts"
+      }
+    },
     "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "typesVersions": {

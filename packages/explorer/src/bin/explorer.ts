@@ -120,9 +120,7 @@ process.on("exit", () => {
   explorerProcess?.kill();
 });
 
-async function main() {
+(async function main() {
   await startStoreIndexer();
   await startExplorer();
-}
-
-main().catch(console.error);
+})();
