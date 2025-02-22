@@ -1,7 +1,7 @@
 import { MUDChain } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex, decodeErrorResult, hexToString, parseEventLogs } from "viem";
-import { entryPoint07Abi } from "viem/account-abstraction";
+import { GetTransactionReceiptErrorType, Hex, OneOf, parseEventLogs } from "viem";
+import { GetUserOperationReceiptErrorType, entryPoint07Abi, getUserOperationReceipt } from "viem/account-abstraction";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -45,7 +45,6 @@ import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
-import { worldAbi } from "mock-game-contracts";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -336,7 +335,9 @@ export async function createStoreSync({
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
-  async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
+  async function waitForTransaction(
+    tx: Hex | OneOf<{ userOperationHash: Hex } | { transactionHash: Hex }>,
+  ): Promise<WaitForTransactionResult> {
     debug("waiting for tx", tx);
 
     // This currently blocks for async call on each block processed
@@ -345,17 +346,28 @@ export async function createStoreSync({
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (storedBlocks) => {
-        for (const storedBlock of storedBlocks) {
-          // If stored block had Store event logs associated with tx, it must have succeeded.
-          if (storedBlock.logs.some((log) => log.transactionHash === tx)) {
-            return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: tx } as const;
-          }
-        }
-
         try {
+          const hash = await (async (): Promise<Hex> => {
+            if (typeof tx === "string") return tx;
+            if (tx.transactionHash) return tx.transactionHash;
+            const userOpReceipt = await getAction(
+              publicClient,
+              getUserOperationReceipt,
+              "getUserOperationReceipt",
+            )({ hash: tx.userOperationHash });
+            return userOpReceipt.receipt.transactionHash;
+          })();
+
+          for (const storedBlock of storedBlocks) {
+            // If stored block had Store event logs associated with tx, it must have succeeded.
+            if (storedBlock.logs.some((log) => log.transactionHash === hash)) {
+              return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: hash } as const;
+            }
+          }
+
           const lastStoredBlock = storedBlocks[0];
           debug("fetching tx receipt for block", lastStoredBlock.blockNumber);
-          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash: tx });
+          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash });
 
           // Skip if sync hasn't caught up to this transaction's block.
           if (lastStoredBlock.blockNumber < receipt.blockNumber) return;
@@ -398,8 +410,8 @@ export async function createStoreSync({
             transactionHash: receipt.transactionHash,
           };
         } catch (e) {
-          const error = e as GetTransactionReceiptErrorType;
-          if (error.name === "TransactionReceiptNotFoundError") {
+          const error = e as GetTransactionReceiptErrorType | GetUserOperationReceiptErrorType;
+          if (error.name === "TransactionReceiptNotFoundError" || error.name === "UserOperationReceiptNotFoundError") {
             return;
           }
           throw error;
