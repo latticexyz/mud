@@ -2,12 +2,18 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, Client, Transport, createClient, http, keccak256, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { userOpExecutor } from "./quarry/transports/userOpExecutor";
+import { wiresaw } from "./quarry/transports/wiresaw";
 
 export function getBundlerTransport(client: Client<Transport, Chain>) {
   const bundlerHttpUrl = client.chain.rpcUrls.bundler?.http[0];
   // TODO: bundler websocket
+  // TODO: do chain checks/conditionals inside the transports
   const bundlerTransport = bundlerHttpUrl
-    ? alto(http(bundlerHttpUrl))
+    ? client.chain.id === 17420
+      ? wiresaw(http(bundlerHttpUrl))
+      : client.chain.id === 690 || client.chain.id === 17069
+        ? alto(http(bundlerHttpUrl))
+        : http(bundlerHttpUrl)
     : client.chain.id === 31337
       ? userOpExecutor({
           executor: createClient({
@@ -24,7 +30,7 @@ export function getBundlerTransport(client: Client<Transport, Chain>) {
   return bundlerTransport;
 }
 
-export function alto<transport extends Transport>(createTransport: transport): transport {
+function alto<transport extends Transport>(createTransport: transport): transport {
   return ((opts) => {
     const transport = createTransport(opts);
     const request: typeof transport.request = async (req) => {
