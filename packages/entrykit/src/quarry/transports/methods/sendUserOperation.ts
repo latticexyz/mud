@@ -12,19 +12,15 @@ import { ConnectedClient } from "../../../common";
 
 // TODO: move to common package?
 
-// TODO: move this into a generic to support other versions?
-const entryPointVersion = "0.7";
-type entryPointVersion = typeof entryPointVersion;
-
 export async function sendUserOperation({
   executor,
   rpcUserOp,
 }: {
   executor: ConnectedClient;
-  rpcUserOp: RpcUserOperation<entryPointVersion>;
+  rpcUserOp: RpcUserOperation<"0.7">;
 }): Promise<
-  Pick<RpcUserOperationReceipt<entryPointVersion>, "success" | "userOpHash"> & {
-    receipt: Pick<RpcUserOperationReceipt<entryPointVersion>["receipt"], "transactionHash">;
+  Pick<RpcUserOperationReceipt<"0.7">, "success" | "userOpHash"> & {
+    receipt: Pick<RpcUserOperationReceipt<"0.7">["receipt"], "transactionHash">;
   }
 > {
   const userOp = formatUserOperation(rpcUserOp);

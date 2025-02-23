@@ -48,11 +48,12 @@ export function userOpExecutor({ executor }: { executor: ConnectedClient }): Tra
 
       if (method === "eth_sendUserOperation") {
         const [rpcUserOp, entrypoint] = params;
-        if (entrypoint === entryPoint07Address) {
-          const result = await sendUserOperation({ executor, rpcUserOp });
-          receipts.set(result.userOpHash, result as RpcUserOperationReceipt<"0.7">);
-          return result.userOpHash;
+        if (entrypoint !== entryPoint07Address) {
+          throw new Error(`Entrypoint "${entrypoint}" not supported.`);
         }
+        const result = await sendUserOperation({ executor, rpcUserOp });
+        receipts.set(result.userOpHash, result as RpcUserOperationReceipt<"0.7">);
+        return result.userOpHash;
       }
 
       if (method === "eth_getUserOperationReceipt") {
@@ -61,7 +62,11 @@ export function userOpExecutor({ executor }: { executor: ConnectedClient }): Tra
       }
 
       if (method === "eth_estimateUserOperationGas") {
-        return await estimateUserOperationGas(params);
+        const [rpcUserOp, entrypoint] = params;
+        if (entrypoint !== entryPoint07Address) {
+          throw new Error(`Entrypoint "${entrypoint}" not supported.`);
+        }
+        return await estimateUserOperationGas({ executor, rpcUserOp });
       }
 
       throw new Error("Method not implemented.");
