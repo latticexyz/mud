@@ -15,7 +15,7 @@
     "file": "test/AccessControl.t.sol:AccessControlTest",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (warm)",
-    "gasUsed": 3092
+    "gasUsed": 5092
   },
   {
     "file": "test/AccessControl.t.sol:AccessControlTest",
@@ -27,7 +27,7 @@
     "file": "test/AccessControl.t.sol:AccessControlTest",
     "test": "testRequireAccess",
     "name": "AccessControl: requireAccess (warm)",
-    "gasUsed": 3131
+    "gasUsed": 9131
   },
   {
     "file": "test/AccessControl.t.sol:AccessControlTest",
@@ -39,7 +39,7 @@
     "file": "test/AccessControl.t.sol:AccessControlTest",
     "test": "testRequireOwner",
     "name": "AccessControl: requireOwner (warm)",
-    "gasUsed": 1391
+    "gasUsed": 5391
   },
   {
     "file": "test/BatchCall.t.sol:BatchCallTest",
@@ -87,13 +87,13 @@
     "file": "test/World.t.sol:WorldTest",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 40567
+    "gasUsed": 45067
   },
   {
     "file": "test/World.t.sol:WorldTest",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 36655
+    "gasUsed": 40655
   },
   {
     "file": "test/World.t.sol:WorldTest",
@@ -135,7 +135,7 @@
     "file": "test/World.t.sol:WorldTest",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 62008
+    "gasUsed": 64008
   },
   {
     "file": "test/World.t.sol:WorldTest",
@@ -165,25 +165,25 @@
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 51609
+    "gasUsed": 53609
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 45555
+    "gasUsed": 53555
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 52746
+    "gasUsed": 54746
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 43947
+    "gasUsed": 54447
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
@@ -207,13 +207,13 @@
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 45490
+    "gasUsed": 49990
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 41557
+    "gasUsed": 45557
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
@@ -255,7 +255,7 @@
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 66901
+    "gasUsed": 68901
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
