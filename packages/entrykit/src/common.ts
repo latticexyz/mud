@@ -6,6 +6,10 @@ import { SmartAccount } from "viem/account-abstraction";
 export type ConnectedClient<chain extends Chain = Chain> = Client<Transport, chain, Account>;
 export type SessionClient<chain extends Chain = Chain> = Client<Transport, chain, SmartAccount> & {
   readonly userAddress: Address;
+  /**
+   * World address used for delegated calls. Assumes a delegation has been set up between the user account and session account.
+   */
+  readonly worldAddress: Address;
   /** @internal */
   readonly internal_signer: LocalAccount;
 };
