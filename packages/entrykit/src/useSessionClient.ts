@@ -30,9 +30,12 @@ export function getSessionClientQueryOptions({
       ? {
           queryKey,
           async queryFn() {
-            const sessionAccount = await queryClient.fetchQuery(getSessionAccountQueryOptions({ client, userAddress }));
+            const { account: sessionAccount, signer: sessionSigner } = await queryClient.fetchQuery(
+              getSessionAccountQueryOptions({ client, userAddress }),
+            );
             return await getSessionClient({
               sessionAccount,
+              sessionSigner,
               userAddress,
               worldAddress,
             });
