@@ -459,6 +459,9 @@ importers:
       usehooks-ts:
         specifier: ^3.1.0
         version: 3.1.0(react@18.2.0)
+      webauthn-p256:
+        specifier: 0.0.10
+        version: 0.0.10
       zustand:
         specifier: ^4.5.2
         version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
@@ -882,10 +885,10 @@ importers:
         version: 8.3.4
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@20.17.16)
+        version: 29.5.0(@types/node@22.7.4)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(esbuild@0.23.1)(jest@29.5.0(@types/node@20.17.16))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(esbuild@0.23.1)(jest@29.5.0(@types/node@22.7.4))(typescript@5.4.2)
       type-fest:
         specifier: ^2.14.0
         version: 2.14.0
@@ -1250,10 +1253,10 @@ importers:
         version: 27.4.1
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@22.7.4)
+        version: 29.5.0(@types/node@20.17.16)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(esbuild@0.23.1)(jest@29.5.0(@types/node@22.7.4))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(esbuild@0.23.1)(jest@29.5.0(@types/node@20.17.16))(typescript@5.4.2)
 
   packages/vite-plugin-mud:
     devDependencies:
@@ -3658,10 +3661,6 @@ packages:
   '@noble/curves@1.4.2':
     resolution: {integrity: sha512-TavHr8qycMChk8UwMld0ZDRvatedkzWfH8IiaeGCfymOP5i0hSCozz9vHOL0nkwk7HRMlFnAiKpS2jrUmSybcw==}
 
-  '@noble/curves@1.6.0':
-    resolution: {integrity: sha512-TlaHRXDehJuRNR9TfZDNQ45mMEd5dwUwmicsafcIX4SsNiqnCHKjE/1alYPd/lDRVhxdhUAlv8uEhMCI5zjIJQ==}
-    engines: {node: ^14.21.3 || >=16}
-
   '@noble/curves@1.8.1':
     resolution: {integrity: sha512-warwspo+UYUPep0Q+vtdVB4Ugn8GGQj8iyB3gnRWsztmUHTI3S1nhdiWNsPUGL0vud7JlRRk1XEu7Lq1KGTnMQ==}
     engines: {node: ^14.21.3 || >=16}
@@ -3669,10 +3668,6 @@ packages:
   '@noble/hashes@1.4.0':
     resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
     engines: {node: '>= 16'}
-
-  '@noble/hashes@1.5.0':
-    resolution: {integrity: sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA==}
-    engines: {node: ^14.21.3 || >=16}
 
   '@noble/hashes@1.7.1':
     resolution: {integrity: sha512-B8XBPsn4vT/KJAGqDzbwztd+6Yte3P4V7iafm24bxgDe/mlRuK6xmWPuCNrKt2vDafZ8MfJLlchDG/vYafQEjQ==}
@@ -15370,7 +15365,7 @@ snapshots:
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@metamask/superstruct': 3.1.0
-      '@noble/hashes': 1.5.0
+      '@noble/hashes': 1.7.1
       '@scure/base': 1.1.9
       '@types/debug': 4.1.7
       debug: 4.4.0
@@ -15384,7 +15379,7 @@ snapshots:
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@metamask/superstruct': 3.1.0
-      '@noble/hashes': 1.5.0
+      '@noble/hashes': 1.7.1
       '@scure/base': 1.1.9
       '@types/debug': 4.1.7
       debug: 4.4.0
@@ -15551,17 +15546,11 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.4.0
 
-  '@noble/curves@1.6.0':
-    dependencies:
-      '@noble/hashes': 1.5.0
-
   '@noble/curves@1.8.1':
     dependencies:
       '@noble/hashes': 1.7.1
 
   '@noble/hashes@1.4.0': {}
-
-  '@noble/hashes@1.5.0': {}
 
   '@noble/hashes@1.7.1': {}
 
@@ -25637,8 +25626,8 @@ snapshots:
 
   webauthn-p256@0.0.10:
     dependencies:
-      '@noble/curves': 1.6.0
-      '@noble/hashes': 1.5.0
+      '@noble/curves': 1.8.1
+      '@noble/hashes': 1.7.1
 
   webextension-polyfill@0.10.0: {}
 

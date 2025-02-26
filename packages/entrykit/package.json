@@ -61,6 +61,7 @@
     "react-merge-refs": "^2.1.1",
     "tailwind-merge": "^1.12.0",
     "usehooks-ts": "^3.1.0",
+    "webauthn-p256": "0.0.10",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
