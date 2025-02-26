@@ -2,8 +2,7 @@ import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
 import { UndefinedInitialDataOptions, UseQueryResult, queryOptions, useQuery } from "@tanstack/react-query";
-import { getSessionAccount } from "./getSessionAccount";
-import { SmartAccount } from "viem/account-abstraction";
+import { GetSessionAccountReturnType, getSessionAccount } from "./getSessionAccount";
 
 export function getSessionAccountQueryOptions({
   client,
@@ -11,9 +10,9 @@ export function getSessionAccountQueryOptions({
 }: {
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
-}): UndefinedInitialDataOptions<SmartAccount> {
+}): UndefinedInitialDataOptions<GetSessionAccountReturnType> {
   const queryKey = ["getSessionAccount", client?.uid, userAddress];
-  return queryOptions<SmartAccount>(
+  return queryOptions<GetSessionAccountReturnType>(
     client && userAddress
       ? {
           queryKey,
@@ -26,7 +25,7 @@ export function getSessionAccountQueryOptions({
   );
 }
 
-export function useSessionAccount(userAddress: Address | undefined): UseQueryResult<SmartAccount> {
+export function useSessionAccount(userAddress: Address | undefined): UseQueryResult<GetSessionAccountReturnType> {
   const { chainId } = useEntryKitConfig();
   const client = useClient({ chainId });
   return useQuery(getSessionAccountQueryOptions({ userAddress, client }));

@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, RpcSchema, Transport } from "viem";
+import { Account, Address, Chain, Client, LocalAccount, RpcSchema, Transport } from "viem";
 import { smartAccountActions } from "permissionless";
 import { callFrom } from "@latticexyz/world/internal";
 import { createBundlerClient } from "./createBundlerClient";
@@ -9,10 +9,12 @@ import { getBundlerTransport } from "./getBundlerTransport";
 export async function getSessionClient({
   userAddress,
   sessionAccount,
+  sessionSigner,
   worldAddress,
 }: {
   userAddress: Address;
   sessionAccount: SmartAccount;
+  sessionSigner: LocalAccount;
   worldAddress: Address;
 }): Promise<SessionClient> {
   const client = sessionAccount.client;
@@ -36,7 +38,7 @@ export async function getSessionClient({
       } as never),
     )
     // TODO: add observer once we conditionally fetch receipts while bridge is open
-    .extend(() => ({ userAddress }));
+    .extend(() => ({ userAddress, internal_signer: sessionSigner }));
 
   return sessionClient;
 }

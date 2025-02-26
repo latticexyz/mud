@@ -31,9 +31,9 @@ export function getPrequisitesQueryOptions({
           async queryFn() {
             const paymaster = getPaymaster(client.chain);
 
-            const { address: sessionAddress } = await queryClient.fetchQuery(
-              getSessionAccountQueryOptions({ client, userAddress }),
-            );
+            const {
+              account: { address: sessionAddress },
+            } = await queryClient.fetchQuery(getSessionAccountQueryOptions({ client, userAddress }));
             const [sessionBalance, allowance, spender, hasDelegation] = await Promise.all([
               !paymaster
                 ? queryClient.fetchQuery(

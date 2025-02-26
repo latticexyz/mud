@@ -1,11 +1,13 @@
 import { resourceToHex } from "@latticexyz/common";
-import { Client, Chain, Transport, Account, parseAbi, ClientConfig, Address } from "viem";
+import { Client, Chain, Transport, Account, parseAbi, ClientConfig, Address, LocalAccount } from "viem";
 import worldConfig from "@latticexyz/world/mud.config";
 import { SmartAccount } from "viem/account-abstraction";
 
 export type ConnectedClient<chain extends Chain = Chain> = Client<Transport, chain, Account>;
 export type SessionClient<chain extends Chain = Chain> = Client<Transport, chain, SmartAccount> & {
   readonly userAddress: Address;
+  /** @internal */
+  readonly internal_signer: LocalAccount;
 };
 
 export const defaultClientConfig = {
