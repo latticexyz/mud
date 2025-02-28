@@ -238,6 +238,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
     // Expect a revert if the start index is out of bounds
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
+    revert("uncaught revert");
     StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
   }
 }
