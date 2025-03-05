@@ -2,7 +2,7 @@ import { chainConfig } from "viem/op-stack";
 import { MUDChain } from "./types";
 import { Chain } from "viem";
 
-const sourceId = 17000;
+const sourceId = 11155111;
 
 const defaultRpcUrls = {
   http: ["https://rpc.pyropechain.com"],
