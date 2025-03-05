@@ -29,9 +29,6 @@ export const pyrope = {
         address: "0x6487446e0B9FAEa90F6a9772A6448cFa780E30F9", // TODO: set correct address
       },
     },
-    quarryPaymaster: {
-      address: "0x7ca1b85aca23fccf2fbac14c02b5e8a6432639b9", // TODO: set correct address
-    },
   },
   blockExplorers: {
     default: {
@@ -43,6 +40,6 @@ export const pyrope = {
       url: "https://explorer.mud.dev/pyrope/worlds",
     },
   },
-  iconUrls: ["https://redstone.xyz/chain-icons/pyrope.png"], // TODO: set correct icon
+  iconUrls: ["https://lattice.xyz/brand/color/pyrope.svg"],
   indexerUrl: "https://indexer.mud.pyropechain.com",
 } as const satisfies MUDChain;

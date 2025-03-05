@@ -57,9 +57,9 @@ export function Explorer() {
   return (
     <div className="space-y-4">
       <TableSelector tables={tables} />
-      {indexer.type !== "sqlite" && (
-        <SQLEditor table={table} isLiveQuery={isLiveQuery} setIsLiveQuery={setIsLiveQuery} />
-      )}
+      {/* {indexer.type !== "sqlite" && ( */}
+      <SQLEditor table={table} isLiveQuery={isLiveQuery} setIsLiveQuery={setIsLiveQuery} />
+      {/* )} */}
       <TablesViewer table={table} isLiveQuery={isLiveQuery} />
     </div>
   );
