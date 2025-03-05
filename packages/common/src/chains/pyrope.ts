@@ -26,7 +26,7 @@ export const pyrope = {
     ...chainConfig.contracts,
     l1StandardBridge: {
       [sourceId]: {
-        address: "0x6487446e0B9FAEa90F6a9772A6448cFa780E30F9", // TODO: set correct address
+        address: "0xC24932c31D9621aE9e792576152B7ef010cFC2F8",
       },
     },
   },
