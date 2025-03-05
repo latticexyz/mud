@@ -3,3 +3,4 @@ export { mudFoundry } from "./mudFoundry";
 export { redstone } from "./redstone";
 export { garnet } from "./garnet";
 export { rhodolite } from "./rhodolite";
+export { pyrope } from "./pyrope";
