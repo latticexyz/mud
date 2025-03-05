@@ -3,4 +3,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Added Pyrope Testnet chain configuration and support for Worlds Explorer.
+Added Pyrope testnet chain.
