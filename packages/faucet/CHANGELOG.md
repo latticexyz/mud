@@ -1,5 +1,12 @@
 # @latticexyz/faucet
 
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [1d354b8]
+  - @latticexyz/common@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

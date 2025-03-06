@@ -1,5 +1,23 @@
 # @latticexyz/explorer
 
+## 2.2.21
+
+### Patch Changes
+
+- 1d354b8: Added Pyrope testnet chain.
+- 581228b: The Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.
+- Updated dependencies [1d354b8]
+- Updated dependencies [8b83c6b]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/store-indexer@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

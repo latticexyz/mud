@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/entrykit",
-  "version": "2.2.20",
+  "version": "2.2.21",
   "description": "User onboarding flows for MUD apps",
   "repository": {
     "type": "git",
