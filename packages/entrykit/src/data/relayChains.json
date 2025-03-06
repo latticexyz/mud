@@ -14,8 +14,14 @@
   "111": {
     "bridgeUrl": "https://testnets.relay.link/bridge/bob"
   },
+  "130": {
+    "bridgeUrl": "https://relay.link/bridge/unichain"
+  },
   "137": {
     "bridgeUrl": "https://relay.link/bridge/polygon"
+  },
+  "146": {
+    "bridgeUrl": "https://relay.link/bridge/sonic"
   },
   "185": {
     "bridgeUrl": "https://relay.link/bridge/mint"
@@ -35,6 +41,9 @@
   "690": {
     "bridgeUrl": "https://relay.link/bridge/redstone"
   },
+  "747": {
+    "bridgeUrl": "https://relay.link/bridge/flow-evm"
+  },
   "919": {
     "bridgeUrl": "https://testnets.relay.link/bridge/mode-testnet"
   },
@@ -50,17 +59,29 @@
   "1329": {
     "bridgeUrl": "https://relay.link/bridge/sei"
   },
+  "1424": {
+    "bridgeUrl": "https://relay.link/bridge/perennial"
+  },
+  "1514": {
+    "bridgeUrl": "https://relay.link/bridge/story"
+  },
   "1625": {
     "bridgeUrl": "https://relay.link/bridge/gravity"
   },
   "1868": {
     "bridgeUrl": "https://relay.link/bridge/soneium"
   },
+  "1923": {
+    "bridgeUrl": "https://relay.link/bridge/swellchain"
+  },
   "1993": {
     "bridgeUrl": "https://testnets.relay.link/bridge/b3"
   },
   "1996": {
     "bridgeUrl": "https://relay.link/bridge/sanko"
+  },
+  "2187": {
+    "bridgeUrl": "https://relay.link/bridge/game7"
   },
   "2741": {
     "bridgeUrl": "https://relay.link/bridge/abstract"
@@ -131,6 +152,9 @@
   "42170": {
     "bridgeUrl": "https://relay.link/bridge/arbitrum-nova"
   },
+  "42220": {
+    "bridgeUrl": "https://relay.link/bridge/celo"
+  },
   "43114": {
     "bridgeUrl": "https://relay.link/bridge/avalanche"
   },
@@ -161,11 +185,17 @@
   "80002": {
     "bridgeUrl": "https://testnets.relay.link/bridge/amoy"
   },
+  "80094": {
+    "bridgeUrl": "https://relay.link/bridge/berachain"
+  },
   "81457": {
     "bridgeUrl": "https://relay.link/bridge/blast"
   },
   "84532": {
     "bridgeUrl": "https://testnets.relay.link/bridge/base-sepolia"
+  },
+  "167000": {
+    "bridgeUrl": "https://relay.link/bridge/taiko"
   },
   "167009": {
     "bridgeUrl": "https://testnets.relay.link/bridge/hekla"
@@ -182,6 +212,9 @@
   "660279": {
     "bridgeUrl": "https://relay.link/bridge/xai"
   },
+  "695569": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/pyrope"
+  },
   "911867": {
     "bridgeUrl": "https://testnets.relay.link/bridge/odyssey"
   },
@@ -193,6 +226,9 @@
   },
   "3397901": {
     "bridgeUrl": "https://testnets.relay.link/bridge/funki-testnet"
+  },
+  "3441006": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/manta-pacific-testnet"
   },
   "4457845": {
     "bridgeUrl": "https://testnets.relay.link/bridge/zero-sepolia"
@@ -220,6 +256,9 @@
   },
   "792703809": {
     "bridgeUrl": "https://relay.link/bridge/solana"
+  },
+  "845320008": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/lordchain-testnet"
   },
   "888888888": {
     "bridgeUrl": "https://relay.link/bridge/ancient8"
