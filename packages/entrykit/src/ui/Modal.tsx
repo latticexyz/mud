@@ -1,5 +1,11 @@
-import { ReactNode } from "react";
-import { Root as DialogRoot, DialogPortal, DialogContent } from "@radix-ui/react-dialog";
+import { ReactNode, useEffect } from "react";
+import {
+  Root as DialogRoot,
+  DialogPortal,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@radix-ui/react-dialog";
 import { Shadow } from "./Shadow";
 import { twMerge } from "tailwind-merge";
 
@@ -10,6 +16,25 @@ export type Props = {
 };
 
 export function Modal({ open, onOpenChange, children }: Props) {
+  // Focus trapping doesn't seem to completely work with our iframe approach,
+  // so tabbing until you get to the document body means Escape doesn't work.
+  // We'll patch this behavior for now with our own listener.
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.defaultPrevented) return;
+
+      if (event.key === "Escape" && open) {
+        event.preventDefault();
+        onOpenChange?.(false);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onOpenChange, open]);
+
   return (
     <DialogRoot open={open} onOpenChange={onOpenChange}>
       {/* This intentionally does not use `<DialogTrigger>` because it doesn't play nicely with `<Shadow>` trigger (our primary use case). */}
@@ -28,14 +53,10 @@ export function Modal({ open, onOpenChange, children }: Props) {
             )}
           >
             <div>
-              <DialogContent
-                className="outline-none w-full max-w-[26rem] mx-auto"
-                // TODO description
-                aria-describedby={undefined}
-                onOpenAutoFocus={(event) => {
-                  event.preventDefault();
-                }}
-              >
+              <DialogContent className="outline-none w-full max-w-[26rem] mx-auto">
+                <DialogTitle className="sr-only">EntryKit</DialogTitle>
+                <DialogDescription className="sr-only">Sign in to this app</DialogDescription>
+
                 {children}
               </DialogContent>
             </div>
