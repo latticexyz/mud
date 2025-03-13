@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.21
+
+### Patch Changes
+
+- 1d354b8: Added Pyrope testnet chain.
+  - @latticexyz/schema-type@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes
