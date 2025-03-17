@@ -151,6 +151,9 @@ export const systemsConfig = defineWorld({
     WorldRegistrationSystem: {
       name: "Registration",
     },
+    CallWithSignatureSystem: {
+      name: "SignatureCall",
+    },
   },
 });
 
