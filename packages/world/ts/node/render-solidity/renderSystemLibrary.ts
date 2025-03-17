@@ -16,11 +16,17 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     systemName,
     namespace,
     resourceId,
-    functions,
+    functions: functionsInput,
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
   } = options;
+
+  // Remove `payable` from stateMutability for library functions
+  const functions = functionsInput.map((func) => ({
+    ...func,
+    stateMutability: func.stateMutability.replace("payable", ""),
+  }));
 
   // Add required imports, if they are already included they will get removed in renderImports
   const imports = [
