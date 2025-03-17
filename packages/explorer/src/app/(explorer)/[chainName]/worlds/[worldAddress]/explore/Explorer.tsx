@@ -19,7 +19,7 @@ export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const [isLiveQuery, setIsLiveQuery] = useState(false);
+  const [isLiveQuery, setIsLiveQuery] = useState(indexer.type === "sqlite");
   const [{ pageSize }, setPagination] = usePaginationState();
   const [query, setQuery] = useSQLQueryState();
   const [selectedTableId] = useQueryState("tableId");
