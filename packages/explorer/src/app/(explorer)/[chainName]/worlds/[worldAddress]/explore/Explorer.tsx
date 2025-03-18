@@ -31,7 +31,7 @@ export function Explorer() {
     if (table && (!query || prevSelectedTableId !== selectedTableId)) {
       const tableName = constructTableName(table, worldAddress as Hex, chainId);
       if (indexer.type === "sqlite") {
-        setQuery(`SELECT * FROM "${tableName}";`);
+        setQuery(`SELECT * FROM "${tableName}" WHERE __isDeleted = 0;`);
       } else {
         const columns = Object.keys(table.schema).map((column) => `"${column}"`);
         setQuery(`SELECT ${columns.join(", ")} FROM "${tableName}" LIMIT ${pageSize} OFFSET 0;`);
