@@ -9,8 +9,26 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./deprecated": "./dist/deprecated/index.js"
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    },
+    "./deprecated": {
+      "import": {
+        "import": "./dist/deprecated/index.js",
+        "types": "./dist/deprecated/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/deprecated/index.cjs",
+        "types": "./dist/deprecated/index.d.cts"
+      }
+    }
   },
   "typesVersions": {
     "*": {

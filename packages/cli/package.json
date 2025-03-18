@@ -10,7 +10,16 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    }
   },
   "typesVersions": {
     "*": {
@@ -28,7 +37,7 @@
   ],
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:test-tables",
-    "build:js": "tsup && chmod +x ./dist/mud.js",
+    "build:js": "tsup",
     "build:test-tables": "tsx ./scripts/generate-test-tables.ts",
     "clean": "pnpm run clean:js && pnpm run clean:test-tables",
     "clean:js": "shx rm -rf dist",

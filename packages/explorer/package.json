@@ -4,7 +4,16 @@
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
   "exports": {
-    "./observer": "./dist/exports/observer.js"
+    "./observer": {
+      "import": {
+        "import": "./dist/exports/observer.js",
+        "types": "./dist/exports/observer.d.ts"
+      },
+      "require": {
+        "require": "./dist/exports/observer.cjs",
+        "types": "./dist/exports/observer.d.cts"
+      }
+    }
   },
   "typesVersions": {
     "*": {
