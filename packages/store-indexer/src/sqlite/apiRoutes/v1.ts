@@ -3,16 +3,22 @@ import Router from "@koa/router";
 import compose from "koa-compose";
 import { input } from "@latticexyz/store-sync/indexer-client";
 import { schemasTable, tablesWithRecordsToLogs } from "@latticexyz/store-sync";
-import { debug } from "../debug";
+import { debug } from "../../debug";
 import { createBenchmark } from "@latticexyz/common";
-import { compress } from "../koa-middleware/compress";
-import { getTablesWithRecords } from "./getTablesWithRecords";
+import { compress } from "../../koa-middleware/compress";
+import { getTablesWithRecords } from "../getTablesWithRecords";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
+/**
+ * @deprecated
+ * Please keep this implementation unchanged in order to maintain
+ * backwards compatibility for third parties.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware {
+export function apiRoutesV1(database: BaseSQLiteDatabase<"sync", any>): Middleware {
   const router = new Router();
 
+  // Unversioned path for backwards compatibility
   router.get("/api/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("sqlite:logs");
 
