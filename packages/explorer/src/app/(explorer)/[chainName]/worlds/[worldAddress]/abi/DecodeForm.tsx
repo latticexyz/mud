@@ -75,10 +75,9 @@ export function DecodeForm() {
 
         {form.formState.isSubmitted && (
           <pre
-            className={cn(
-              "text-md relative mt-4 rounded border border-white/20 p-3 text-sm",
-              !result ? "border-red-500 bg-red-100" : "",
-            )}
+            className={cn("text-md relative mt-4 rounded border border-white/20 p-3 text-sm", {
+              "border-red-400 bg-red-100": !result,
+            })}
           >
             {result ? (
               <>
