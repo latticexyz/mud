@@ -1,9 +1,9 @@
 "use client";
 
 import { AbiEvent, AbiFunction, toFunctionSelector } from "viem";
+import { formatAbiItem } from "viem/utils";
 import * as z from "zod";
 import { useState } from "react";
-import JsonView from "react18-json-view";
 import "react18-json-view/src/dark.css";
 import "react18-json-view/src/style.css";
 import { useForm } from "react-hook-form";
@@ -67,7 +67,7 @@ export function DecodeForm() {
               <FormControl>
                 <Input placeholder="0xf0f0f0f0" type="text" {...field} />
               </FormControl>
-              <FormDescription>Find the function or error by its selector.</FormDescription>
+              <FormDescription>Find the function or error by its selector</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -81,7 +81,8 @@ export function DecodeForm() {
           >
             {result ? (
               <>
-                <JsonView src={result} theme="a11y" />
+                <span className="mr-2 text-sm opacity-50">{result.type === "function" ? "function" : "error"}</span>
+                <span>{formatAbiItem(result)}</span>
                 <CopyButton value={JSON.stringify(result, null, 2)} className="absolute right-1.5 top-1.5" />
               </>
             ) : (
