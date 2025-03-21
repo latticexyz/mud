@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.21
+
+### Patch Changes
+
+- 1d354b8: Added Pyrope testnet chain.
+- b18c0ef: Removed the `wiresaw` RPC URL from the Pyrope chain config, since Wiresaw is not deployed to Pyrope yet.
+  - @latticexyz/schema-type@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

@@ -1,5 +1,233 @@
 [
   {
+    "version": "2.2.21",
+    "date": "2025-03-21T23:41:59.847Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded Pyrope testnet chain.",
+          "type": 0,
+          "commitHash": "1d354b89f3aeb28e9dc085bdde27647a7ba6d8ae",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): add pyrope testnet support (#3619)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSystem libraries are no longer generated with `payable` keyword.",
+          "type": 0,
+          "commitHash": "8cdc57b90fe3d3f21abe4a3362c8a7ac9ba2e9d4",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(cli): remove payable modifier from library functions (#3629)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRemoved the `wiresaw` RPC URL from the Pyrope chain config, since Wiresaw is not deployed to Pyrope yet.",
+          "type": 0,
+          "commitHash": "b18c0ef0edeab2378b08d9f4a328a5d0d817f6bf",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix: remove wiresaw from pyrope chain definition (#3634)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe session client's world address (used for delegations and `callFrom`) is now available via `sesssionClient.worldAddress`.\n\nThe local signer is also available via `sesssionClient.internal_signer`. This is marked as internal for now as we may change how this is exposed.\n\nUsing the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated session account <> user account delegation in the world.",
+          "type": 0,
+          "commitHash": "f1e008f2d2a7ba2369a07f9807a7ee0cd1b3b20c",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): expose world address on session client (#3607)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeleted records no longer appear in the table data viewer when using the SQLite indexer.",
+          "type": 0,
+          "commitHash": "af2865b3164b348b03dd4354e1737d3a37160689",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): hide deleted records on local explorer (#3631)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated error message for unsupported methods in `userOpExecutor`.",
+          "type": 0,
+          "commitHash": "f4db683f90214b03bb8d68635a3825cc9bf58263",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "chore(entrykit): update error message in userOpExecutor (#3609)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded React 19 to peer dependency range.",
+          "type": 0,
+          "commitHash": "5a67f40bed3b05afd388f96a7b1bfee8b52c29ef",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): add react 19 and missing peer dep (#3605)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved escape key handling when account modal is open. And fixed development warnings about missing dialog title/description.",
+          "type": 0,
+          "commitHash": "98fc29ddfa9b5db0492165acd2c49a9862569878",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(entrykit): improve escape handling (#3623)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.",
+          "type": 0,
+          "commitHash": "581228bd857077023efdb496a9a44fa62ff89936",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): tables viewer pagination (#3426)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-consumer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`WorldConsumer` now doesn't store a single namespace. Instead, child contracts can keep track of namespaces and use the `onlyNamespace(namespace)` and `onlyNamespaceOwner(namespace)` modifiers for access control.\n\nERC20 module was adapted to use this new version of `WorldConsumer`.",
+          "type": 0,
+          "commitHash": "041031d271b62a7f41f7c6dc0098c1c0ae222bd5",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "refactor(world-consumer): remove namespace (#3597)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBumped Koa dependency for vulnerability fix.",
+          "type": 0,
+          "commitHash": "8b83c6b7481219898ab0f8e9c1afd88591646396",
+          "authorName": "CCP Red Dragon",
+          "authorEmail": "181853434+CCP-Red-Dragon@users.noreply.github.com",
+          "title": "chore(store-indexer): bump koa (#3599)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an ABI page for exploring world ABI. The ABI Explorer also includes a form for searching custom errors or functions based on their selectors.",
+          "type": 0,
+          "commitHash": "aeb210f4c7f3e44c63655541e7aab8e83c52d6d6",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): abi explorer (#3635)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated chains supported by Relay.link.",
+          "type": 0,
+          "commitHash": "55dae5f5bb7b814e6f488432deb15a9a15b49b06",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(entrykit): update relay chains (#3620)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExported an internal method to validate signatures for login flows that use session signer on behalf of user accounts.",
+          "type": 0,
+          "commitHash": "454387765857a956f3872887619d25f0352abf1c",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): validate signature (#3632)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTable data refetching is now enabled for locally run Explorer instances.",
+          "type": 0,
+          "commitHash": "303714d89811a01be2802c32f4f6876fa81e5df9",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): enable table data refetch for local explorer (#3627)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.20",
     "date": "2025-02-11T11:38:20.747Z",
     "changes": {

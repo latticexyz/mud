@@ -1,5 +1,28 @@
 # @latticexyz/explorer
 
+## 2.2.21
+
+### Patch Changes
+
+- 1d354b8: Added Pyrope testnet chain.
+- af2865b: Deleted records no longer appear in the table data viewer when using the SQLite indexer.
+- 581228b: The Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.
+- aeb210f: Added an ABI page for exploring world ABI. The ABI Explorer also includes a form for searching custom errors or functions based on their selectors.
+- 303714d: Table data refetching is now enabled for locally run Explorer instances.
+- Updated dependencies [1d354b8]
+- Updated dependencies [8cdc57b]
+- Updated dependencies [b18c0ef]
+- Updated dependencies [8b83c6b]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/store-indexer@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

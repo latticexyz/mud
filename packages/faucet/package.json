@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/faucet",
-  "version": "2.2.20",
+  "version": "2.2.21",
   "description": "Faucet API for Lattice testnet",
   "repository": {
     "type": "git",
