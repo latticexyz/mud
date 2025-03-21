@@ -1,5 +1,31 @@
 # @latticexyz/entrykit
 
+## 2.2.21
+
+### Patch Changes
+
+- 236ef3c: The session client's world address (used for delegations and `callFrom`) is now available via `sesssionClient.worldAddress`.
+
+  The local signer is also available via `sesssionClient.internal_signer`. This is marked as internal for now as we may change how this is exposed.
+
+  Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated session account <> user account delegation in the world.
+
+- f4db683: Updated error message for unsupported methods in `userOpExecutor`.
+- 5a67f40: Added React 19 to peer dependency range.
+- 98fc29d: Improved escape key handling when account modal is open. And fixed development warnings about missing dialog title/description.
+- 55dae5f: Updated chains supported by Relay.link.
+- 4543877: Exported an internal method to validate signatures for login flows that use session signer on behalf of user accounts.
+- Updated dependencies [1d354b8]
+- Updated dependencies [8cdc57b]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/world-module-callwithsignature@2.2.21
+  - @latticexyz/paymaster@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes
