@@ -6,6 +6,7 @@ html,
 body,
 .container {
   font-family: var(--font-jetbrains-mono);
+  background: var(--color-background);
 }
 
 @layer base {
