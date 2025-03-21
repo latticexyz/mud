@@ -19,8 +19,6 @@ export const pyrope = {
   rpcUrls: {
     default: defaultRpcUrls,
     bundler: defaultRpcUrls,
-    quarryPassIssuer: defaultRpcUrls,
-    wiresaw: defaultRpcUrls,
   },
   contracts: {
     ...chainConfig.contracts,
