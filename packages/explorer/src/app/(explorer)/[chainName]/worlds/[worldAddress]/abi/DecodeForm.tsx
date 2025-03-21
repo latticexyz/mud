@@ -21,6 +21,7 @@ import {
 } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
+import { cn } from "../../../../../../utils";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { getErrorSelector } from "./getErrorSelector";
 
@@ -74,7 +75,10 @@ export function DecodeForm() {
 
         {form.formState.isSubmitted && (
           <pre
-            className={`text-md relative mt-4 rounded border border-white/20 p-3 text-sm ${!result ? "border-red-500" : ""}`}
+            className={cn(
+              "text-md relative mt-4 rounded border border-white/20 p-3 text-sm",
+              !result ? "border-red-500 bg-red-100" : "",
+            )}
           >
             {result ? (
               <>
@@ -82,7 +86,7 @@ export function DecodeForm() {
                 <CopyButton value={JSON.stringify(result, null, 2)} className="absolute right-1.5 top-1.5" />
               </>
             ) : (
-              <span className="text-red-500">No matching function or error found for this selector</span>
+              <span className="text-red-700">No matching function or error found for this selector</span>
             )}
           </pre>
         )}
