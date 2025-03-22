@@ -26,40 +26,16 @@ library Memory {
 
   /**
    * @notice Copies memory from one location to another.
-   * @dev Safely copies memory in chunks of 32 bytes, then handles any residual bytes.
+   * @dev Length does not have to be a multiple of 32, mcopy safely handles unaligned words.
+   * Copying takes place as if an intermediate buffer was used, allowing the destination and source to overlap.
    * @param fromPointer The memory location to copy from.
    * @param toPointer The memory location to copy to.
    * @param length The number of bytes to copy.
    */
   function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal pure {
-    // Copy 32-byte chunks
-    while (length >= 32) {
-      /// @solidity memory-safe-assembly
-      assembly {
-        mstore(toPointer, mload(fromPointer))
-      }
-      // Safe because total addition will be <= length (ptr+len is implicitly safe)
-      unchecked {
-        toPointer += 32;
-        fromPointer += 32;
-        length -= 32;
-      }
-    }
-    if (length == 0) return;
-
-    // Copy the 0-31 length tail
-    uint256 mask = rightMask(length);
     /// @solidity memory-safe-assembly
     assembly {
-      mstore(
-        toPointer,
-        or(
-          // store the left part
-          and(mload(fromPointer), not(mask)),
-          // preserve the right part
-          and(mload(toPointer), mask)
-        )
-      )
+      mcopy(toPointer, fromPointer, length)
     }
   }
 }

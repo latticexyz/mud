@@ -10,4 +10,5 @@ export default defineWorld({
       key: ["signer"],
     },
   },
+  excludeSystems: ["CallWithSignatureSystem"],
 });
