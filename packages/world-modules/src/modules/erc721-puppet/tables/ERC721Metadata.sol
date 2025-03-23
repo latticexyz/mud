@@ -90,7 +90,7 @@ library ERC721Metadata {
   function setName(ResourceId _tableId, string memory name) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((name)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes(name));
   }
 
   /**
@@ -99,7 +99,7 @@ library ERC721Metadata {
   function _setName(ResourceId _tableId, string memory name) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((name)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes(name));
   }
 
   /**
@@ -158,7 +158,7 @@ library ERC721Metadata {
   function pushName(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes(_slice));
   }
 
   /**
@@ -167,7 +167,7 @@ library ERC721Metadata {
   function _pushName(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes(_slice));
   }
 
   /**
@@ -195,7 +195,7 @@ library ERC721Metadata {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _encoded = bytes((_slice));
+      bytes memory _encoded = bytes(_slice);
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
@@ -207,7 +207,7 @@ library ERC721Metadata {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _encoded = bytes((_slice));
+      bytes memory _encoded = bytes(_slice);
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
@@ -238,7 +238,7 @@ library ERC721Metadata {
   function setSymbol(ResourceId _tableId, string memory symbol) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, bytes((symbol)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, bytes(symbol));
   }
 
   /**
@@ -247,7 +247,7 @@ library ERC721Metadata {
   function _setSymbol(ResourceId _tableId, string memory symbol) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((symbol)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes(symbol));
   }
 
   /**
@@ -306,7 +306,7 @@ library ERC721Metadata {
   function pushSymbol(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, bytes(_slice));
   }
 
   /**
@@ -315,7 +315,7 @@ library ERC721Metadata {
   function _pushSymbol(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes(_slice));
   }
 
   /**
@@ -343,7 +343,7 @@ library ERC721Metadata {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _encoded = bytes((_slice));
+      bytes memory _encoded = bytes(_slice);
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
@@ -355,7 +355,7 @@ library ERC721Metadata {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _encoded = bytes((_slice));
+      bytes memory _encoded = bytes(_slice);
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
@@ -386,7 +386,7 @@ library ERC721Metadata {
   function setBaseURI(ResourceId _tableId, string memory baseURI) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, bytes((baseURI)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, bytes(baseURI));
   }
 
   /**
@@ -395,7 +395,7 @@ library ERC721Metadata {
   function _setBaseURI(ResourceId _tableId, string memory baseURI) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 2, bytes((baseURI)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 2, bytes(baseURI));
   }
 
   /**
@@ -454,7 +454,7 @@ library ERC721Metadata {
   function pushBaseURI(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, bytes((_slice)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, bytes(_slice));
   }
 
   /**
@@ -463,7 +463,7 @@ library ERC721Metadata {
   function _pushBaseURI(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, bytes((_slice)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, bytes(_slice));
   }
 
   /**
@@ -491,7 +491,7 @@ library ERC721Metadata {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _encoded = bytes((_slice));
+      bytes memory _encoded = bytes(_slice);
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
@@ -503,7 +503,7 @@ library ERC721Metadata {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _encoded = bytes((_slice));
+      bytes memory _encoded = bytes(_slice);
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
@@ -671,7 +671,7 @@ library ERC721Metadata {
     string memory symbol,
     string memory baseURI
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(bytes((name)), bytes((symbol)), bytes((baseURI)));
+    return abi.encodePacked(bytes(name), bytes(symbol), bytes(baseURI));
   }
 
   /**
