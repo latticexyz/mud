@@ -19,8 +19,6 @@ export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";
 export * from "./writeContract";
-import { getFeeRef } from "./getFeeRef";
-export const internal_getFeeRef = getFeeRef;
 
 /** @deprecated use `getContract` instead */
 export { createContract } from "./deprecated/createContract";
