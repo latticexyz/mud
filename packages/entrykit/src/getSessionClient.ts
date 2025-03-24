@@ -28,20 +28,18 @@ export async function getSessionClient({
     client,
     account: sessionAccount,
     userOperation: {
-      estimateFeesPerGas: async () => {
-        const {
-          fees: { maxFeePerGas, maxPriorityFeePerGas },
-        } = await internal_getFeeRef({ client, refreshInterval: 5000 });
+      estimateFeesPerGas: async ({ userOperation }) => {
+        const { fees } = await internal_getFeeRef({ client, refreshInterval: 5000 });
 
-        if (maxFeePerGas == null || maxPriorityFeePerGas == null) {
+        if (fees.maxFeePerGas == null || fees.maxPriorityFeePerGas == null) {
           throw new Error("Unexpected undefined fee per gas");
         }
 
-        console.log("estimated fees per gas", { maxFeePerGas, maxPriorityFeePerGas });
+        console.log("estimated fees per gas", { fees, userOperation });
 
         return {
-          maxFeePerGas,
-          maxPriorityFeePerGas,
+          maxFeePerGas: userOperation.maxFeePerGas ?? fees.maxFeePerGas,
+          maxPriorityFeePerGas: userOperation.maxPriorityFeePerGas ?? fees.maxPriorityFeePerGas,
         } satisfies FeeValuesEIP1559;
       },
     },
