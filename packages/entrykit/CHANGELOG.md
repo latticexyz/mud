@@ -8,7 +8,7 @@
 
   The local signer is also available via `sesssionClient.internal_signer`. This is marked as internal for now as we may change how this is exposed.
 
-  Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated session account <> user account delegation in the world.
+  Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated delegation from user account to session account in the world.
 
 - f4db683: Updated error message for unsupported methods in `userOpExecutor`.
 - 5a67f40: Added React 19 to peer dependency range.
