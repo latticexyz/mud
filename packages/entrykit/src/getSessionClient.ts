@@ -35,8 +35,6 @@ export async function getSessionClient({
           throw new Error("Unexpected undefined fee per gas");
         }
 
-        console.log("estimated fees per gas", { fees, userOperation });
-
         return {
           maxFeePerGas: userOperation.maxFeePerGas ?? fees.maxFeePerGas,
           maxPriorityFeePerGas: userOperation.maxPriorityFeePerGas ?? fees.maxPriorityFeePerGas,
