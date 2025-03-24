@@ -22,7 +22,7 @@ The session client's world address (used for delegations and `callFrom`) is now 
 
 The local signer is also available via `sesssionClient.internal_signer`. This is marked as internal for now as we may change how this is exposed.
 
-Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated session account <> user account delegation in the world.
+Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated delegation from user account to session account in the world.
 
 **[chore(explorer): hide deleted records on local explorer (#3631)](https://github.com/latticexyz/mud/commit/af2865b3164b348b03dd4354e1737d3a37160689)** (@latticexyz/explorer)
 
