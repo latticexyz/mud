@@ -55,10 +55,10 @@ function createFeeEstimator(client: Client): undefined | (() => Promise<Estimate
     return async () => ({ maxFeePerGas: 100_000n, maxPriorityFeePerGas: 0n });
   }
 
-  // do our own fee calculation for redstone, garnet, rhodolite chains
+  // do our own fee calculation for redstone, garnet, rhodolite, pyrope chains
   // because viem sets fees way too high by default
   // https://github.com/wevm/viem/blob/253b1072ad9fe36a0e0491e173c85a6d69209ada/src/account-abstraction/actions/bundler/prepareUserOperation.ts#L436-L457
-  if ([690, 17069, 17420].includes(client.chain.id)) {
+  if ([690, 17069, 17420, 695569].includes(client.chain.id)) {
     // TODO: move to fee ref or similar approach
     return () => getAction(client, estimateFeesPerGas, "estimateFeesPerGas")({ chain: client.chain });
   }
