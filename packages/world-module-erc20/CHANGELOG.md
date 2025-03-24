@@ -1,5 +1,20 @@
 # @latticexyz/world-module-erc20
 
+## 2.2.21
+
+### Patch Changes
+
+- 041031d: `WorldConsumer` now doesn't store a single namespace. Instead, child contracts can keep track of namespaces and use the `onlyNamespace(namespace)` and `onlyNamespaceOwner(namespace)` modifiers for access control.
+
+  ERC20 module was adapted to use this new version of `WorldConsumer`.
+
+- Updated dependencies [8cdc57b]
+- Updated dependencies [041031d]
+  - @latticexyz/world@2.2.21
+  - @latticexyz/world-consumer@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes

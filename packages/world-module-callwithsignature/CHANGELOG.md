@@ -1,5 +1,14 @@
 # @latticexyz/world-module-callwithsignature
 
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [8cdc57b]
+  - @latticexyz/world@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
 ## 2.2.20
 
 ### Patch Changes
