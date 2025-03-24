@@ -1,3 +1,77 @@
+## Version 2.2.21
+
+Release date: Fri Mar 21 2025
+
+### Patch changes
+
+**[feat(explorer): add pyrope testnet support (#3619)](https://github.com/latticexyz/mud/commit/1d354b89f3aeb28e9dc085bdde27647a7ba6d8ae)** (@latticexyz/common, @latticexyz/explorer)
+
+Added Pyrope testnet chain.
+
+**[fix(cli): remove payable modifier from library functions (#3629)](https://github.com/latticexyz/mud/commit/8cdc57b90fe3d3f21abe4a3362c8a7ac9ba2e9d4)** (@latticexyz/world)
+
+System libraries are no longer generated with `payable` keyword.
+
+**[fix: remove wiresaw from pyrope chain definition (#3634)](https://github.com/latticexyz/mud/commit/b18c0ef0edeab2378b08d9f4a328a5d0d817f6bf)** (@latticexyz/common)
+
+Removed the `wiresaw` RPC URL from the Pyrope chain config, since Wiresaw is not deployed to Pyrope yet.
+
+**[feat(entrykit): expose world address on session client (#3607)](https://github.com/latticexyz/mud/commit/f1e008f2d2a7ba2369a07f9807a7ee0cd1b3b20c)** (@latticexyz/entrykit)
+
+The session client's world address (used for delegations and `callFrom`) is now available via `sesssionClient.worldAddress`.
+
+The local signer is also available via `sesssionClient.internal_signer`. This is marked as internal for now as we may change how this is exposed.
+
+Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated delegation from user account to session account in the world.
+
+**[chore(explorer): hide deleted records on local explorer (#3631)](https://github.com/latticexyz/mud/commit/af2865b3164b348b03dd4354e1737d3a37160689)** (@latticexyz/explorer)
+
+Deleted records no longer appear in the table data viewer when using the SQLite indexer.
+
+**[chore(entrykit): update error message in userOpExecutor (#3609)](https://github.com/latticexyz/mud/commit/f4db683f90214b03bb8d68635a3825cc9bf58263)** (@latticexyz/entrykit)
+
+Updated error message for unsupported methods in `userOpExecutor`.
+
+**[feat(entrykit): add react 19 and missing peer dep (#3605)](https://github.com/latticexyz/mud/commit/5a67f40bed3b05afd388f96a7b1bfee8b52c29ef)** (@latticexyz/entrykit)
+
+Added React 19 to peer dependency range.
+
+**[fix(entrykit): improve escape handling (#3623)](https://github.com/latticexyz/mud/commit/98fc29ddfa9b5db0492165acd2c49a9862569878)** (@latticexyz/entrykit)
+
+Improved escape key handling when account modal is open. And fixed development warnings about missing dialog title/description.
+
+**[feat(explorer): tables viewer pagination (#3426)](https://github.com/latticexyz/mud/commit/581228bd857077023efdb496a9a44fa62ff89936)** (@latticexyz/explorer)
+
+The Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.
+
+**[refactor(world-consumer): remove namespace (#3597)](https://github.com/latticexyz/mud/commit/041031d271b62a7f41f7c6dc0098c1c0ae222bd5)** (@latticexyz/world-consumer, @latticexyz/world-module-erc20)
+
+`WorldConsumer` now doesn't store a single namespace. Instead, child contracts can keep track of namespaces and use the `onlyNamespace(namespace)` and `onlyNamespaceOwner(namespace)` modifiers for access control.
+
+ERC20 module was adapted to use this new version of `WorldConsumer`.
+
+**[chore(store-indexer): bump koa (#3599)](https://github.com/latticexyz/mud/commit/8b83c6b7481219898ab0f8e9c1afd88591646396)** (@latticexyz/store-indexer)
+
+Bumped Koa dependency for vulnerability fix.
+
+**[feat(explorer): abi explorer (#3635)](https://github.com/latticexyz/mud/commit/aeb210f4c7f3e44c63655541e7aab8e83c52d6d6)** (@latticexyz/explorer)
+
+Added an ABI page for exploring world ABI. The ABI Explorer also includes a form for searching custom errors or functions based on their selectors.
+
+**[feat(entrykit): update relay chains (#3620)](https://github.com/latticexyz/mud/commit/55dae5f5bb7b814e6f488432deb15a9a15b49b06)** (@latticexyz/entrykit)
+
+Updated chains supported by Relay.link.
+
+**[feat(entrykit): validate signature (#3632)](https://github.com/latticexyz/mud/commit/454387765857a956f3872887619d25f0352abf1c)** (@latticexyz/entrykit)
+
+Exported an internal method to validate signatures for login flows that use session signer on behalf of user accounts.
+
+**[fix(explorer): enable table data refetch for local explorer (#3627)](https://github.com/latticexyz/mud/commit/303714d89811a01be2802c32f4f6876fa81e5df9)** (@latticexyz/explorer)
+
+Table data refetching is now enabled for locally run Explorer instances.
+
+---
+
 ## Version 2.2.20
 
 Release date: Tue Feb 11 2025
