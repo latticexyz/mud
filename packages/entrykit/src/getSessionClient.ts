@@ -1,10 +1,11 @@
-import { Account, Address, Chain, Client, LocalAccount, RpcSchema, Transport } from "viem";
+import { Account, Address, Chain, Client, FeeValuesEIP1559, LocalAccount, RpcSchema, Transport } from "viem";
 import { smartAccountActions } from "permissionless";
 import { callFrom } from "@latticexyz/world/internal";
 import { createBundlerClient } from "./createBundlerClient";
 import { SessionClient } from "./common";
 import { SmartAccount } from "viem/account-abstraction";
 import { getBundlerTransport } from "./getBundlerTransport";
+import { internal_getFeeRef } from "@latticexyz/common";
 
 export async function getSessionClient({
   userAddress,
@@ -26,6 +27,24 @@ export async function getSessionClient({
     transport: getBundlerTransport(client.chain),
     client,
     account: sessionAccount,
+    userOperation: {
+      estimateFeesPerGas: async () => {
+        const {
+          fees: { maxFeePerGas, maxPriorityFeePerGas },
+        } = await internal_getFeeRef({ client, refreshInterval: 5000 });
+
+        if (maxFeePerGas == null || maxPriorityFeePerGas == null) {
+          throw new Error("Unexpected undefined fee per gas");
+        }
+
+        console.log("estimated fees per gas", { maxFeePerGas, maxPriorityFeePerGas });
+
+        return {
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        } satisfies FeeValuesEIP1559;
+      },
+    },
   });
 
   const sessionClient = bundlerClient
