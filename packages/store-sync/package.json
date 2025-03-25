@@ -84,6 +84,7 @@
     "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-module-metadata": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "change-case": "^5.2.0",
