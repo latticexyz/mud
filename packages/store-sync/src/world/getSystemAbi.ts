@@ -31,7 +31,7 @@ export async function getSystemAbi({
 
   const abi = records
     .filter(({ resource, tag }) => hexToString(tag).replace(/\0+$/, "") === "abi" && resource === systemId)
-    .flatMap(({ value }) => (value === "0x" ? [] : parseAbiItem(hexToString(value).split("\n"))));
+    .flatMap(({ value }) => (value === "0x" ? [] : hexToString(value).split("\n").map(parseAbiItem)));
 
   return abi;
 }
