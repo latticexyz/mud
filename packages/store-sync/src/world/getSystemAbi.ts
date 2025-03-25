@@ -29,7 +29,7 @@ export async function getSystemAbi({
 
   const abi = records
     .filter(({ tag }) => hexToString(tag).replace(/\0+$/, "") === "abi")
-    .flatMap(({ value }) => (value === "0x" ? [] : hexToString(value).split("\n").map(parseAbiItem)));
+    .flatMap(({ value }) => (value === "0x" ? [] : parseAbiItem(hexToString(value).split("\n"))));
 
   return abi;
 }
