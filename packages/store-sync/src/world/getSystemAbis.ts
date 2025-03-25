@@ -18,7 +18,7 @@ export async function getSystemAbis({
   readonly toBlock?: bigint;
   readonly indexerUrl?: string;
   readonly chainId?: number;
-}): Promise<Record<string, Abi>> {
+}): Promise<{ readonly [systemId: Hex]: Abi }> {
   const { records } = await getRecords({
     table: metadataConfig.tables.metadata__ResourceTag,
     worldAddress,
