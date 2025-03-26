@@ -1,4 +1,4 @@
-import { Client, Abi, Address, Hex, hexToString, parseAbi } from "viem";
+import { Client, Abi, Address, Hex, hexToString, parseAbi, stringToHex } from "viem";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { getRecords } from "../getRecords";
 
@@ -32,7 +32,7 @@ export async function getSystemAbis({
   const abis = Object.fromEntries([
     ...systemIds.map((id) => [id, [] as Abi] as const),
     ...records
-      .filter(({ resource, tag }) => hexToString(tag).replace(/\0+$/, "") === "abi" && systemIds.includes(resource))
+      .filter(({ resource, tag }) => tag === stringToHex("abi", { size: 32 }) && systemIds.includes(resource))
       .map(({ resource, value }) => {
         const abi = value === "0x" ? [] : parseAbi(hexToString(value).split("\n"));
         return [resource, abi] as const;
