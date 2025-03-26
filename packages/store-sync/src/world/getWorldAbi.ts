@@ -1,4 +1,4 @@
-import { Client, Abi, Address, hexToString, parseAbiItem } from "viem";
+import { Client, Abi, Address, hexToString, parseAbi } from "viem";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { getRecords } from "../getRecords";
 
@@ -29,7 +29,7 @@ export async function getWorldAbi({
 
   const abi = records
     .filter(({ tag }) => hexToString(tag).replace(/\0+$/, "") === "worldAbi")
-    .flatMap(({ value }) => (value === "0x" ? [] : hexToString(value).split("\n").map(parseAbiItem)));
+    .flatMap(({ value }) => (value === "0x" ? [] : parseAbi(hexToString(value).split("\n"))));
 
   return abi;
 }

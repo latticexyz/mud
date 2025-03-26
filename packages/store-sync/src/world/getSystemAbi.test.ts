@@ -1,4 +1,4 @@
-import { parseAbiItem, createTestClient, http } from "viem";
+import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
 import { mockError, mockMetadata, mockSystem1Fn, mockSystem1Id } from "./mocks.test.utils";
@@ -29,6 +29,6 @@ describe("System ABI", () => {
       systemId: mockSystem1Id,
     });
 
-    expect(abi).toEqual([parseAbiItem(mockSystem1Fn), parseAbiItem(mockError)]);
+    expect(abi).toEqual(parseAbi([mockSystem1Fn, mockError]));
   });
 });

@@ -1,4 +1,4 @@
-import { parseAbiItem, createTestClient, http } from "viem";
+import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
 import { mockError, mockMetadata, mockWorldFn } from "./mocks.test.utils";
@@ -26,6 +26,6 @@ describe("World ABI", () => {
       toBlock: 0n,
     });
 
-    expect(abi).toEqual([parseAbiItem(mockWorldFn), parseAbiItem(mockError)]);
+    expect(abi).toEqual(parseAbi([mockWorldFn, mockError]));
   });
 });
