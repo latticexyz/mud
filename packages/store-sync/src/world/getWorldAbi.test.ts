@@ -1,7 +1,7 @@
 import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
-import { mockError, mockMetadata, mockWorldFn } from "./mocks.test.utils";
+import { mockError, mockMetadata, mockWorldFn } from "./test/mocks";
 
 vi.doMock("../getRecords", () => ({
   getRecords: vi.fn().mockResolvedValue({

@@ -9,7 +9,7 @@ import {
   mockSystem2Fn,
   mockSystem2Id,
   mockSystem3Id,
-} from "./mocks.test.utils";
+} from "./test/mocks";
 
 vi.doMock("../getRecords", () => ({
   getRecords: vi.fn().mockResolvedValue({

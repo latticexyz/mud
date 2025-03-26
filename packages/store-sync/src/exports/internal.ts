@@ -6,3 +6,7 @@ export * from "../stash/common";
 export * from "../stash/createStorageAdapter";
 export * from "../stash/createSyncAdapter";
 export * from "../stash/syncToStash";
+
+// World
+export * from "../world/getSystemAbi";
+export * from "../world/getSystemAbis";

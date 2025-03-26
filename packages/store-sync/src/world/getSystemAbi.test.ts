@@ -1,7 +1,7 @@
 import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
-import { mockError, mockMetadata, mockSystem1Fn, mockSystem1Id } from "./mocks.test.utils";
+import { mockError, mockMetadata, mockSystem1Fn, mockSystem1Id } from "./test/mocks";
 
 vi.doMock("@latticexyz/store/internal", async (importOriginal) => {
   const actual = (await importOriginal()) as object;

@@ -2,4 +2,6 @@
 "@latticexyz/store-sync": patch
 ---
 
-`getSystemAbi()` and `getSystemAbis()` to `@latticexyz/store-sync/world` for retrieving system ABIs. `getSystemAbi()`, `getSystemAbis()`, and `getWorldAbi()` now return ABIs that include function and error parameter names.
+`getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
