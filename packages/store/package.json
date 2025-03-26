@@ -10,10 +10,46 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./mud.config": "./dist/mud.config.js",
-    "./codegen": "./dist/codegen.js",
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    },
+    "./internal": {
+      "import": {
+        "import": "./dist/internal.js",
+        "types": "./dist/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/internal.cjs",
+        "types": "./dist/internal.d.cts"
+      }
+    },
+    "./mud.config": {
+      "import": {
+        "import": "./dist/mud.config.js",
+        "types": "./dist/mud.config.d.ts"
+      },
+      "require": {
+        "require": "./dist/mud.config.cjs",
+        "types": "./dist/mud.config.d.cts"
+      }
+    },
+    "./codegen": {
+      "import": {
+        "import": "./dist/codegen.js",
+        "types": "./dist/codegen.d.ts"
+      },
+      "require": {
+        "require": "./dist/codegen.cjs",
+        "types": "./dist/codegen.d.cts"
+      }
+    },
     "./out/*": "./out/*"
   },
   "typesVersions": {

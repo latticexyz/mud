@@ -10,8 +10,26 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/tsup/exports/index.js",
-    "./internal": "./dist/tsup/exports/internal.js"
+    ".": {
+      "import": {
+        "import": "./dist/tsup/exports/index.js",
+        "types": "./dist/tsup/exports/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/tsup/exports/index.cjs",
+        "types": "./dist/tsup/exports/index.d.cts"
+      }
+    },
+    "./internal": {
+      "import": {
+        "import": "./dist/tsup/exports/internal.js",
+        "types": "./dist/tsup/exports/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/tsup/exports/internal.cjs",
+        "types": "./dist/tsup/exports/internal.d.cts"
+      }
+    }
   },
   "typesVersions": {
     "*": {

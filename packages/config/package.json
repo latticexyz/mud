@@ -10,9 +10,36 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./node": "./dist/deprecated/node.js"
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    },
+    "./internal": {
+      "import": {
+        "import": "./dist/internal.js",
+        "types": "./dist/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/internal.cjs",
+        "types": "./dist/internal.d.cts"
+      }
+    },
+    "./node": {
+      "import": {
+        "import": "./dist/deprecated/node.js",
+        "types": "./dist/deprecated/node.d.ts"
+      },
+      "require": {
+        "require": "./dist/deprecated/node.cjs",
+        "types": "./dist/deprecated/node.d.cts"
+      }
+    }
   },
   "typesVersions": {
     "*": {

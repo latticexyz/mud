@@ -10,10 +10,46 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./mud.config": "./dist/mud.config.js",
-    "./node": "./dist/node.js",
+    ".": {
+      "import": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    },
+    "./internal": {
+      "import": {
+        "import": "./dist/internal.js",
+        "types": "./dist/internal.d.ts"
+      },
+      "require": {
+        "require": "./dist/internal.cjs",
+        "types": "./dist/internal.d.cts"
+      }
+    },
+    "./mud.config": {
+      "import": {
+        "import": "./dist/mud.config.js",
+        "types": "./dist/mud.config.d.ts"
+      },
+      "require": {
+        "require": "./dist/mud.config.cjs",
+        "types": "./dist/mud.config.d.cts"
+      }
+    },
+    "./node": {
+      "import": {
+        "import": "./dist/node.js",
+        "types": "./dist/node.d.ts"
+      },
+      "require": {
+        "require": "./dist/node.cjs",
+        "types": "./dist/node.d.cts"
+      }
+    },
     "./out/*": "./out/*"
   },
   "typesVersions": {
