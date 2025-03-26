@@ -19,7 +19,7 @@
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
-    "./world": "./dist/world/index.js",
+    "./world": "./dist/exports/world.js",
     "./zustand": "./dist/zustand/index.js"
   },
   "typesVersions": {
@@ -52,7 +52,7 @@
         "./dist/trpc-indexer/index.d.ts"
       ],
       "world": [
-        "./dist/world/index.d.ts"
+        "./dist/exports/world.d.ts"
       ],
       "zustand": [
         "./dist/zustand/index.d.ts"
@@ -84,6 +84,7 @@
     "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-module-metadata": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "change-case": "^5.2.0",

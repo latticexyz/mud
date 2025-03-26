@@ -1,20 +1,18 @@
-import { describe, expect, it, vi } from "vitest";
-import { createTestClient, http } from "viem";
-import { getWorldAbi } from "./getWorldAbi";
+import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
+import { describe, expect, it, vi } from "vitest";
+import { mockError, mockMetadata, mockWorldFn } from "./test/mocks";
 
-vi.mock("./getFunctions", () => {
-  const mockGetFunctionsResult = [{ signature: "setNumber(bool)" }, { signature: "batchCall((bytes32,bytes)[])" }];
-  const getFunctions = vi.fn();
-  getFunctions.mockResolvedValue(mockGetFunctionsResult);
+vi.doMock("../getRecords", () => ({
+  getRecords: vi.fn().mockResolvedValue({
+    records: mockMetadata,
+  }),
+}));
 
-  return {
-    getFunctions,
-  };
-});
+const { getWorldAbi } = await import("./getWorldAbi");
 
 describe("World ABI", () => {
-  it("should concat base and world ABI", async () => {
+  it("should return the world ABI", async () => {
     const client = createTestClient({
       chain: foundry,
       mode: "anvil",
@@ -28,24 +26,6 @@ describe("World ABI", () => {
       toBlock: 0n,
     });
 
-    expect(abi).toContainEqual({
-      inputs: [
-        {
-          type: "bool",
-        },
-      ],
-      name: "setNumber",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    });
-
-    expect(abi).not.toContainEqual({
-      name: "batchCall",
-      type: "function",
-      stateMutability: "nonpayable",
-      inputs: [{ type: "tuple[]", components: [{ type: "bytes32" }, { type: "bytes" }] }],
-      outputs: [],
-    });
+    expect(abi).toEqual(parseAbi([mockWorldFn, mockError]));
   });
 });
