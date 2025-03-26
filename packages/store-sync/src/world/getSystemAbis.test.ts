@@ -19,8 +19,8 @@ vi.doMock("../getRecords", () => ({
 
 const { getSystemAbis } = await import("./getSystemAbis");
 
-describe("System ABI", () => {
-  it("should return the system ABI", async () => {
+describe("Systems ABIs", () => {
+  it("should return the systems ABIs", async () => {
     const client = createTestClient({
       chain: foundry,
       mode: "anvil",
