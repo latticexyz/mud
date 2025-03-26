@@ -16,6 +16,7 @@ vi.doMock("../getRecords", () => ({
     records: mockMetadata,
   }),
 }));
+
 const { getSystemAbis } = await import("./getSystemAbis");
 
 describe("System ABI", () => {

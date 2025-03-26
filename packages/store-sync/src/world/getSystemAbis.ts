@@ -29,12 +29,15 @@ export async function getSystemAbis({
     toBlock,
   });
 
-  const abi = Object.fromEntries([
-    ...systemIds.map((id) => [id, []]),
+  const abis = Object.fromEntries([
+    ...systemIds.map((id) => [id, [] as Abi] as const),
     ...records
       .filter(({ resource, tag }) => hexToString(tag).replace(/\0+$/, "") === "abi" && systemIds.includes(resource))
-      .map(({ resource, value }) => [resource, value === "0x" ? [] : hexToString(value).split("\n").map(parseAbiItem)]),
-  ]) as Record<string, Abi>;
+      .map(({ resource, value }) => {
+        const abi = value === "0x" ? [] : hexToString(value).split("\n").map(parseAbiItem);
+        return [resource, abi] as const;
+      }),
+  ]);
 
-  return abi;
+  return abis;
 }

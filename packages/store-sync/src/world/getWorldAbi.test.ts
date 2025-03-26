@@ -8,6 +8,7 @@ vi.doMock("../getRecords", () => ({
     records: mockMetadata,
   }),
 }));
+
 const { getWorldAbi } = await import("./getWorldAbi");
 
 describe("World ABI", () => {

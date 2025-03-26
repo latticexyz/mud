@@ -1,37 +1,22 @@
-import { Client, Abi, Address, hexToString, parseAbiItem, Hex } from "viem";
+import { Client, Abi, Address, hexToString, parseAbiItem, Hex, stringToHex } from "viem";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
-import { getRecords } from "../getRecords";
+import { getRecord } from "@latticexyz/store/internal";
 
 export async function getSystemAbi({
   client,
   worldAddress,
   systemId,
-  fromBlock,
-  toBlock,
-  indexerUrl,
-  chainId,
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
   readonly systemId: Hex;
-  readonly fromBlock?: bigint;
-  readonly toBlock?: bigint;
-  readonly indexerUrl?: string;
-  readonly chainId?: number;
 }): Promise<Abi> {
-  const { records } = await getRecords({
+  const record = await getRecord(client, {
+    address: worldAddress,
     table: metadataConfig.tables.metadata__ResourceTag,
-    worldAddress,
-    chainId,
-    indexerUrl,
-    client,
-    fromBlock,
-    toBlock,
+    key: { resource: systemId, tag: stringToHex("abi", { size: 32 }) },
   });
-
-  const abi = records
-    .filter(({ resource, tag }) => hexToString(tag).replace(/\0+$/, "") === "abi" && resource === systemId)
-    .flatMap(({ value }) => (value === "0x" ? [] : hexToString(value).split("\n").map(parseAbiItem)));
+  const abi = hexToString(record.value).split("\n").map(parseAbiItem);
 
   return abi;
 }

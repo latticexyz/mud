@@ -3,11 +3,16 @@ import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
 import { mockError, mockMetadata, mockSystem1Fn, mockSystem1Id } from "./mocks.test.utils";
 
-vi.doMock("../getRecords", () => ({
-  getRecords: vi.fn().mockResolvedValue({
-    records: mockMetadata,
-  }),
-}));
+vi.doMock("@latticexyz/store/internal", async (importOriginal) => {
+  const actual = (await importOriginal()) as object;
+  return {
+    ...actual,
+    getRecord: vi.fn().mockResolvedValue({
+      value: mockMetadata[0].value,
+    }),
+  };
+});
+
 const { getSystemAbi } = await import("./getSystemAbi");
 
 describe("System ABI", () => {
@@ -22,8 +27,6 @@ describe("System ABI", () => {
       client,
       worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
       systemId: mockSystem1Id,
-      fromBlock: 0n,
-      toBlock: 0n,
     });
 
     expect(abi).toEqual([parseAbiItem(mockSystem1Fn), parseAbiItem(mockError)]);
