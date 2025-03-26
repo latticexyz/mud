@@ -81,7 +81,12 @@ export function TransactionsWatcher() {
         receipt,
         logs,
         value: transaction.value,
-        status: userOperationEvent?.args.success ? "success" : "reverted",
+        status:
+          userOperationEvent && "success" in userOperationEvent.args
+            ? userOperationEvent.args.success
+              ? "success"
+              : "reverted"
+            : "reverted",
       });
     },
     [abi, setTransaction, worldAddress],
