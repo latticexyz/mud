@@ -121,6 +121,7 @@ export const systemsConfig = defineWorld({
     worldgenDirectory: "interfaces",
     worldInterfaceName: "IBaseWorld",
     generateSystemLibraries: true,
+    // generate into experimental dir until these are stable/audited
     systemLibrariesDirectory: "experimental/systems",
   },
   // Keep aligned with src/modules/init/constants.sol
