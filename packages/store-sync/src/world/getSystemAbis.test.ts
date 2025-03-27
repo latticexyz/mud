@@ -20,7 +20,7 @@ vi.doMock("../getRecords", () => ({
 const { getSystemAbis } = await import("./getSystemAbis");
 
 describe("Systems ABIs", () => {
-  it("should return the systems ABIs", async () => {
+  it("should return queried systems ABIs", async () => {
     const client = createTestClient({
       chain: foundry,
       mode: "anvil",
@@ -30,7 +30,27 @@ describe("Systems ABIs", () => {
     const abi = await getSystemAbis({
       client,
       worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-      systemIds: [mockSystem1Id, mockSystem2Id, mockSystem3Id],
+      systemIds: [mockSystem1Id, mockSystem3Id],
+      fromBlock: 0n,
+      toBlock: 0n,
+    });
+
+    expect(abi).toEqual({
+      [mockSystem1Id]: parseAbi([mockSystem1Fn, mockError]),
+      [mockSystem3Id]: [],
+    });
+  });
+
+  it("should return all systems ABIs", async () => {
+    const client = createTestClient({
+      chain: foundry,
+      mode: "anvil",
+      transport: http(),
+    });
+
+    const abi = await getSystemAbis({
+      client,
+      worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
       fromBlock: 0n,
       toBlock: 0n,
     });
@@ -38,7 +58,6 @@ describe("Systems ABIs", () => {
     expect(abi).toEqual({
       [mockSystem1Id]: parseAbi([mockSystem1Fn, mockError]),
       [mockSystem2Id]: parseAbi([mockSystem2Fn, mockError]),
-      [mockSystem3Id]: [],
     });
   });
 });

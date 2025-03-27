@@ -556,9 +556,6 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
-      '@latticexyz/world-module-metadata':
-        specifier: workspace:*
-        version: link:../world-module-metadata
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)

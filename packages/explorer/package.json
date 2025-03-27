@@ -45,7 +45,6 @@
     "@latticexyz/store-indexer": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@latticexyz/world-module-metadata": "workspace:*",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
