@@ -1,5 +1,5 @@
 import { Abi, Hex } from "viem";
-import { getSystemAbis } from "@latticexyz/store-sync/world";
+import { getSystemAbis } from "@latticexyz/store-sync/internal";
 import { validateChainId } from "../../../../common";
 import { getClient } from "../utils/getClient";
 import { getIndexerUrl } from "../utils/getIndexerUrl";
