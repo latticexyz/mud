@@ -3,7 +3,6 @@
 import { AbiFunction, AbiItem, toFunctionSelector } from "viem";
 import { formatAbiItem } from "viem/utils";
 import * as z from "zod";
-import { AbiError } from "abitype";
 import { useState } from "react";
 import "react18-json-view/src/dark.css";
 import "react18-json-view/src/style.css";
@@ -26,6 +25,8 @@ import { cn } from "../../../../../../utils";
 import { useSystemAbisQuery } from "../../../../queries/useSystemAbisQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { getErrorSelector } from "./getErrorSelector";
+
+type AbiError = AbiItem & { type: "error" };
 
 const formSchema = z.object({
   selector: z.string().min(1).optional(),
