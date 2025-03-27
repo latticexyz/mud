@@ -35,7 +35,7 @@ function isFunction(item: AbiItem): item is AbiFunction {
   return item.type === "function";
 }
 
-function isError(item: AbiItem): item is AbiError {
+function isError(item: AbiItem): item is AbiItem & { type: "error" } {
   return item.type === "error";
 }
 
