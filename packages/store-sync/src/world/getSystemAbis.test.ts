@@ -1,6 +1,6 @@
 import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import {
   mockError,
   mockMetadata,
@@ -20,19 +20,26 @@ vi.doMock("../getRecords", () => ({
 const { getSystemAbis } = await import("./getSystemAbis");
 
 describe("Systems ABIs", () => {
-  it("should return queried systems ABIs", async () => {
-    const client = createTestClient({
+  let client;
+  const baseParams = {
+    worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+    fromBlock: 0n,
+    toBlock: 0n,
+  };
+
+  beforeEach(() => {
+    client = createTestClient({
       chain: foundry,
       mode: "anvil",
       transport: http(),
     });
+  });
 
+  it("should return queried systems ABIs", async () => {
     const abi = await getSystemAbis({
+      ...baseParams,
       client,
-      worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
       systemIds: [mockSystem1Id, mockSystem3Id],
-      fromBlock: 0n,
-      toBlock: 0n,
     });
 
     expect(abi).toEqual({
@@ -42,17 +49,9 @@ describe("Systems ABIs", () => {
   });
 
   it("should return all systems ABIs", async () => {
-    const client = createTestClient({
-      chain: foundry,
-      mode: "anvil",
-      transport: http(),
-    });
-
     const abi = await getSystemAbis({
+      ...baseParams,
       client,
-      worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-      fromBlock: 0n,
-      toBlock: 0n,
     });
 
     expect(abi).toEqual({
