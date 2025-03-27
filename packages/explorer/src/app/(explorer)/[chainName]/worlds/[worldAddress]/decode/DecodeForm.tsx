@@ -31,11 +31,11 @@ const formSchema = z.object({
   selector: z.string().min(1).optional(),
 });
 
-function isFunction(item: AbiItem): item is AbiFunction {
+function isAbiFunction(item: AbiItem): item is AbiFunction {
   return item.type === "function";
 }
 
-function isError(item: AbiItem): item is AbiItem & { type: "error" } {
+function isAbiError(item: AbiItem): item is AbiItem & { type: "error" } {
   return item.type === "error";
 }
 
@@ -53,9 +53,9 @@ export function DecodeForm() {
     const abis = [worldAbi, ...systemsAbis].flat();
 
     const abiItem = abis.find((item): item is AbiFunction | AbiError => {
-      if (isFunction(item)) {
+      if (isAbiFunction(item)) {
         return toFunctionSelector(item) === selector;
-      } else if (isError(item)) {
+      } else if (isAbiError(item)) {
         return getErrorSelector(item) === selector;
       }
       return false;

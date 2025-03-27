@@ -60,7 +60,6 @@
     "@rainbow-me/rainbowkit": "^2.1.5",
     "@tanstack/react-query": "^5.51.3",
     "@tanstack/react-table": "^8.19.3",
-    "abitype": "1.0.6",
     "better-sqlite3": "^8.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
