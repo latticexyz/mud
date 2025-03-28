@@ -13,7 +13,7 @@ export async function getSystemAbis({
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
-  readonly systemIds: Hex[];
+  readonly systemIds?: Hex[];
   readonly fromBlock?: bigint;
   readonly toBlock?: bigint;
   readonly indexerUrl?: string;
@@ -30,9 +30,13 @@ export async function getSystemAbis({
   });
 
   const abis = Object.fromEntries([
-    ...systemIds.map((id) => [id, [] as Abi] as const),
+    ...(systemIds?.map((id) => [id, [] as Abi] as const) || []),
     ...records
-      .filter(({ resource, tag }) => tag === stringToHex("abi", { size: 32 }) && systemIds.includes(resource))
+      .filter(({ resource, tag }) => {
+        const isAbiTag = tag === stringToHex("abi", { size: 32 });
+        const matchesSystemId = systemIds ? systemIds.includes(resource) : true;
+        return isAbiTag && matchesSystemId;
+      })
       .map(({ resource, value }) => {
         const abi = value === "0x" ? [] : parseAbi(hexToString(value).split("\n"));
         return [resource, abi] as const;

@@ -2,7 +2,7 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { AbiFunction, stringify } from "viem";
+import { AbiFunction, AbiItem, stringify } from "viem";
 import { useDeferredValue, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
@@ -12,6 +12,10 @@ import { useHashState } from "../../../../hooks/useHashState";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { FunctionField } from "./FunctionField";
 
+function isFunction(abi: AbiItem): abi is AbiFunction {
+  return abi.type === "function";
+}
+
 export function InteractForm() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
@@ -20,7 +24,8 @@ export function InteractForm() {
   const filteredFunctions = useMemo(() => {
     if (!data?.abi) return [];
     return data.abi.filter(
-      (item) => item.type === "function" && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
+      (item): item is AbiFunction =>
+        isFunction(item) && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
     );
   }, [data?.abi, deferredFilterValue]);
 
