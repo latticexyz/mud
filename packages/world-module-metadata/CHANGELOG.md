@@ -1,5 +1,21 @@
 # @latticexyz/world-module-metadata
 
+## 2.2.22
+
+### Patch Changes
+
+- 2048adf: Added experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.
+
+  ```solidity
+  import { metadataSystem } from "@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol";
+
+  metadataSystem.setResourceTag(namespaceId, bytes32("label"), "hello");
+  ```
+
+  - @latticexyz/schema-type@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/world@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

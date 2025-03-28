@@ -1,5 +1,71 @@
 [
   {
+    "version": "2.2.22",
+    "date": "2025-03-28T12:39:52.303Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.\n\nAlso added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.",
+          "type": 0,
+          "commitHash": "490159e880e2ac0e1ce8f5785873a25b99fb7668",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(store-sync): system/world ABI from metadata (#3642)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\n- Added the `/system-abis` endpoint to retrieve ABIs by system IDs.\n- The search form for decoding selectors now uses all system ABIs for complete results.\n- The `ABI` page has been renamed to `Decode`.",
+          "type": 0,
+          "commitHash": "13071c45dd7d28c1860e703d12b07624c271f508",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): use systems abis in decode form (#3646)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded explicit gas estimation for Pyrope to avoid overpaying.",
+          "type": 0,
+          "commitHash": "050dfd5c0f540bc4145db05ca6798926fdecff4c",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(entrykit): add pyrope fee estimation (#3640)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.\n\n```solidity\nimport { metadataSystem } from \"@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol\";\n\nmetadataSystem.setResourceTag(namespaceId, bytes32(\"label\"), \"hello\");\n```",
+          "type": 0,
+          "commitHash": "2048adf7aa386ef1fe1e9863dd87cebdef439f1b",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world-module-metadata): add metadata system lib (#3645)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.21",
     "date": "2025-03-21T23:41:59.847Z",
     "changes": {
