@@ -4,15 +4,21 @@ import Router from "@koa/router";
 import compose from "koa-compose";
 import { input } from "@latticexyz/store-sync/indexer-client";
 import { schemasTable } from "@latticexyz/store-sync";
-import { queryLogs } from "./queryLogs";
-import { recordToLog } from "./recordToLog";
-import { debug, error } from "../debug";
+import { queryLogs } from "../queryLogs";
+import { recordToLog } from "../recordToLog";
+import { debug, error } from "../../debug";
 import { createBenchmark } from "@latticexyz/common";
-import { compress } from "../koa-middleware/compress";
+import { compress } from "../../koa-middleware/compress";
 
-export function apiRoutes(database: Sql): Middleware {
+/**
+ * @deprecated
+ * Please keep this implementation unchanged in order to maintain
+ * backwards compatibility for third parties.
+ */
+export function apiRoutesV1(database: Sql): Middleware {
   const router = new Router();
 
+  // Unversioned path for backwards compatibility
   router.get("/api/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("postgres:logs");
     let options: ReturnType<typeof input.parse>;
