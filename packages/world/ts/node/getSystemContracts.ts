@@ -22,22 +22,16 @@ export async function getSystemContracts({
     pattern: path.join(config.sourceDirectory, "**"),
   });
 
-  // Get systems from the top-level systems object
-  const topLevelSystems = Object.keys(config.systems);
-
-  // Get systems from namespaces
-  const namespaceSystems = Object.values(config.namespaces || {}).flatMap((namespace) =>
-    Object.keys(namespace.systems || {}),
+  // Get system labels from all namespaces
+  const configSystemLabels = Object.values(config.namespaces || {}).flatMap((namespace) =>
+    Object.values(namespace.systems).map((system) => system.label),
   );
-
-  // Combine both sets of systems
-  const configSystems = [...topLevelSystems, ...namespaceSystems];
 
   return solidityFiles
     .filter(
       (file) =>
         // Include files with the System suffix and files defined in config
-        (file.basename.endsWith("System") || configSystems.includes(file.basename)) &&
+        (file.basename.endsWith("System") || configSystemLabels.includes(file.basename)) &&
         // exclude the base System contract
         file.basename !== "System" &&
         // exclude interfaces
