@@ -240,4 +240,26 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
     StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
   }
+
+  /// forge-config: default.allow_internal_expect_revert = true
+  function testDynamicFieldInvalidDeleteCount() public {
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
+
+    // Expect a revert if deleteCount is greater than the current field length
+    uint256 length = secondDataBytes.length;
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidSplice.selector, 0, 9, length));
+    StoreCore.spliceDynamicData(tableId, keyTuple, 0, 0, 9, hex"191a1b1c");
+  }
+
+  /// forge-config: default.allow_internal_expect_revert = true
+  function testDynamicFieldInvalidSplice() public {
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
+
+    // Expect a revert if the data to be removed is not at the end of the field
+    uint256 length = secondDataBytes.length;
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidSplice.selector, 0, 1, length));
+    StoreCore.spliceDynamicData(tableId, keyTuple, 0, 0, 1, "");
+  }
 }
