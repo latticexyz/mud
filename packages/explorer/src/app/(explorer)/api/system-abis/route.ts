@@ -19,7 +19,7 @@ export async function GET(req: Request) {
   const systemIds = searchParams.get("systemIds")?.split(",") as Hex[];
 
   if (!chainId || !worldAddress) {
-    return Response.json({ error: "Missing chainId, worldAddress or systemIds" }, { status: 400 });
+    return Response.json({ error: "Missing chainId or worldAddress" }, { status: 400 });
   }
   validateChainId(chainId);
 
