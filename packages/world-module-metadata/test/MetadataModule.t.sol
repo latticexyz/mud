@@ -99,20 +99,15 @@ contract MetadataModuleTest is Test, GasReporter {
     assertEq(ResourceTag.get(resource, "label"), "");
   }
 
-  function testTagNonexistentResource() public {
+  function testTagArbitraryResource() public {
     world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
 
     world.installModule(metadataModule, new bytes(0));
-    ResourceId resource = WorldResourceIdLib.encode("tb", "whatever", "SomeTable");
 
-    vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
-    );
-    world.metadata__setResourceTag(resource, "label", "SomeTable");
+    ResourceId resource = WorldResourceIdLib.encode("az", "whatever", "SomeResource");
+    world.registerNamespace(resource.getNamespaceId());
 
-    vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
-    );
+    world.metadata__setResourceTag(resource, "label", "SomeArbitraryResource");
     world.metadata__deleteResourceTag(resource, "label");
   }
 
