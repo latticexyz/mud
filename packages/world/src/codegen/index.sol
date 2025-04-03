@@ -15,3 +15,4 @@ import { SystemHooks } from "./tables/SystemHooks.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "./tables/FunctionSignatures.sol";
 import { InitModuleAddress } from "./tables/InitModuleAddress.sol";
+import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";

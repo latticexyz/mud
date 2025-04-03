@@ -19,10 +19,11 @@ import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelega
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
+import { CallWithSignatureSystem } from "./implementations/CallWithSignatureSystem/CallWithSignatureSystem.sol";
 
 import { RegistrationSystem } from "./RegistrationSystem.sol";
-import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "./constants.sol";
-import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration } from "./functionSignatures.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID, CALL_WITH_SIGNATURE_SYSTEM_ID } from "./constants.sol";
+import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration, getFunctionSignaturesCallWithSignature } from "./functionSignatures.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
@@ -31,6 +32,7 @@ import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
 import { InitModuleAddress } from "../../codegen/tables/InitModuleAddress.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
+import { CallWithSignatureNonces } from "../../codegen/tables/CallWithSignatureNonces.sol";
 
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
@@ -45,17 +47,20 @@ contract InitModule is Module {
   address internal immutable balanceTransferSystem;
   address internal immutable batchCallSystem;
   address internal immutable registrationSystem;
+  address internal immutable delegationSystem;
 
   constructor(
     AccessManagementSystem _accessManagementSystem,
     BalanceTransferSystem _balanceTransferSystem,
     BatchCallSystem _batchCallSystem,
-    RegistrationSystem _registrationSystem
+    RegistrationSystem _registrationSystem,
+    CallWithSignatureSystem _delegationSystem
   ) {
     accessManagementSystem = address(_accessManagementSystem);
     balanceTransferSystem = address(_balanceTransferSystem);
     batchCallSystem = address(_batchCallSystem);
     registrationSystem = address(_registrationSystem);
+    delegationSystem = address(_delegationSystem);
   }
 
   /**
@@ -86,6 +91,7 @@ contract InitModule is Module {
     SystemHooks.register();
     SystemRegistry.register();
     InitModuleAddress.register();
+    CallWithSignatureNonces.register();
 
     ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
     NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
@@ -108,6 +114,7 @@ contract InitModule is Module {
     _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
     _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
     _registerSystem(registrationSystem, REGISTRATION_SYSTEM_ID);
+    _registerSystem(delegationSystem, CALL_WITH_SIGNATURE_SYSTEM_ID);
   }
 
   /**
@@ -146,6 +153,11 @@ contract InitModule is Module {
     string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
     for (uint256 i = 0; i < functionSignaturesRegistration.length; i++) {
       _registerRootFunctionSelector(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
+    }
+
+    string[1] memory functionSignaturesCallWithSignature = getFunctionSignaturesCallWithSignature();
+    for (uint256 i = 0; i < functionSignaturesCallWithSignature.length; i++) {
+      _registerRootFunctionSelector(CALL_WITH_SIGNATURE_SYSTEM_ID, functionSignaturesCallWithSignature[i]);
     }
   }
 

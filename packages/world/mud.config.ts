@@ -110,6 +110,10 @@ export const tablesConfig = defineWorld({
       },
       key: [],
     },
+    CallWithSignatureNonces: {
+      schema: { signer: "address", nonce: "uint256" },
+      key: ["signer"],
+    },
   },
 });
 
@@ -147,6 +151,9 @@ export const systemsConfig = defineWorld({
     },
     WorldRegistrationSystem: {
       name: "Registration",
+    },
+    CallWithSignatureSystem: {
+      name: "SignatureCall",
     },
   },
 });
