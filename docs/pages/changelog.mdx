@@ -1,3 +1,45 @@
+## Version 2.2.22
+
+Release date: Thu Apr 03 2025
+
+### Patch changes
+
+**[chore(explorer): append base world ABI to API endpoint (#3653)](https://github.com/latticexyz/mud/commit/7fd242ecf040c1c9955cdd2c971d0ed5570fa14b)** (@latticexyz/explorer)
+
+World ABI endpoint is now includes the base world ABI.
+
+**[feat(store-sync): system/world ABI from metadata (#3642)](https://github.com/latticexyz/mud/commit/490159e880e2ac0e1ce8f5785873a25b99fb7668)** (@latticexyz/store-sync)
+
+`getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
+
+**[feat(explorer): use systems abis in decode form (#3646)](https://github.com/latticexyz/mud/commit/13071c45dd7d28c1860e703d12b07624c271f508)** (@latticexyz/explorer)
+
+- Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+- The search form for decoding selectors now uses all system ABIs for complete results.
+- The `ABI` page has been renamed to `Decode`.
+
+**[feat(entrykit): add pyrope fee estimation (#3640)](https://github.com/latticexyz/mud/commit/050dfd5c0f540bc4145db05ca6798926fdecff4c)** (@latticexyz/entrykit)
+
+Added explicit gas estimation for Pyrope to avoid overpaying.
+
+**[chore(explorer): optional systemIds param for system ABIs endpoint (#3651)](https://github.com/latticexyz/mud/commit/a3645c819959efe97ff2e50f6f5b88ebe77fa980)** (@latticexyz/explorer)
+
+`systemIds` parameter is now optional for the system ABIs API endpoint.
+
+**[feat(world-module-metadata): add metadata system lib (#3645)](https://github.com/latticexyz/mud/commit/2048adf7aa386ef1fe1e9863dd87cebdef439f1b)** (@latticexyz/world-module-metadata)
+
+Added experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.
+
+```solidity
+import { metadataSystem } from "@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol";
+
+metadataSystem.setResourceTag(namespaceId, bytes32("label"), "hello");
+```
+
+---
+
 ## Version 2.2.21
 
 Release date: Fri Mar 21 2025
