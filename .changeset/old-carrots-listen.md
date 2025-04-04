@@ -1,5 +1,4 @@
 ---
-"@latticexyz/explorer": patch
 "@latticexyz/store-sync": patch
 ---
 
