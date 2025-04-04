@@ -1,6 +1,25 @@
-import { Client, Abi, Address, hexToString, parseAbi, stringToHex } from "viem";
+import {
+  Client,
+  Abi,
+  Address,
+  AbiItem,
+  AbiFunction,
+  getAddress,
+  toFunctionSelector,
+  hexToString,
+  parseAbi,
+  stringToHex,
+} from "viem";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
+import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
+import { isDefined } from "@latticexyz/common/utils";
+import { getFunctions } from "./getFunctions";
 import { getRecords } from "../getRecords";
+
+function isAbiFunction(abiItem: AbiItem): abiItem is AbiFunction {
+  return abiItem.type === "function";
+}
 
 export async function getWorldAbi({
   client,
@@ -17,19 +36,46 @@ export async function getWorldAbi({
   readonly indexerUrl?: string;
   readonly chainId?: number;
 }): Promise<Abi> {
-  const { records } = await getRecords({
-    table: metadataConfig.tables.metadata__ResourceTag,
-    worldAddress,
-    chainId,
-    indexerUrl,
-    client,
-    fromBlock,
-    toBlock,
-  });
+  const [worldFunctions, { records }] = await Promise.all([
+    getFunctions({
+      client,
+      worldAddress: getAddress(worldAddress),
+      fromBlock,
+      toBlock,
+      indexerUrl,
+      chainId,
+    }),
+    getRecords({
+      table: metadataConfig.tables.metadata__ResourceTag,
+      worldAddress,
+      chainId,
+      indexerUrl,
+      client,
+      fromBlock,
+      toBlock,
+    }),
+  ]);
 
-  const abi = records
+  const metadataAbi = records
     .filter(({ tag }) => tag === stringToHex("worldAbi", { size: 32 }))
     .flatMap(({ value }) => (value === "0x" ? [] : parseAbi(hexToString(value).split("\n"))));
 
-  return abi;
+  const metadataFunctionSelectors = metadataAbi.filter(isAbiFunction).map(toFunctionSelector);
+  const baseFunctionSelectors = (IBaseWorldAbi as Abi).filter(isAbiFunction).map(toFunctionSelector);
+  const worldFunctionsAbi = worldFunctions
+    .map((func) => {
+      try {
+        return functionSignatureToAbiItem(func.signature);
+      } catch (error) {
+        console.error(error);
+      }
+    })
+    .filter(isDefined)
+    .filter(
+      (abiItem) =>
+        !baseFunctionSelectors.includes(toFunctionSelector(abiItem)) &&
+        !metadataFunctionSelectors.includes(toFunctionSelector(abiItem)),
+    );
+
+  return [...(IBaseWorldAbi as Abi), ...metadataAbi, ...worldFunctionsAbi];
 }

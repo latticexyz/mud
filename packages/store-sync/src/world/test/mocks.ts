@@ -7,6 +7,7 @@ export const mockSystem3Id = stringToHex("system3", { size: 32 });
 export const mockSystem1Fn = "function systemFn(uint256 arg1, bool arg2) pure returns (uint256)";
 export const mockSystem2Fn = "function systemFn2(uint256 arg1, bool arg2) pure returns (uint256)";
 export const mockWorldFn = "function test_WorldFunction(uint256 arg1, bool arg2) pure returns (uint256)";
+export const mockWorldFn2 = "function setNumber(bool)";
 export const mockError = "error Error(string message)";
 
 export const mockMetadata = [
