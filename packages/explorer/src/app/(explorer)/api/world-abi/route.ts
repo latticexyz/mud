@@ -62,9 +62,9 @@ export async function GET(req: Request) {
         }),
       ]);
 
-      const filteredWorldAbi_deprecated = worldAbi_deprecated.filter((abiItem) => {
-        if ("name" in abiItem) {
-          return !worldAbi.some((worldAbiItem) => "name" in worldAbiItem && worldAbiItem.name === abiItem.name);
+      const filteredWorldAbi_deprecated = worldAbi_deprecated.filter((deprecatedAbiItem) => {
+        if ("name" in deprecatedAbiItem) {
+          return !worldAbi.some((abiItem) => "name" in abiItem && abiItem.name === deprecatedAbiItem.name);
         }
         return false;
       });
@@ -92,15 +92,15 @@ export async function GET(req: Request) {
       }),
     ]);
 
-    const mainAbi = [...IBaseWorldAbi, ...worldAbi];
-    const filteredWorldAbi_deprecated = worldAbi_deprecated.filter((abiItem) => {
-      if ("name" in abiItem) {
-        return !mainAbi.some((mainAbiItem) => "name" in mainAbiItem && mainAbiItem.name === abiItem.name);
+    const abi = [...IBaseWorldAbi, ...worldAbi];
+    const filteredWorldAbi_deprecated = worldAbi_deprecated.filter((deprecatedAbiItem) => {
+      if ("name" in deprecatedAbiItem) {
+        return !abi.some((abiItem) => "name" in abiItem && abiItem.name === deprecatedAbiItem.name);
       }
       return false;
     });
 
-    return Response.json({ abi: [...mainAbi, ...filteredWorldAbi_deprecated], isWorldDeployed });
+    return Response.json({ abi: [...abi, ...filteredWorldAbi_deprecated], isWorldDeployed });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     return Response.json({ error: errorMessage }, { status: 400 });
