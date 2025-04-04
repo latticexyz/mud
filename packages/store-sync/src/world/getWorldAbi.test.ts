@@ -1,7 +1,18 @@
 import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
-import { mockError, mockMetadata, mockWorldFn } from "./test/mocks";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import { mockError, mockMetadata, mockWorldFn, mockWorldFn2 } from "./test/mocks";
+
+vi.doMock("./getFunctions", () => {
+  const mockGetFunctionsResult = [{ signature: "setNumber(bool)" }, { signature: "batchCall((bytes32,bytes)[])" }];
+  const getFunctions = vi.fn();
+  getFunctions.mockResolvedValue(mockGetFunctionsResult);
+
+  return {
+    getFunctions,
+  };
+});
 
 vi.doMock("../getRecords", () => ({
   getRecords: vi.fn().mockResolvedValue({
@@ -26,6 +37,6 @@ describe("World ABI", () => {
       toBlock: 0n,
     });
 
-    expect(abi).toEqual(parseAbi([mockWorldFn, mockError]));
+    expect(abi).toEqual([...IBaseWorldAbi, ...parseAbi([mockWorldFn, mockError, mockWorldFn2])]);
   });
 });
