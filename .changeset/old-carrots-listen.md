@@ -2,4 +2,7 @@
 "@latticexyz/store-sync": patch
 ---
 
-`getWorldAbi()` now returns an extended ABI that includes both the base World ABI and additional function selectors derived from MUD events.
+`getWorldAbi()` now returns an ABI that is a combination of:
+- base World ABI
+- system ABIs stored onchain with metadata module during deploy
+- world functions
