@@ -46,7 +46,7 @@ export async function GET(req: Request) {
     const indexerUrl = getIndexerUrl(chainId);
 
     if (indexerUrl) {
-      const [code, worldAbi, worldAbi_deprecated] = await Promise.all([
+      const [code, worldAbi] = await Promise.all([
         getCode(client, { address: worldAddress }),
         getWorldAbi({
           client,
@@ -54,53 +54,44 @@ export async function GET(req: Request) {
           indexerUrl,
           chainId,
         }),
-        getWorldAbi_deprecated({
-          client,
-          worldAddress,
-          fromBlock: 0n,
-          toBlock: 0n,
-        }),
       ]);
 
-      const filteredWorldAbi_deprecated = worldAbi_deprecated.filter((deprecatedAbiItem) => {
-        if ("name" in deprecatedAbiItem) {
-          return !worldAbi.some((abiItem) => "name" in abiItem && abiItem.name === deprecatedAbiItem.name);
-        }
-        return false;
-      });
+      const abi =
+        worldAbi && worldAbi.length > 0
+          ? worldAbi
+          : await getWorldAbi_deprecated({
+              client,
+              worldAddress,
+              fromBlock: 0n,
+              toBlock: 0n,
+            });
 
       return Response.json({
-        abi: [...worldAbi, ...filteredWorldAbi_deprecated],
+        abi,
         isWorldDeployed: code && size(code) > 0,
       });
     }
 
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
-    const [worldAbi, worldAbi_deprecated] = await Promise.all([
-      getWorldAbi({
-        client,
-        worldAddress,
-        fromBlock,
-        toBlock,
-        chainId,
-      }),
-      getWorldAbi_deprecated({
-        client,
-        worldAddress,
-        fromBlock,
-        toBlock,
-      }),
-    ]);
-
-    const abi = [...IBaseWorldAbi, ...worldAbi];
-    const filteredWorldAbi_deprecated = worldAbi_deprecated.filter((deprecatedAbiItem) => {
-      if ("name" in deprecatedAbiItem) {
-        return !abi.some((abiItem) => "name" in abiItem && abiItem.name === deprecatedAbiItem.name);
-      }
-      return false;
+    const worldAbi = await getWorldAbi({
+      client,
+      worldAddress,
+      fromBlock,
+      toBlock,
+      chainId,
     });
 
-    return Response.json({ abi: [...abi, ...filteredWorldAbi_deprecated], isWorldDeployed });
+    const abi =
+      worldAbi && worldAbi.length > 0
+        ? worldAbi
+        : await getWorldAbi_deprecated({
+            client,
+            worldAddress,
+            fromBlock,
+            toBlock,
+          });
+
+    return Response.json({ abi: [...IBaseWorldAbi, ...abi], isWorldDeployed });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     return Response.json({ error: errorMessage }, { status: 400 });
