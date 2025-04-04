@@ -3,7 +3,7 @@ import { getBlockNumber, getCode } from "viem/actions";
 import { getAction } from "viem/utils";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
-import { getWorldAbi, getWorldAbi_deprecated } from "@latticexyz/store-sync/world";
+import { getWorldAbi } from "@latticexyz/store-sync/world";
 import { helloWorldEvent } from "@latticexyz/world";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { supportedChainId, validateChainId } from "../../../../common";
@@ -46,7 +46,7 @@ export async function GET(req: Request) {
     const indexerUrl = getIndexerUrl(chainId);
 
     if (indexerUrl) {
-      const [code, worldAbi] = await Promise.all([
+      const [code, abi] = await Promise.all([
         getCode(client, { address: worldAddress }),
         getWorldAbi({
           client,
@@ -56,20 +56,7 @@ export async function GET(req: Request) {
         }),
       ]);
 
-      const abi =
-        worldAbi && worldAbi.length > 0
-          ? worldAbi
-          : await getWorldAbi_deprecated({
-              client,
-              worldAddress,
-              fromBlock: 0n,
-              toBlock: 0n,
-            });
-
-      return Response.json({
-        abi,
-        isWorldDeployed: code && size(code) > 0,
-      });
+      return Response.json({ abi, isWorldDeployed: code && size(code) > 0 });
     }
 
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
@@ -80,18 +67,9 @@ export async function GET(req: Request) {
       toBlock,
       chainId,
     });
+    const abi = [...IBaseWorldAbi, ...worldAbi];
 
-    const abi =
-      worldAbi && worldAbi.length > 0
-        ? worldAbi
-        : await getWorldAbi_deprecated({
-            client,
-            worldAddress,
-            fromBlock,
-            toBlock,
-          });
-
-    return Response.json({ abi: [...IBaseWorldAbi, ...abi], isWorldDeployed });
+    return Response.json({ abi, isWorldDeployed });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     return Response.json({ error: errorMessage }, { status: 400 });
