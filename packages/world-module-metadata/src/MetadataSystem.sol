@@ -13,13 +13,11 @@ contract MetadataSystem is System {
   }
 
   function setResourceTag(ResourceId resource, bytes32 tag, bytes memory value) public {
-    AccessControl.requireExistence(resource);
     AccessControl.requireOwner(resource, _msgSender());
     ResourceTag.set(resource, tag, value);
   }
 
   function deleteResourceTag(ResourceId resource, bytes32 tag) public {
-    AccessControl.requireExistence(resource);
     AccessControl.requireOwner(resource, _msgSender());
     ResourceTag.deleteRecord(resource, tag);
   }
