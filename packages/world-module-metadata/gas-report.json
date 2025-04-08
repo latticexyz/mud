@@ -9,7 +9,7 @@
     "file": "test/MetadataModule.t.sol:MetadataModuleTest",
     "test": "testInstall",
     "name": "install metadata module",
-    "gasUsed": 1053549
+    "gasUsed": 1053341
   },
   {
     "file": "test/MetadataModule.t.sol:MetadataModuleTest",
