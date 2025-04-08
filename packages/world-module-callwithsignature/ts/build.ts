@@ -15,4 +15,6 @@ const configPath = "../mud.config";
 
 const { default: config } = await import(configPath);
 const rootDir = path.dirname(path.join(__dirname, configPath));
-await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
+
+await tablegen({ rootDir, config });
+await worldgen({ rootDir, config });

@@ -14,10 +14,8 @@ import config, { systemsConfig } from "../../mud.config";
 const configPath = await resolveConfigPath();
 const rootDir = path.dirname(configPath);
 
-await Promise.all([
-  tablegen({ rootDir, config }),
-  // until we get finer-grained control of for namespaces (source path, codegen)
-  // or being able to merge configs with strong types, we need to use a separate
-  // config for systems to maintain source locations
-  worldgen({ rootDir, config: systemsConfig }),
-]);
+await tablegen({ rootDir, config });
+// until we get finer-grained control of for namespaces (source path, codegen)
+// or being able to merge configs with strong types, we need to use a separate
+// config for systems to maintain source locations
+await worldgen({ rootDir, config: systemsConfig });

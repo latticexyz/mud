@@ -530,7 +530,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterSystem() public {
-    System system = new System();
+    System system = new WorldTestSystem();
     bytes14 namespace = "";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     bytes16 name = "testSystem";
@@ -564,7 +564,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(ResourceAccess.get({ resourceId: namespaceId, caller: address(system) }));
 
     // Expect the registration to fail if the namespace does not exist yet
-    System newSystem = new System();
+    System newSystem = new WorldTestSystem();
     ResourceId invalidNamespaceSystemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
       namespace: "newNamespace",
@@ -612,7 +612,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(tableId, newSystem, true);
 
     // Expect an error when registering a system in a namespace that is not owned by the caller
-    System yetAnotherSystem = new System();
+    System yetAnotherSystem = new WorldTestSystem();
     _expectAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "rootSystem" }),
@@ -658,11 +658,11 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
 
     // Register a system
-    System oldSystem = new System();
+    System oldSystem = new WorldTestSystem();
     world.registerSystem(systemId, oldSystem, true);
 
     // Upgrade the system and set public access to false
-    System newSystem = new System();
+    System newSystem = new WorldTestSystem();
     world.registerSystem(systemId, newSystem, false);
 
     // Expect the system address and public access to be updated in the System table
@@ -712,7 +712,7 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Deploy a new system
-    System system = new System();
+    System system = new WorldTestSystem();
 
     // Expect an error when trying to register a system at the same ID
     vm.expectRevert(
@@ -727,7 +727,7 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new system
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "namespace2", name: "name" });
-    world.registerSystem(systemId, new System(), false);
+    world.registerSystem(systemId, new WorldTestSystem(), false);
 
     // Expect an error when trying to register a table at the same ID
     vm.expectRevert(
