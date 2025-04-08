@@ -12,6 +12,7 @@ import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimen
 import { storeRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/StoreRegistrationSystemLib.sol";
 
 import { MetadataSystem } from "./MetadataSystem.sol";
+import { metadataSystem } from "./codegen/experimental/systems/MetadataSystemLib.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
 
 /**
@@ -23,7 +24,7 @@ import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
 contract MetadataModule is Module {
   using WorldResourceIdInstance for ResourceId;
 
-  MetadataSystem private immutable metadataSystem = new MetadataSystem();
+  MetadataSystem private immutable metadataSystemAddress = new MetadataSystem();
 
   function install(bytes memory args) public override {
     ResourceId namespace = ResourceTag._tableId.getNamespaceId();
@@ -44,14 +45,10 @@ contract MetadataModule is Module {
       );
     }
 
-    ResourceId metadataSystemId = WorldResourceIdLib.encode(
-      RESOURCE_SYSTEM,
-      namespace.getNamespace(),
-      "MetadataSystem"
-    );
-    // TODO: add support for upgrading system and registering new function selectors
+    ResourceId metadataSystemId = metadataSystem.toResourceId();
+
     if (!ResourceIds.getExists(metadataSystemId)) {
-      worldRegistrationSystem.callFrom(_msgSender()).registerSystem(metadataSystemId, metadataSystem, true);
+      worldRegistrationSystem.callFrom(_msgSender()).registerSystem(metadataSystemId, metadataSystemAddress, true);
       worldRegistrationSystem.callFrom(_msgSender()).registerFunctionSelector(
         metadataSystemId,
         "getResourceTag(bytes32,bytes32)"
@@ -64,6 +61,9 @@ contract MetadataModule is Module {
         metadataSystemId,
         "deleteResourceTag(bytes32,bytes32)"
       );
+    } else if (metadataSystem.getAddress() != address(metadataSystemAddress)) {
+      // upgrade system
+      worldRegistrationSystem.callFrom(_msgSender()).registerSystem(metadataSystemId, metadataSystemAddress, true);
     }
   }
 }
