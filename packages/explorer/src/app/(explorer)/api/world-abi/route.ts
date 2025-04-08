@@ -5,6 +5,7 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
 import { getWorldAbi } from "@latticexyz/store-sync/world";
 import { helloWorldEvent } from "@latticexyz/world";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { supportedChainId, validateChainId } from "../../../../common";
 import { getClient } from "../utils/getClient";
 import { getIndexerUrl } from "../utils/getIndexerUrl";
@@ -59,13 +60,14 @@ export async function GET(req: Request) {
     }
 
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
-    const abi = await getWorldAbi({
+    const worldAbi = await getWorldAbi({
       client,
       worldAddress,
       fromBlock,
       toBlock,
       chainId,
     });
+    const abi = [...IBaseWorldAbi, ...worldAbi];
 
     return Response.json({ abi, isWorldDeployed });
   } catch (error: unknown) {
