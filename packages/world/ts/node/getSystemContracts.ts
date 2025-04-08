@@ -33,8 +33,6 @@ export async function getSystemContracts({
     }),
   );
 
-  console.log("got files", filePaths);
-
   return files
     .map((file) => {
       const parsedSystem = parseSystem(file.source, file.basename);
