@@ -16,6 +16,7 @@ export function parseSystem(
 
   const contractType = contractNode.kind;
   // skip libraries and interfaces
+  // we allow abstract systems here so that we can create system libraries from them but without deploying them
   if (contractType !== "contract" && contractType !== "abstract") return;
 
   const isSystem = ((): boolean => {
