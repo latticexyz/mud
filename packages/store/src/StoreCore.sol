@@ -994,7 +994,17 @@ library StoreCoreInternal {
     }
 
     uint256 previousFieldLength = previousEncodedLengths.atIndex(dynamicFieldIndex);
-    uint256 updatedFieldLength = previousFieldLength - deleteCount + data.length;
+
+    // The field can't be reduced below its length
+    if (deleteCount > previousFieldLength) {
+      revert IStoreErrors.Store_InvalidSplice(startWithinField, deleteCount, uint40(previousFieldLength));
+    }
+
+    uint256 updatedFieldLength;
+    unchecked {
+      // (safe because deleteCount was just checked, and memory length additions can't overflow uint256 due to gas costs)
+      updatedFieldLength = previousFieldLength - deleteCount + data.length;
+    }
 
     // If the total length of the field is changed, the data has to be appended/removed at the end of the field.
     // Otherwise offchain indexers would shift the data after inserted data, while onchain the data is truncated at the end.
