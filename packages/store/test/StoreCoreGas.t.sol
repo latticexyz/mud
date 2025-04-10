@@ -599,7 +599,6 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     endGasReport();
   }
 
-  /// forge-config: default.allow_internal_expect_revert = true
   function testAccessEmptyData() public {
     ResourceId tableId = _tableId;
 
@@ -629,7 +628,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     endGasReport();
 
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
-    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, 0);
+    this.getDynamicFieldSlice(tableId, keyTuple, 0, 0, 0);
   }
 
   function testHooks() public {
