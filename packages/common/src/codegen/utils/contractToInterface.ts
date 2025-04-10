@@ -165,6 +165,8 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
       length = typeName.length.number;
     } else if (typeName.length?.type === "Identifier") {
       length = typeName.length.name;
+    } else if (typeName.length?.type) {
+      throw new MUDError(`Complex expressions not supported in static array length`);
     }
 
     const { name, stateMutability } = flattenTypeName(typeName.baseTypeName);
