@@ -217,6 +217,8 @@ describe("defineQuery", () => {
     // Update multiple records but only advance timer once
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
     setRecord({ stash, table: Health, key: { player: `0x1` }, value: { health: 1 } });
+    setRecord({ stash, table: Position, key: { player: `0x1` }, value: { x: 1, y: 2 } });
+    setRecord({ stash, table: Position, key: { player: `0x2` }, value: { x: 2, y: 3 } });
     vi.advanceTimersToNextTimer();
 
     expect(subscriber).toBeCalledTimes(2);
@@ -262,6 +264,50 @@ describe("defineQuery", () => {
         previous: "(undefined)",
         current: { player: "0x1", health: 1 },
         type: "enter",
+      },
+      {
+        table: {
+          label: "Position",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Position",
+          tableId: "0x74626e616d6573706163653100000000506f736974696f6e0000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            x: { type: "int32", internalType: "int32" },
+            y: { type: "int32", internalType: "int32" },
+          },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+          deploy: { disabled: false },
+        },
+        key: { player: "0x1" },
+        previous: { player: "0x1", x: 1, y: 4 },
+        current: { player: "0x1", x: 1, y: 2 },
+        type: "update",
+      },
+      {
+        table: {
+          label: "Position",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Position",
+          tableId: "0x74626e616d6573706163653100000000506f736974696f6e0000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            x: { type: "int32", internalType: "int32" },
+            y: { type: "int32", internalType: "int32" },
+          },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+          deploy: { disabled: false },
+        },
+        key: { player: "0x2" },
+        previous: { player: "0x2", x: 2, y: 3 },
+        current: { player: "0x2", x: 2, y: 3 },
+        type: "update",
       },
     ]);
   });
