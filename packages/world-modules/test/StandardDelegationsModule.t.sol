@@ -147,7 +147,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
   function testRegisterDelegationRevertInterfaceNotSupported() public {
     // Register a system that is not a delegation control system
-    System noDelegationControlSystem = new System();
+    System noDelegationControlSystem = new WorldTestSystem();
     ResourceId noDelegationControlId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
       namespace: "namespace",

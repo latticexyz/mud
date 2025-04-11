@@ -1,11 +1,8 @@
 import { parse, visit } from "@solidity-parser/parser";
-import type {
-  ContractDefinition,
-  SourceUnit,
-  TypeName,
-  VariableDeclaration,
-} from "@solidity-parser/parser/dist/src/ast-types";
+import type { SourceUnit, TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
 import { MUDError } from "../../errors";
+import { findContractNode } from "./findContractNode";
+import { SymbolImport, findSymbolImport } from "./findSymbolImport";
 
 export interface ContractInterfaceFunction {
   name: string;
@@ -17,11 +14,6 @@ export interface ContractInterfaceFunction {
 export interface ContractInterfaceError {
   name: string;
   parameters: string[];
-}
-
-interface SymbolImport {
-  symbol: string;
-  path: string;
 }
 
 /**
@@ -106,20 +98,6 @@ export function contractToInterface(
   };
 }
 
-export function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
-  let contract: ContractDefinition | undefined = undefined;
-
-  visit(ast, {
-    ContractDefinition(node) {
-      if (node.name === contractName) {
-        contract = node;
-      }
-    },
-  });
-
-  return contract;
-}
-
 function parseParameter({ name, typeName, storageLocation }: VariableDeclaration): string {
   let typedNameWithLocation = "";
 
@@ -197,42 +175,10 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
   }
 }
 
-// Get imports for given symbols.
-// To avoid circular dependencies of interfaces on their implementations,
-// symbols used for args/returns must always be imported from an auxiliary file.
-// To avoid parsing the entire project to build dependencies,
-// symbols must be imported with an explicit `import { symbol } from ...`
 function symbolsToImports(ast: SourceUnit, symbols: string[]): SymbolImport[] {
-  const imports: SymbolImport[] = [];
-
-  for (const symbol of symbols) {
-    let symbolImport: SymbolImport | undefined;
-
-    visit(ast, {
-      ImportDirective({ path, symbolAliases }) {
-        if (symbolAliases) {
-          for (const symbolAndAlias of symbolAliases) {
-            // either check the alias, or the original symbol if there's no alias
-            const symbolAlias = symbolAndAlias[1] || symbolAndAlias[0];
-            if (symbol === symbolAlias) {
-              symbolImport = {
-                // always use the original symbol for interface imports
-                symbol: symbolAndAlias[0],
-                path,
-              };
-              return;
-            }
-          }
-        }
-      },
-    });
-
-    if (symbolImport) {
-      imports.push(symbolImport);
-    } else {
-      throw new MUDError(`Symbol "${symbol}" has no explicit import`);
-    }
-  }
-
-  return imports;
+  return symbols.map((symbol) => {
+    const symbolImport = findSymbolImport(ast, symbol);
+    if (!symbolImport) throw new MUDError(`Symbol "${symbol}" has no explicit import`);
+    return symbolImport;
+  });
 }
