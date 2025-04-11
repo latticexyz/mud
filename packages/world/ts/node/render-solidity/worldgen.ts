@@ -26,7 +26,7 @@ export async function worldgen({
 
   const systems = (await resolveSystems({ rootDir, config }))
     // TODO: move to codegen option or generate "system manifest" and codegen from that
-    .filter((system) => system.deploy.registerWorldFunctions)
+    .filter((system) => system.deploy.registerWorldFunctions || config.codegen.generateSystemLibraries)
     .map((system) => {
       const interfaceName = `I${system.label}`;
       const libraryName = `${system.label}Lib`;
@@ -61,12 +61,14 @@ export async function worldgen({
 
   const outputPath = path.join(worldgenOutDir, config.codegen.worldInterfaceName + ".sol");
 
-  const worldImports = systems.map(
-    (system): ImportDatum => ({
-      symbol: system.interfaceName,
-      path: "./" + path.relative(path.dirname(outputPath), system.interfacePath),
-    }),
-  );
+  const worldImports = systems
+    .filter((system) => system.deploy.registerWorldFunctions)
+    .map(
+      (system): ImportDatum => ({
+        symbol: system.interfaceName,
+        path: "./" + path.relative(path.dirname(outputPath), system.interfacePath),
+      }),
+    );
 
   const storeImportPath = config.codegen.storeImportPath.startsWith(".")
     ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, config.codegen.storeImportPath))
@@ -80,24 +82,27 @@ export async function worldgen({
       const source = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
       // get external functions from a contract
       const { functions, errors, symbolImports } = contractToInterface(source, system.label);
-      const interfaceImports = symbolImports.map(
-        ({ symbol, path: importPath }): ImportDatum => ({
-          symbol,
-          path: importPath.startsWith(".")
-            ? "./" + path.relative(worldgenOutDir, path.join(rootDir, path.dirname(system.sourcePath), importPath))
-            : importPath,
-        }),
-      );
 
-      const systemInterface = renderSystemInterface({
-        name: system.interfaceName,
-        functionPrefix: system.namespace === "" ? "" : `${system.namespace}__`,
-        functions,
-        errors,
-        imports: interfaceImports,
-      });
-      // write to file
-      await formatAndWriteSolidity(systemInterface, system.interfacePath, "Generated system interface");
+      if (system.deploy.registerWorldFunctions) {
+        const interfaceImports = symbolImports.map(
+          ({ symbol, path: importPath }): ImportDatum => ({
+            symbol,
+            path: importPath.startsWith(".")
+              ? "./" + path.relative(worldgenOutDir, path.join(rootDir, path.dirname(system.sourcePath), importPath))
+              : importPath,
+          }),
+        );
+
+        const systemInterface = renderSystemInterface({
+          name: system.interfaceName,
+          functionPrefix: system.namespace === "" ? "" : `${system.namespace}__`,
+          functions,
+          errors,
+          imports: interfaceImports,
+        });
+        // write to file
+        await formatAndWriteSolidity(systemInterface, system.interfacePath, "Generated system interface");
+      }
 
       if (config.codegen.generateSystemLibraries) {
         const systemImport = {
