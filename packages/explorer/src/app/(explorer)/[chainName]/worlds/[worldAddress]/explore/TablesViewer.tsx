@@ -8,7 +8,7 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
 import {
@@ -112,14 +112,8 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     });
   }, [table, tableData]);
 
-  const [data, setData] = useState(() => tableData?.rows ?? initialRows);
-
-  useEffect(() => {
-    setData(tableData?.rows ?? initialRows);
-  }, [tableData]);
-
   const reactTable = useReactTable({
-    data,
+    data: tableData?.rows ?? initialRows,
     columns: tableColumns,
     defaultColumn,
     initialState: {

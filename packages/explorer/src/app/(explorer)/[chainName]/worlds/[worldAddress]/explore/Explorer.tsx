@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Hex } from "viem";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
 import { usePrevious } from "../../../../hooks/usePrevious";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
