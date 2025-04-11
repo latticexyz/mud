@@ -8,11 +8,10 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Table as TableType } from "@latticexyz/config";
-import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
+import { getKeySchema } from "@latticexyz/protocol-parser/internal";
 import {
-  CellContext,
   ColumnDef,
   OnChangeFn,
   PaginationState,
@@ -33,9 +32,9 @@ import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
-import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
 import { PAGE_SIZE_OPTIONS } from "./consts";
+import { defaultColumn } from "./defaultColumn";
 import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { getLimitOffset } from "./utils/getLimitOffset";
@@ -44,91 +43,17 @@ import { typeSortingFn } from "./utils/typeSortingFn";
 const initialSortingState: SortingState = [];
 const initialRows: TData["rows"] = [];
 
-type Props = {
-  table?: TableType;
-  query?: string;
-  isLiveQuery: boolean;
-};
-
-type UpdateData = (rowIndex: number, columnId: string, value: unknown) => void;
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    updateData: UpdateData;
     tableConfig?: TableType;
   }
 }
 
-function useSkipper() {
-  const shouldSkipRef = useRef(true);
-  const shouldSkip = shouldSkipRef.current;
-
-  // Wrap a function with this to skip a pagination reset temporarily
-  const skip = useCallback(() => {
-    shouldSkipRef.current = false;
-  }, []);
-
-  useEffect(() => {
-    shouldSkipRef.current = true;
-  });
-
-  return [shouldSkip, skip] as const;
-}
-
-function Cell({ getValue, row, column, table }) {
-  const { index } = row;
-  const { id } = column;
-
-  const initialValue = getValue();
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = useState(initialValue);
-  const tableConfig = table.options.meta?.tableConfig;
-
-  console.log("TABLE CONFIG:", tableConfig);
-
-  // When the input is blurred, we'll call our table meta's updateData function
-  const onBlur = () => {
-    table.options.meta?.updateData(index, id, value);
-  };
-
-  // If the initialValue is changed external, sync it up with our state
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  // try {
-  //   const name = column.id;
-  //   const keySchema = getKeySchema(tableConfig);
-  //   if (!table || Object.keys(keySchema).includes(name)) {
-  //     return value;
-  //   }
-
-  //   return <input value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />;
-  // } catch (e) {
-  //   return value;
-  // }
-
-  // const keySchema = getKeySchema(table);
-  // // const value = row.getValue(name);
-
-  try {
-    const name = column.id;
-    const keySchema = getKeySchema(tableConfig);
-    if (!table || Object.keys(keySchema).includes(name)) {
-      return value;
-    }
-
-    const keyTuple = getKeyTuple(tableConfig, row.original as never);
-
-    // TODO: fix value stuff
-    return <EditableTableCell name={name} table={tableConfig} value={row.getValue(name)} keyTuple={keyTuple} />;
-  } catch (e) {
-    return value;
-  }
-}
-
-// Give our default column cell renderer editing superpowers!
-const defaultColumn: Partial<ColumnDef<TDataRow>> = {
-  cell: Cell,
+type Props = {
+  table?: TableType;
+  query?: string;
+  isLiveQuery: boolean;
 };
 
 export function TablesViewer({ table, isLiveQuery }: Props) {
@@ -166,7 +91,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       const schema = table?.schema[name];
       const type = schema?.type;
       const keySchema = getKeySchema(table);
-
       return {
         accessorKey: name,
         header: ({ column }) => {
@@ -188,33 +112,12 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     });
   }, [table, tableData]);
 
-  // const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
-  // const updateData = useCallback(
-  //   (rowIndex: number, columnId: string, value: any) => {
-  //     // Skip page index reset until after next rerender
-  //     skipAutoResetPageIndex();
-  //     // setData((old) =>
-  //     //   old.map((row, index) => {
-  //     //     if (index === rowIndex) {
-  //     //       return {
-  //     //         ...old[rowIndex]!,
-  //     //         [columnId]: value,
-  //     //       };
-  //     //     }
-  //     //     return row;
-  //     //   }),
-  //     // );
-  //   },
-  //   [skipAutoResetPageIndex],
-  // );
-
   const [data, setData] = useState(() => tableData?.rows ?? initialRows);
 
   useEffect(() => {
     setData(tableData?.rows ?? initialRows);
   }, [tableData]);
 
-  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
   const reactTable = useReactTable({
     data,
     columns: tableColumns,
@@ -239,36 +142,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       globalFilter,
       pagination,
     },
-
-    autoResetPageIndex,
-
-    // Provide our updateData function to our table meta
     meta: {
-      updateData: (rowIndex, columnId, value) => {
-        console.log("UPDATE DATA", rowIndex, columnId, value);
-
-        // Skip page index reset until after next rerender
-        skipAutoResetPageIndex();
-        setData((old) =>
-          old.map((row, index) => {
-            if (index === rowIndex) {
-              return {
-                ...old[rowIndex]!,
-                [columnId]: value,
-              };
-            }
-            return row;
-          }),
-        );
-      },
       tableConfig: table,
     },
-
-    // meta: {
-    //   updateData: updateData,
-    // },
-    // autoResetPageIndex: false,
-    // autoResetExpanded: false,
   });
 
   // Pagination is only enabled if the query has a LIMIT and OFFSET that are divisible by the page size
@@ -280,8 +156,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
 
     return PAGE_SIZE_OPTIONS.includes(limit) && offset % pagination.pageSize === 0;
   }, [pagination.pageSize, query]);
-
-  console.log(reactTable.getRowModel().rows, data);
 
   return (
     <div
@@ -326,21 +200,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                 ))}
             </TableHeader>
 
-            <tbody>
-              {reactTable.getRowModel().rows.map((row) => {
-                return (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </tbody>
-
-            {/* <TableBody className="relative">
+            <TableBody className="relative">
               {isLoading && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
                   <LoaderIcon className="h-5 w-5 animate-spin" />
@@ -348,10 +208,11 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
               )}
               {!isError && reactTable.getRowModel().rows?.length ? (
                 reactTable.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => {
-                      console.log("CELL 123:", cell);
-                      return <TableCell key={cell.id}>{renderCell(cell, table)}</TableCell>;
+                      return (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      );
                     })}
                   </TableRow>
                 ))
@@ -373,7 +234,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   </TableCell>
                 </TableRow>
               )}
-            </TableBody> */}
+            </TableBody>
           </Table>
         </div>
       </div>
