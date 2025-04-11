@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { ChangeEvent, memo, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -35,20 +35,12 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
-
-  console.log("TABLE:", table);
-
   const valueSchema = getValueSchema(table);
-
-  console.log("VALUE SCHEMA:", valueSchema);
-
   const fieldType = valueSchema?.[name as never]?.type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
       if (!fieldType) throw new Error("Field type not found");
-
-      // console.log("newValue", newValue, valueSchema, name);
 
       const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
       const encodedFieldValue = encodeField(fieldType, newValue);
@@ -61,7 +53,6 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-
       return { txHash, receipt };
     },
     onMutate: () => {
