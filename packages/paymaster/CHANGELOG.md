@@ -1,5 +1,7 @@
 # @latticexyz/paymaster
 
+## 2.2.22
+
 ## 2.2.21
 
 ## 2.2.20

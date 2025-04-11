@@ -1,5 +1,36 @@
 # @latticexyz/store-sync
 
+## 2.2.22
+
+### Patch Changes
+
+- 490159e: `getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+  Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
+
+- 26d2e3a: `getWorldAbi()` now returns an ABI that is a combination of:
+
+  - base World ABI
+  - system ABIs stored onchain with metadata module during deploy
+  - world functions
+
+- Updated dependencies [6344ced]
+- Updated dependencies [fb2745a]
+- Updated dependencies [2048adf]
+- Updated dependencies [03af917]
+- Updated dependencies [b8239d8]
+- Updated dependencies [ab837ce]
+  - @latticexyz/world-module-metadata@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/stash@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/recs@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

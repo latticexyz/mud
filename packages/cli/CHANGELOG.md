@@ -1,5 +1,43 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 03af917: `mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+  ```solidity
+  import {System} from "@latticexyz/world/src/System.sol";
+
+  contract EntityProgram is System {
+    ...
+  }
+  ```
+
+  If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+- ab837ce: CLI will no longer deploy abstract systems and contracts without bytecode.
+- Updated dependencies [6344ced]
+- Updated dependencies [490159e]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [2048adf]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+  - @latticexyz/world-module-metadata@2.2.22
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/abi-ts@2.2.22
+  - @latticexyz/gas-report@2.2.22
+  - @latticexyz/schema-type@2.2.22
+  - @latticexyz/utils@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

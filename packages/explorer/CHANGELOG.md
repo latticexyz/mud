@@ -1,5 +1,29 @@
 # @latticexyz/explorer
 
+## 2.2.22
+
+### Patch Changes
+
+- 7fd242e: World ABI endpoint is now includes the base world ABI.
+- 13071c4: - Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+  - The search form for decoding selectors now uses all system ABIs for complete results.
+  - The `ABI` page has been renamed to `Decode`.
+- a3645c8: `systemIds` parameter is now optional for the system ABIs API endpoint.
+- Updated dependencies [490159e]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/store-indexer@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
