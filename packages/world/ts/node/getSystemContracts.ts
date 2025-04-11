@@ -27,7 +27,6 @@ export async function getSystemContracts({
 
   const files = await Promise.all(
     filePaths.map(async (file) => {
-      console.log("reading source for", file.filename);
       const source = await fs.readFile(path.join(rootDir, file.filename), "utf-8");
       return { ...file, source };
     }),
