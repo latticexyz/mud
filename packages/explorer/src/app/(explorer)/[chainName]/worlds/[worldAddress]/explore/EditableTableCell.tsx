@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, memo, useEffect, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -27,14 +27,24 @@ type Props = {
   keyTuple: readonly Hex[];
 };
 
-export function EditableTableCell({ name, table, keyTuple, value: defaultValue }: Props) {
+function EditableTableCellInner({ name, table, keyTuple, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
+  const [isFocused, setIsFocused] = useState(false);
+  const [localValue, setLocalValue] = useState<string>(String(defaultValue));
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
+
+  // Update local value when default changes and not focused
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalValue(String(defaultValue));
+      setValue(defaultValue);
+    }
+  }, [defaultValue, isFocused]);
 
   const valueSchema = getValueSchema(table);
   const fieldType = valueSchema?.[name as never]?.type;
@@ -116,14 +126,21 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
         <form
           onSubmit={(evt) => {
             evt.preventDefault();
-            handleSubmit(value);
+            handleSubmit(localValue);
           }}
         >
           <input
             className="w-full bg-transparent"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
-            onBlur={(evt) => handleSubmit(evt.target.value)}
-            value={String(value)}
+            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+              setLocalValue(evt.target.value);
+              setValue(evt.target.value);
+            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={(evt) => {
+              setIsFocused(false);
+              handleSubmit(evt.target.value);
+            }}
+            value={localValue}
             disabled={isPending}
           />
         </form>
@@ -138,3 +155,11 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
     </div>
   );
 }
+
+export const EditableTableCell = memo(EditableTableCellInner, (prevProps, nextProps) => {
+  console.log("prevProps", prevProps);
+  console.log("nextProps", nextProps);
+
+  // Only re-render if defaultValue has changed
+  return true; // prevProps.value !== nextProps.value;
+});

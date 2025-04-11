@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Hex } from "viem";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
 import { usePrevious } from "../../../../hooks/usePrevious";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
@@ -25,7 +25,10 @@ export function Explorer() {
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
   const { data: tables } = useTablesQuery();
-  const table = tables?.find(({ tableId }) => tableId === selectedTableId);
+  const table = useMemo(() => {
+    console.log("RERENDERING TABLE 111");
+    return tables?.find(({ tableId }) => tableId === selectedTableId);
+  }, [tables, selectedTableId]);
 
   useEffect(() => {
     if (table && (!query || prevSelectedTableId !== selectedTableId)) {
