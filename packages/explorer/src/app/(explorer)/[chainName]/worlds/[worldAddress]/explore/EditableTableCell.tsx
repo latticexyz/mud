@@ -38,6 +38,8 @@ function EditableTableCellInner({ name, table, keyTuple, value: defaultValue }: 
   const { id: chainId } = useChain();
   const account = useAccount();
 
+  console.log("EditableTableCellInner", name, table, keyTuple, defaultValue);
+
   // Update local value when default changes and not focused
   useEffect(() => {
     if (!isFocused) {

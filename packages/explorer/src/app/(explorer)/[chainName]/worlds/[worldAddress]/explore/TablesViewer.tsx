@@ -79,8 +79,7 @@ type CellProps = {
   updateData?: UpdateData;
 };
 
-const CellInner: React.FC<CellProps> = ({ initialValue, rowIndex, columnId, updateData }: CellProps) => {
-  console.log("render cell", rowIndex, columnId);
+const CellInner: React.FC<CellProps> = ({ initialValue, rowIndex, columnId, updateData, table, name }: CellProps) => {
   // We need to keep and update the state of the cell normally
   const [value, setValue] = useState(initialValue);
 
@@ -94,18 +93,31 @@ const CellInner: React.FC<CellProps> = ({ initialValue, rowIndex, columnId, upda
     setValue(initialValue);
   }, [initialValue]);
 
-  return <input value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />;
+  // return <input value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />;
+  // return <EditableTableCell name={columnId} table={table} value={value} keyTuple={[]} />;
+  try {
+    // const keyTuple = getKeyTuple(table, row.original as never);
+    // const cellKey = `${keyTuple.join("-")}-${name}-${String(value)}`;
+    return <EditableTableCell name={name} table={table} value={value} keyTuple={[]} />;
+  } catch (e) {
+    return value;
+  }
 };
 
 const Cell = memo(CellInner) as typeof CellInner;
 
-function renderCell(cellContext: CellContext<TDataRow, unknown>) {
+function renderCell(cellContext: CellContext<TDataRow, unknown>, table: TableType, name: string) {
+  console.log("CELL CONTEXT", cellContext);
+  console.log("NAME", cellContext.column.id);
+
   return (
     <Cell
       rowIndex={cellContext.row.index}
       columnId={cellContext.column.id}
       initialValue={cellContext.getValue()}
       updateData={cellContext.table.options.meta?.updateData}
+      table={table}
+      name={name}
     />
   );
 }
@@ -187,25 +199,25 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     });
   }, [table, tableData]);
 
-  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
-  const updateData = useCallback(
-    (rowIndex: number, columnId: string, value: any) => {
-      // Skip page index reset until after next rerender
-      skipAutoResetPageIndex();
-      // setData((old) =>
-      //   old.map((row, index) => {
-      //     if (index === rowIndex) {
-      //       return {
-      //         ...old[rowIndex]!,
-      //         [columnId]: value,
-      //       };
-      //     }
-      //     return row;
-      //   }),
-      // );
-    },
-    [skipAutoResetPageIndex],
-  );
+  // const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+  // const updateData = useCallback(
+  //   (rowIndex: number, columnId: string, value: any) => {
+  //     // Skip page index reset until after next rerender
+  //     skipAutoResetPageIndex();
+  //     // setData((old) =>
+  //     //   old.map((row, index) => {
+  //     //     if (index === rowIndex) {
+  //     //       return {
+  //     //         ...old[rowIndex]!,
+  //     //         [columnId]: value,
+  //     //       };
+  //     //     }
+  //     //     return row;
+  //     //   }),
+  //     // );
+  //   },
+  //   [skipAutoResetPageIndex],
+  // );
 
   const reactTable = useReactTable({
     data: tableData?.rows ?? initialRows,
@@ -231,11 +243,11 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       pagination,
     },
 
-    meta: {
-      updateData: updateData,
-    },
-    autoResetPageIndex: false,
-    autoResetExpanded: false,
+    // meta: {
+    //   updateData: updateData,
+    // },
+    // autoResetPageIndex: false,
+    // autoResetExpanded: false,
   });
 
   // Pagination is only enabled if the query has a LIMIT and OFFSET that are divisible by the page size
@@ -303,11 +315,12 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                       <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                     ))} */}
 
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getVisibleCells().map((cell) => {
                       // <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
 
-                      <td key={cell.id}>{renderCell(cell.getContext())}</td>
-                    ))}
+                      console.log("CELL 123:", cell);
+                      return <td key={cell.id}>{renderCell(cell.getContext(), table, cell.column.id)}</td>;
+                    })}
                   </TableRow>
                 ))
               ) : (
@@ -390,8 +403,3 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     </div>
   );
 }
-
-const TestComponent = memo(function TestComponent() {
-  console.log("RERENDERING TEST COMPONENT");
-  return <div>Test 1</div>;
-});
