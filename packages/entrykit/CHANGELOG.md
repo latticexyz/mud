@@ -1,5 +1,21 @@
 # @latticexyz/entrykit
 
+## 2.2.22
+
+### Patch Changes
+
+- 050dfd5: Added explicit gas estimation for Pyrope to avoid overpaying.
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/paymaster@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
