@@ -27,10 +27,8 @@ type Props = {
   keyTuple: readonly Hex[];
 };
 
-function EditableTableCellInner({ name, table, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, table, keyTuple, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
-  const [isFocused, setIsFocused] = useState(false);
-  const [localValue, setLocalValue] = useState<string>(String(defaultValue));
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -38,22 +36,19 @@ function EditableTableCellInner({ name, table, keyTuple, value: defaultValue }: 
   const { id: chainId } = useChain();
   const account = useAccount();
 
-  console.log("EditableTableCellInner", name, table, keyTuple, defaultValue);
-
-  // Update local value when default changes and not focused
-  useEffect(() => {
-    if (!isFocused) {
-      setLocalValue(String(defaultValue));
-      setValue(defaultValue);
-    }
-  }, [defaultValue, isFocused]);
+  console.log("TABLE:", table);
 
   const valueSchema = getValueSchema(table);
+
+  console.log("VALUE SCHEMA:", valueSchema);
+
   const fieldType = valueSchema?.[name as never]?.type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
       if (!fieldType) throw new Error("Field type not found");
+
+      // console.log("newValue", newValue, valueSchema, name);
 
       const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
       const encodedFieldValue = encodeField(fieldType, newValue);
@@ -128,21 +123,14 @@ function EditableTableCellInner({ name, table, keyTuple, value: defaultValue }: 
         <form
           onSubmit={(evt) => {
             evt.preventDefault();
-            handleSubmit(localValue);
+            handleSubmit(value);
           }}
         >
           <input
             className="w-full bg-transparent"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              setLocalValue(evt.target.value);
-              setValue(evt.target.value);
-            }}
-            onFocus={() => setIsFocused(true)}
-            onBlur={(evt) => {
-              setIsFocused(false);
-              handleSubmit(evt.target.value);
-            }}
-            value={localValue}
+            onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
+            onBlur={(evt) => handleSubmit(evt.target.value)}
+            value={String(value)}
             disabled={isPending}
           />
         </form>
@@ -157,11 +145,3 @@ function EditableTableCellInner({ name, table, keyTuple, value: defaultValue }: 
     </div>
   );
 }
-
-export const EditableTableCell = memo(EditableTableCellInner, (prevProps, nextProps) => {
-  console.log("prevProps", prevProps);
-  console.log("nextProps", nextProps);
-
-  // Only re-render if defaultValue has changed
-  return true; // prevProps.value !== nextProps.value;
-});

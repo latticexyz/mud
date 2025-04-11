@@ -25,10 +25,7 @@ export function Explorer() {
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
   const { data: tables } = useTablesQuery();
-  const table = useMemo(() => {
-    console.log("RERENDERING TABLE 111");
-    return tables?.find(({ tableId }) => tableId === selectedTableId);
-  }, [tables, selectedTableId]);
+  const table = tables?.find(({ tableId }) => tableId === selectedTableId);
 
   useEffect(() => {
     if (table && (!query || prevSelectedTableId !== selectedTableId)) {

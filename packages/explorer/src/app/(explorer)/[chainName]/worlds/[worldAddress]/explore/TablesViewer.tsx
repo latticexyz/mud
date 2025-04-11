@@ -16,6 +16,7 @@ import {
   ColumnDef,
   OnChangeFn,
   PaginationState,
+  RowData,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -49,6 +50,14 @@ type Props = {
   isLiveQuery: boolean;
 };
 
+type UpdateData = (rowIndex: number, columnId: string, value: unknown) => void;
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    updateData: UpdateData;
+    tableConfig?: TableType;
+  }
+}
+
 function useSkipper() {
   const shouldSkipRef = useRef(true);
   const shouldSkip = shouldSkipRef.current;
@@ -65,27 +74,20 @@ function useSkipper() {
   return [shouldSkip, skip] as const;
 }
 
-type UpdateData = (rowIndex: number, columnId: string, value: unknown) => void;
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData extends RowData> {
-    updateData: UpdateData;
-  }
-}
+function Cell({ getValue, row, column, table }) {
+  const { index } = row;
+  const { id } = column;
 
-type CellProps = {
-  initialValue: unknown;
-  rowIndex: number;
-  columnId: string;
-  updateData?: UpdateData;
-};
-
-const CellInner: React.FC<CellProps> = ({ initialValue, rowIndex, columnId, updateData, table, name }: CellProps) => {
+  const initialValue = getValue();
   // We need to keep and update the state of the cell normally
   const [value, setValue] = useState(initialValue);
+  const tableConfig = table.options.meta?.tableConfig;
+
+  console.log("TABLE CONFIG:", tableConfig);
 
   // When the input is blurred, we'll call our table meta's updateData function
   const onBlur = () => {
-    updateData?.(rowIndex, columnId, value);
+    table.options.meta?.updateData(index, id, value);
   };
 
   // If the initialValue is changed external, sync it up with our state
@@ -93,34 +95,41 @@ const CellInner: React.FC<CellProps> = ({ initialValue, rowIndex, columnId, upda
     setValue(initialValue);
   }, [initialValue]);
 
-  // return <input value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />;
-  // return <EditableTableCell name={columnId} table={table} value={value} keyTuple={[]} />;
+  // try {
+  //   const name = column.id;
+  //   const keySchema = getKeySchema(tableConfig);
+  //   if (!table || Object.keys(keySchema).includes(name)) {
+  //     return value;
+  //   }
+
+  //   return <input value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />;
+  // } catch (e) {
+  //   return value;
+  // }
+
+  // const keySchema = getKeySchema(table);
+  // // const value = row.getValue(name);
+
   try {
-    // const keyTuple = getKeyTuple(table, row.original as never);
-    // const cellKey = `${keyTuple.join("-")}-${name}-${String(value)}`;
-    return <EditableTableCell name={name} table={table} value={value} keyTuple={[]} />;
+    const name = column.id;
+    const keySchema = getKeySchema(tableConfig);
+    if (!table || Object.keys(keySchema).includes(name)) {
+      return value;
+    }
+
+    const keyTuple = getKeyTuple(tableConfig, row.original as never);
+
+    // TODO: fix value stuff
+    return <EditableTableCell name={name} table={tableConfig} value={row.getValue(name)} keyTuple={keyTuple} />;
   } catch (e) {
     return value;
   }
-};
-
-const Cell = memo(CellInner) as typeof CellInner;
-
-function renderCell(cellContext: CellContext<TDataRow, unknown>, table: TableType, name: string) {
-  console.log("CELL CONTEXT", cellContext);
-  console.log("NAME", cellContext.column.id);
-
-  return (
-    <Cell
-      rowIndex={cellContext.row.index}
-      columnId={cellContext.column.id}
-      initialValue={cellContext.getValue()}
-      updateData={cellContext.table.options.meta?.updateData}
-      table={table}
-      name={name}
-    />
-  );
 }
+
+// Give our default column cell renderer editing superpowers!
+const defaultColumn: Partial<ColumnDef<TDataRow>> = {
+  cell: Cell,
+};
 
 export function TablesViewer({ table, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
@@ -131,8 +140,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [pagination, setPagination] = usePaginationState();
   const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
-
-  console.log("RERENDERING TABLE 222");
 
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
     (updater) => {
@@ -177,24 +184,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
           );
         },
         sortingFn: (rowA, rowB, columnId) => typeSortingFn(rowA, rowB, columnId, type),
-        // cell: ({ row }) => {
-        //   const keySchema = getKeySchema(table);
-        //   const value = row.getValue(name);
-        //   if (!table || Object.keys(keySchema).includes(name)) {
-        //     return value;
-        //   }
-
-        //   console.log("CELL:", name, value);
-
-        //   try {
-        //     const keyTuple = getKeyTuple(table, row.original as never);
-        //     const cellKey = `${keyTuple.join("-")}-${name}-${String(value)}`;
-        //     // return <EditableTableCell key={cellKey} name={name} table={table} value={value} keyTuple={keyTuple} />;
-        //     return <TestComponent key={keyTuple.join("-")} />;
-        //   } catch (e) {
-        //     return value;
-        //   }
-        // },
       };
     });
   }, [table, tableData]);
@@ -219,9 +208,17 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   //   [skipAutoResetPageIndex],
   // );
 
+  const [data, setData] = useState(() => tableData?.rows ?? initialRows);
+
+  useEffect(() => {
+    setData(tableData?.rows ?? initialRows);
+  }, [tableData]);
+
+  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
   const reactTable = useReactTable({
-    data: tableData?.rows ?? initialRows,
+    data,
     columns: tableColumns,
+    defaultColumn,
     initialState: {
       pagination: {
         pageSize: pagination.pageSize,
@@ -243,6 +240,30 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       pagination,
     },
 
+    autoResetPageIndex,
+
+    // Provide our updateData function to our table meta
+    meta: {
+      updateData: (rowIndex, columnId, value) => {
+        console.log("UPDATE DATA", rowIndex, columnId, value);
+
+        // Skip page index reset until after next rerender
+        skipAutoResetPageIndex();
+        setData((old) =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex]!,
+                [columnId]: value,
+              };
+            }
+            return row;
+          }),
+        );
+      },
+      tableConfig: table,
+    },
+
     // meta: {
     //   updateData: updateData,
     // },
@@ -259,6 +280,8 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
 
     return PAGE_SIZE_OPTIONS.includes(limit) && offset % pagination.pageSize === 0;
   }, [pagination.pageSize, query]);
+
+  console.log(reactTable.getRowModel().rows, data);
 
   return (
     <div
@@ -302,7 +325,22 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   </TableRow>
                 ))}
             </TableHeader>
-            <TableBody className="relative">
+
+            <tbody>
+              {reactTable.getRowModel().rows.map((row) => {
+                return (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </tbody>
+
+            {/* <TableBody className="relative">
               {isLoading && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
                   <LoaderIcon className="h-5 w-5 animate-spin" />
@@ -311,15 +349,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
               {!isError && reactTable.getRowModel().rows?.length ? (
                 reactTable.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                    {/* {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))} */}
-
                     {row.getVisibleCells().map((cell) => {
-                      // <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-
                       console.log("CELL 123:", cell);
-                      return <td key={cell.id}>{renderCell(cell.getContext(), table, cell.column.id)}</td>;
+                      return <TableCell key={cell.id}>{renderCell(cell, table)}</TableCell>;
                     })}
                   </TableRow>
                 ))
@@ -341,7 +373,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   </TableCell>
                 </TableRow>
               )}
-            </TableBody>
+            </TableBody> */}
           </Table>
         </div>
       </div>
