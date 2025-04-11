@@ -16,9 +16,9 @@ import {
   Key,
   TableRecord,
 } from "../common";
-import { getTable } from "./getTable";
 import { runQuery } from "./runQuery";
 import { encodeKey } from "./encodeKey";
+import { subscribeStash } from "./subscribeStash";
 
 export type SubscribeQueryOptions = CommonQueryOptions;
 
@@ -119,13 +119,16 @@ export function subscribeQuery<query extends Query>({
     subscribers.forEach((subscriber) => subscriber(updates));
   };
 
-  // Subscribe to each table's update stream and return the unsubscribers
-  const unsubsribers = query.map((fragment) =>
-    getTable({ stash, table: fragment.table }).subscribe({
-      subscriber: (updates) => updateQueryResult(updates),
-    }),
-  );
-  const unsubscribe = () => unsubsribers.forEach((unsub) => unsub());
+  // Too maintain atomicity of stash updates we don't subscribe to tables individually but filter global stash updates.
+  const relevantTables = new Set(query.map((fragment) => fragment.table.tableId));
+  const unsubscribe = subscribeStash({
+    stash,
+    subscriber: (event) => {
+      if (event.type !== "records") return;
+      const relevantUpdates = event.updates.filter((update) => relevantTables.has(update.table.tableId));
+      updateQueryResult(relevantUpdates);
+    },
+  });
 
   // Notify initial subscribers
   const updates: QueryUpdates = Object.values(matching).map((key) => ({ key, type: "enter" }));
