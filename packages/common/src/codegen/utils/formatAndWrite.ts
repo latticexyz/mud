@@ -10,7 +10,12 @@ import { debug } from "../debug";
  * @param logPrefix prefix for debug logs
  */
 export async function formatAndWriteSolidity(output: string, fullOutputPath: string, logPrefix: string): Promise<void> {
-  const formattedOutput = await formatSolidity(output);
+  let formattedOutput = "";
+  try {
+    formattedOutput = await formatSolidity(output);
+  } catch (e) {
+    formattedOutput = output;
+  }
 
   await fs.mkdir(path.dirname(fullOutputPath), { recursive: true });
 
