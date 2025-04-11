@@ -35,7 +35,6 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
-
   const valueSchema = getValueSchema(table);
   const fieldType = valueSchema?.[name as never]?.type;
 
@@ -54,7 +53,6 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-
       return { txHash, receipt };
     },
     onMutate: () => {
