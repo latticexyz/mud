@@ -53,6 +53,13 @@ contract LibrariesTest is MudTest {
     assertEq(PositionValue.getX(), 4);
     assertEq(PositionValue.getY(), 5);
     assertEq(PositionValue.getZ(), 6);
+
+    aSystem.setValuesStaticArray([uint256(1)]);
+    assertEq(Value.get(), 1);
+    aSystem.setValuesStaticArray([uint256(1), 2]);
+    assertEq(Value.get(), 2);
+    aSystem.setValuesStaticArray([uint256(1), 2, 3]);
+    assertEq(Value.get(), 3);
   }
 
   function testCanCallSystemFromOtherSystem() public {

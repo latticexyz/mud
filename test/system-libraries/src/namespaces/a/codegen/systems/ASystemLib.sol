@@ -5,6 +5,7 @@ pragma solidity >=0.8.24;
 
 import { ASystem } from "../../ASystem.sol";
 import { ASystemThing, Position } from "../../ASystemTypes.sol";
+import { THREE } from "../../ASystemConstants.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
 import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
@@ -66,6 +67,18 @@ library ASystemLib {
 
   function setAddress(ASystemType self) internal returns (address) {
     return CallWrapper(self.toResourceId(), address(0)).setAddress();
+  }
+
+  function setValuesStaticArray(ASystemType self, uint256[1] memory values) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValuesStaticArray(values);
+  }
+
+  function setValuesStaticArray(ASystemType self, uint256[2] memory values) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValuesStaticArray(values);
+  }
+
+  function setValuesStaticArray(ASystemType self, uint256[THREE] memory values) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValuesStaticArray(values);
   }
 
   function setValue(CallWrapper memory self, ASystemThing memory value) internal {
@@ -160,6 +173,39 @@ library ASystemLib {
     return abi.decode(result, (address));
   }
 
+  function setValuesStaticArray(CallWrapper memory self, uint256[1] memory values) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_setValuesStaticArray_uint2560x5b315d.setValuesStaticArray, (values));
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
+  function setValuesStaticArray(CallWrapper memory self, uint256[2] memory values) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_setValuesStaticArray_uint2560x5b325d.setValuesStaticArray, (values));
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
+  function setValuesStaticArray(CallWrapper memory self, uint256[THREE] memory values) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(
+      _setValuesStaticArray_uint2560x5b54485245455d.setValuesStaticArray,
+      (values)
+    );
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
   function setValue(RootCallWrapper memory self, ASystemThing memory value) internal {
     bytes memory systemCall = abi.encodeCall(_setValue_ASystemThing.setValue, (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -204,6 +250,24 @@ library ASystemLib {
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
     return abi.decode(result, (address));
+  }
+
+  function setValuesStaticArray(RootCallWrapper memory self, uint256[1] memory values) internal {
+    bytes memory systemCall = abi.encodeCall(_setValuesStaticArray_uint2560x5b315d.setValuesStaticArray, (values));
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function setValuesStaticArray(RootCallWrapper memory self, uint256[2] memory values) internal {
+    bytes memory systemCall = abi.encodeCall(_setValuesStaticArray_uint2560x5b325d.setValuesStaticArray, (values));
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function setValuesStaticArray(RootCallWrapper memory self, uint256[THREE] memory values) internal {
+    bytes memory systemCall = abi.encodeCall(
+      _setValuesStaticArray_uint2560x5b54485245455d.setValuesStaticArray,
+      (values)
+    );
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function callFrom(ASystemType self, address from) internal pure returns (CallWrapper memory) {
@@ -274,6 +338,18 @@ interface _getTwoValues {
 
 interface _setAddress {
   function setAddress() external;
+}
+
+interface _setValuesStaticArray_uint2560x5b315d {
+  function setValuesStaticArray(uint256[1] memory values) external;
+}
+
+interface _setValuesStaticArray_uint2560x5b325d {
+  function setValuesStaticArray(uint256[2] memory values) external;
+}
+
+interface _setValuesStaticArray_uint2560x5b54485245455d {
+  function setValuesStaticArray(uint256[THREE] memory values) external;
 }
 
 using ASystemLib for ASystemType global;
