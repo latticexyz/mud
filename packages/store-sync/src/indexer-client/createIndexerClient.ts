@@ -28,7 +28,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
       try {
         const input = encodeURIComponent(JSON.stringify(opts));
         const urlOrigin = new URL(url).origin;
-        const response = await fetch(`${urlOrigin}/api/logs?input=${input}`, { method: "GET" });
+        const response = await fetch(`${urlOrigin}/api/2/logs?input=${input}`, { method: "GET" });
 
         // TODO: return a readable stream instead of fetching the entire response at once
         const result = await response.json();

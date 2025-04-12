@@ -10,6 +10,7 @@ import {
   SyncOptions,
   SyncResult,
   internalTableIds,
+  schemasTable,
   WaitForTransactionResult,
 } from "./common";
 import { createBlockStream, getRpcClient } from "@latticexyz/block-logs-stream";
@@ -74,10 +75,17 @@ export async function createStoreSync({
   initialBlockLogs,
   ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
-  const filters: SyncFilter[] =
+  const filters: SyncFilter[] = (
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
-      : [];
+      : []
+  ).concat([
+    // The schemas table is always added to the filters in order for the storage adapters
+    // to process table registration logs (necessary for initializing the storage).
+    {
+      tableId: schemasTable.tableId,
+    },
+  ]);
 
   const logFilter = filters.length
     ? (log: StoreEventsLog): boolean =>

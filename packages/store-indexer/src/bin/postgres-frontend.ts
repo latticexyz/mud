@@ -9,7 +9,8 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { createQueryAdapter } from "../postgres/deprecated/createQueryAdapter";
-import { apiRoutes } from "../postgres/apiRoutes";
+import { apiRoutesV1 } from "../postgres/apiRoutes/v1";
+import { apiRoutesV2 } from "../postgres/apiRoutes/v2";
 import { sentry } from "../koa-middleware/sentry";
 import { healthcheck } from "../koa-middleware/healthcheck";
 import { helloWorld } from "../koa-middleware/helloWorld";
@@ -42,7 +43,8 @@ server.use(
   }),
 );
 server.use(helloWorld());
-server.use(apiRoutes(database));
+server.use(apiRoutesV1(database));
+server.use(apiRoutesV2(database));
 
 server.use(
   createKoaMiddleware({

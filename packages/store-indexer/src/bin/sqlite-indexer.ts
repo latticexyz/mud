@@ -15,7 +15,8 @@ import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
 import { healthcheck } from "../koa-middleware/healthcheck";
 import { helloWorld } from "../koa-middleware/helloWorld";
-import { apiRoutes } from "../sqlite/apiRoutes";
+import { apiRoutesV1 } from "../sqlite/apiRoutes/v1";
+import { apiRoutesV2 } from "../sqlite/apiRoutes/v2";
 import { sentry } from "../koa-middleware/sentry";
 import { metrics } from "../koa-middleware/metrics";
 import { getClientOptions } from "./getClientOptions";
@@ -136,7 +137,8 @@ server.use(
   }),
 );
 server.use(helloWorld());
-server.use(apiRoutes(database));
+server.use(apiRoutesV1(database));
+server.use(apiRoutesV2(database));
 
 server.use(
   createKoaMiddleware({

@@ -52,10 +52,7 @@ export async function getRecords<table extends Table>(
         indexerUrl: options.indexerUrl,
         filters: [{ tableId: options.table.tableId }],
       });
-      // By default, the indexer includes the `store.Tables` table as part of the snapshot.
-      // Once we change this default, we can remove the filter here.
-      // See https://github.com/latticexyz/mud/issues/3386.
-      return logs?.logs.filter((log) => log.args.tableId === options.table.tableId) ?? [];
+      return logs?.logs ?? [];
     } else {
       const client =
         options.client ??
