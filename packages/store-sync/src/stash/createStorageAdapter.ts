@@ -46,7 +46,9 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
         updates.push((pendingRecords[id] = { table, key, value }));
       } else if (log.eventName === "Store_SpliceStaticData") {
         const previousValue = pendingRecords[id]
-          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+          ? pendingRecords[id].value
+            ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+            : undefined
           : getRecord({ stash, table, key });
 
         const {
