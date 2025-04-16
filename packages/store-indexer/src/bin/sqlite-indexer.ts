@@ -29,7 +29,7 @@ const env = parseEnv(
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
       SENTRY_DSN: z.string().optional(),
-      ENABLE_QUERY_ENDPOINT: z
+      ENABLE_UNSAFE_QUERY_API: z
         .string()
         .optional()
         .default("false")
