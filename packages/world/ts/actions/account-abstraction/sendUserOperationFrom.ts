@@ -122,5 +122,5 @@ type DecodedCall = {
 };
 
 function isDecodedCall(call: unknown): call is DecodedCall {
-  return "functionName" in (call as never) && "args" in (call as never) && "to" in (call as never);
+  return typeof call === "object" && call != null && "functionName" in call && "args" in call && "to" in call;
 }
