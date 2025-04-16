@@ -7,22 +7,14 @@ import {
   type Hex,
   type WalletActions,
   type Client,
-  type PublicActions,
   type WriteContractParameters,
   type EncodeFunctionDataParameters,
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
-import { readContract, writeContract as viem_writeContract } from "viem/actions";
+import { writeContract as viem_writeContract } from "viem/actions";
 import { readHex } from "@latticexyz/common";
-import {
-  getKeySchema,
-  getValueSchema,
-  getSchemaTypes,
-  decodeValueArgs,
-  encodeKey,
-} from "@latticexyz/protocol-parser/internal";
-import worldConfig from "../../mud.config";
 import { worldCallAbi } from "../worldCallAbi";
+import { SystemFunction, worldFunctionToSystemFunction } from "../worldFunctionToSystemFunction";
 
 type CallFromParameters = {
   worldAddress: Hex;
@@ -30,8 +22,6 @@ type CallFromParameters = {
   worldFunctionToSystemFunction?: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
   publicClient?: Client;
 };
-
-type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 
 // By extending viem clients with this function after delegation, the delegation is automatically applied to World contract writes.
 // This means that these writes are made on behalf of the delegator.
@@ -107,93 +97,4 @@ export function callFrom(
       });
     },
   });
-}
-
-const systemFunctionCache = new Map<Hex, SystemFunction>();
-
-async function worldFunctionToSystemFunction(params: {
-  worldAddress: Hex;
-  delegatorAddress: Hex;
-  worldFunctionSelector: Hex;
-  worldFunctionToSystemFunction?: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
-  publicClient: Client;
-}): Promise<SystemFunction> {
-  const cacheKey = concat([params.worldAddress, params.worldFunctionSelector]);
-
-  // Use cache if the function has been called previously.
-  const cached = systemFunctionCache.get(cacheKey);
-  if (cached) return cached;
-
-  // If a mapping function is provided, use it. Otherwise, call the World contract.
-  const systemFunction = params.worldFunctionToSystemFunction
-    ? await params.worldFunctionToSystemFunction(params.worldFunctionSelector)
-    : await retrieveSystemFunctionFromContract(params.publicClient, params.worldAddress, params.worldFunctionSelector);
-
-  systemFunctionCache.set(cacheKey, systemFunction);
-
-  return systemFunction;
-}
-
-async function retrieveSystemFunctionFromContract(
-  publicClient: Client,
-  worldAddress: Hex,
-  worldFunctionSelector: Hex,
-): Promise<SystemFunction> {
-  const table = worldConfig.tables.world__FunctionSelectors;
-
-  const keySchema = getSchemaTypes(getKeySchema(table));
-  const valueSchema = getSchemaTypes(getValueSchema(table));
-
-  const _readContract = getAction(publicClient, readContract, "readContract") as PublicActions["readContract"];
-
-  const [staticData, encodedLengths, dynamicData] = await _readContract({
-    address: worldAddress,
-    abi: [
-      {
-        type: "function",
-        name: "getRecord",
-        inputs: [
-          {
-            name: "tableId",
-            type: "bytes32",
-            internalType: "ResourceId",
-          },
-          {
-            name: "keyTuple",
-            type: "bytes32[]",
-            internalType: "bytes32[]",
-          },
-        ],
-        outputs: [
-          {
-            name: "staticData",
-            type: "bytes",
-            internalType: "bytes",
-          },
-          {
-            name: "encodedLengths",
-            type: "bytes32",
-            internalType: "EncodedLengths",
-          },
-          {
-            name: "dynamicData",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
-        stateMutability: "view",
-      },
-    ],
-    functionName: "getRecord",
-    args: [table.tableId, encodeKey(keySchema, { worldFunctionSelector })],
-  });
-
-  const decoded = decodeValueArgs(valueSchema, { staticData, encodedLengths, dynamicData });
-
-  const systemFunction: SystemFunction = {
-    systemId: decoded.systemId,
-    systemFunctionSelector: decoded.systemFunctionSelector,
-  };
-
-  return systemFunction;
 }
