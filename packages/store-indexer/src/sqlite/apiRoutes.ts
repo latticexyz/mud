@@ -57,13 +57,6 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>, enableQuery
 
         const result = [];
         for (const { query } of queries) {
-          const normalizedQuery = query.trim().toLowerCase();
-          if (!normalizedQuery.startsWith("select")) {
-            ctx.status = 400;
-            ctx.body = JSON.stringify({ error: "Only SELECT queries are allowed" });
-            return;
-          }
-
           const data = database.all(sql.raw(query)) as Record<string, unknown>[];
           if (!data || !Array.isArray(data)) {
             throw new Error("Invalid query result");
