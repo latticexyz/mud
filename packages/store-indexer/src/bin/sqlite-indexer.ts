@@ -157,3 +157,12 @@ server.use(
 
 server.listen({ host: env.HOST, port: env.PORT });
 console.log(`sqlite indexer frontend listening on http://${env.HOST}:${env.PORT}`);
+
+if (env.ENABLE_UNSAFE_QUERY_API) {
+  console.warn("\n\n⚠️  SECURITY WARNING ⚠️");
+  console.warn("=========================\n");
+  console.warn("UNSAFE QUERY API IS ENABLED");
+  console.warn("DO NOT USE IN PRODUCTION");
+  console.warn("This will expose your database to public access");
+  console.warn("\n=========================\n\n");
+}
