@@ -143,7 +143,7 @@ server.use(
   }),
 );
 server.use(helloWorld());
-server.use(apiRoutes(database, env.ENABLE_QUERY_ENDPOINT));
+server.use(apiRoutes({ database, enableUnsafeQueryApi: env.ENABLE_UNSAFE_QUERY_API }));
 
 server.use(
   createKoaMiddleware({
