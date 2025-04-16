@@ -45,46 +45,50 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>, enableQuery
     }
   });
 
-  if (enableQueryEndpoint) {
-    router.post("/q", async (ctx) => {
-      try {
-        const queries = Array.isArray(ctx.request.body) ? ctx.request.body : [];
-        if (queries.length === 0) {
-          ctx.status = 400;
-          ctx.body = JSON.stringify({ error: "No queries provided" });
-          return;
-        }
+  router.post("/q", async (ctx) => {
+    if (!enableQueryEndpoint) {
+      ctx.status = 404;
+      ctx.body = JSON.stringify({ error: "Query endpoint is not enabled" });
+      return;
+    }
 
-        const result = [];
-        for (const { query } of queries) {
-          const data = database.all(sql.raw(query)) as Record<string, unknown>[];
-          if (!data || !Array.isArray(data)) {
-            throw new Error("Invalid query result");
-          }
-
-          if (data.length === 0) {
-            result.push([]);
-            continue;
-          }
-
-          if (!data[0]) {
-            throw new Error("Invalid row data");
-          }
-
-          const columns = Object.keys(data[0]).map((key) => key.replaceAll("_", "").toLowerCase());
-          const rows = data.map((row) => Object.values(row).map((value) => value?.toString() ?? ""));
-          result.push([columns, ...rows]);
-        }
-
-        ctx.status = 200;
-        ctx.body = JSON.stringify({ result });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    try {
+      const queries = Array.isArray(ctx.request.body) ? ctx.request.body : [];
+      if (queries.length === 0) {
         ctx.status = 400;
-        ctx.body = JSON.stringify({ error: errorMessage });
+        ctx.body = JSON.stringify({ error: "No queries provided" });
+        return;
       }
-    });
-  }
+
+      const result = [];
+      for (const { query } of queries) {
+        const data = database.all(sql.raw(query)) as Record<string, unknown>[];
+        if (!data || !Array.isArray(data)) {
+          throw new Error("Invalid query result");
+        }
+
+        if (data.length === 0) {
+          result.push([]);
+          continue;
+        }
+
+        if (!data[0]) {
+          throw new Error("Invalid row data");
+        }
+
+        const columns = Object.keys(data[0]).map((key) => key.replaceAll("_", "").toLowerCase());
+        const rows = data.map((row) => Object.values(row).map((value) => value?.toString() ?? ""));
+        result.push([columns, ...rows]);
+      }
+
+      ctx.status = 200;
+      ctx.body = JSON.stringify({ result });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      ctx.status = 400;
+      ctx.body = JSON.stringify({ error: errorMessage });
+    }
+  });
 
   return compose([router.routes(), router.allowedMethods()]) as Middleware;
 }
