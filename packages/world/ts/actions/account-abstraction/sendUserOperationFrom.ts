@@ -38,10 +38,8 @@ export function sendUserOperationFrom(
 ): <chain extends Chain, account extends SmartAccount | undefined>(
   client: Client<Transport, chain, account>,
 ) => Pick<BundlerActions<account>, "sendUserOperation"> {
-  console.log("extending sendUserOperationFrom");
   return (client) => ({
     async sendUserOperation(args) {
-      console.log("send user operation from");
       const _sendUserOperation = getAction(client, viem_sendUserOperation, "sendUserOperation");
 
       if (args.callData) {

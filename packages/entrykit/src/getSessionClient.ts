@@ -28,8 +28,6 @@ export async function getSessionClient({
     account: sessionAccount,
   });
 
-  console.log("get session client");
-
   const sessionClient = bundlerClient
     .extend(smartAccountActions)
     .extend(
