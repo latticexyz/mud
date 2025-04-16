@@ -10,12 +10,4 @@ procs:
     shell: anvil --base-fee 0 --block-time 2
   explorer:
     cwd: packages/contracts
-    shell: pnpm explorer --dev --chainId 695569
-  indexer:
-    shell: node_modules/.bin/sqlite-indexer
-    env:
-      DEBUG: "mud:*"
-      RPC_HTTP_URL: "http://127.0.0.1:8545"
-      FOLLOW_BLOCK_TAG: "latest"
-      PORT: "3333"
-      SQLITE_FILENAME: "anvil123.db"
+    shell: pnpm explorer --dev
