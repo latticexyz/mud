@@ -2,4 +2,4 @@
 "@latticexyz/world": patch
 ---
 
-Added a `sendUserOperationFrom` viem action to automatically redirect user operation calls to `callFrom`.
+Added a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.
