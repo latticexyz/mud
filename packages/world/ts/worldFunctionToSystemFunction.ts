@@ -8,7 +8,7 @@ import {
 import { Client, concat, Hex, PublicActions } from "viem";
 import { readContract } from "viem/actions";
 import { getAction } from "viem/utils";
-import worldConfig from "../../mud.config";
+import worldConfig from "../mud.config";
 
 export type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 

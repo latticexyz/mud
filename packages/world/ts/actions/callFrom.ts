@@ -14,7 +14,7 @@ import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract as viem_writeContract } from "viem/actions";
 import { readHex } from "@latticexyz/common";
 import { worldCallAbi } from "../worldCallAbi";
-import { SystemFunction, worldFunctionToSystemFunction } from "./worldFunctionToSystemFunction";
+import { SystemFunction, worldFunctionToSystemFunction } from "../worldFunctionToSystemFunction";
 
 type CallFromParameters = {
   worldAddress: Hex;

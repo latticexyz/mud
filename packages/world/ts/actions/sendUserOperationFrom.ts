@@ -13,7 +13,7 @@ import { getAction, encodeFunctionData } from "viem/utils";
 import { readHex } from "@latticexyz/common";
 import { BundlerActions, sendUserOperation as viem_sendUserOperation, SmartAccount } from "viem/account-abstraction";
 import { worldFunctionToSystemFunction } from "../worldFunctionToSystemFunction";
-import { worldCallAbi } from "../../worldCallAbi";
+import { worldCallAbi } from "../worldCallAbi";
 
 type CallFromParameters = {
   worldAddress: Hex;
