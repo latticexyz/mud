@@ -7,6 +7,7 @@ import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import Koa from "koa";
 import cors from "@koa/cors";
+import bodyParser from "koa-bodyparser";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
@@ -28,6 +29,11 @@ const env = parseEnv(
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
       SENTRY_DSN: z.string().optional(),
+      ENABLE_UNSAFE_QUERY_API: z
+        .string()
+        .optional()
+        .default("false")
+        .transform((val) => val === "true"),
     }),
   ),
 );
@@ -121,6 +127,7 @@ if (env.SENTRY_DSN) {
 }
 
 server.use(cors());
+server.use(bodyParser());
 server.use(
   healthcheck({
     isReady: () => isCaughtUp,
@@ -136,7 +143,7 @@ server.use(
   }),
 );
 server.use(helloWorld());
-server.use(apiRoutes(database));
+server.use(apiRoutes({ database, enableUnsafeQueryApi: env.ENABLE_UNSAFE_QUERY_API }));
 
 server.use(
   createKoaMiddleware({
@@ -150,3 +157,12 @@ server.use(
 
 server.listen({ host: env.HOST, port: env.PORT });
 console.log(`sqlite indexer frontend listening on http://${env.HOST}:${env.PORT}`);
+
+if (env.ENABLE_UNSAFE_QUERY_API) {
+  console.warn("\n\n⚠️  SECURITY WARNING ⚠️");
+  console.warn("=========================\n");
+  console.warn("UNSAFE QUERY API IS ENABLED");
+  console.warn("DO NOT USE IN PRODUCTION");
+  console.warn("This will expose your database to public access");
+  console.warn("\n=========================\n\n");
+}
