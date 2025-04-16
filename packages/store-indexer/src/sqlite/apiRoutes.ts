@@ -11,7 +11,7 @@ import { compress } from "../koa-middleware/compress";
 import { getTablesWithRecords } from "./getTablesWithRecords";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>, enableQueryEndpoint = false): Middleware {
+export function apiRoutes({ database, enableUnsafeQueryApi = false }: { database: BaseSQLiteDatabase<"sync", any>, enableUnsafeQueryApi?: boolean }): Middleware {
   const router = new Router();
 
   router.get("/api/logs", compress(), async (ctx) => {
