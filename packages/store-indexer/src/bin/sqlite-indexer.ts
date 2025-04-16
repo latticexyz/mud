@@ -7,6 +7,7 @@ import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import Koa from "koa";
 import cors from "@koa/cors";
+import bodyParser from "koa-bodyparser";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
@@ -121,6 +122,7 @@ if (env.SENTRY_DSN) {
 }
 
 server.use(cors());
+server.use(bodyParser());
 server.use(
   healthcheck({
     isReady: () => isCaughtUp,
