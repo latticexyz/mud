@@ -45,7 +45,7 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware
     }
   });
 
-  router.post("/api/sqlite-indexer", async (ctx) => {
+  router.post("/q", async (ctx) => {
     try {
       const queries = Array.isArray(ctx.request.body) ? ctx.request.body : [];
       if (queries.length === 0) {
@@ -56,6 +56,13 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware
 
       const result = [];
       for (const { query } of queries) {
+        const normalizedQuery = query.trim().toLowerCase();
+        if (!normalizedQuery.startsWith("select")) {
+          ctx.status = 400;
+          ctx.body = JSON.stringify({ error: "Only SELECT queries are allowed" });
+          return;
+        }
+
         const data = database.all(sql.raw(query)) as Record<string, unknown>[];
         if (!data || !Array.isArray(data)) {
           throw new Error("Invalid query result");
