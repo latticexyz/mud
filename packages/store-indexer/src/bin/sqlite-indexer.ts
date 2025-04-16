@@ -29,6 +29,11 @@ const env = parseEnv(
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
       SENTRY_DSN: z.string().optional(),
+      ENABLE_QUERY_ENDPOINT: z
+        .string()
+        .optional()
+        .default("false")
+        .transform((val) => val === "true"),
     }),
   ),
 );
@@ -138,7 +143,7 @@ server.use(
   }),
 );
 server.use(helloWorld());
-server.use(apiRoutes(database));
+server.use(apiRoutes(database, env.ENABLE_QUERY_ENDPOINT));
 
 server.use(
   createKoaMiddleware({
