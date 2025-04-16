@@ -10,8 +10,13 @@ import { createBenchmark } from "@latticexyz/common";
 import { compress } from "../koa-middleware/compress";
 import { getTablesWithRecords } from "./getTablesWithRecords";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function apiRoutes({ database, enableUnsafeQueryApi = false }: { database: BaseSQLiteDatabase<"sync", any>, enableUnsafeQueryApi?: boolean }): Middleware {
+type Props = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  database: BaseSQLiteDatabase<"sync", any>;
+  enableUnsafeQueryApi?: boolean;
+};
+
+export function apiRoutes({ database, enableUnsafeQueryApi = false }: Props): Middleware {
   const router = new Router();
 
   router.get("/api/logs", compress(), async (ctx) => {
@@ -46,7 +51,7 @@ export function apiRoutes({ database, enableUnsafeQueryApi = false }: { database
   });
 
   router.post("/q", async (ctx) => {
-    if (!enableQueryEndpoint) {
+    if (!enableUnsafeQueryApi) {
       ctx.status = 404;
       ctx.body = JSON.stringify({ error: "Query endpoint is not enabled" });
       return;
