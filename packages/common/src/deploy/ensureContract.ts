@@ -35,6 +35,10 @@ export async function ensureContract({
   }
 
   if (deployedBytecodeSize != null) {
+    if (deployedBytecodeSize === 0) {
+      throw new Error(`Empty bytecode for ${debugLabel}`);
+    }
+
     if (deployedBytecodeSize > contractSizeLimit) {
       console.warn(
         `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,

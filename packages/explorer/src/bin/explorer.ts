@@ -67,6 +67,7 @@ async function startExplorer() {
     ...process.env,
     CHAIN_ID: chainId.toString(),
     INDEXER_DATABASE: indexerDatabasePath,
+    NEXT_PUBLIC_INDEXER_PORT: indexerPort.toString(),
   };
 
   if (dev) {
@@ -108,6 +109,7 @@ async function startStoreIndexer() {
       DEBUG: "mud:*",
       RPC_HTTP_URL: "http://127.0.0.1:8545",
       FOLLOW_BLOCK_TAG: "latest",
+      ENABLE_UNSAFE_QUERY_API: "true",
       SQLITE_FILENAME: indexerDatabase,
       ...process.env,
       PORT: indexerPort.toString(),

@@ -23,9 +23,11 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     storeImportPath,
   } = options;
 
-  // Remove `payable` from stateMutability for library functions
   const functions = functionsInput.map((func) => ({
     ...func,
+    // Format parameters (add auxiliary argument names, replace calldata location)
+    parameters: formatParams(func.parameters),
+    // Remove `payable` from stateMutability for library functions
     stateMutability: func.stateMutability.replace("payable", ""),
   }));
 
@@ -159,7 +161,7 @@ function renderErrors(errors: ContractInterfaceError[]) {
 function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, userTypeName: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const args = [`${userTypeName} self`, ...parameters].map((arg) => arg.replace(/ calldata /, " memory "));
+  const args = [`${userTypeName} self`, ...parameters];
 
   const functionSignature = `
     function ${name}(
@@ -184,7 +186,7 @@ function renderCallWrapperFunction(
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const args = [`CallWrapper memory self`, ...parameters].map((arg) => arg.replace(/ calldata /, " memory "));
+  const args = [`CallWrapper memory self`, ...parameters];
 
   const functionSignature = `
     function ${name}(
@@ -237,7 +239,7 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
     return "";
   }
 
-  const args = ["RootCallWrapper memory self", ...parameters].map((arg) => arg.replace(/ calldata /, " memory "));
+  const args = ["RootCallWrapper memory self", ...parameters];
 
   const functionSignature = `
     function ${name}(
@@ -314,4 +316,17 @@ function renderReturnParameters(returnParameters: string[]) {
   if (returnParameters.length == 0) return "";
 
   return `returns (${renderArguments(returnParameters)})`;
+}
+
+function formatParams(params: string[]) {
+  // Use auxiliary argument names for arguments without names
+  let auxCount = 0;
+
+  return params
+    .map((arg) => arg.replace(/ calldata /, " memory "))
+    .map((arg) => {
+      const items = arg.split(" ");
+      const needsAux = items.length === 1 || (items.length === 2 && items[1] === "memory");
+      return needsAux ? `${arg} __aux${auxCount++}` : arg;
+    });
 }
