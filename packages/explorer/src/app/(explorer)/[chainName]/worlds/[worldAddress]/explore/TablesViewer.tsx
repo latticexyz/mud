@@ -30,8 +30,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
-import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { ExportButton } from "./ExportButton";
 import { PAGE_SIZE_OPTIONS } from "./consts";
 import { defaultColumn } from "./defaultColumn";
@@ -58,7 +58,7 @@ type Props = {
 
 export function TablesViewer({ table, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
-  const indexer = indexerForChainId(chainId);
+  const indexer = useIndexerForChainId(chainId);
   const [query, setQuery] = useSQLQueryState();
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));

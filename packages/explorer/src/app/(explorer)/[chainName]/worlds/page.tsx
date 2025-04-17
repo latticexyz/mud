@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Address } from "viem";
 import { supportedChainName, supportedChains } from "../../../../common";
-import { indexerForChainId } from "../../utils/indexerForChainId";
+import { useIndexerForChainId } from "../../hooks/useIndexerForChainId";
 import { WorldsForm } from "./WorldsForm";
 
 type ApiResponse = {
@@ -13,12 +13,11 @@ type ApiResponse = {
   }[];
 };
 
-async function fetchWorlds(chainName: supportedChainName): Promise<Address[]> {
+async function fetchWorlds(chainName: supportedChainName, indexerType: "sqlite" | "hosted"): Promise<Address[]> {
   const chain = supportedChains[chainName];
-  const indexer = indexerForChainId(chain.id);
   let worldsApiUrl: string | null = null;
 
-  if (indexer.type === "sqlite") {
+  if (indexerType === "sqlite") {
     const headersList = headers();
     const host = headersList.get("host") || "";
     const protocol = headersList.get("x-forwarded-proto") || "http";
@@ -52,7 +51,9 @@ type Props = {
 };
 
 export default async function WorldsPage({ params: { chainName } }: Props) {
-  const worlds = await fetchWorlds(chainName);
+  const chainId = supportedChains[chainName].id;
+  const indexer = useIndexerForChainId(chainId);
+  const worlds = await fetchWorlds(chainName, indexer.type);
   if (worlds.length === 1) {
     return redirect(`/${chainName}/worlds/${worlds[0]}`);
   }

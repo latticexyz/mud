@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { Table } from "@latticexyz/config";
 import { useMonaco } from "@monaco-editor/react";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { constructTableName } from "../../../../utils/constructTableName";
 import { useMonacoErrorMarker } from "./useMonacoErrorMarker";
 
@@ -47,6 +48,7 @@ export function useQueryValidator(table?: Table) {
   const monaco = useMonaco();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const indexer = useIndexerForChainId(chainId);
   const setErrorMarker = useMonacoErrorMarker();
 
   return useCallback(
@@ -73,7 +75,7 @@ export function useQueryValidator(table?: Table) {
           for (const tableInfo of ast.from) {
             if ("table" in tableInfo) {
               const selectedTableName = tableInfo.table;
-              const tableName = constructTableName(table, worldAddress as Address, chainId);
+              const tableName = constructTableName(table, worldAddress as Address, indexer.type);
 
               if (selectedTableName !== tableName) {
                 setErrorMarker({
@@ -106,6 +108,6 @@ export function useQueryValidator(table?: Table) {
         return false;
       }
     },
-    [monaco, table, setErrorMarker, worldAddress, chainId],
+    [monaco, table, setErrorMarker, worldAddress, indexer.type],
   );
 }

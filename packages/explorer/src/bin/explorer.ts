@@ -68,6 +68,7 @@ async function startExplorer() {
     CHAIN_ID: chainId.toString(),
     INDEXER_DATABASE: indexerDatabasePath,
     NEXT_PUBLIC_INDEXER_PORT: indexerPort.toString(),
+    NEXT_PUBLIC_FOO: "TESTING NEXT_PUBLIC_FOO 222",
   };
 
   if (dev) {

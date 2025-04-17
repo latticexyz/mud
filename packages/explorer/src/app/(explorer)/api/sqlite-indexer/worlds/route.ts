@@ -1,11 +1,11 @@
 import { anvil } from "viem/chains";
-import { indexerForChainId } from "../../../utils/indexerForChainId";
+import { useIndexerForChainId } from "../../../hooks/useIndexerForChainId";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const indexer = indexerForChainId(anvil.id);
+    const indexer = useIndexerForChainId(anvil.id);
     const response = await fetch(indexer.url, {
       method: "POST",
       headers: {
