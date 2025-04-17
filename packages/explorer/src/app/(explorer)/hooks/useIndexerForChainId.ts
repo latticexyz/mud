@@ -3,12 +3,13 @@
 import { anvil } from "viem/chains";
 import { MUDChain } from "@latticexyz/common/chains";
 import { chainIdToName, supportedChains, validateChainId } from "../../../common";
-import { useIndexer } from "../providers/IndexerProvider";
+import { useEnv } from "../providers/EnvProvider";
 
 export function useIndexerForChainId(chainId: number) {
-  validateChainId(chainId);
+  const env = useEnv();
+  const indexerPort = env.INDEXER_PORT;
 
-  const { indexerPort } = useIndexer();
+  validateChainId(chainId);
 
   if (chainId === anvil.id) {
     return {
@@ -19,6 +20,7 @@ export function useIndexerForChainId(chainId: number) {
 
   const chainName = chainIdToName[chainId];
   const chain = supportedChains[chainName] as MUDChain;
+
   return {
     type: "hosted" as const,
     url: new URL("/q", chain.indexerUrl).toString(),
