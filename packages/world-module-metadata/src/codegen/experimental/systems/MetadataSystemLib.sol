@@ -69,7 +69,10 @@ library MetadataSystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (bytes));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes));
+    }
   }
 
   function setResourceTag(CallWrapper memory self, ResourceId resource, bytes32 tag, bytes memory value) internal {
@@ -103,7 +106,10 @@ library MetadataSystemLib {
     bytes memory systemCall = abi.encodeCall(_getResourceTag_ResourceId_bytes32.getResourceTag, (resource, tag));
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-    return abi.decode(result, (bytes));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes));
+    }
   }
 
   function setResourceTag(RootCallWrapper memory self, ResourceId resource, bytes32 tag, bytes memory value) internal {

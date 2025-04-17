@@ -95,4 +95,12 @@ contract LibrariesTest is MudTest {
     assertEq(aSystem.getValue(), value);
     assertEq(rootSystem.getValueFromA(), value);
   }
+
+  function testCanExpectRevert() public {
+    vm.expectRevert("reverted successfully");
+    aSystem.getValueWithRevert();
+
+    vm.expectRevert("reverted successfully");
+    aSystem.setAddressWithRevert();
+  }
 }

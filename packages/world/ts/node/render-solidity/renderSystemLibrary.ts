@@ -308,7 +308,10 @@ function renderAbiDecode(expression: string, returnParameters: string[]) {
   const returnTypes = returnParameters.map((param) => param.split(" ")[0]).join(", ");
   return `
     bytes memory result = ${expression};
-    return abi.decode(result, (${returnTypes}));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (${returnTypes}));
+    }
   `;
 }
 

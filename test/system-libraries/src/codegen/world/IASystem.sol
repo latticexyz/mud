@@ -28,6 +28,10 @@ interface IASystem {
 
   function a__setAddress() external returns (address);
 
+  function a__getValueWithRevert() external pure returns (uint256);
+
+  function a__setAddressWithRevert() external returns (address);
+
   function a__setValuesStaticArray(uint256[1] memory values) external;
 
   function a__setValuesStaticArray(uint256[2] memory values) external;

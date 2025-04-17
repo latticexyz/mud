@@ -69,6 +69,14 @@ library ASystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setAddress();
   }
 
+  function getValueWithRevert(ASystemType self) internal view returns (uint256) {
+    return CallWrapper(self.toResourceId(), address(0)).getValueWithRevert();
+  }
+
+  function setAddressWithRevert(ASystemType self) internal returns (address) {
+    return CallWrapper(self.toResourceId(), address(0)).setAddressWithRevert();
+  }
+
   function setValuesStaticArray(ASystemType self, uint256[1] memory values) internal {
     return CallWrapper(self.toResourceId(), address(0)).setValuesStaticArray(values);
   }
@@ -143,7 +151,10 @@ library ASystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function getTwoValues(CallWrapper memory self) internal view returns (uint256, uint256) {
@@ -158,7 +169,10 @@ library ASystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (uint256, uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256, uint256));
+    }
   }
 
   function setAddress(CallWrapper memory self) internal returns (address) {
@@ -170,7 +184,43 @@ library ASystemLib {
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
-    return abi.decode(result, (address));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (address));
+    }
+  }
+
+  function getValueWithRevert(CallWrapper memory self) internal view returns (uint256) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_getValueWithRevert.getValueWithRevert, ());
+    bytes memory worldCall = self.from == address(0)
+      ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+      : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
+    (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
+    if (!success) revertWithBytes(returnData);
+
+    bytes memory result = abi.decode(returnData, (bytes));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
+  }
+
+  function setAddressWithRevert(CallWrapper memory self) internal returns (address) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_setAddressWithRevert.setAddressWithRevert, ());
+
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (address));
+    }
   }
 
   function setValuesStaticArray(CallWrapper memory self, uint256[1] memory values) internal {
@@ -235,21 +285,50 @@ library ASystemLib {
     bytes memory systemCall = abi.encodeCall(_getValue.getValue, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function getTwoValues(RootCallWrapper memory self) internal view returns (uint256, uint256) {
     bytes memory systemCall = abi.encodeCall(_getTwoValues.getTwoValues, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-    return abi.decode(result, (uint256, uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256, uint256));
+    }
   }
 
   function setAddress(RootCallWrapper memory self) internal returns (address) {
     bytes memory systemCall = abi.encodeCall(_setAddress.setAddress, ());
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-    return abi.decode(result, (address));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (address));
+    }
+  }
+
+  function getValueWithRevert(RootCallWrapper memory self) internal view returns (uint256) {
+    bytes memory systemCall = abi.encodeCall(_getValueWithRevert.getValueWithRevert, ());
+
+    bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
+  }
+
+  function setAddressWithRevert(RootCallWrapper memory self) internal returns (address) {
+    bytes memory systemCall = abi.encodeCall(_setAddressWithRevert.setAddressWithRevert, ());
+
+    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (address));
+    }
   }
 
   function setValuesStaticArray(RootCallWrapper memory self, uint256[1] memory values) internal {
@@ -338,6 +417,14 @@ interface _getTwoValues {
 
 interface _setAddress {
   function setAddress() external;
+}
+
+interface _getValueWithRevert {
+  function getValueWithRevert() external;
+}
+
+interface _setAddressWithRevert {
+  function setAddressWithRevert() external;
 }
 
 interface _setValuesStaticArray_uint2560x5b315d {

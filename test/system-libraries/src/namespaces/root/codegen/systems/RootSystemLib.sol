@@ -68,7 +68,10 @@ library RootSystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {

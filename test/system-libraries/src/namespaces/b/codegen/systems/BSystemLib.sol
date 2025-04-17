@@ -66,7 +66,10 @@ library BSystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {
@@ -78,7 +81,10 @@ library BSystemLib {
     bytes memory systemCall = abi.encodeCall(_getValueFromA.getValueFromA, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function callFrom(BSystemType self, address from) internal pure returns (CallWrapper memory) {
