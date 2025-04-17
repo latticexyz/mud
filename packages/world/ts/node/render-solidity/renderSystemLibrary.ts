@@ -7,6 +7,7 @@ import {
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
+import { stringToHex } from "viem";
 
 export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const {
@@ -289,6 +290,8 @@ function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
   const paramTypes = parameters
     .map((param) => param.split(" ")[0])
     .map((type) => type.replace("[]", "Array"))
+    // Static arrays may contain multiple disallowed symbols, for name uniqueness toHex is easier than escaping
+    .map((type) => type.replace(/\[.+\]/, (match) => stringToHex(match)))
     .join("_");
   return `_${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
 }
