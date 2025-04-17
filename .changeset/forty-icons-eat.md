@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Fixed fetching from `@latticexyz/store-indexer` in production builds.
+Fixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.
