@@ -6,7 +6,10 @@ export function indexerForChainId(chainId: number): { type: "sqlite" | "hosted";
   validateChainId(chainId);
 
   if (chainId === anvil.id) {
-    return { type: "sqlite", url: "/api/sqlite-indexer" };
+    return {
+      type: "sqlite",
+      url: new URL("/q", `http://localhost:${process.env.NEXT_PUBLIC_INDEXER_PORT}`).toString(),
+    };
   }
 
   const chainName = chainIdToName[chainId];
