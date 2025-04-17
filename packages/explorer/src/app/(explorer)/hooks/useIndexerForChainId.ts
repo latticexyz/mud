@@ -6,10 +6,10 @@ import { chainIdToName, supportedChains, validateChainId } from "../../../common
 import { useEnv } from "../providers/EnvProvider";
 
 export function useIndexerForChainId(chainId: number) {
+  validateChainId(chainId);
+
   const env = useEnv();
   const indexerPort = env.INDEXER_PORT;
-
-  validateChainId(chainId);
 
   if (chainId === anvil.id) {
     return {
