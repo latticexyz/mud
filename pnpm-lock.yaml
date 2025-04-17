@@ -598,9 +598,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.19.3
         version: 8.20.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      better-sqlite3:
-        specifier: ^8.6.0
-        version: 8.6.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -668,9 +665,6 @@ importers:
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^4.3.0
         version: 4.3.0(prettier@3.2.5)
-      '@types/better-sqlite3':
-        specifier: ^7.6.4
-        version: 7.6.4
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
