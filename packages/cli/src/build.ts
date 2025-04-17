@@ -16,7 +16,8 @@ type BuildOptions = {
 };
 
 export async function build({ rootDir, config, foundryProfile }: BuildOptions): Promise<void> {
-  await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
+  await tablegen({ rootDir, config });
+  await worldgen({ rootDir, config });
   await printCommand(
     execa("forge", ["build"], {
       stdio: "inherit",

@@ -10,11 +10,12 @@ import {
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
-import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
+import { getKeySchema } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   OnChangeFn,
   PaginationState,
+  RowData,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -31,9 +32,9 @@ import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
-import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
 import { PAGE_SIZE_OPTIONS } from "./consts";
+import { defaultColumn } from "./defaultColumn";
 import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { getLimitOffset } from "./utils/getLimitOffset";
@@ -41,6 +42,13 @@ import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
 const initialRows: TData["rows"] = [];
+
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    tableConfig?: TableType;
+  }
+}
 
 type Props = {
   table?: TableType;
@@ -83,7 +91,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       const schema = table?.schema[name];
       const type = schema?.type;
       const keySchema = getKeySchema(table);
-
       return {
         accessorKey: name,
         header: ({ column }) => {
@@ -101,20 +108,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
           );
         },
         sortingFn: (rowA, rowB, columnId) => typeSortingFn(rowA, rowB, columnId, type),
-        cell: ({ row }) => {
-          const keySchema = getKeySchema(table);
-          const value = row.getValue(name);
-          if (!table || Object.keys(keySchema).includes(name)) {
-            return value;
-          }
-
-          try {
-            const keyTuple = getKeyTuple(table, row.original as never);
-            return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
-          } catch (e) {
-            return value;
-          }
-        },
       };
     });
   }, [table, tableData]);
@@ -122,6 +115,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const reactTable = useReactTable({
     data: tableData?.rows ?? initialRows,
     columns: tableColumns,
+    defaultColumn,
     initialState: {
       pagination: {
         pageSize: pagination.pageSize,
@@ -141,6 +135,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       sorting,
       globalFilter,
       pagination,
+    },
+    meta: {
+      tableConfig: table,
     },
   });
 
@@ -196,6 +193,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   </TableRow>
                 ))}
             </TableHeader>
+
             <TableBody className="relative">
               {isLoading && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
@@ -204,10 +202,12 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
               )}
               {!isError && reactTable.getRowModel().rows?.length ? (
                 reactTable.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))}
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))
               ) : (

@@ -4,6 +4,7 @@ export * from "../encodeSystemCalls";
 export * from "../encodeSystemCallsFrom";
 
 export * from "../actions/callFrom";
+export * from "../actions/sendUserOperationFrom";
 
 export * from "../config/v2/codegen";
 export * from "../config/v2/defaults";
