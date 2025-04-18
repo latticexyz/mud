@@ -5,10 +5,10 @@ import { useQueryState } from "nuqs";
 import { Hex } from "viem";
 import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { usePrevious } from "../../../../hooks/usePrevious";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
 import { constructTableName } from "../../../../utils/constructTableName";
-import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
@@ -18,7 +18,8 @@ import { useSQLQueryState } from "./hooks/useSQLQueryState";
 export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const indexer = indexerForChainId(chainId);
+  const indexer = useIndexerForChainId(chainId);
+
   const [isLiveQuery, setIsLiveQuery] = useState(indexer.type === "sqlite");
   const [{ pageSize }, setPagination] = usePaginationState();
   const [query, setQuery] = useSQLQueryState();
@@ -29,7 +30,7 @@ export function Explorer() {
 
   useEffect(() => {
     if (table && (!query || prevSelectedTableId !== selectedTableId)) {
-      const tableName = constructTableName(table, worldAddress as Hex, chainId);
+      const tableName = constructTableName(table, worldAddress as Hex, indexer.type);
       if (indexer.type === "sqlite") {
         setQuery(`SELECT * FROM "${tableName}" WHERE __isDeleted = 0;`);
       } else {

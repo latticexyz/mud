@@ -2,6 +2,7 @@
 
 import { notFound } from "next/navigation";
 import { isValidChainName } from "../../../common";
+import { Providers } from "./Providers";
 
 type Props = {
   params: {
@@ -15,5 +16,5 @@ export default function ChainLayout({ params: { chainName }, children }: Props) 
     return notFound();
   }
 
-  return children;
+  return <Providers>{children}</Providers>;
 }
