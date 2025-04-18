@@ -41,7 +41,7 @@ library MetadataSystemLib {
     MetadataSystemType self,
     ResourceId resource,
     bytes32 tag
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).getResourceTag(resource, tag);
   }
 
@@ -57,7 +57,7 @@ library MetadataSystemLib {
     CallWrapper memory self,
     ResourceId resource,
     bytes32 tag
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert MetadataSystemLib_CallingFromRootSystem();
 
@@ -102,7 +102,7 @@ library MetadataSystemLib {
     RootCallWrapper memory self,
     ResourceId resource,
     bytes32 tag
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory __auxRet0) {
     bytes memory systemCall = abi.encodeCall(_getResourceTag_ResourceId_bytes32.getResourceTag, (resource, tag));
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);

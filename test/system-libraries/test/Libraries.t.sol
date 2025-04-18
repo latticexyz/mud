@@ -60,6 +60,15 @@ contract LibrariesTest is MudTest {
     assertEq(Value.get(), 2);
     aSystem.setValuesStaticArray([uint256(1), 2, 3]);
     assertEq(Value.get(), 3);
+
+    bytes memory bytesArgument = "test bytes";
+    (, bytes memory bytesResult, ) = aSystem.setWithNamelessParameters(
+      payable(0),
+      bytesArgument,
+      bytesArgument,
+      new string[](0)
+    );
+    assertEq(bytesResult, bytesArgument);
   }
 
   function testCanCallSystemFromOtherSystem() public {

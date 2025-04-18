@@ -26,7 +26,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const functions = functionsInput.map((func) => ({
     ...func,
     // Format parameters (add auxiliary argument names, replace calldata location)
-    parameters: formatParams(func.parameters),
+    parameters: formatParams("__auxArg", func.parameters),
+    returnParameters: formatParams("__auxRet", func.returnParameters),
     // Remove `payable` from stateMutability for library functions
     stateMutability: func.stateMutability.replace("payable", ""),
   }));
@@ -321,15 +322,15 @@ function renderReturnParameters(returnParameters: string[]) {
   return `returns (${renderArguments(returnParameters)})`;
 }
 
-function formatParams(params: string[]) {
+function formatParams(auxPrefix: string, params: string[]) {
   // Use auxiliary argument names for arguments without names
   let auxCount = 0;
 
   return params
-    .map((arg) => arg.replace(/ calldata /, " memory "))
+    .map((arg) => arg.replace(/ calldata( |$)/, " memory$1"))
     .map((arg) => {
       const items = arg.split(" ");
-      const needsAux = items.length === 1 || (items.length === 2 && items[1] === "memory");
-      return needsAux ? `${arg} __aux${auxCount++}` : arg;
+      const needsAux = items.length === 1 || (items.length === 2 && ["memory", "payable"].includes(items[1]));
+      return needsAux ? `${arg} ${auxPrefix}${auxCount++}` : arg;
     });
 }

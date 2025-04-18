@@ -57,23 +57,33 @@ library ASystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setPositions(positions);
   }
 
-  function getValue(ASystemType self) internal view returns (uint256) {
+  function getValue(ASystemType self) internal view returns (uint256 __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).getValue();
   }
 
-  function getTwoValues(ASystemType self) internal view returns (uint256, uint256) {
+  function getTwoValues(ASystemType self) internal view returns (uint256 __auxRet0, uint256 __auxRet1) {
     return CallWrapper(self.toResourceId(), address(0)).getTwoValues();
   }
 
-  function setAddress(ASystemType self) internal returns (address) {
+  function setAddress(ASystemType self) internal returns (address __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).setAddress();
   }
 
-  function getValueWithRevert(ASystemType self) internal view returns (uint256) {
+  function setWithNamelessParameters(
+    ASystemType self,
+    address payable __auxArg0,
+    bytes memory b,
+    bytes memory __auxArg1,
+    string[] memory __auxArg2
+  ) internal returns (address payable __auxRet0, bytes memory __auxRet1, string[] memory __auxRet2) {
+    return CallWrapper(self.toResourceId(), address(0)).setWithNamelessParameters(__auxArg0, b, __auxArg1, __auxArg2);
+  }
+
+  function getValueWithRevert(ASystemType self) internal view returns (uint256 __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).getValueWithRevert();
   }
 
-  function setAddressWithRevert(ASystemType self) internal returns (address) {
+  function setAddressWithRevert(ASystemType self) internal returns (address __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).setAddressWithRevert();
   }
 
@@ -139,7 +149,7 @@ library ASystemLib {
       : _world().callFrom(self.from, self.systemId, systemCall);
   }
 
-  function getValue(CallWrapper memory self) internal view returns (uint256) {
+  function getValue(CallWrapper memory self) internal view returns (uint256 __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
@@ -157,7 +167,7 @@ library ASystemLib {
     }
   }
 
-  function getTwoValues(CallWrapper memory self) internal view returns (uint256, uint256) {
+  function getTwoValues(CallWrapper memory self) internal view returns (uint256 __auxRet0, uint256 __auxRet1) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
@@ -175,7 +185,7 @@ library ASystemLib {
     }
   }
 
-  function setAddress(CallWrapper memory self) internal returns (address) {
+  function setAddress(CallWrapper memory self) internal returns (address __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
@@ -190,7 +200,31 @@ library ASystemLib {
     }
   }
 
-  function getValueWithRevert(CallWrapper memory self) internal view returns (uint256) {
+  function setWithNamelessParameters(
+    CallWrapper memory self,
+    address payable __auxArg0,
+    bytes memory b,
+    bytes memory __auxArg1,
+    string[] memory __auxArg2
+  ) internal returns (address payable __auxRet0, bytes memory __auxRet1, string[] memory __auxRet2) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(
+      _setWithNamelessParameters_address_bytes_bytes_stringArray.setWithNamelessParameters,
+      (__auxArg0, b, __auxArg1, __auxArg2)
+    );
+
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (address, bytes, string[]));
+    }
+  }
+
+  function getValueWithRevert(CallWrapper memory self) internal view returns (uint256 __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
@@ -208,7 +242,7 @@ library ASystemLib {
     }
   }
 
-  function setAddressWithRevert(CallWrapper memory self) internal returns (address) {
+  function setAddressWithRevert(CallWrapper memory self) internal returns (address __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
@@ -281,7 +315,7 @@ library ASystemLib {
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
-  function getValue(RootCallWrapper memory self) internal view returns (uint256) {
+  function getValue(RootCallWrapper memory self) internal view returns (uint256 __auxRet0) {
     bytes memory systemCall = abi.encodeCall(_getValue.getValue, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
@@ -291,7 +325,7 @@ library ASystemLib {
     }
   }
 
-  function getTwoValues(RootCallWrapper memory self) internal view returns (uint256, uint256) {
+  function getTwoValues(RootCallWrapper memory self) internal view returns (uint256 __auxRet0, uint256 __auxRet1) {
     bytes memory systemCall = abi.encodeCall(_getTwoValues.getTwoValues, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
@@ -301,7 +335,7 @@ library ASystemLib {
     }
   }
 
-  function setAddress(RootCallWrapper memory self) internal returns (address) {
+  function setAddress(RootCallWrapper memory self) internal returns (address __auxRet0) {
     bytes memory systemCall = abi.encodeCall(_setAddress.setAddress, ());
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -311,7 +345,26 @@ library ASystemLib {
     }
   }
 
-  function getValueWithRevert(RootCallWrapper memory self) internal view returns (uint256) {
+  function setWithNamelessParameters(
+    RootCallWrapper memory self,
+    address payable __auxArg0,
+    bytes memory b,
+    bytes memory __auxArg1,
+    string[] memory __auxArg2
+  ) internal returns (address payable __auxRet0, bytes memory __auxRet1, string[] memory __auxRet2) {
+    bytes memory systemCall = abi.encodeCall(
+      _setWithNamelessParameters_address_bytes_bytes_stringArray.setWithNamelessParameters,
+      (__auxArg0, b, __auxArg1, __auxArg2)
+    );
+
+    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (address, bytes, string[]));
+    }
+  }
+
+  function getValueWithRevert(RootCallWrapper memory self) internal view returns (uint256 __auxRet0) {
     bytes memory systemCall = abi.encodeCall(_getValueWithRevert.getValueWithRevert, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
@@ -321,7 +374,7 @@ library ASystemLib {
     }
   }
 
-  function setAddressWithRevert(RootCallWrapper memory self) internal returns (address) {
+  function setAddressWithRevert(RootCallWrapper memory self) internal returns (address __auxRet0) {
     bytes memory systemCall = abi.encodeCall(_setAddressWithRevert.setAddressWithRevert, ());
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -417,6 +470,15 @@ interface _getTwoValues {
 
 interface _setAddress {
   function setAddress() external;
+}
+
+interface _setWithNamelessParameters_address_bytes_bytes_stringArray {
+  function setWithNamelessParameters(
+    address payable __auxArg0,
+    bytes memory b,
+    bytes memory __auxArg1,
+    string[] memory __auxArg2
+  ) external;
 }
 
 interface _getValueWithRevert {
