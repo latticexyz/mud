@@ -4,8 +4,8 @@ import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { store } from "../../observer/store";
-import { Providers } from "./Providers";
 import "./globals.css";
+import { ServerEnvProvider } from "./providers/ServerEnvProvider";
 
 // Reference to imported store observer so the listener is established when this component is used.
 store;
@@ -35,9 +35,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
         <Theme appearance="dark">
-          <Providers>
+          <ServerEnvProvider>
             <div className="container">{children}</div>
-          </Providers>
+          </ServerEnvProvider>
           <Toaster richColors closeButton duration={10000} theme="dark" />
         </Theme>
       </body>
