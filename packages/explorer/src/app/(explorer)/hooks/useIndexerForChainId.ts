@@ -1,5 +1,3 @@
-"use client";
-
 import { anvil } from "viem/chains";
 import { MUDChain } from "@latticexyz/common/chains";
 import { chainIdToName, supportedChains, validateChainId } from "../../../common";
