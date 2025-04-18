@@ -66,8 +66,7 @@ async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
-    INDEXER_DATABASE: indexerDatabasePath,
-    NEXT_PUBLIC_INDEXER_PORT: indexerPort.toString(),
+    INDEXER_PORT: indexerPort.toString(),
   };
 
   if (dev) {

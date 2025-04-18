@@ -3,8 +3,8 @@ import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
+import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 import { DozerResponse } from "../types";
-import { indexerForChainId } from "../utils/indexerForChainId";
 
 type Props = {
   table: Table | undefined;
@@ -22,13 +22,13 @@ export type TData = {
 export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const indexer = useIndexerForChainId(chainId);
   const decodedQuery = decodeURIComponent(query ?? "");
 
   return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
     queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const startTime = performance.now();
-      const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
@@ -54,7 +54,6 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
     select: (data: DozerResponse & { queryDuration: number }): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
-      const indexer = indexerForChainId(chainId);
       const result = data.result[0];
       // if columns are undefined, the result is empty
       if (!result[0]) return undefined;

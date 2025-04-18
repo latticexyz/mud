@@ -7,17 +7,17 @@ import { useQuery } from "@tanstack/react-query";
 import { internalNamespaces } from "../../../common";
 import { decodeTable } from "../api/utils/decodeTable";
 import { useChain } from "../hooks/useChain";
+import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 import { DozerResponse } from "../types";
-import { indexerForChainId } from "../utils/indexerForChainId";
 
 export function useTablesQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
+  const indexer = useIndexerForChainId(chainId);
 
   return useQuery<DozerResponse, Error, Table[]>({
     queryKey: ["tables", worldAddress, chainName],
     queryFn: async () => {
-      const indexer = indexerForChainId(chainId);
       const tableName = "store__Tables";
       const query =
         indexer.type === "sqlite"
