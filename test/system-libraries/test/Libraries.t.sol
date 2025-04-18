@@ -60,6 +60,12 @@ contract LibrariesTest is MudTest {
     assertEq(Value.get(), 2);
     aSystem.setValuesStaticArray([uint256(1), 2, 3]);
     assertEq(Value.get(), 3);
+
+    uint256[][] memory array2d = new uint256[][](1);
+    array2d[0] = new uint256[](1);
+    array2d[0][0] = 10;
+    uint256[][] memory array2dResult = aSystem.set2dArray(array2d);
+    assertEq(abi.encode(array2d), abi.encode(array2dResult));
   }
 
   function testCanCallSystemFromOtherSystem() public {
