@@ -1,3 +1,124 @@
+## Version 2.2.22
+
+Release date: Fri Apr 18 2025
+
+### Patch changes
+
+**[fix(explorer): editable cells keep focus (#3664)](https://github.com/latticexyz/mud/commit/fdb727e847024560315c10ebf32c1f924755ffe9)** (@latticexyz/explorer)
+
+Editable table cells no longer lose focus during editing when the query is set to "live".
+
+**[feat(world,entrykit): add `sendUserOperationFrom` (#3675)](https://github.com/latticexyz/mud/commit/60085734145ea8db0b43084034bec9f8ea474dc4)** (@latticexyz/world)
+
+Added a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.
+
+**[chore(explorer): append base world ABI to API endpoint (#3653)](https://github.com/latticexyz/mud/commit/7fd242ecf040c1c9955cdd2c971d0ed5570fa14b)** (@latticexyz/explorer)
+
+World ABI endpoint is now includes the base world ABI.
+
+**[fix(explorer): fetch from sqlite indexer in production (#3679)](https://github.com/latticexyz/mud/commit/f0c0b982573f9953e1c726c0bef91671efaaa545)** (@latticexyz/explorer)
+
+Fixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.
+
+**[fix(common): improve codegen error visibility (#3662)](https://github.com/latticexyz/mud/commit/88ddd0c3a68c52469abbc59c2f9db3bbee2eafb6)** (@latticexyz/common)
+
+Improved surfacing of errors during code generation.
+
+**[feat(world-module-metadata): remove resource existence check (#3650)](https://github.com/latticexyz/mud/commit/6344ced32a0e0903de81a689ac45b97703db136e)** (@latticexyz/world-module-metadata)
+
+Adding/deleting resource tags no longer checks if resource exists, only if you're the resource namespace owner.
+
+**[feat(store-sync): system/world ABI from metadata (#3642)](https://github.com/latticexyz/mud/commit/490159e880e2ac0e1ce8f5785873a25b99fb7668)** (@latticexyz/store-sync)
+
+`getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
+
+**[fix(store-sync): handle pending deletion in stash storage adapter (#3672)](https://github.com/latticexyz/mud/commit/7902888215e548882b314342e21caed5088b869c)** (@latticexyz/store-sync)
+
+Pending deletions immediately followed by field updates are now handled correctly by the Stash storage adapter.
+
+**[chore(explorer): remove indexer endpoint (#3678)](https://github.com/latticexyz/mud/commit/fc10a277e139c26aea88326f188b45b18367d4a5)** (@latticexyz/explorer)
+
+Removed the Explorer’s SQLite indexer API endpoint in favor of the equivalent `/q` endpoint from `@latticexyz/store-indexer`.
+
+**[feat(explorer): use systems abis in decode form (#3646)](https://github.com/latticexyz/mud/commit/13071c45dd7d28c1860e703d12b07624c271f508)** (@latticexyz/explorer)
+
+- Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+- The search form for decoding selectors now uses all system ABIs for complete results.
+- The `ABI` page has been renamed to `Decode`.
+
+**[feat(world,entrykit): add `sendUserOperationFrom` (#3675)](https://github.com/latticexyz/mud/commit/60085734145ea8db0b43084034bec9f8ea474dc4)** (@latticexyz/entrykit)
+
+EntryKit's `SessionClient` now automatically routes `sendUserOperation` through `callFrom` like it does with `writeContract` calls.
+
+**[fix(world): fix static array arguments in system libraries (#3661)](https://github.com/latticexyz/mud/commit/f6d87edb8513fd0f255ac4389a2e613a508ffab4)** (@latticexyz/world)
+
+Fix static array arguments in system libraries.
+
+**[feat(entrykit): add pyrope fee estimation (#3640)](https://github.com/latticexyz/mud/commit/050dfd5c0f540bc4145db05ca6798926fdecff4c)** (@latticexyz/entrykit)
+
+Added explicit gas estimation for Pyrope to avoid overpaying.
+
+**[feat(explorer): fetch deprecated world ABI (#3654)](https://github.com/latticexyz/mud/commit/26d2e3acd8fc0a0852f530e8e1574a68d2baa3d2)** (@latticexyz/store-sync)
+
+`getWorldAbi()` now returns an ABI that is a combination of:
+
+- base World ABI
+- system ABIs stored onchain with metadata module during deploy
+- world functions
+
+**[fix(world): support generating libraries for systems without function registration (#3670)](https://github.com/latticexyz/mud/commit/fb2745a7b2d4735a67adffa69e70ec7d1085f4da)** (@latticexyz/world)
+
+Support generating libraries for systems without function registration.
+
+**[chore(explorer): optional systemIds param for system ABIs endpoint (#3651)](https://github.com/latticexyz/mud/commit/a3645c819959efe97ff2e50f6f5b88ebe77fa980)** (@latticexyz/explorer)
+
+`systemIds` parameter is now optional for the system ABIs API endpoint.
+
+**[feat(world-module-metadata): add metadata system lib (#3645)](https://github.com/latticexyz/mud/commit/2048adf7aa386ef1fe1e9863dd87cebdef439f1b)** (@latticexyz/world-module-metadata)
+
+Added experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.
+
+```solidity
+import { metadataSystem } from "@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol";
+
+metadataSystem.setResourceTag(namespaceId, bytes32("label"), "hello");
+```
+
+**[feat(world): find systems based on inheritance (#3649)](https://github.com/latticexyz/mud/commit/03af917786370b8251542adb3d53099aa85e754f)** (@latticexyz/world, @latticexyz/cli)
+
+`mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+```solidity
+import {System} from "@latticexyz/world/src/System.sol";
+
+contract EntityProgram is System {
+  ...
+}
+```
+
+If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+**[fix(stash): maintain update atomicity in `subscribeQuery` (#3663)](https://github.com/latticexyz/mud/commit/b8239d8a667d5119569395f4b182f8ea3dc9b97e)** (@latticexyz/stash)
+
+Stash now preserves batch updates when subscribing to query results.
+Previously, while Stash supported batching table updates for atomic onchain changes, subscribing to query results would split these updates by table.
+
+**[fix(cli): don't deploy abstract contracts (#3669)](https://github.com/latticexyz/mud/commit/ab837ceb49fa77cc29487bb9df0c487975b37afe)** (@latticexyz/cli, @latticexyz/common)
+
+CLI will no longer deploy abstract systems and contracts without bytecode.
+
+**[fix(world): support functions with missing argument names in system libraries (#3671)](https://github.com/latticexyz/mud/commit/d83a0fd5283b7bea7e9a5372ea3c45ab9aea350f)** (@latticexyz/world)
+
+Adds support for functions with missing argument names in system libraries.
+
+**[feat(store-indexer): add experimental/local SQL API endpoint (#3676)](https://github.com/latticexyz/mud/commit/6bb6a79dff407a5adf951343d9c37315816bac4b)** (@latticexyz/store-indexer)
+
+Added experimental SQL API endpoint `/q` to the SQLite indexer. This is only intended for local development purposes and should not be used in production.
+
+---
+
 ## Version 2.2.21
 
 Release date: Fri Mar 21 2025
