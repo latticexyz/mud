@@ -1,5 +1,26 @@
 # @latticexyz/entrykit
 
+## 2.2.22
+
+### Patch Changes
+
+- 6008573: EntryKit's `SessionClient` now automatically routes `sendUserOperation` through `callFrom` like it does with `writeContract` calls.
+- 050dfd5: Added explicit gas estimation for Pyrope to avoid overpaying.
+- Updated dependencies [6008573]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/paymaster@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

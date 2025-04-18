@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 88ddd0c: Improved surfacing of errors during code generation.
+- ab837ce: CLI will no longer deploy abstract systems and contracts without bytecode.
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
