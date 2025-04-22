@@ -108,6 +108,66 @@ library SystemHooks {
   }
 
   /**
+   * @notice Get value slice.
+   */
+  function getValueSlice(
+    ResourceId systemId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function _getValueSlice(
+    ResourceId systemId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function getSlice(
+    ResourceId systemId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function _getSlice(
+    ResourceId systemId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
    * @notice Set value.
    */
   function setValue(ResourceId systemId, bytes21[] memory value) internal {

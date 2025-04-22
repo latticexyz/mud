@@ -105,6 +105,58 @@ library Callbacks {
   }
 
   /**
+   * @notice Get value slice.
+   */
+  function getValueSlice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes24[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 24 * startIndex, 24 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function _getValueSlice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes24[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 24 * startIndex, 24 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function getSlice(bytes32 key, uint256 startIndex, uint256 endIndex) internal view returns (bytes24[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 24 * startIndex, 24 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function _getSlice(bytes32 key, uint256 startIndex, uint256 endIndex) internal view returns (bytes24[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 24 * startIndex, 24 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
+  }
+
+  /**
    * @notice Set value.
    */
   function setValue(bytes32 key, bytes24[] memory value) internal {
