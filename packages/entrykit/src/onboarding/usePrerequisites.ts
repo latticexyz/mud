@@ -2,7 +2,7 @@ import { minGasBalance } from "./common";
 import { getAllowanceQueryOptions } from "./quarry/useAllowance";
 import { getSpenderQueryOptions } from "./quarry/useSpender";
 import { getDelegationQueryOptions } from "./useDelegation";
-import { QueryClient, queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, queryOptions, skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { Config, useClient, useConfig } from "wagmi";
 import { Address, Chain, Client, Transport } from "viem";
@@ -23,12 +23,11 @@ export function getPrequisitesQueryOptions({
   userAddress: Address | undefined;
   worldAddress: Address;
 }) {
-  const queryKey = ["getPrerequisites", client?.uid, userAddress];
-  return queryOptions(
-    client && userAddress
-      ? {
-          queryKey,
-          async queryFn() {
+  return queryOptions({
+    queryKey: ["getPrerequisites", client?.uid, userAddress],
+    queryFn:
+      client && userAddress
+        ? async () => {
             const paymaster = getPaymaster(client.chain);
 
             const {
@@ -61,11 +60,10 @@ export function getPrequisitesQueryOptions({
               // we intentionally don't enforce an allowance/gas balance here
               complete: isSpender && hasDelegation,
             };
-          },
-          retry: false,
-        }
-      : { queryKey, enabled: false },
-  );
+          }
+        : skipToken,
+    retry: false,
+  });
 }
 
 export function usePrerequisites(userAddress: Address | undefined) {

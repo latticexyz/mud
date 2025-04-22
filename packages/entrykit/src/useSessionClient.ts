@@ -6,6 +6,7 @@ import {
   UndefinedInitialDataOptions,
   UseQueryResult,
   queryOptions,
+  skipToken,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -24,28 +25,25 @@ export function getSessionClientQueryOptions({
   userAddress: Address | undefined;
   worldAddress: Address;
 }): UndefinedInitialDataOptions<SessionClient> {
-  const queryKey = ["getSessionClient", client?.uid, userAddress, worldAddress];
-  return queryOptions<SessionClient>(
-    userAddress
-      ? {
-          queryKey,
-          async queryFn() {
-            const { account: sessionAccount, signer: sessionSigner } = await queryClient.fetchQuery(
-              getSessionAccountQueryOptions({ client, userAddress }),
-            );
-            return await getSessionClient({
-              sessionAccount,
-              sessionSigner,
-              userAddress,
-              worldAddress,
-            });
-          },
-          staleTime: Infinity,
-          // TODO: replace with function to retry only connection errors
-          retry: false,
+  return queryOptions<SessionClient>({
+    queryKey: ["getSessionClient", client?.uid, userAddress, worldAddress],
+    queryFn: userAddress
+      ? async () => {
+          const { account: sessionAccount, signer: sessionSigner } = await queryClient.fetchQuery(
+            getSessionAccountQueryOptions({ client, userAddress }),
+          );
+          return await getSessionClient({
+            sessionAccount,
+            sessionSigner,
+            userAddress,
+            worldAddress,
+          });
         }
-      : { queryKey, enabled: false },
-  );
+      : skipToken,
+    staleTime: Infinity,
+    // TODO: replace with function to retry only connection errors
+    retry: false,
+  });
 }
 
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
