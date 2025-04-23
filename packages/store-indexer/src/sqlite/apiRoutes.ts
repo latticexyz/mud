@@ -9,6 +9,7 @@ import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
 import { compress } from "../koa-middleware/compress";
 import { getTablesWithRecords } from "./getTablesWithRecords";
+import { formatSqlQuery } from "./formatSqlQuery";
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,7 +68,8 @@ export function apiRoutes({ database, enableUnsafeQueryApi = false }: Props): Mi
 
       const result = [];
       for (const { query } of queries) {
-        const data = database.all(sql.raw(query)) as Record<string, unknown>[];
+        const formattedQuery = formatSqlQuery(query);
+        const data = database.all(sql.raw(formattedQuery)) as Record<string, unknown>[];
         if (!data || !Array.isArray(data)) {
           throw new Error("Invalid query result");
         }
