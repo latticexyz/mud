@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, skipToken, useQuery } from "@tanstack/react-query";
 import { getCallWithSignatureNonce } from "./getCallWithSignatureNonce";
 
 export function getCallWithSignatureNonceQueryOptions({
@@ -13,15 +13,10 @@ export function getCallWithSignatureNonceQueryOptions({
   worldAddress: Address;
   userAddress: Address | undefined;
 }) {
-  const queryKey = ["getCallWithSignatureNonce", client?.chain.id, worldAddress, userAddress];
-  return queryOptions(
-    client && userAddress
-      ? {
-          queryKey,
-          queryFn: () => getCallWithSignatureNonce({ client, worldAddress, userAddress }),
-        }
-      : { queryKey, enabled: false },
-  );
+  return queryOptions({
+    queryKey: ["getCallWithSignatureNonce", client?.chain.id, worldAddress, userAddress],
+    queryFn: client && userAddress ? () => getCallWithSignatureNonce({ client, worldAddress, userAddress }) : skipToken,
+  });
 }
 
 export function useCallWithSignatureNonce({

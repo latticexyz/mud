@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, skipToken, useQuery } from "@tanstack/react-query";
 import { getDelegation } from "./getDelegation";
 
 export function getDelegationQueryOptions({
@@ -15,15 +15,13 @@ export function getDelegationQueryOptions({
   userAddress: Address | undefined;
   sessionAddress: Address | undefined;
 }) {
-  const queryKey = ["getDelegation", client?.uid, worldAddress, userAddress, sessionAddress];
-  return queryOptions(
-    client && userAddress && sessionAddress
-      ? {
-          queryKey,
-          queryFn: () => getDelegation({ client, worldAddress, userAddress, sessionAddress }),
-        }
-      : { queryKey, enabled: false },
-  );
+  return queryOptions({
+    queryKey: ["getDelegation", client?.uid, worldAddress, userAddress, sessionAddress],
+    queryFn:
+      client && userAddress && sessionAddress
+        ? () => getDelegation({ client, worldAddress, userAddress, sessionAddress })
+        : skipToken,
+  });
 }
 
 export function useDelegation(userAddress: Address | undefined, sessionAddress: Address | undefined) {

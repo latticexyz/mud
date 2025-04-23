@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, skipToken, useQuery } from "@tanstack/react-query";
 import { getAllowance } from "../../quarry/getAllowance";
 
 export function getAllowanceQueryOptions({
@@ -11,15 +11,10 @@ export function getAllowanceQueryOptions({
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
 }) {
-  const queryKey = ["getAllowance", client?.uid, userAddress];
-  return queryOptions(
-    client && userAddress
-      ? {
-          queryKey,
-          queryFn: () => getAllowance({ client, userAddress }),
-        }
-      : { queryKey, enabled: false },
-  );
+  return queryOptions({
+    queryKey: ["getAllowance", client?.uid, userAddress],
+    queryFn: client && userAddress ? () => getAllowance({ client, userAddress }) : skipToken,
+  });
 }
 
 export function useAllowance(userAddress: Address | undefined) {
