@@ -54,6 +54,7 @@
     "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@radix-ui/react-dialog": "^1.0.5",
     "@rainbow-me/rainbowkit": "2.1.7",
+    "@reservoir0x/relay-sdk": "^1.7.0",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "permissionless": "0.2.30",
