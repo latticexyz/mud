@@ -16,4 +16,4 @@ runs:
     - name: Setup foundry
       uses: foundry-rs/foundry-toolchain@v1
       with:
-        version: nightly
+        version: nightly-f47d7e0c29a36372908b917cd74aa589d5888f8e
