@@ -1,15 +1,15 @@
 import { twMerge } from "tailwind-merge";
 import { AccountModalSection } from "../../AccountModalSection";
 import { BoltIcon } from "../../icons/BoltIcon";
-import { useGasTankBalance } from "../../useGasTankBalance";
+// import { useGasTankBalance } from "../../useGasTankBalance";
 import { Balance } from "./Balance";
 import { formatActions } from "./formatActions";
-import { WithdrawButton } from "./WithdrawButton";
 import { useFeePerAction } from "./useFeePerAction";
 
 export function GasBalanceSection() {
   const { data: feePerAction } = useFeePerAction();
-  const { gasTankBalance: balance } = useGasTankBalance();
+  // const { gasTankBalance: balance } = useGasTankBalance(); TODO: add this back
+  const balance = 0n;
 
   // TODO: better pending state?
   if (balance == null) return;
@@ -30,14 +30,6 @@ export function GasBalanceSection() {
             )}
           >
             <Balance amount={balance} />
-          </div>
-          <div
-            className={twMerge(
-              "col-start-1 row-start-1 flex items-center justify-end",
-              "transition opacity-0 translate-x-1 group-hover:translate-x-0 group-hover:opacity-100",
-            )}
-          >
-            <WithdrawButton />
           </div>
         </div>
       </div>

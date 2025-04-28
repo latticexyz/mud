@@ -37,7 +37,7 @@ export function DepositForm({ onClose, sessionAddress }: { onClose: () => void; 
     onClose();
   };
 
-  return <DepositViaRelayForm {...props} />;
+  return <DepositViaRelayForm />; // {...props}
 
   return (
     <div className="flex flex-col h-full">

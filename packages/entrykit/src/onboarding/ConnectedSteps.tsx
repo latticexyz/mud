@@ -12,6 +12,7 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
 import { Deposit } from "./Deposit";
+import { DepositFormHardcoded } from "./deposit/DepositFormHardcoded";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -75,12 +76,14 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         id: "deposit",
         isComplete: !!hasGasBalance,
         content: (props) => (
-          <Deposit
-            {...props}
-            sessionAddress={sessionAddress}
-            showDepositForm={showDepositForm}
-            onShowDepositForm={setShowDepositForm}
-          />
+          // <Deposit
+          //   {...props}
+          //   sessionAddress={sessionAddress}
+          //   showDepositForm={showDepositForm}
+          //   onShowDepositForm={setShowDepositForm}
+          // />
+
+          <DepositFormHardcoded onClose={() => setShowDepositForm(false)} sessionAddress={sessionAddress} />
         ),
       });
     }

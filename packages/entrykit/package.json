@@ -53,6 +53,7 @@
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-select": "^2.1.1",
     "@rainbow-me/rainbowkit": "2.1.7",
     "@reservoir0x/relay-sdk": "^1.7.0",
     "debug": "^4.3.4",

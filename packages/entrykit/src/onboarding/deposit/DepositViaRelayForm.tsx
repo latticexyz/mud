@@ -1,23 +1,31 @@
 import { DepositForm } from "./DepositForm";
 import { useWalletClient } from "wagmi";
 import { useAppAccountClient } from "../../useAppAccountClient";
-import { type Props } from "./DepositMethodForm";
 import { SubmitButton } from "./SubmitButton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAppChain } from "../../useAppChain";
-import { BridgeActionParameters, GetBridgeQuoteParameters } from "@reservoir0x/relay-sdk";
+import { ExecuteActionParameters, GetQuoteParameters } from "@reservoir0x/relay-sdk";
 import { useRelay } from "./useRelay";
 import { useDeposits } from "./useDeposits";
+import { Chain } from "viem";
+import { useSessionClient } from "../../useSessionClient";
+import { useSessionClientReady } from "../../useSessionClientReady";
+
+// TODO: investigate more
+type Props = {
+  sourceChain: Chain;
+  amount: bigint;
+};
 
 export function DepositViaRelayForm(props: Props) {
   const appChain = useAppChain();
-  const { data: appAccountClient } = useAppAccountClient();
+  const sessionClient = useSessionClientReady();
   const { data: walletClient } = useWalletClient();
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
   const { addDeposit } = useDeposits();
 
-  if (appAccountClient?.type === "smartAccountClient") {
+  if (sessionClient?.type === "smartAccountClient") {
     // TODO: wire this up differently to make a `depositTo` call on gas tank
     throw new Error("Smart accounts not yet supported with Relay deposits.");
   }
@@ -49,7 +57,7 @@ export function DepositViaRelayForm(props: Props) {
           amount: props.amount.toString(),
           currency: "eth",
           recipient: appAccountClient?.account.address,
-        } satisfies GetBridgeQuoteParameters)
+        } satisfies GetQuoteParameters)
       : undefined;
 
   const quote = useQuery(
@@ -85,7 +93,7 @@ export function DepositViaRelayForm(props: Props) {
 
   const bridge = useMutation({
     mutationKey: ["relayBridge"],
-    mutationFn: async (params: BridgeActionParameters) => {
+    mutationFn: async (params: ExecuteActionParameters) => {
       try {
         // This start time isn't very accurate because the `bridge` call below doesn't resolve until everything is complete.
         // Ideally `start` is initialized after the transaction is signed by the user wallet.
