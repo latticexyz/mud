@@ -11,6 +11,7 @@ import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
+import { Deposit } from "./Deposit";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -20,6 +21,7 @@ export type Props = {
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
+  const [showDepositForm, setShowDepositForm] = useState(false);
 
   const userAddress = userClient.account.address;
   const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
@@ -68,6 +70,21 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       },
     ];
 
+    if (sessionAddress) {
+      steps.push({
+        id: "deposit",
+        isComplete: !!hasGasBalance,
+        content: (props) => (
+          <Deposit
+            {...props}
+            sessionAddress={sessionAddress}
+            showDepositForm={showDepositForm}
+            onShowDepositForm={setShowDepositForm}
+          />
+        ),
+      });
+    }
+
     if (!paymaster) {
       if (sessionAddress != null) {
         steps.push({
@@ -93,7 +110,17 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     });
 
     return steps;
-  }, [hasAllowance, hasDelegation, hasGasBalance, isSpender, paymaster, sessionAddress, userAddress, userClient]);
+  }, [
+    hasAllowance,
+    hasDelegation,
+    hasGasBalance,
+    isSpender,
+    paymaster,
+    sessionAddress,
+    userAddress,
+    userClient,
+    showDepositForm,
+  ]);
 
   const [selectedStepId] = useState<null | string>(null);
   const nextStep = steps.find((step) => step.content != null && !step.isComplete);
@@ -107,8 +134,8 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   return (
     <div
       className={twMerge(
-        // steps.length === 2 ? "min-h-[22rem]" : "min-h-[26rem]",
-        "px-8 flex flex-col divide-y divide-neutral-800",
+        "px-8 flex flex-col",
+        !showDepositForm && "divide-y divide-neutral-800",
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
@@ -116,10 +143,24 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         const isActive = step === activeStep;
         const isExpanded = isActive || completedSteps.length === steps.length;
         const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
+        const content = step.content({ isActive, isExpanded });
+
+        // Only show the deposit step if we're showing the form, or hide all other steps if we're showing the form
+        if (showDepositForm && step.id !== "deposit") {
+          return null;
+        }
+
         return (
-          <div key={step.id} className={twMerge("py-8 flex flex-col justify-center", isActive ? "flex-grow" : null)}>
+          <div
+            key={step.id}
+            className={twMerge(
+              "py-8 flex flex-col justify-center",
+              isActive ? "flex-grow" : null,
+              showDepositForm ? "!py-0" : null,
+            )}
+          >
             <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
-              {step.content({ isActive, isExpanded })}
+              {content}
             </div>
           </div>
         );

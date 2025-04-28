@@ -41,7 +41,7 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
       <div className="flex justify-between gap-4">
         <div>
           <div>Session</div>
-          <div className="font-mono text-white">{hasSession ? "Enabled" : "Set up"}</div>
+          <div className="font-mono text-white">{hasSession ? "Enabled" : "Set up 2"}</div>
         </div>
         {hasSession ? (
           <Button variant="tertiary" className="flex-shrink-0 text-sm p-1 w-28" autoFocus={isActive} disabled>
