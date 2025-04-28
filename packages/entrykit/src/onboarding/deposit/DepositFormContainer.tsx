@@ -1,17 +1,18 @@
 import { useState } from "react";
+import { useChains, useChainId } from "wagmi";
 import { DepositForm } from "./DepositForm";
-import { SourceChain } from "./common";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
-import { pyrope } from "@latticexyz/common/chains";
 
 type Props = {
   goBack: () => void;
 };
 
 export function DepositFormContainer({ goBack }: Props) {
+  const chainId = useChainId();
+  const chains = useChains();
+  const [sourceChainId, setSourceChainId] = useState(chainId);
+  const sourceChain = chains.find(({ id }) => id === sourceChainId)!;
   const [amount, setAmount] = useState<bigint | undefined>(undefined);
-  const [sourceChainId, setSourceChainId] = useState<SourceChain>(pyrope.id);
-  const sourceChain = pyrope;
 
   return (
     <>
@@ -23,7 +24,7 @@ export function DepositFormContainer({ goBack }: Props) {
       <div className="py-6">
         <DepositForm
           sourceChain={sourceChain}
-          setSourceChainId={() => {}}
+          setSourceChainId={setSourceChainId}
           amount={amount}
           setAmount={setAmount}
           estimatedFee={{

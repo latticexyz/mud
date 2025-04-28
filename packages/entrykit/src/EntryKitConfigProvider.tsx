@@ -22,8 +22,6 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   const currentConfig = useContext(Context);
   if (currentConfig) throw new Error("`EntryKitProvider` can only be used once.");
 
-  console.log("Config", config);
-
   // TODO: move chain-based lookups to function so we can reuse here and in passkeyConnector
 
   const chains = useChains();

@@ -21,7 +21,6 @@ export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayC
     queryFn: async () => {
       debug("fetching relay chains from", baseApiUrl);
       const chains = await fetchChainConfigs(baseApiUrl);
-      console.log("chains are:", chains);
 
       // TODO: call getSolverCapacity to make sure source relay chain to app chain is supported
       //       this might also help with our balance checking, because this returns a balance as well

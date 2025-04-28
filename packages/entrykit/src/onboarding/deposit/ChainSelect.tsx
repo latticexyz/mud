@@ -22,10 +22,6 @@ export function ChainSelect({ value, onChange }: Props) {
   const sourceChains = useSourceChains();
   const selectedChain = sourceChains.find((c) => c.id === value)!;
 
-  if (selectedChain == null) {
-    return null; // TODO: handle loading state
-  }
-
   return (
     <Select.Root
       value={value.toString()}
@@ -42,10 +38,10 @@ export function ChainSelect({ value, onChange }: Props) {
         <Select.Trigger className="group inline-flex items-center justify-center">
           <Select.Value asChild>
             <ChainIcon
-              id={selectedChain.id}
-              name={selectedChain.name}
+              id={selectedChain?.id}
+              name={selectedChain?.name}
               // TODO: define our own set of icons for each chain
-              url={selectedChain.relayChain?.icon?.[theme]}
+              url={selectedChain?.relayChain?.icon?.[theme]}
               className="w-8"
             />
           </Select.Value>

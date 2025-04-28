@@ -5,18 +5,17 @@ import { AmountInput } from "./AmountInput";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { formatGas } from "./formatGas";
-import { SourceChain } from "./common";
 import { SubmitButton } from "./SubmitButton";
 import { useIsMounted } from "usehooks-ts";
 import { WarningIcon } from "../../icons/WarningIcon";
 import { Balance } from "./Balance";
-import { pyrope } from "@latticexyz/common/chains";
 import { useShowQueryError } from "../../errors/useShowQueryError";
+import { Chain } from "viem";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
 export type Props = {
-  sourceChain: SourceChain;
+  sourceChain: Chain;
   setSourceChainId: (chainId: number) => void;
   amount: bigint | undefined;
   setAmount: (amount: bigint | undefined) => void;
@@ -43,8 +42,7 @@ export function DepositForm({
   const isMounted = useIsMounted();
 
   const { address: userAddress, chainId: userChainId } = useAccount();
-  // TODO: add `chainId` dynamically
-  const balance = useShowQueryError(useBalance({ chainId: pyrope.id, address: userAddress }));
+  const balance = useShowQueryError(useBalance({ chainId: sourceChain.id, address: userAddress }));
   useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   const minimumBalance = amount != null ? amount + (estimatedFee?.fee ?? 0n) : undefined;
@@ -91,8 +89,7 @@ export function DepositForm({
       }}
     >
       <div className="flex gap-2">
-        {/* TODO: add dynamic chain select */}
-        <ChainSelect value={pyrope.id} onChange={setSourceChainId} />
+        <ChainSelect value={sourceChain.id} onChange={setSourceChainId} />
         <AmountInput
           ref={amountInputRef}
           // TODO: fix issue where this causes `.4` to re-render as `0.4` (because `initialAmount` is bigint)
