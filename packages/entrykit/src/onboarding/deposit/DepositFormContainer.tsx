@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useChains, useChainId, useWalletClient } from "wagmi";
 import { useMutation, useQuery } from "wagmi/query";
 import { Execute } from "@reservoir0x/relay-sdk";
+import { SubmitButton } from "./SubmitButton";
 import { DepositForm } from "./DepositForm";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { useRelay } from "./useRelay";
@@ -40,6 +41,7 @@ export function DepositFormContainer({ goBack }: Props) {
 
       return result;
     },
+    refetchInterval: 15000,
     enabled: !!amount,
   });
 
@@ -84,6 +86,16 @@ export function DepositFormContainer({ goBack }: Props) {
           }}
           estimatedTime="A few seconds"
           onSubmit={() => deposit.mutateAsync(quote.data)}
+          submitButton={
+            <SubmitButton
+              variant="primary"
+              chainId={sourceChain.id}
+              disabled={quote.isError || !amount}
+              pending={deposit.isPending}
+            >
+              Deposit
+            </SubmitButton>
+          }
         />
       </div>
     </>

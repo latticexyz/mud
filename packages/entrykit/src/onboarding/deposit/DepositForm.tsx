@@ -27,6 +27,7 @@ export type Props = {
   };
   estimatedTime: string;
   onSubmit: () => Promise<void>;
+  submitButton: React.ReactNode;
 };
 
 export function DepositForm({
@@ -37,6 +38,7 @@ export function DepositForm({
   estimatedFee,
   estimatedTime,
   onSubmit,
+  submitButton,
 }: Props) {
   const amountInputRef = useRef<HTMLInputElement | null>(null);
   const isMounted = useIsMounted();
@@ -134,11 +136,7 @@ export function DepositForm({
         <dd>{estimatedTime}</dd>
       </dl>
 
-      {hasMinimumBalance ? (
-        <SubmitButton variant="primary">Deposit</SubmitButton>
-      ) : (
-        <SubmitButton disabled>Not enough funds</SubmitButton>
-      )}
+      {hasMinimumBalance ? submitButton : <SubmitButton disabled>Not enough funds</SubmitButton>}
     </form>
   );
 }
