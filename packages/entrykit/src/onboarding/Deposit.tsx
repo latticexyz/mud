@@ -12,6 +12,7 @@ import { useShowMutationError } from "../errors/useShowMutationError";
 import { useShowQueryError } from "../errors/useShowQueryError";
 import { useState } from "react";
 import { ArrowLeftIcon } from "../icons/ArrowLeftIcon";
+import { DepositViaRelayForm } from "./deposit/DepositViaRelayForm";
 
 export type Props = {
   isExpanded: boolean;
@@ -35,6 +36,8 @@ export function DepositForm({ onClose, sessionAddress }: { onClose: () => void; 
     });
     onClose();
   };
+
+  return <DepositViaRelayForm {...props} />;
 
   return (
     <div className="flex flex-col h-full">
