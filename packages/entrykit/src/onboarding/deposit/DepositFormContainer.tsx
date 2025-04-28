@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useChains, useChainId, useWalletClient } from "wagmi";
-import { useQuery } from "wagmi/query";
+import { useMutation, useQuery } from "wagmi/query";
+import { Execute } from "@reservoir0x/relay-sdk";
 import { DepositForm } from "./DepositForm";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { useRelay } from "./useRelay";
-import { pyrope } from "@latticexyz/common/chains";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 
 type Props = {
@@ -43,7 +43,25 @@ export function DepositFormContainer({ goBack }: Props) {
     enabled: !!amount,
   });
 
-  console.log("quote:", quote.data);
+  const deposit = useMutation({
+    mutationKey: ["relayBridge"],
+    mutationFn: async (quote: Execute) => {
+      try {
+        const result = await relayClient?.actions.execute({
+          quote,
+          wallet: wallet!, // TODO: check types
+          onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
+            console.log("onProgress", { steps, fees, breakdown, currentStep, currentStepItem, txHashes, details });
+          },
+        });
+
+        return result;
+      } catch (error) {
+        console.error("Error while depositing via Relay", error);
+        throw error;
+      }
+    },
+  });
 
   const fee = quote.data?.fees?.gas?.amount; // TODO: calculate fee correctly
   return (
@@ -65,8 +83,7 @@ export function DepositFormContainer({ goBack }: Props) {
             error: quote.error ?? undefined,
           }}
           estimatedTime="A few seconds"
-          onSubmit={() => {}}
-          // submitButton={<SubmitButton chainId={sourceChain.id} disabled={!amount} pending={false} />}
+          onSubmit={() => deposit.mutateAsync(quote.data)}
         />
       </div>
     </>
