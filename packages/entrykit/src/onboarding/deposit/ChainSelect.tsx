@@ -19,9 +19,12 @@ export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
   const userAccount = useAccount();
-
   const sourceChains = useSourceChains();
   const selectedChain = sourceChains.find((c) => c.id === value)!;
+
+  if (selectedChain == null) {
+    return null; // TODO: handle loading state
+  }
 
   return (
     <Select.Root
@@ -47,7 +50,6 @@ export function ChainSelect({ value, onChange }: Props) {
             />
           </Select.Value>
           <Select.Icon asChild>
-            {/* TODO: animate */}
             <>
               <ChevronDownIcon className="text-sm -mr-1 group-aria-expanded:hidden" />
               <ChevronUpIcon className="text-sm -mr-1 hidden group-aria-expanded:inline" />
@@ -58,7 +60,8 @@ export function ChainSelect({ value, onChange }: Props) {
 
       {frame.contentDocument ? (
         <Select.Portal container={frame.contentDocument.body}>
-          <Select.Content position="popper" className="w-80 mt-1 animate-in fade-in slide-in-from-top-2">
+          {/* TODO: hardcoded width */}
+          <Select.Content position="popper" className="w-[352px] mt-1 animate-in fade-in slide-in-from-top-2">
             <Select.Viewport>
               <Select.Group
                 className={twMerge(

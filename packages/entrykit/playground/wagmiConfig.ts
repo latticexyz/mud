@@ -1,20 +1,14 @@
 import { Chain, http } from "viem";
-import { anvil } from "viem/chains";
+import { sepolia, baseSepolia } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
+import { pyrope } from "@latticexyz/common/chains";
 
 const chains = [
   {
-    ...anvil,
+    ...pyrope,
     rpcUrls: {
-      ...anvil.rpcUrls,
-      // bundler: {
-      //   http: ["http://127.0.0.1:4337"],
-      // },
-      // TODO: automatically grant allowance in anvil instead of requiring the service
-      // quarryPassIssuer: {
-      //   http: ["http://127.0.0.1:3003/rpc"],
-      // },
+      ...pyrope.rpcUrls,
     },
     contracts: {
       // quarryPaymaster: {
@@ -25,10 +19,16 @@ const chains = [
       },
     },
   },
+  sepolia,
+  baseSepolia,
 ] as const satisfies Chain[];
 
 const transports = {
-  [anvil.id]: http(),
+  // [anvil.id]: http(),
+  // [redstone.id]: http(),
+  [pyrope.id]: http(),
+  [sepolia.id]: http(),
+  [baseSepolia.id]: http(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
@@ -38,6 +38,10 @@ export const wagmiConfig = createWagmiConfig({
   chains,
   transports,
   pollingInterval: {
-    [anvil.id]: 500,
+    // [anvil.id]: 500,
+    // [redstone.id]: 500,
+    [pyrope.id]: 500,
+    [sepolia.id]: 500,
+    [baseSepolia.id]: 500,
   },
 });

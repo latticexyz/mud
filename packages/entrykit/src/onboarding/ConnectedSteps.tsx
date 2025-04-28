@@ -11,8 +11,8 @@ import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
-import { Deposit } from "./Deposit";
-import { DepositFormHardcoded } from "./deposit/DepositFormHardcoded";
+import { TopUp } from "./TopUp";
+import { DepositFormContainer } from "./deposit/DepositFormContainer";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -26,6 +26,8 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
 
   const userAddress = userClient.account.address;
   const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
+
+  console.log("prerequisites", userAddress, prerequisites);
 
   useEffect(() => {
     if (prerequisitesError) {
@@ -71,19 +73,13 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       },
     ];
 
+    // TODO: do we need sessionAddress here?
     if (sessionAddress) {
       steps.push({
         id: "deposit",
-        isComplete: !!hasGasBalance,
+        isComplete: false, // TODO: add logic
         content: (props) => (
-          // <Deposit
-          //   {...props}
-          //   sessionAddress={sessionAddress}
-          //   showDepositForm={showDepositForm}
-          //   onShowDepositForm={setShowDepositForm}
-          // />
-
-          <DepositFormHardcoded onClose={() => setShowDepositForm(false)} sessionAddress={sessionAddress} />
+          <TopUp {...props} sessionAddress={sessionAddress} onSubmit={() => setShowDepositForm(true)} />
         ),
       });
     }
@@ -113,17 +109,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     });
 
     return steps;
-  }, [
-    hasAllowance,
-    hasDelegation,
-    hasGasBalance,
-    isSpender,
-    paymaster,
-    sessionAddress,
-    userAddress,
-    userClient,
-    showDepositForm,
-  ]);
+  }, [hasAllowance, hasDelegation, hasGasBalance, isSpender, paymaster, sessionAddress, userAddress, userClient]);
 
   const [selectedStepId] = useState<null | string>(null);
   const nextStep = steps.find((step) => step.content != null && !step.isComplete);
@@ -142,32 +128,35 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
-      {steps.map((step, i) => {
-        const isActive = step === activeStep;
-        const isExpanded = isActive || completedSteps.length === steps.length;
-        const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
-        const content = step.content({ isActive, isExpanded });
+      {showDepositForm && <DepositFormContainer goBack={() => setShowDepositForm(false)} />}
 
-        // Only show the deposit step if we're showing the form, or hide all other steps if we're showing the form
-        if (showDepositForm && step.id !== "deposit") {
-          return null;
-        }
+      {!showDepositForm &&
+        steps.map((step, i) => {
+          const isActive = step === activeStep;
+          const isExpanded = isActive || completedSteps.length === steps.length;
+          const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
+          const content = step.content({ isActive, isExpanded });
 
-        return (
-          <div
-            key={step.id}
-            className={twMerge(
-              "py-8 flex flex-col justify-center",
-              isActive ? "flex-grow" : null,
-              showDepositForm ? "!py-0" : null,
-            )}
-          >
-            <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
-              {content}
+          // Only show the deposit step if we're showing the form, or hide all other steps if we're showing the form
+          if (showDepositForm && step.id !== "deposit") {
+            return null;
+          }
+
+          return (
+            <div
+              key={step.id}
+              className={twMerge(
+                "py-8 flex flex-col justify-center",
+                isActive ? "flex-grow" : null,
+                showDepositForm ? "!py-0" : null,
+              )}
+            >
+              <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
+                {content}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
     </div>
   );
 }

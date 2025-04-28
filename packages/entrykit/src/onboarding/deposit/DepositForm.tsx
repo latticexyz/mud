@@ -1,15 +1,17 @@
-import { useAccount, useBalance } from "wagmi";
+import { useEffect, useRef } from "react";
+import { useAccount, useBalance, useWatchBlockNumber } from "wagmi";
 import { ChainSelect } from "./ChainSelect";
 import { AmountInput } from "./AmountInput";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { formatGas } from "./formatGas";
-import { DepositMethod, SourceChain } from "./common";
-import { ReactNode, useEffect, useRef } from "react";
+import { SourceChain } from "./common";
 import { SubmitButton } from "./SubmitButton";
 import { useIsMounted } from "usehooks-ts";
 import { WarningIcon } from "../../icons/WarningIcon";
 import { Balance } from "./Balance";
+import { pyrope } from "@latticexyz/common/chains";
+import { useShowQueryError } from "../../errors/useShowQueryError";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -18,8 +20,6 @@ export type Props = {
   setSourceChainId: (chainId: number) => void;
   amount: bigint | undefined;
   setAmount: (amount: bigint | undefined) => void;
-  depositMethod: DepositMethod;
-  setDepositMethod: (depositMethod: DepositMethod) => void;
   // TODO: add errors
   estimatedFee: {
     fee?: bigint | undefined;
@@ -27,7 +27,6 @@ export type Props = {
     error: Error | undefined;
   };
   estimatedTime: string;
-  submitButton: ReactNode;
   onSubmit: () => Promise<void>;
 };
 
@@ -36,25 +35,20 @@ export function DepositForm({
   setSourceChainId,
   amount,
   setAmount,
-  depositMethod,
-  setDepositMethod,
   estimatedFee,
   estimatedTime,
   onSubmit,
-  submitButton,
 }: Props) {
   const amountInputRef = useRef<HTMLInputElement | null>(null);
   const isMounted = useIsMounted();
 
   const { address: userAddress, chainId: userChainId } = useAccount();
-  const balance = useBalance({ chainId: sourceChain.id, address: userAddress });
+  // TODO: add `chainId` dynamically
+  const balance = useShowQueryError(useBalance({ chainId: pyrope.id, address: userAddress }));
+  useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   const minimumBalance = amount != null ? amount + (estimatedFee?.fee ?? 0n) : undefined;
   const hasMinimumBalance = balance.data != null ? balance.data.value > (minimumBalance ?? 0n) : undefined;
-
-  const selectedMethod = sourceChain.depositMethods.includes(depositMethod)
-    ? depositMethod
-    : sourceChain.depositMethods[0];
 
   // Re-focus input if chain ID changes (otherwise the chain select is still in focus)
   useEffect(() => {
@@ -69,13 +63,13 @@ export function DepositForm({
 
   useEffect(() => {
     if (estimatedFee.error) {
-      console.error("Failed to estimate fee for", selectedMethod, "deposit from", sourceChain.id, estimatedFee.error);
+      console.error("Failed to estimate fee, deposit from", sourceChain.id, estimatedFee.error);
     }
-  }, [estimatedFee.error, selectedMethod, sourceChain.id, userAddress]);
+  }, [estimatedFee.error, sourceChain.id, userAddress]);
 
   return (
     <form
-      className="flex flex-col px-5 gap-5"
+      className="flex flex-col gap-5"
       onSubmit={async (event) => {
         event.preventDefault();
 
@@ -97,7 +91,8 @@ export function DepositForm({
       }}
     >
       <div className="flex gap-2">
-        <ChainSelect value={sourceChain.id} onChange={setSourceChainId} />
+        {/* TODO: add dynamic chain select */}
+        <ChainSelect value={pyrope.id} onChange={setSourceChainId} />
         <AmountInput
           ref={amountInputRef}
           // TODO: fix issue where this causes `.4` to re-render as `0.4` (because `initialAmount` is bigint)
@@ -106,31 +101,6 @@ export function DepositForm({
           onChange={setAmount}
         />
       </div>
-
-      {sourceChain.depositMethods.length > 1 ? (
-        <div className="grid grid-flow-col justify-stretch font-medium">
-          {sourceChain.depositMethods.map((method) => (
-            <button
-              key={method}
-              type="button"
-              className={twMerge(
-                "border border-transparent p-2",
-                "bg-neutral-200 dark:bg-neutral-700",
-                "aria-selected:bg-transparent dark:aria-selected:bg-transparent",
-                "aria-selected:border-neutral-300 dark:aria-selected:border-neutral-600",
-                "aria-selected:border-b-transparent dark:aria-selected:border-b-transparent",
-                "hover:bg-neutral-300 dark:hover:bg-neutral-600",
-                // TODO: replace with nicer label
-                "capitalize",
-              )}
-              aria-selected={method === selectedMethod}
-              onClick={() => setDepositMethod(method)}
-            >
-              {method}
-            </button>
-          ))}
-        </div>
-      ) : null}
 
       <dl
         className={twMerge(
@@ -167,7 +137,11 @@ export function DepositForm({
         <dd>{estimatedTime}</dd>
       </dl>
 
-      {hasMinimumBalance ? submitButton : <SubmitButton disabled>Not enough funds</SubmitButton>}
+      {hasMinimumBalance ? (
+        <SubmitButton variant="primary">Deposit</SubmitButton>
+      ) : (
+        <SubmitButton disabled>Not enough funds</SubmitButton>
+      )}
     </form>
   );
 }
