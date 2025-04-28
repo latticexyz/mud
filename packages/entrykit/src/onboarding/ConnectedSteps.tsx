@@ -27,8 +27,6 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const userAddress = userClient.account.address;
   const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
 
-  console.log("prerequisites", userAddress, prerequisites);
-
   useEffect(() => {
     if (prerequisitesError) {
       console.error("Could not get prerequisites", prerequisitesError);
