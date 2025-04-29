@@ -115,6 +115,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
         <SubmitButton
           variant="primary"
           chainId={sourceChain.id}
+          amount={amount}
           disabled={quote.isError || !amount}
           pending={deposit.isPending}
         >

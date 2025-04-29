@@ -72,6 +72,7 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
       submitButton={
         <SubmitButton
           variant="primary"
+          amount={amount}
           chainId={sourceChain.id}
           disabled={!!prepareError || !amount || !userAddress}
           pending={deposit.isPending}
