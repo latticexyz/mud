@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useChains, useChainId, useWalletClient, useAccount } from "wagmi";
 import { createPublicClient, encodeFunctionData, http } from "viem";
-import { useMutation, useQuery } from "wagmi/query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Execute } from "@reservoir0x/relay-sdk";
 import { SubmitButton } from "./SubmitButton";
 import { DepositForm } from "./DepositForm";
@@ -15,6 +15,7 @@ type Props = {
 };
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
+// TODO: move to configs
 const BALANCE_SYSTEM_ADDRESS = "0x01B0d1C240524FC52Ba233Ae509723c79b17A4d3";
 const BALANCE_SYSTEM_ABI = [
   {
@@ -82,17 +83,16 @@ export function DepositFormContainer({ goBack }: Props) {
   const chains = useChains();
   const { address: userAddress } = useAccount();
   const { chainId: destinationChainId } = useEntryKitConfig();
+  const [amount, setAmount] = useState<bigint | undefined>(undefined);
   const [sourceChainId, setSourceChainId] = useState(chainId);
   const sourceChain = chains.find(({ id }) => id === sourceChainId)!;
-  const [amount, setAmount] = useState<bigint | undefined>(undefined);
+  const isNativeDeposit = sourceChainId === destinationChainId;
 
   const { data: wallet } = useWalletClient();
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
 
-  console.log("amount", amount);
-
-  const quote = useQuery({
+  const quote = useQuery<Execute>({
     queryKey: ["relayBridgeQuote", sourceChain.id, amount?.toString()],
     retry: 1,
     queryFn: async () => {
@@ -109,7 +109,7 @@ export function DepositFormContainer({ goBack }: Props) {
         toChainId: destinationChainId,
         currency: ETH_ADDRESS,
         toCurrency: ETH_ADDRESS,
-        amount: amount?.toString(), // 1000000000000000
+        amount: amount?.toString(),
         tradeType: "EXACT_OUTPUT",
         recipient: BALANCE_SYSTEM_ADDRESS,
         wallet,
@@ -133,11 +133,11 @@ export function DepositFormContainer({ goBack }: Props) {
       return result as Execute;
     },
     refetchInterval: 15000,
-    enabled: !!amount && !!wallet?.account.address,
+    enabled: !!amount && !!userAddress && !isNativeDeposit,
   });
 
   const deposit = useMutation({
-    mutationKey: ["relayBridge"],
+    mutationKey: ["deposit"],
     mutationFn: async (quote: Execute) => {
       try {
         const result = await relayClient?.actions.execute({
@@ -155,8 +155,6 @@ export function DepositFormContainer({ goBack }: Props) {
       }
     },
   });
-
-  console.log("quote", quote.data);
 
   const fee = quote.data?.fees?.gas?.amount;
   return (
@@ -176,7 +174,7 @@ export function DepositFormContainer({ goBack }: Props) {
             isLoading: quote.isLoading,
             error: quote.error instanceof Error ? quote.error : undefined,
           }}
-          estimatedTime="A few seconds"
+          estimatedTime={"A few seconds"}
           onSubmit={async () => {
             if (!quote.data) return;
             await deposit.mutateAsync(quote.data);
