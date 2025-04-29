@@ -13,7 +13,7 @@ import { useAppChain } from "../../useAppChain";
 import { useAppInfo } from "../../useAppInfo";
 
 export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayChain[] }> {
-  const appChain = useAppChain();
+  const appChain = useAppChain(); // TODO: remove usage of useAppChain
   const appInfo = useAppInfo();
   const baseApiUrl = appChain.testnet ? TESTNET_RELAY_API : MAINNET_RELAY_API;
   return useQuery({

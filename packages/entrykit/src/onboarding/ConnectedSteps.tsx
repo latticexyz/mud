@@ -126,11 +126,6 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
           const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
           const content = step.content({ isActive, isExpanded });
 
-          // Only show the deposit step if we're showing the form, or hide all other steps if we're showing the form
-          if (showDepositForm && step.id !== "deposit") {
-            return null;
-          }
-
           return (
             <div
               key={step.id}

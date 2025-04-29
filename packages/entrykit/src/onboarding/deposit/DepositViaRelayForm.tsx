@@ -1,125 +1,91 @@
-import { DepositForm } from "./DepositForm";
-import { useWalletClient } from "wagmi";
-import { useAppAccountClient } from "../../useAppAccountClient";
-import { SubmitButton } from "./SubmitButton";
+import { Chain, encodeFunctionData } from "viem";
+import { useAccount, useWalletClient } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAppChain } from "../../useAppChain";
-import { ExecuteActionParameters, GetQuoteParameters } from "@reservoir0x/relay-sdk";
+import { Execute } from "@reservoir0x/relay-sdk";
+import { SubmitButton } from "./SubmitButton";
+import { DepositForm } from "./DepositForm";
 import { useRelay } from "./useRelay";
 import { useDeposits } from "./useDeposits";
-import { Chain } from "viem";
-import { useSessionClient } from "../../useSessionClient";
-import { useSessionClientReady } from "../../useSessionClientReady";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
+import { BALANCE_SYSTEM_ABI, BALANCE_SYSTEM_ADDRESS, ETH_ADDRESS, publicClient } from "./DepositFormContainer";
 
-// TODO: investigate more
 type Props = {
+  amount: bigint | undefined;
+  setAmount: (amount: bigint | undefined) => void;
   sourceChain: Chain;
-  amount: bigint;
+  setSourceChainId: (chainId: number) => void;
 };
 
-export function DepositViaRelayForm(props: Props) {
-  const appChain = useAppChain();
-  const sessionClient = useSessionClientReady();
-  const { data: walletClient } = useWalletClient();
+export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
+  const { chainId: destinationChainId } = useEntryKitConfig();
+  const { address: userAddress } = useAccount();
+  const { data: wallet } = useWalletClient();
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
+
+  // TODO: show deposits loading state
   const { addDeposit } = useDeposits();
 
-  if (sessionClient?.type === "smartAccountClient") {
-    // TODO: wire this up differently to make a `depositTo` call on gas tank
-    throw new Error("Smart accounts not yet supported with Relay deposits.");
-  }
-
-  const relayChain = props.sourceChain.relayChain;
-  // TODO: this might be too aggressive if we're in the middle of loading these chains, unclear if the upstream components will prevent this one from loading in that case
-  if (!relayChain) throw new Error(`No Relay chain found for chain ID ${props.sourceChain.id}.`);
-
-  // we should never get here if we have a relay chain, because they're created at the same time
-  if (!relayClient) throw new Error("No Relay client found.");
-
   // TODO: get solver capacity for `user.maxBridgeAmount`
+  const quote = useQuery<Execute>({
+    queryKey: ["relayBridgeQuote", sourceChain.id, amount?.toString()],
+    retry: 1,
+    queryFn: async () => {
+      const balance = await publicClient.readContract({
+        address: BALANCE_SYSTEM_ADDRESS,
+        abi: BALANCE_SYSTEM_ABI,
+        functionName: "balances",
+        args: [userAddress],
+      });
+      console.log("balance", balance);
 
-  const queryKey = [
-    "relayBridgeQuote",
-    walletClient?.account.address,
-    props.sourceChain.id,
-    appChain.id,
-    props.amount?.toString(),
-    appAccountClient?.account.address,
-  ];
+      if (!relayClient) throw new Error("No Relay client found.");
 
-  const bridgeParams =
-    walletClient && appAccountClient && props.amount != null && props.amount > 0n
-      ? ({
-          wallet: walletClient,
-          chainId: props.sourceChain.id,
-          toChainId: appChain.id,
-          amount: props.amount.toString(),
-          currency: "eth",
-          recipient: appAccountClient?.account.address,
-        } satisfies GetQuoteParameters)
-      : undefined;
-
-  const quote = useQuery(
-    bridgeParams
-      ? {
-          queryKey,
-          retry: 1,
-          queryFn: async () => {
-            // `getBridgeQuote` calls `bridge` with `precheck: true`
-            // https://github.com/reservoirprotocol/relay-sdk/blob/24a5da9d9dbdefa64b4b2c05f02ab243b78b3715/packages/sdk/src/methods/getBridgeQuote.ts
-            // but `bridge` doesn't narrow the return type
-            // https://github.com/reservoirprotocol/relay-sdk/blob/24a5da9d9dbdefa64b4b2c05f02ab243b78b3715/packages/sdk/src/actions/bridge.ts#L112-L121
-            // so we'll do that ourselves to make this easier to use downstream
-            const result = (await relayClient.methods.getBridgeQuote(bridgeParams)) as Exclude<
-              Awaited<ReturnType<typeof relayClient.methods.getBridgeQuote>>,
-              true
-            >;
-
-            // I have no idea what these errors will say or look like, so I am YOLOing this approach.
-            if (result.errors?.length) {
-              const messages = result.errors.map((error) => error.message);
-              throw new Error(`Error while retrieving Relay bridge quote:\n\n- ${messages.join("\n- ")}`);
-            }
-
-            return {
-              params: bridgeParams,
-              quote: result,
-            };
+      const result = await relayClient.actions.getQuote({
+        chainId: sourceChain.id,
+        toChainId: destinationChainId,
+        currency: ETH_ADDRESS,
+        toCurrency: ETH_ADDRESS,
+        amount: amount?.toString(),
+        tradeType: "EXACT_OUTPUT",
+        recipient: BALANCE_SYSTEM_ADDRESS,
+        wallet,
+        txs: [
+          {
+            to: BALANCE_SYSTEM_ADDRESS,
+            data: encodeFunctionData({
+              abi: BALANCE_SYSTEM_ABI,
+              functionName: "depositTo",
+              args: [userAddress],
+            }),
+            value: amount?.toString(),
           },
-        }
-      : { queryKey, enabled: false },
-  );
+        ],
+      });
 
-  const bridge = useMutation({
-    mutationKey: ["relayBridge"],
-    mutationFn: async (params: ExecuteActionParameters) => {
+      if (!result) {
+        throw new Error("Failed to get relay quote");
+      }
+
+      return result as Execute;
+    },
+    refetchInterval: 15000,
+    enabled: !!amount && !!userAddress && !!relayClient,
+  });
+
+  const deposit = useMutation({
+    mutationKey: ["deposit"],
+    mutationFn: async (quote: Execute) => {
       try {
-        // This start time isn't very accurate because the `bridge` call below doesn't resolve until everything is complete.
-        // Ideally `start` is initialized after the transaction is signed by the user wallet.
-        const start = new Date();
-
-        const pendingDeposit = relayClient.actions.bridge({
-          ...params,
-          // TODO: translate this to something useful
-          onProgress(progress) {
-            console.log("onProgress", progress);
+        const result = await relayClient?.actions.execute({
+          quote,
+          wallet: wallet!,
+          onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
+            console.log("onProgress", { steps, fees, breakdown, currentStep, currentStepItem, txHashes, details });
           },
         });
 
-        // TODO: move this into `onProgress` once we can determine that the tx has been signed and sent to mempool
-        addDeposit({
-          type: "relay",
-          amount: BigInt(params.amount), // ugh
-          chainL1Id: params.chainId,
-          chainL2Id: params.toChainId,
-          start,
-          estimatedTime: 1000 * 30,
-          depositPromise: pendingDeposit,
-          isComplete: pendingDeposit.then(() => undefined),
-        });
-
-        return await pendingDeposit;
+        return result;
       } catch (error) {
         console.error("Error while depositing via Relay", error);
         throw error;
@@ -127,25 +93,33 @@ export function DepositViaRelayForm(props: Props) {
     },
   });
 
-  const fee = quote.data?.quote.fees?.gas;
+  const fee = quote.data?.fees?.gas?.amount;
   return (
     <DepositForm
-      {...props}
+      sourceChain={sourceChain}
+      setSourceChainId={setSourceChainId}
+      amount={amount}
+      setAmount={setAmount}
       estimatedFee={{
         fee: fee != null ? BigInt(fee) : undefined,
         isLoading: quote.isLoading,
-        error: quote.error ?? undefined,
+        error: quote.error instanceof Error ? quote.error : undefined,
       }}
-      estimatedTime="A few seconds"
+      estimatedTime={"A few seconds"}
+      onSubmit={async () => {
+        if (!quote.data) return;
+        await deposit.mutateAsync(quote.data);
+      }}
       submitButton={
-        <SubmitButton chainId={props.sourceChain.id} disabled={!bridgeParams} pending={bridge.isPending}>
-          Deposit via Relay
+        <SubmitButton
+          variant="primary"
+          chainId={sourceChain.id}
+          disabled={quote.isError || !amount}
+          pending={deposit.isPending}
+        >
+          Deposit
         </SubmitButton>
       }
-      onSubmit={async () => {
-        console.log("sending bridge request", bridgeParams);
-        await bridge.mutateAsync(bridgeParams!);
-      }}
     />
   );
 }
