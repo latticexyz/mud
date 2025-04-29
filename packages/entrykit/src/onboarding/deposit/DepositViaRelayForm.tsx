@@ -1,5 +1,5 @@
 import { Chain, encodeFunctionData } from "viem";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Execute } from "@reservoir0x/relay-sdk";
 import { SubmitButton } from "./SubmitButton";
@@ -7,7 +7,7 @@ import { DepositForm } from "./DepositForm";
 import { useRelay } from "./useRelay";
 import { useDeposits } from "./useDeposits";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { BALANCE_SYSTEM_ABI, BALANCE_SYSTEM_ADDRESS, ETH_ADDRESS, publicClient } from "./DepositFormContainer";
+import { BALANCE_SYSTEM_ABI, BALANCE_SYSTEM_ADDRESS, ETH_ADDRESS } from "./DepositFormContainer";
 
 type Props = {
   amount: bigint | undefined;
@@ -18,8 +18,9 @@ type Props = {
 
 export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
   const { chainId: destinationChainId } = useEntryKitConfig();
-  const { address: userAddress } = useAccount();
+  const publicClient = usePublicClient();
   const { data: wallet } = useWalletClient();
+  const { address: userAddress } = useAccount();
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
 
@@ -74,7 +75,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
   });
 
   const deposit = useMutation({
-    mutationKey: ["deposit"],
+    mutationKey: ["depositViaRelay", sourceChain.id, amount?.toString()],
     mutationFn: async (quote: Execute) => {
       try {
         const result = await relayClient?.actions.execute({

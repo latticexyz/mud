@@ -1,11 +1,9 @@
-import { Chain, encodeFunctionData } from "viem";
-import { useAccount, useWalletClient } from "wagmi";
-import { useMutation } from "@tanstack/react-query";
-import { SubmitButton } from "./SubmitButton";
+import { useAccount, useWriteContract, usePrepareTransactionRequest, usePublicClient } from "wagmi";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { DepositForm } from "./DepositForm";
-import { useDeposits } from "./useDeposits";
-import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { BALANCE_SYSTEM_ABI, BALANCE_SYSTEM_ADDRESS, ETH_ADDRESS, publicClient } from "./DepositFormContainer";
+import { SubmitButton } from "./SubmitButton";
+import { Chain, encodeFunctionData } from "viem";
+import { BALANCE_SYSTEM_ADDRESS, BALANCE_SYSTEM_ABI } from "./DepositFormContainer";
 
 type Props = {
   amount: bigint | undefined;
@@ -15,39 +13,47 @@ type Props = {
 };
 
 export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
-  const { chainId: destinationChainId } = useEntryKitConfig();
   const { address: userAddress } = useAccount();
-  const { data: wallet } = useWalletClient();
+  const { writeContractAsync: writeDepositTo } = useWriteContract();
+  const publicClient = usePublicClient();
 
-  // TODO: show deposits loading state
-  const { addDeposit } = useDeposits();
+  const { data: gasPrice } = useQuery({
+    queryKey: ["gasPrice", sourceChain.id],
+    queryFn: async () => {
+      if (!publicClient) throw new Error("Public client not available");
+      return publicClient.getGasPrice();
+    },
+    refetchInterval: 15000,
+    enabled: !!publicClient,
+  });
+
+  const { data: prepareData, error: prepareError } = usePrepareTransactionRequest({
+    to: BALANCE_SYSTEM_ADDRESS,
+    data: encodeFunctionData({
+      abi: BALANCE_SYSTEM_ABI,
+      functionName: "depositTo",
+      args: [userAddress],
+    }),
+    value: amount,
+  });
 
   const deposit = useMutation({
-    mutationKey: ["deposit"],
+    mutationKey: ["nativeDeposit", amount?.toString()],
     mutationFn: async () => {
-      try {
-        // const result = await relayClient?.actions.execute({
-        //   quote,
-        //   wallet: wallet!,
-        //   onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
-        //     console.log("onProgress", { steps, fees, breakdown, currentStep, currentStepItem, txHashes, details });
-        //   },
-        // });
+      if (!amount || !userAddress) return;
 
-        return "hello";
-      } catch (error) {
-        console.error("Error while depositing via Relay", error);
-        throw error;
-      }
+      const hash = await writeDepositTo({
+        address: BALANCE_SYSTEM_ADDRESS,
+        abi: BALANCE_SYSTEM_ABI,
+        functionName: "depositTo",
+        args: [userAddress],
+        value: amount,
+      });
+      return { hash };
     },
   });
 
-  // TODO: fetch fees
-  const fee = {
-    fee: 2n,
-    isLoading: false,
-    error: undefined,
-  };
+  const estimatedFee = prepareData?.gas && gasPrice ? prepareData.gas * gasPrice : undefined;
   return (
     <DepositForm
       sourceChain={sourceChain}
@@ -55,11 +61,11 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
       amount={amount}
       setAmount={setAmount}
       estimatedFee={{
-        fee: fee != null ? BigInt(fee.fee) : undefined,
-        isLoading: fee.isLoading,
-        error: fee.error instanceof Error ? fee.error : undefined,
+        fee: estimatedFee,
+        isLoading: (!prepareData && !prepareError) || !gasPrice,
+        error: prepareError instanceof Error ? prepareError : undefined,
       }}
-      estimatedTime={"A few seconds"}
+      estimatedTime="A few seconds"
       onSubmit={async () => {
         await deposit.mutateAsync();
       }}
@@ -67,9 +73,8 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
         <SubmitButton
           variant="primary"
           chainId={sourceChain.id}
-          // TODO: add disabled and pending
-          // disabled={quote.isError || !amount}
-          // pending={deposit.isPending}
+          disabled={!!prepareError || !amount || !userAddress}
+          pending={deposit.isPending}
         >
           Deposit
         </SubmitButton>

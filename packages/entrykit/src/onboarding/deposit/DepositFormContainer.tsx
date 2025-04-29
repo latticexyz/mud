@@ -1,14 +1,6 @@
 import { useState } from "react";
-import { useChains, useChainId, useWalletClient, useAccount } from "wagmi";
-import { createPublicClient, encodeFunctionData, http } from "viem";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Execute } from "@reservoir0x/relay-sdk";
-import { SubmitButton } from "./SubmitButton";
-import { DepositForm } from "./DepositForm";
-import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
-import { useRelay } from "./useRelay";
+import { useChains, useChainId } from "wagmi";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { pyrope } from "@latticexyz/common/chains";
 import { DepositViaRelayForm } from "./DepositViaRelayForm";
 import { DepositViaNativeForm } from "./DepositViaNativeForm";
 
@@ -74,12 +66,6 @@ export const BALANCE_SYSTEM_ABI = [
     ],
   },
 ];
-
-// TODO: remove use of publicClient
-export const publicClient = createPublicClient({
-  chain: pyrope,
-  transport: http(),
-});
 
 // TODO: add goBack
 export function DepositFormContainer({ goBack }: Props) {
