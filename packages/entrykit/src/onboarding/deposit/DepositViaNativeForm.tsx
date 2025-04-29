@@ -38,7 +38,7 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   });
 
   const deposit = useMutation({
-    mutationKey: ["nativeDeposit", amount?.toString()],
+    mutationKey: ["depositViaNative", amount?.toString()],
     mutationFn: async () => {
       if (!amount || !userAddress) return;
 

@@ -60,7 +60,6 @@ export function useDeposits() {
   const deposits = useStore(store, (state) => state.deposits);
 
   // TODO: allow specifying a time to automatically remove after successful?
-
   const addDeposit = useCallback((transaction: Deposit) => {
     store.setState((state) => ({
       count: state.count + 1,
