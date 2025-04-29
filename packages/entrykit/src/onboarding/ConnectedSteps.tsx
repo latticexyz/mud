@@ -11,7 +11,6 @@ import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
-import { TopUp } from "./TopUp";
 import { DepositFormContainer } from "./deposit/DepositFormContainer";
 
 export type Props = {
@@ -71,23 +70,15 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       },
     ];
 
-    // TODO: do we need sessionAddress here?
-    if (sessionAddress) {
-      steps.push({
-        id: "deposit",
-        isComplete: false, // TODO: add logic
-        content: (props) => (
-          <TopUp {...props} sessionAddress={sessionAddress} onSubmit={() => setShowDepositForm(true)} />
-        ),
-      });
-    }
-
     if (!paymaster) {
       if (sessionAddress != null) {
         steps.push({
           id: "gasBalance",
           isComplete: !!hasGasBalance,
-          content: (props) => <GasBalance {...props} sessionAddress={sessionAddress} />,
+          content: (props) => (
+            // TODO: rename onSubmit
+            <GasBalance {...props} sessionAddress={sessionAddress} onSubmit={() => setShowDepositForm(true)} />
+          ),
         });
       }
     } else if (paymaster.type === "quarry") {
@@ -126,8 +117,8 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
+      {/* // TODO: rename go back */}
       {showDepositForm && <DepositFormContainer goBack={() => setShowDepositForm(false)} />}
-
       {!showDepositForm &&
         steps.map((step, i) => {
           const isActive = step === activeStep;

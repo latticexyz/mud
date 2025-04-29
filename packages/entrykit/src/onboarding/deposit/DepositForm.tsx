@@ -92,13 +92,7 @@ export function DepositForm({
     >
       <div className="flex gap-2">
         <ChainSelect value={sourceChain.id} onChange={setSourceChainId} />
-        <AmountInput
-          ref={amountInputRef}
-          // TODO: fix issue where this causes `.4` to re-render as `0.4` (because `initialAmount` is bigint)
-          //       might need to move up amount state and separate string state from parsed amount
-          initialAmount={amount}
-          onChange={setAmount}
-        />
+        <AmountInput ref={amountInputRef} initialAmount={amount} onChange={setAmount} />
       </div>
 
       <dl
@@ -120,6 +114,11 @@ export function DepositForm({
             <PendingIcon className="inline-block text-xs" />
           ) : null}
         </dd>
+
+        {/* TODO: calculate gas balance after deposit */}
+        <dt>Gas balance after deposit</dt>
+        <dd>2</dd>
+
         <dt>Estimated fee</dt>
         <dd>
           {estimatedFee.fee ? (

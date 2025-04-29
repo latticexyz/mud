@@ -14,6 +14,7 @@ type Props = {
   goBack: () => void;
 };
 
+const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 const BALANCE_SYSTEM_ADDRESS = "0x01B0d1C240524FC52Ba233Ae509723c79b17A4d3";
 const BALANCE_SYSTEM_ABI = [
   {
@@ -89,44 +90,26 @@ export function DepositFormContainer({ goBack }: Props) {
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
 
+  console.log("amount", amount);
+
   const quote = useQuery({
     queryKey: ["relayBridgeQuote", sourceChain.id, amount?.toString()],
     retry: 1,
     queryFn: async () => {
-      const depositToData = encodeFunctionData({
-        abi: BALANCE_SYSTEM_ABI,
-        functionName: "depositTo",
-        args: [userAddress],
-      });
-
-      const { request } = await publicClient.simulateContract({
-        address: BALANCE_SYSTEM_ADDRESS,
-        abi: BALANCE_SYSTEM_ABI,
-        functionName: "depositTo",
-        args: [userAddress],
-        value: 1n,
-      });
-      console.log("simulatedConract", request);
-
-      // read balance
       const balance = await publicClient.readContract({
         address: BALANCE_SYSTEM_ADDRESS,
         abi: BALANCE_SYSTEM_ABI,
         functionName: "balances",
         args: [userAddress],
       });
-
       console.log("balance", balance);
-
-      // const hash = await wallet?.writeContract(request);
-      // console.log("hash", hash);
 
       const result = await relayClient?.actions.getQuote({
         chainId: sourceChain.id,
-        toChainId: pyrope.id, // TODO: add dynamic destination chain
-        currency: "0x0000000000000000000000000000000000000000",
-        toCurrency: "0x0000000000000000000000000000000000000000",
-        amount: "1000000000000000", // 0.001 ETH
+        toChainId: destinationChainId,
+        currency: ETH_ADDRESS,
+        toCurrency: ETH_ADDRESS,
+        amount: amount?.toString(), // 1000000000000000
         tradeType: "EXACT_OUTPUT",
         recipient: BALANCE_SYSTEM_ADDRESS,
         wallet,
@@ -138,7 +121,7 @@ export function DepositFormContainer({ goBack }: Props) {
               functionName: "depositTo",
               args: [userAddress],
             }),
-            value: "900000000000000",
+            value: amount?.toString(),
           },
         ],
       });
@@ -172,6 +155,8 @@ export function DepositFormContainer({ goBack }: Props) {
       }
     },
   });
+
+  console.log("quote", quote.data);
 
   const fee = quote.data?.fees?.gas?.amount;
   return (
