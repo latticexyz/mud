@@ -23,7 +23,7 @@ export function DepositStatus({ status, progress, children, onDismiss }: Props) 
 
   return (
     <div className="group bg-white dark:bg-neutral-900 flex flex-col animate-in fade-in slide-in-from-bottom-2 animate-out fade-out">
-      <div className="p-2 text-sm flex items-center gap-2">
+      <div className="py-1 text-sm flex items-center gap-2">
         <div className="flex-grow">{children}</div>
         <div className="flex-shrink-0 grid">
           <span className="col-start-1 row-start-1 transition opacity-100 group-hover:opacity-0 group-hover:pointer-events-none">

@@ -22,19 +22,12 @@ export type TransferDeposit = Omit<DepositBase, "type"> & {
   readonly receipt: Promise<TransactionReceipt>;
 };
 
-export type BridgeDeposit = Omit<DepositBase, "type"> & {
-  readonly type: "bridge";
-  readonly hashL1: Hex;
-  readonly receiptL1: Promise<{ receiptL1: TransactionReceipt; hashL2: Hex }>;
-  readonly receiptL2: Promise<TransactionReceipt>;
-};
-
 export type RelayDeposit = Omit<DepositBase, "type"> & {
   readonly type: "relay";
   readonly depositPromise: Promise<unknown>;
 };
 
-export type Deposit = satisfy<DepositBase, TransferDeposit | BridgeDeposit | RelayDeposit>;
+export type Deposit = satisfy<DepositBase, TransferDeposit | RelayDeposit>;
 
 const store = createStore<{
   readonly count: number;

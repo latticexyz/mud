@@ -43,5 +43,7 @@ export function SubmitButton({ amount, chainId, className, ...buttonProps }: Pro
     }
   }
 
+  console.log("buttonProps", buttonProps);
+
   return <Button type="submit" className={twMerge("w-full", className)} {...buttonProps} />;
 }

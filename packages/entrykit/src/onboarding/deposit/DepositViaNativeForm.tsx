@@ -6,7 +6,7 @@ import { SubmitButton } from "./SubmitButton";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { getPaymaster } from "../../getPaymaster";
 import { paymasterAbi } from "../../quarry/common";
-import { useDeposits } from "./useDeposits";
+import { TransferDeposit, useDeposits } from "./useDeposits";
 
 type Props = {
   amount: bigint | undefined;
@@ -21,9 +21,7 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   const publicClient = usePublicClient();
   const { address: userAddress } = useAccount();
   const { writeContractAsync } = useWriteContract();
-
-  // TODO: show deposits loading state
-  const { deposits, addDeposit } = useDeposits();
+  const { addDeposit } = useDeposits();
 
   if (!userAddress) {
     throw new Error("User address not found");
@@ -52,16 +50,43 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   const deposit = useMutation({
     mutationKey: ["depositViaNative", amount?.toString()],
     mutationFn: async () => {
-      if (!amount || !paymaster?.address) return;
+      if (!paymaster) throw new Error("Paymaster not found");
+      if (!publicClient) throw new Error("Public client not found");
+      if (!amount) throw new Error("Amount cannot be 0");
 
-      const hash = await writeContractAsync({
-        address: paymaster.address,
-        abi: paymasterAbi,
-        functionName: "depositTo",
-        args: [userAddress],
-        value: amount,
-      });
-      return { hash };
+      try {
+        const hash = await writeContractAsync({
+          address: paymaster.address,
+          abi: paymasterAbi,
+          functionName: "depositTo",
+          args: [userAddress],
+          value: amount,
+        });
+
+        const receipt = publicClient.waitForTransactionReceipt({ hash }).then((receipt) => {
+          if (receipt.status === "reverted") {
+            throw new Error("Transfer transaction reverted.");
+          }
+          return receipt;
+        });
+
+        const pendingDeposit = {
+          type: "transfer",
+          amount,
+          chainL1Id: sourceChain.id,
+          chainL2Id: chain.id,
+          hash,
+          receipt,
+          start: new Date(),
+          estimatedTime: 1000 * 12,
+          isComplete: receipt.then(() => undefined),
+        } satisfies TransferDeposit;
+
+        addDeposit(pendingDeposit);
+      } catch (error) {
+        console.error("Error while depositing via bridge", error);
+        throw error;
+      }
     },
   });
 

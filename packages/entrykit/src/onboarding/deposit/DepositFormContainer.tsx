@@ -4,14 +4,16 @@ import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { DepositViaNativeForm } from "./DepositViaNativeForm";
 import { DepositViaRelayForm } from "./DepositViaRelayForm";
 import { DepositMethod } from "../ConnectedSteps";
+import { Deposits } from "./Deposits";
+
+export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 type Props = {
   depositMethod: DepositMethod;
   goBack: () => void;
 };
 
-export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
-
+// TODO: rename depositMethod
 // TODO: add goBack
 export function DepositFormContainer({ depositMethod, goBack }: Props) {
   const { chainId: destinationChainId } = useEntryKitConfig();
@@ -22,7 +24,7 @@ export function DepositFormContainer({ depositMethod, goBack }: Props) {
   const sourceChain = chains.find(({ id }) => id === sourceChainId)!;
 
   return (
-    <div className="pt-8 pb-4">
+    <div className="pt-8 pb-2">
       {destinationChainId === sourceChainId ? (
         <DepositViaNativeForm
           amount={amount}
@@ -38,6 +40,8 @@ export function DepositFormContainer({ depositMethod, goBack }: Props) {
           setSourceChainId={setSourceChainId}
         />
       )}
+
+      <Deposits />
     </div>
   );
 }

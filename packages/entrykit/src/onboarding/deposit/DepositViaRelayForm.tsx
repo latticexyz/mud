@@ -23,11 +23,9 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
   const paymaster = getPaymaster(chain);
   const { data: wallet } = useWalletClient();
   const { address: userAddress } = useAccount();
+  const { addDeposit } = useDeposits();
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
-
-  // TODO: show deposits loading state
-  const { addDeposit } = useDeposits();
 
   // TODO: get solver capacity for `user.maxBridgeAmount`
   const quote = useQuery<Execute>({
@@ -72,23 +70,58 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
   const deposit = useMutation({
     mutationKey: ["depositViaRelay", sourceChain.id, amount?.toString()],
     mutationFn: async (quote: Execute) => {
+      if (!relayClient) throw new Error("No Relay client found.");
+      if (!wallet) throw new Error("No wallet found.");
+
       try {
-        const result = await relayClient?.actions.execute({
+        // This start time isn't very accurate because the `bridge` call below doesn't resolve until everything is complete.
+        // Ideally `start` is initialized after the transaction is signed by the user wallet.
+        const start = new Date();
+
+        const pendingDeposit = relayClient.actions.execute({
           quote,
-          wallet: wallet!,
-          onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
-            console.log("onProgress", { steps, fees, breakdown, currentStep, currentStepItem, txHashes, details });
+          wallet,
+          onProgress(progress) {
+            console.log("onProgress", progress);
           },
         });
 
-        return result;
+        // TODO: move this into `onProgress` once we can determine that the tx has been signed and sent to mempool
+        addDeposit({
+          type: "relay",
+          amount,
+          chainL1Id: sourceChain.id,
+          chainL2Id: destinationChainId,
+          start,
+          estimatedTime: 1000 * 30,
+          depositPromise: pendingDeposit,
+          isComplete: pendingDeposit.then(() => undefined),
+        });
+
+        return await pendingDeposit;
       } catch (error) {
         console.error("Error while depositing via Relay", error);
         throw error;
       }
+
+      // try {
+      //   const result = await relayClient?.actions.execute({
+      //     quote,
+      //     wallet: wallet!,
+      //     onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
+      //       console.log("onProgress", { steps, fees, breakdown, currentStep, currentStepItem, txHashes, details });
+      //     },
+      //   });
+
+      //   return result;
+      // } catch (error) {
+      //   console.error("Error while depositing via Relay", error);
+      //   throw error;
+      // }
     },
   });
 
+  // TODO: double-check fees calculation
   const fees = quote.data?.fees;
   const gasFee = BigInt(fees?.gas?.amount ?? 0);
   const relayerFee = BigInt(fees?.relayer?.amount ?? 0);
