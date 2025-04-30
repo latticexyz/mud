@@ -8,7 +8,7 @@ import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { Input } from "../../ui/Input";
 import { ChainBalance } from "./ChainBalance";
 import { ChainIcon } from "./ChainIcon";
-import { useSourceChains } from "./useSourceChains";
+import { useRelaySourceChains } from "./useRelaySourceChains";
 
 export type Props = {
   value: number;
@@ -19,7 +19,7 @@ export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
   const userAccount = useAccount();
-  const sourceChains = useSourceChains();
+  const sourceChains = useRelaySourceChains();
   const selectedChain = sourceChains.find((c) => c.id === value)!;
 
   return (

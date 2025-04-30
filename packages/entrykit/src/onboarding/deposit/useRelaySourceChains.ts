@@ -1,9 +1,14 @@
-import { useChains } from "wagmi";
-import { useRelay } from "./useRelay";
 import { useMemo } from "react";
-import { SourceChain } from "./common";
+import { Chain } from "viem";
+import { useChains } from "wagmi";
+import { RelayChain } from "@reservoir0x/relay-sdk";
+import { useRelay } from "./useRelay";
 
-export function useSourceChains(): readonly SourceChain[] {
+export type SourceChain = Chain & {
+  relayChain: RelayChain | undefined;
+};
+
+export function useRelaySourceChains(): readonly SourceChain[] {
   const chains = useChains();
   const relay = useRelay();
   const relayChains = relay.data?.chains;

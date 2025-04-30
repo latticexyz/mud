@@ -9,11 +9,11 @@ import {
 } from "@reservoir0x/relay-sdk";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { debug } from "../../debug";
-import { useAppChain } from "../../useAppChain";
 import { useAppInfo } from "../../useAppInfo";
+import { useAppChain } from "../../useAppChain";
 
 export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayChain[] }> {
-  const appChain = useAppChain(); // TODO: remove usage of useAppChain
+  const appChain = useAppChain();
   const appInfo = useAppInfo();
   const baseApiUrl = appChain.testnet ? TESTNET_RELAY_API : MAINNET_RELAY_API;
   return useQuery({

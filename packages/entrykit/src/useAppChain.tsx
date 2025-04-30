@@ -2,7 +2,6 @@ import { useChains } from "wagmi";
 import { MUDChain } from "@latticexyz/common/chains";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 
-// TODO: remove useAppChain
 export function useAppChain(): MUDChain {
   const { chainId } = useEntryKitConfig();
   const chains = useChains();
