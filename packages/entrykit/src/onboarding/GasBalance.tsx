@@ -55,7 +55,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
         ) : relayChain != null ? (
           // TODO: convert this to a <ButtonLink>
           <a
-            href={`${relayChain.bridgeUrl}?${new URLSearchParams({ toAddress: sessionAddress })}`}
+            href={`${relayChain.bridgeUrl}?${new URLSearchParams({ toAddress: sessionAddress, amount: "0.01" })}`}
             target="_blank"
             rel="noopener noreferrer"
           >
