@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { Hex, parseEther } from "viem";
 import { PendingIcon } from "../icons/PendingIcon";
 import { Button } from "../ui/Button";
 import { Balance } from "../ui/Balance";
@@ -6,7 +6,7 @@ import { useBalance, useWatchBlockNumber } from "wagmi";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import relayChains from "../data/relayChains.json";
 import { useSetBalance } from "./useSetBalance";
-import { RelayChains, minGasBalance } from "./common";
+import { RelayChains } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { useShowQueryError } from "../errors/useShowQueryError";
@@ -46,7 +46,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
             onClick={() =>
               setBalance.mutate({
                 address: sessionAddress,
-                value: minGasBalance + (balance.data?.value ?? 0n),
+                value: parseEther("0.01") + (balance.data?.value ?? 0n),
               })
             }
           >
