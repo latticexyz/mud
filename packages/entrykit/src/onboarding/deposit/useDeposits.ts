@@ -24,6 +24,7 @@ export type TransferDeposit = Omit<DepositBase, "type"> & {
 
 export type RelayDeposit = Omit<DepositBase, "type"> & {
   readonly type: "relay";
+  readonly requestId: Hex;
   readonly depositPromise: Promise<unknown>;
 };
 
@@ -34,36 +35,34 @@ const store = createStore<{
   readonly deposits: readonly (Deposit & { readonly uid: string })[];
 }>(() => ({
   count: 0,
-  deposits: [
-    // {
-    //   type: "bridge",
-    //   amount: parseEther("0.01"),
-    //   chainL1: holesky,
-    //   chainL2: garnet,
-    //   hashL1: "0x8f0987b82756f2e7df50fcbb302693e21aea823e0afac312c91fff052ce259d8",
-    //   receiptL1: wait(5_000).then(() => ({}) as never),
-    //   receiptL2: wait(15_000).then(() => ({}) as never),
-    //   start: new Date(),
-    //   estimatedTime: 1000 * 60 * 3,
-    // },
-  ],
+  deposits: [],
 }));
 
 export function useDeposits() {
   const deposits = useStore(store, (state) => state.deposits);
-
-  // TODO: allow specifying a time to automatically remove after successful?
   const addDeposit = useCallback((transaction: Deposit) => {
-    store.setState((state) => ({
-      count: state.count + 1,
-      deposits: [
-        ...state.deposits,
-        {
-          ...transaction,
-          uid: `deposit-${state.count}`,
-        },
-      ],
-    }));
+    store.setState((state) => {
+      if (transaction.type === "relay") {
+        const existingDeposit = state.deposits.find(
+          (deposit) => deposit.type === "relay" && deposit.requestId === transaction.requestId,
+        );
+
+        if (existingDeposit) {
+          return state;
+        }
+      }
+
+      return {
+        count: state.count + 1,
+        deposits: [
+          ...state.deposits,
+          {
+            ...transaction,
+            uid: `deposit-${state.count}`,
+          },
+        ],
+      };
+    });
   }, []);
 
   const removeDeposit = useCallback((uid: string) => {

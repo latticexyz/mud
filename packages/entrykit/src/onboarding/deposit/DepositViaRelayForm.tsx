@@ -74,28 +74,27 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
       if (!wallet) throw new Error("No wallet found.");
 
       try {
-        // This start time isn't very accurate because the `bridge` call below doesn't resolve until everything is complete.
-        // Ideally `start` is initialized after the transaction is signed by the user wallet.
-        const start = new Date();
-
         const pendingDeposit = relayClient.actions.execute({
           quote,
           wallet,
           onProgress(progress) {
-            console.log("onProgress", progress);
-          },
-        });
+            const currentStep = progress.currentStep;
+            const currentState = currentStep?.items[0]?.progressState;
 
-        // TODO: move this into `onProgress` once we can determine that the tx has been signed and sent to mempool
-        addDeposit({
-          type: "relay",
-          amount,
-          chainL1Id: sourceChain.id,
-          chainL2Id: destinationChainId,
-          start,
-          estimatedTime: 1000 * 30,
-          depositPromise: pendingDeposit,
-          isComplete: pendingDeposit.then(() => undefined),
+            if (currentState === "validating") {
+              addDeposit({
+                type: "relay",
+                requestId: currentStep?.requestId,
+                amount,
+                chainL1Id: sourceChain.id,
+                chainL2Id: destinationChainId,
+                start: new Date(),
+                estimatedTime: 1000 * 30,
+                depositPromise: pendingDeposit,
+                isComplete: pendingDeposit.then(() => undefined),
+              });
+            }
+          },
         });
 
         return await pendingDeposit;
@@ -103,21 +102,6 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
         console.error("Error while depositing via Relay", error);
         throw error;
       }
-
-      // try {
-      //   const result = await relayClient?.actions.execute({
-      //     quote,
-      //     wallet: wallet!,
-      //     onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
-      //       console.log("onProgress", { steps, fees, breakdown, currentStep, currentStepItem, txHashes, details });
-      //     },
-      //   });
-
-      //   return result;
-      // } catch (error) {
-      //   console.error("Error while depositing via Relay", error);
-      //   throw error;
-      // }
     },
   });
 
