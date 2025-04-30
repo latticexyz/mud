@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useAccount, useBalance, useWatchBlockNumber } from "wagmi";
+import { useBalance as useQuarryBalance } from "../quarry/useBalance";
 import { ChainSelect } from "./ChainSelect";
 import { AmountInput } from "./AmountInput";
 import { twMerge } from "tailwind-merge";
@@ -45,6 +46,7 @@ export function DepositForm({
 
   const { address: userAddress, chainId: userChainId } = useAccount();
   const balance = useShowQueryError(useBalance({ chainId: sourceChain.id, address: userAddress }));
+  const quarryBalance = useShowQueryError(useQuarryBalance(userAddress));
   useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   const minimumBalance = amount != null ? amount + (estimatedFee?.fee ?? 0n) : undefined;
@@ -66,6 +68,8 @@ export function DepositForm({
       console.error("Failed to estimate fee, deposit from", sourceChain.id, estimatedFee.error);
     }
   }, [estimatedFee.error, sourceChain.id, userAddress]);
+
+  console.log("quarryBalance", quarryBalance.data);
 
   return (
     <form
@@ -115,9 +119,10 @@ export function DepositForm({
           ) : null}
         </dd>
 
-        {/* TODO: calculate gas balance after deposit */}
         <dt>Gas balance after deposit</dt>
-        <dd>2</dd>
+        <dd>
+          <Balance amount={(quarryBalance.data ?? 0n) + (amount ?? 0n)} />
+        </dd>
 
         <dt>Estimated fee</dt>
         <dd>
