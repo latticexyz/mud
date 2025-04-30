@@ -9,7 +9,7 @@ export const paymasterAbi = parseAbi([
   "error BalanceSystem_BalanceTooHigh(address user, uint256 balance, uint256 max)",
   "error BalanceSystem_InsufficientBalance(address user, uint256 amount, uint256 balance)",
   "function registerSpender(address spender)",
-  "function depositTo(address user)",
+  "function depositTo(address to) payable",
 ]);
 
 export const paymasterConfig = defineStore({

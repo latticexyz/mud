@@ -7,8 +7,9 @@ import { DepositForm } from "./DepositForm";
 import { useRelay } from "./useRelay";
 import { useDeposits } from "./useDeposits";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { BALANCE_SYSTEM_ABI, ETH_ADDRESS } from "./DepositFormContainer";
+import { ETH_ADDRESS } from "./DepositFormContainer";
 import { getPaymaster } from "../../getPaymaster";
+import { paymasterAbi } from "../../quarry/common";
 
 type Props = {
   amount: bigint | undefined;
@@ -34,6 +35,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
     retry: 1,
     queryFn: async () => {
       if (!relayClient) throw new Error("No Relay client found.");
+      if (!userAddress) throw new Error("No user address found.");
 
       const result = await relayClient.actions.getQuote({
         chainId: sourceChain.id,
@@ -48,7 +50,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
           {
             to: paymaster?.address,
             data: encodeFunctionData({
-              abi: BALANCE_SYSTEM_ABI,
+              abi: paymasterAbi,
               functionName: "depositTo",
               args: [userAddress],
             }),

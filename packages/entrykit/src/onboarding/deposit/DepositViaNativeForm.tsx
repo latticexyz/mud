@@ -3,9 +3,10 @@ import { Chain, encodeFunctionData } from "viem";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { DepositForm } from "./DepositForm";
 import { SubmitButton } from "./SubmitButton";
-import { BALANCE_SYSTEM_ABI } from "./DepositFormContainer";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { getPaymaster } from "../../getPaymaster";
+import { paymasterAbi } from "../../quarry/common";
+import { useDeposits } from "./useDeposits";
 
 type Props = {
   amount: bigint | undefined;
@@ -17,9 +18,16 @@ type Props = {
 export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
-  const { address: userAddress } = useAccount();
-  const { writeContractAsync: writeDepositTo } = useWriteContract();
   const publicClient = usePublicClient();
+  const { address: userAddress } = useAccount();
+  const { writeContractAsync } = useWriteContract();
+
+  // TODO: show deposits loading state
+  const { deposits, addDeposit } = useDeposits();
+
+  if (!userAddress) {
+    throw new Error("User address not found");
+  }
 
   const { data: gasPrice } = useQuery({
     queryKey: ["gasPrice", sourceChain.id],
@@ -34,7 +42,7 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   const { data: prepareData, error: prepareError } = usePrepareTransactionRequest({
     to: paymaster?.address,
     data: encodeFunctionData({
-      abi: BALANCE_SYSTEM_ABI,
+      abi: paymasterAbi,
       functionName: "depositTo",
       args: [userAddress],
     }),
@@ -44,11 +52,11 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   const deposit = useMutation({
     mutationKey: ["depositViaNative", amount?.toString()],
     mutationFn: async () => {
-      if (!amount || !userAddress || !paymaster?.address) return;
+      if (!amount || !paymaster?.address) return;
 
-      const hash = await writeDepositTo({
-        address: paymaster?.address,
-        abi: BALANCE_SYSTEM_ABI,
+      const hash = await writeContractAsync({
+        address: paymaster.address,
+        abi: paymasterAbi,
         functionName: "depositTo",
         args: [userAddress],
         value: amount,
