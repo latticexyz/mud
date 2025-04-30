@@ -12,6 +12,7 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
 import { DepositFormContainer } from "./deposit/DepositFormContainer";
+import { ArrowLeftIcon } from "../icons/ArrowLeftIcon";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -113,29 +114,45 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const activeStepIndex = activeStep ? steps.indexOf(activeStep) : -1;
 
   return (
-    <div
-      className={twMerge(
-        "px-8 flex flex-col",
-        !!depositMethod && "divide-y divide-neutral-800",
-        "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
+    <>
+      {depositMethod && (
+        <div className="absolute top-0 left-0">
+          <div
+            className="flex items-center justify-center w-10 h-10 text-white/20 hover:text-white/40 cursor-pointer"
+            onClick={() => setDepositMethod(undefined)}
+          >
+            <ArrowLeftIcon className="m-0" />
+          </div>
+        </div>
       )}
-    >
-      {!!depositMethod && <DepositFormContainer depositMethod={depositMethod} goBack={() => {}} />}
-      {!depositMethod &&
-        steps.map((step, i) => {
-          const isActive = step === activeStep;
-          const isExpanded = isActive || completedSteps.length === steps.length;
-          const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
-          const content = step.content({ isActive, isExpanded });
 
-          return (
-            <div key={step.id} className={twMerge("py-8 flex flex-col justify-center", isActive ? "flex-grow" : null)}>
-              <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
-                {content}
+      <div
+        className={twMerge(
+          "px-8 flex flex-col",
+          !!depositMethod && "divide-y divide-neutral-800",
+          "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
+        )}
+      >
+        {!!depositMethod && <DepositFormContainer />}
+        {!depositMethod &&
+          steps.map((step, i) => {
+            const isActive = step === activeStep;
+            const isExpanded = isActive || completedSteps.length === steps.length;
+            const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
+            const content = step.content({ isActive, isExpanded });
+
+            return (
+              <div
+                key={step.id}
+                className={twMerge("py-8 flex flex-col justify-center", isActive ? "flex-grow" : null)}
+              >
+                <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
+                  {content}
+                </div>
               </div>
-            </div>
-          );
-        })}
-    </div>
+            );
+          })}
+      </div>
+    </>
   );
 }

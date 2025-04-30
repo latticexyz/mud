@@ -3,19 +3,9 @@ import { useChains, useChainId } from "wagmi";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { DepositViaNativeForm } from "./DepositViaNativeForm";
 import { DepositViaRelayForm } from "./DepositViaRelayForm";
-import { DepositMethod } from "../ConnectedSteps";
 import { Deposits } from "./Deposits";
 
-export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-type Props = {
-  depositMethod: DepositMethod;
-  goBack: () => void;
-};
-
-// TODO: rename depositMethod
-// TODO: add goBack
-export function DepositFormContainer({ depositMethod, goBack }: Props) {
+export function DepositFormContainer() {
   const { chainId: destinationChainId } = useEntryKitConfig();
   const chainId = useChainId();
   const chains = useChains();
@@ -24,7 +14,7 @@ export function DepositFormContainer({ depositMethod, goBack }: Props) {
   const sourceChain = chains.find(({ id }) => id === sourceChainId)!;
 
   return (
-    <div className="pt-8 pb-2">
+    <div className="pt-10 pb-2">
       {destinationChainId === sourceChainId ? (
         <DepositViaNativeForm
           amount={amount}

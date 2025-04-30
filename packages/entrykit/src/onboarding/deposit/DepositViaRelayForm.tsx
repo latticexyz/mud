@@ -7,9 +7,10 @@ import { DepositForm } from "./DepositForm";
 import { useRelay } from "./useRelay";
 import { useDeposits } from "./useDeposits";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { ETH_ADDRESS } from "./DepositFormContainer";
 import { getPaymaster } from "../../getPaymaster";
 import { paymasterAbi } from "../../quarry/common";
+
+const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 type Props = {
   amount: bigint | undefined;
