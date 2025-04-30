@@ -1,11 +1,10 @@
-import { Hex } from "viem";
+import { Hex, parseEther } from "viem";
 import { useAllowance } from "./useAllowance";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { useClaimGasPass } from "./useClaimGasPass";
 import { Button } from "../../ui/Button";
 import { Balance } from "../../ui/Balance";
 import { useEffect } from "react";
-import { minGasBalance } from "../common";
 import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useShowMutationError } from "../../errors/useShowMutationError";
 
@@ -30,7 +29,7 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
         claimGasPass.status === "idle" &&
         allowance.isSuccess &&
         allowance.data != null &&
-        allowance.data < minGasBalance
+        allowance.data < parseEther("0.01")
       ) {
         claimGasPass.mutate(userAddress);
       }
