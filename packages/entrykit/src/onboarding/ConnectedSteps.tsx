@@ -19,7 +19,7 @@ export type Props = {
   initialUserAddress: Address | undefined;
 };
 
-export type DepositMethod = "gasBalance" | "allowance";
+export type DepositMethod = "allowance";
 
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const { chain } = useEntryKitConfig();
@@ -78,9 +78,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         steps.push({
           id: "gasBalance",
           isComplete: !!hasGasBalance,
-          content: (props) => (
-            <GasBalance {...props} sessionAddress={sessionAddress} onTopUp={() => setDepositMethod("gasBalance")} />
-          ),
+          content: (props) => <GasBalance {...props} sessionAddress={sessionAddress} />,
         });
       }
     } else if (paymaster.type === "quarry") {
