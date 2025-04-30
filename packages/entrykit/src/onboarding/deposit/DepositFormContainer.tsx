@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useChains, useChainId } from "wagmi";
-import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { DepositViaRelayForm } from "./DepositViaRelayForm";
 import { DepositViaNativeForm } from "./DepositViaNativeForm";
+import { DepositViaRelayForm } from "./DepositViaRelayForm";
+import { DepositMethod } from "../ConnectedSteps";
 
 type Props = {
+  depositMethod: DepositMethod;
   goBack: () => void;
 };
 
 export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 // TODO: move to configs
-export const BALANCE_SYSTEM_ADDRESS = "0x01B0d1C240524FC52Ba233Ae509723c79b17A4d3";
 export const BALANCE_SYSTEM_ABI = [
   {
     type: "function",
@@ -68,31 +68,32 @@ export const BALANCE_SYSTEM_ABI = [
 ];
 
 // TODO: add goBack
-export function DepositFormContainer({ goBack }: Props) {
+export function DepositFormContainer({ depositMethod, goBack }: Props) {
   const chainId = useChainId();
   const chains = useChains();
-  const { chainId: destinationChainId } = useEntryKitConfig();
   const [amount, setAmount] = useState<bigint | undefined>(undefined);
   const [sourceChainId, setSourceChainId] = useState(chainId);
   const sourceChain = chains.find(({ id }) => id === sourceChainId)!;
 
   return (
     <div className="pt-8 pb-4">
-      {sourceChainId === destinationChainId ? (
-        <DepositViaNativeForm
-          amount={amount}
-          setAmount={setAmount}
-          sourceChain={sourceChain}
-          setSourceChainId={setSourceChainId}
-        />
-      ) : (
+      {/* {depositMethod === "gasBalance" && ( */}
+      <DepositViaNativeForm
+        amount={amount}
+        setAmount={setAmount}
+        sourceChain={sourceChain}
+        setSourceChainId={setSourceChainId}
+      />
+      {/* // )} */}
+
+      {/* {depositMethod === "allowance" && (
         <DepositViaRelayForm
           amount={amount}
           setAmount={setAmount}
           sourceChain={sourceChain}
           setSourceChainId={setSourceChainId}
         />
-      )}
+      )} */}
     </div>
   );
 }

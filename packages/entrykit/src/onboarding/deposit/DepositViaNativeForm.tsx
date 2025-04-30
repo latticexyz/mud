@@ -1,9 +1,11 @@
 import { useAccount, useWriteContract, usePrepareTransactionRequest, usePublicClient } from "wagmi";
+import { Chain, encodeFunctionData } from "viem";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { DepositForm } from "./DepositForm";
 import { SubmitButton } from "./SubmitButton";
-import { Chain, encodeFunctionData } from "viem";
-import { BALANCE_SYSTEM_ADDRESS, BALANCE_SYSTEM_ABI } from "./DepositFormContainer";
+import { BALANCE_SYSTEM_ABI } from "./DepositFormContainer";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
+import { getPaymaster } from "../../getPaymaster";
 
 type Props = {
   amount: bigint | undefined;
@@ -13,6 +15,8 @@ type Props = {
 };
 
 export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
+  const { chain } = useEntryKitConfig();
+  const paymaster = getPaymaster(chain);
   const { address: userAddress } = useAccount();
   const { writeContractAsync: writeDepositTo } = useWriteContract();
   const publicClient = usePublicClient();
@@ -28,7 +32,7 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   });
 
   const { data: prepareData, error: prepareError } = usePrepareTransactionRequest({
-    to: BALANCE_SYSTEM_ADDRESS,
+    to: paymaster?.address,
     data: encodeFunctionData({
       abi: BALANCE_SYSTEM_ABI,
       functionName: "depositTo",
@@ -40,10 +44,10 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   const deposit = useMutation({
     mutationKey: ["depositViaNative", amount?.toString()],
     mutationFn: async () => {
-      if (!amount || !userAddress) return;
+      if (!amount || !userAddress || !paymaster?.address) return;
 
       const hash = await writeDepositTo({
-        address: BALANCE_SYSTEM_ADDRESS,
+        address: paymaster?.address,
         abi: BALANCE_SYSTEM_ABI,
         functionName: "depositTo",
         args: [userAddress],

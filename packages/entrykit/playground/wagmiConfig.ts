@@ -9,11 +9,14 @@ const chains = [
     ...pyrope,
     rpcUrls: {
       ...pyrope.rpcUrls,
+      quarryPassIssuer: {
+        http: ["https://rpc.pyropechain.com"],
+      },
     },
     contracts: {
-      // quarryPaymaster: {
-      //   address: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
-      // },
+      quarryPaymaster: {
+        address: "0x8d875140472D888e046f3101481a8B2b7393Eb55",
+      },
       // paymaster: {
       //   address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
       // },

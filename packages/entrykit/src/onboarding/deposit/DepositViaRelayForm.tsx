@@ -1,5 +1,5 @@
 import { Chain, encodeFunctionData } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Execute } from "@reservoir0x/relay-sdk";
 import { SubmitButton } from "./SubmitButton";
@@ -7,7 +7,8 @@ import { DepositForm } from "./DepositForm";
 import { useRelay } from "./useRelay";
 import { useDeposits } from "./useDeposits";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { BALANCE_SYSTEM_ABI, BALANCE_SYSTEM_ADDRESS, ETH_ADDRESS } from "./DepositFormContainer";
+import { BALANCE_SYSTEM_ABI, ETH_ADDRESS } from "./DepositFormContainer";
+import { getPaymaster } from "../../getPaymaster";
 
 type Props = {
   amount: bigint | undefined;
@@ -17,8 +18,8 @@ type Props = {
 };
 
 export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
-  const { chainId: destinationChainId } = useEntryKitConfig();
-  const publicClient = usePublicClient();
+  const { chain, chainId: destinationChainId } = useEntryKitConfig();
+  const paymaster = getPaymaster(chain);
   const { data: wallet } = useWalletClient();
   const { address: userAddress } = useAccount();
   const { data: relay } = useRelay();
@@ -32,14 +33,6 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
     queryKey: ["relayBridgeQuote", sourceChain.id, amount?.toString()],
     retry: 1,
     queryFn: async () => {
-      const balance = await publicClient.readContract({
-        address: BALANCE_SYSTEM_ADDRESS,
-        abi: BALANCE_SYSTEM_ABI,
-        functionName: "balances",
-        args: [userAddress],
-      });
-      console.log("balance", balance);
-
       if (!relayClient) throw new Error("No Relay client found.");
 
       const result = await relayClient.actions.getQuote({
@@ -49,11 +42,11 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
         toCurrency: ETH_ADDRESS,
         amount: amount?.toString(),
         tradeType: "EXACT_OUTPUT",
-        recipient: BALANCE_SYSTEM_ADDRESS,
+        recipient: paymaster?.address,
         wallet,
         txs: [
           {
-            to: BALANCE_SYSTEM_ADDRESS,
+            to: paymaster?.address,
             data: encodeFunctionData({
               abi: BALANCE_SYSTEM_ABI,
               functionName: "depositTo",

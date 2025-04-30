@@ -18,10 +18,12 @@ export type Props = {
   initialUserAddress: Address | undefined;
 };
 
+export type DepositMethod = "gasBalance" | "allowance";
+
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
-  const [showDepositForm, setShowDepositForm] = useState(false);
+  const [depositMethod, setDepositMethod] = useState<DepositMethod>();
 
   const userAddress = userClient.account.address;
   const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
@@ -76,8 +78,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
           id: "gasBalance",
           isComplete: !!hasGasBalance,
           content: (props) => (
-            // TODO: rename onSubmit
-            <GasBalance {...props} sessionAddress={sessionAddress} onSubmit={() => setShowDepositForm(true)} />
+            <GasBalance {...props} sessionAddress={sessionAddress} onTopUp={() => setDepositMethod("gasBalance")} />
           ),
         });
       }
@@ -85,7 +86,9 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       steps.push({
         id: "allowance",
         isComplete: !!hasAllowance,
-        content: (props) => <Allowance {...props} userAddress={userAddress} />,
+        content: (props) => (
+          <Allowance {...props} userAddress={userAddress} onTopUp={() => setDepositMethod("allowance")} />
+        ),
       });
     }
 
@@ -113,13 +116,12 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     <div
       className={twMerge(
         "px-8 flex flex-col",
-        !showDepositForm && "divide-y divide-neutral-800",
+        !!depositMethod && "divide-y divide-neutral-800",
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
-      {/* // TODO: rename go back */}
-      {showDepositForm && <DepositFormContainer goBack={() => setShowDepositForm(false)} />}
-      {!showDepositForm &&
+      {!!depositMethod && <DepositFormContainer depositMethod={depositMethod} goBack={() => {}} />}
+      {!depositMethod &&
         steps.map((step, i) => {
           const isActive = step === activeStep;
           const isExpanded = isActive || completedSteps.length === steps.length;
@@ -127,14 +129,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
           const content = step.content({ isActive, isExpanded });
 
           return (
-            <div
-              key={step.id}
-              className={twMerge(
-                "py-8 flex flex-col justify-center",
-                isActive ? "flex-grow" : null,
-                showDepositForm ? "!py-0" : null,
-              )}
-            >
+            <div key={step.id} className={twMerge("py-8 flex flex-col justify-center", isActive ? "flex-grow" : null)}>
               <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
                 {content}
               </div>
