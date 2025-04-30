@@ -69,8 +69,6 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
     enabled: !!amount && !!userAddress && !!relayClient,
   });
 
-  console.log("quote", quote.data);
-
   const deposit = useMutation({
     mutationKey: ["depositViaRelay", sourceChain.id, amount?.toString()],
     mutationFn: async (quote: Execute) => {
@@ -91,7 +89,12 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
     },
   });
 
-  const fee = quote.data?.fees?.gas?.amount;
+  const fees = quote.data?.fees;
+  const gasFee = BigInt(fees?.gas?.amount ?? 0);
+  const relayerFee = BigInt(fees?.relayer?.amount ?? 0);
+  const relayerGasFee = BigInt(fees?.relayerGas?.amount ?? 0);
+  const relayerServiceFee = BigInt(fees?.relayerService?.amount ?? 0);
+  const fee = gasFee + relayerFee + relayerGasFee + relayerServiceFee;
   return (
     <DepositForm
       sourceChain={sourceChain}

@@ -20,7 +20,6 @@ export type Props = {
   setSourceChainId: (chainId: number) => void;
   amount: bigint | undefined;
   setAmount: (amount: bigint | undefined) => void;
-  // TODO: add errors
   estimatedFee: {
     fee?: bigint | undefined;
     isLoading?: boolean | undefined;
@@ -47,7 +46,12 @@ export function DepositForm({
   const { address: userAddress, chainId: userChainId } = useAccount();
   const balance = useShowQueryError(useBalance({ chainId: sourceChain.id, address: userAddress }));
   const quarryBalance = useShowQueryError(useQuarryBalance(userAddress));
-  useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
+  useWatchBlockNumber({
+    onBlockNumber: () => {
+      balance.refetch();
+      quarryBalance.refetch();
+    },
+  });
 
   const minimumBalance = amount != null ? amount + (estimatedFee?.fee ?? 0n) : undefined;
   const hasMinimumBalance = balance.data != null ? balance.data.value > (minimumBalance ?? 0n) : undefined;
@@ -68,8 +72,6 @@ export function DepositForm({
       console.error("Failed to estimate fee, deposit from", sourceChain.id, estimatedFee.error);
     }
   }, [estimatedFee.error, sourceChain.id, userAddress]);
-
-  console.log("quarryBalance", quarryBalance.data);
 
   return (
     <form
