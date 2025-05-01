@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react";
+import { Chain } from "viem";
 import { useAccount, useBalance, useWatchBlockNumber } from "wagmi";
+import { useIsMounted } from "usehooks-ts";
+import { twMerge } from "tailwind-merge";
+import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useBalance as useQuarryBalance } from "../quarry/useBalance";
 import { ChainSelect } from "./ChainSelect";
 import { AmountInput } from "./AmountInput";
-import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
-import { formatGas } from "./formatGas";
 import { SubmitButton } from "./SubmitButton";
-import { useIsMounted } from "usehooks-ts";
 import { WarningIcon } from "../../icons/WarningIcon";
-import { Balance } from "./Balance";
-import { useShowQueryError } from "../../errors/useShowQueryError";
-import { Chain } from "viem";
+import { formatGas } from "../../formatGas";
+import { Balance } from "../../ui/Balance";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -111,7 +111,7 @@ export function DepositForm({
         <dt>Available to deposit</dt>
         <dd>
           {balance.isSuccess ? (
-            <Balance amount={balance.data.value} />
+            <Balance wei={balance.data.value} />
           ) : balance.isError ? (
             <span title={String(balance.error)}>
               <WarningIcon className="inline-block text-amber-500" />
@@ -123,7 +123,7 @@ export function DepositForm({
 
         <dt>Gas balance after deposit</dt>
         <dd>
-          <Balance amount={(quarryBalance.data ?? 0n) + (amount ?? 0n)} />
+          <Balance wei={(quarryBalance.data ?? 0n) + (amount ?? 0n)} />
         </dd>
 
         <dt>Estimated fee</dt>

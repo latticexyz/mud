@@ -10,12 +10,12 @@ import {
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { debug } from "../../debug";
 import { useAppInfo } from "../../useAppInfo";
-import { useAppChain } from "../../useAppChain";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 
 export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayChain[] }> {
-  const appChain = useAppChain();
+  const { chain } = useEntryKitConfig();
   const appInfo = useAppInfo();
-  const baseApiUrl = appChain.testnet ? TESTNET_RELAY_API : MAINNET_RELAY_API;
+  const baseApiUrl = chain.testnet ? TESTNET_RELAY_API : MAINNET_RELAY_API;
   return useQuery({
     queryKey: ["relayChains", baseApiUrl],
     queryFn: async () => {

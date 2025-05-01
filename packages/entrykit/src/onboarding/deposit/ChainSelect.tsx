@@ -1,14 +1,15 @@
+import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
 import { useFrame } from "../../ui/FrameProvider";
-import { useAccount } from "wagmi";
+import { useAccount, useChains } from "wagmi";
 import { useTheme } from "../../useTheme";
 import { ChevronUpIcon } from "../../icons/ChevronUpIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { Input } from "../../ui/Input";
 import { ChainBalance } from "./ChainBalance";
 import { ChainIcon } from "./ChainIcon";
-import { useRelaySourceChains } from "./useRelaySourceChains";
+import { useRelay } from "./useRelay";
 
 export type Props = {
   value: number;
@@ -19,7 +20,23 @@ export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
   const userAccount = useAccount();
-  const sourceChains = useRelaySourceChains();
+
+  const chains = useChains();
+  const relay = useRelay();
+  const relayChains = relay.data?.chains;
+
+  const sourceChains = useMemo(() => {
+    return chains
+      .map((sourceChain) => {
+        const relayChain = relayChains?.find((c) => c.id === sourceChain.id);
+        return {
+          ...sourceChain,
+          relayChain,
+        };
+      })
+      .filter((c) => c.relayChain);
+  }, [chains, relayChains]);
+
   const selectedChain = sourceChains.find((c) => c.id === value)!;
 
   return (
