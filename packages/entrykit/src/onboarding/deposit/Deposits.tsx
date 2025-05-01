@@ -1,16 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { NativeDepositStatus } from "./NativeDepositStatus";
 import { RelayDepositStatus } from "./RelayDepositStatus";
 import { useDeposits } from "./useDeposits";
-// import { useOnboardingSteps } from "../../useOnboardingSteps"; // TODO: bring back
-import { useEffect } from "react";
-import { useInvalidateBalance } from "./useInvalidateBalance";
+import { useAccount, useClient } from "wagmi";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 
 export function Deposits() {
-  const invalidateBalance = useInvalidateBalance();
+  const queryClient = useQueryClient();
+  const { chainId } = useEntryKitConfig();
+  const client = useClient({ chainId });
+  const { address: userAddress } = useAccount();
   const { deposits, removeDeposit } = useDeposits();
-  // const { resetStep } = useOnboardingSteps();
-
   const { data: isComplete } = useQuery({
     queryKey: ["depositsComplete", deposits.map((deposit) => deposit.uid)],
     queryFn: async () => {
@@ -22,10 +23,10 @@ export function Deposits() {
 
   useEffect(() => {
     if (isComplete) {
-      // TODO: reset step only when balance was previously empty
-      // invalidateBalance().then(resetStep);
+      queryClient.invalidateQueries({ queryKey: ["balance"] });
+      queryClient.invalidateQueries({ queryKey: ["getBalance", client?.uid, userAddress] });
     }
-  }, [invalidateBalance, isComplete]);
+  }, [client?.uid, isComplete, queryClient, userAddress]);
 
   if (!deposits.length) return null;
 
