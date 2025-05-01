@@ -17,7 +17,7 @@ export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayC
   const appInfo = useAppInfo();
   const baseApiUrl = chain.testnet ? TESTNET_RELAY_API : MAINNET_RELAY_API;
   return useQuery({
-    queryKey: ["relayChains", baseApiUrl],
+    queryKey: ["relayChains", baseApiUrl, appInfo.appOrigin],
     queryFn: async () => {
       debug("fetching relay chains from", baseApiUrl);
       const chains = await fetchChainConfigs(baseApiUrl);
