@@ -61,18 +61,6 @@ export function DepositForm({
     amountInputRef.current?.focus();
   }, [userChainId]);
 
-  useEffect(() => {
-    if (balance.error) {
-      console.error("Failed to get balance for", userAddress, "on", sourceChain.id, balance.error);
-    }
-  }, [balance.error, sourceChain.id, userAddress]);
-
-  useEffect(() => {
-    if (estimatedFee.error) {
-      console.error("Failed to estimate fee, deposit from", sourceChain.id, estimatedFee.error);
-    }
-  }, [estimatedFee.error, sourceChain.id, userAddress]);
-
   return (
     <form
       className="flex flex-col gap-5"
