@@ -13,10 +13,24 @@ const chains = [
         http: ["https://rpc.pyropechain.com"],
       },
     },
+    // ...anvil,
+    // rpcUrls: {
+    //   ...anvil.rpcUrls,
+    // bundler: {
+    //   http: ["http://127.0.0.1:4337"],
+    // },
+    // TODO: automatically grant allowance in anvil instead of requiring the service
+    // quarryPassIssuer: {
+    //   http: ["http://127.0.0.1:3003/rpc"],
+    // },
+    // },
     contracts: {
       quarryPaymaster: {
         address: "0x8d875140472D888e046f3101481a8B2b7393Eb55",
       },
+      // quarryPaymaster: {
+      //   address: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
+      // },
       // paymaster: {
       //   address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
       // },
@@ -28,7 +42,6 @@ const chains = [
 
 const transports = {
   // [anvil.id]: http(),
-  // [redstone.id]: http(),
   [pyrope.id]: http(),
   [sepolia.id]: http(),
   [baseSepolia.id]: http(),
@@ -42,7 +55,6 @@ export const wagmiConfig = createWagmiConfig({
   transports,
   pollingInterval: {
     // [anvil.id]: 500,
-    // [redstone.id]: 500,
     [pyrope.id]: 500,
     [sepolia.id]: 500,
     [baseSepolia.id]: 500,
