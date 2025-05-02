@@ -47,9 +47,9 @@ export function getPrequisitesQueryOptions({
               queryClient.fetchQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress })),
             ]);
             // TODO: figure out better approach than null for allowance/spender when no quarry paymaster
-            const hasAllowance = allowance == null || allowance >= 0n;
+            const hasAllowance = allowance == null || allowance > 0n;
             const isSpender = spender == null ? true : spender;
-            const hasGasBalance = sessionBalance == null || sessionBalance.value >= 0n;
+            const hasGasBalance = sessionBalance == null || sessionBalance.value > 0n;
             return {
               sessionAddress,
               hasAllowance,
