@@ -26,7 +26,7 @@ const chains = [
     // },
     contracts: {
       quarryPaymaster: {
-        address: "0x8d875140472D888e046f3101481a8B2b7393Eb55",
+        address: "0xEe87F5F13A3e3dFb82A0e7f41ef09eC4e7c8E0C1", // without 0.1 ETH limit
       },
       // quarryPaymaster: {
       //   address: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",

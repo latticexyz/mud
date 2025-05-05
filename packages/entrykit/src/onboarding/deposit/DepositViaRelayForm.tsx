@@ -45,7 +45,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
     retry: 1,
     enabled: !!amount && !!userAddress && !!relayClient,
   });
-  console.log(solverCapacity);
+  console.log("solverCapacity:", solverCapacity.data);
 
   const quote = useQuery<Execute>({
     queryKey: ["relayBridgeQuote", sourceChain.id, amount?.toString()],
@@ -93,30 +93,31 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
       if (!wallet) throw new Error("No wallet found.");
 
       try {
-        const pendingDeposit = relayClient.actions.execute({
-          quote,
-          wallet,
-          onProgress(progress) {
-            const currentStep = progress.currentStep;
-            const currentState = currentStep?.items[0]?.progressState;
+        return new Promise((resolve) => {
+          const pendingDeposit = relayClient.actions.execute({
+            quote,
+            wallet,
+            onProgress(progress) {
+              const currentStep = progress.currentStep;
+              const currentState = currentStep?.items[0]?.progressState;
 
-            if (currentState === "validating") {
-              addDeposit({
-                type: "relay",
-                requestId: currentStep?.requestId,
-                amount,
-                chainL1Id: sourceChain.id,
-                chainL2Id: destinationChainId,
-                start: new Date(),
-                estimatedTime: 1000 * 30,
-                depositPromise: pendingDeposit,
-                isComplete: pendingDeposit.then(() => undefined),
-              });
-            }
-          },
+              if (currentState === "validating") {
+                addDeposit({
+                  type: "relay",
+                  requestId: currentStep?.requestId,
+                  amount,
+                  chainL1Id: sourceChain.id,
+                  chainL2Id: destinationChainId,
+                  start: new Date(),
+                  estimatedTime: 1000 * 30,
+                  depositPromise: pendingDeposit,
+                  isComplete: pendingDeposit.then(() => undefined),
+                });
+                resolve(undefined);
+              }
+            },
+          });
         });
-
-        return await pendingDeposit;
       } catch (error) {
         console.error("Error while depositing via Relay", error);
         throw error;
@@ -150,8 +151,8 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
       submitButton={
         <SubmitButton
           variant="primary"
-          chainId={sourceChain.id}
           amount={amount}
+          chainId={sourceChain.id}
           disabled={quote.isError || !amount}
           pending={deposit.isPending}
         >
