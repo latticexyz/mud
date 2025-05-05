@@ -28,7 +28,24 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
 
-  // TODO: get solver capacity for `user.maxBridgeAmount`
+  const solverCapacity = useQuery({
+    queryKey: ["solverCapacity", sourceChain.id],
+    queryFn: async () => {
+      if (!relayClient) throw new Error("No Relay client found.");
+      if (!userAddress) throw new Error("No user address found.");
+
+      const { solver, enabled, user, supportsExternalLiquidity } = await relayClient.actions.getSolverCapacity({
+        originChainId: String(sourceChain.id),
+        destinationChainId: String(destinationChainId),
+        currency: "eth",
+      });
+
+      return { solver, enabled, user, supportsExternalLiquidity };
+    },
+    enabled: !!amount && !!userAddress && !!relayClient,
+  });
+  console.log(solverCapacity);
+
   const quote = useQuery<Execute>({
     queryKey: ["relayBridgeQuote", sourceChain.id, amount?.toString()],
     retry: 1,
@@ -64,7 +81,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
 
       return result as Execute;
     },
-    refetchInterval: 15000,
+    refetchInterval: 15_000,
     enabled: !!amount && !!userAddress && !!relayClient,
   });
 
