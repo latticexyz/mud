@@ -8,6 +8,7 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { keccak256, toHex } from "viem";
 import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
@@ -131,6 +132,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     getFilteredRowModel: getFilteredRowModel(),
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
+    getRowId: (row) => keccak256(toHex(`${row.id}-${row.dynamicdata}-${row.staticdata}`)),
     state: {
       sorting,
       globalFilter,
