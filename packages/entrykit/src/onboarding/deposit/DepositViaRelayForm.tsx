@@ -85,7 +85,8 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
     refetchInterval: 15_000,
     enabled: !!amount && !!userAddress && !!relayClient,
   });
-  console.log("quote:", quote.data);
+
+  console.log("quote:", quote.data, quote.error);
 
   const deposit = useMutation({
     mutationKey: ["depositViaRelay", sourceChain.id, amount?.toString()],
