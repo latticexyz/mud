@@ -1,13 +1,10 @@
 import { Hex, TransactionReceipt } from "viem";
 import { createStore } from "zustand/vanilla";
-import { satisfy } from "@latticexyz/common/type-utils";
 import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 
-// TODO: fill in other types
-export type DepositType = "transfer" | "bridge" | "relay";
 export type DepositBase = {
-  readonly type: DepositType;
+  readonly type: "transfer" | "relay";
   readonly amount: bigint;
   readonly chainL1Id: number;
   readonly chainL2Id: number;
@@ -28,7 +25,7 @@ export type RelayDeposit = Omit<DepositBase, "type"> & {
   readonly depositPromise: Promise<unknown>;
 };
 
-export type Deposit = satisfy<DepositBase, TransferDeposit | RelayDeposit>;
+export type Deposit = DepositBase & (TransferDeposit | RelayDeposit);
 
 const store = createStore<{
   readonly count: number;

@@ -15,7 +15,7 @@ type Props = {
   setSourceChainId: (chainId: number) => void;
 };
 
-export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
+export function DepositViaTransferForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
   const publicClient = usePublicClient();
@@ -48,7 +48,7 @@ export function DepositViaNativeForm({ amount, setAmount, sourceChain, setSource
   });
 
   const deposit = useMutation({
-    mutationKey: ["depositViaNative", amount?.toString()],
+    mutationKey: ["depositViaTransfer", amount?.toString()],
     mutationFn: async () => {
       if (!paymaster) throw new Error("Paymaster not found");
       if (!publicClient) throw new Error("Public client not found");

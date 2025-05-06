@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useChains, useChainId } from "wagmi";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { DepositViaNativeForm } from "./DepositViaNativeForm";
+import { DepositViaTransferForm } from "./DepositViaTransferForm";
 import { DepositViaRelayForm } from "./DepositViaRelayForm";
 import { Deposits } from "./Deposits";
 
@@ -16,7 +16,7 @@ export function DepositFormContainer() {
   return (
     <div className="pt-10 pb-2">
       {destinationChainId === sourceChainId ? (
-        <DepositViaNativeForm
+        <DepositViaTransferForm
           amount={amount}
           setAmount={setAmount}
           sourceChain={sourceChain}
