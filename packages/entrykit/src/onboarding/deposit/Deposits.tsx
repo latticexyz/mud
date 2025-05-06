@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { NativeDepositStatus } from "./NativeDepositStatus";
+import { TransferDepositStatus } from "./TransferDepositStatus";
 import { RelayDepositStatus } from "./RelayDepositStatus";
 import { useDeposits } from "./useDeposits";
 import { useAccount, useClient } from "wagmi";
@@ -34,7 +34,7 @@ export function Deposits() {
     <div className="flex flex-col gap-1 mt-4">
       {deposits.map((deposit) => {
         if (deposit.type === "transfer") {
-          return <NativeDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />;
+          return <TransferDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />;
         } else if (deposit.type === "relay") {
           return <RelayDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />;
         }

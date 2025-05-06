@@ -6,7 +6,7 @@ import { Balance } from "../../ui/Balance";
 
 export type Props = TransferDeposit & { onDismiss: () => void };
 
-export function NativeDepositStatus({
+export function TransferDepositStatus({
   amount,
   chainL1Id,
   hash,
@@ -19,7 +19,7 @@ export function NativeDepositStatus({
   const chain = chains.find((chain) => chain.id === chainL1Id)!;
 
   const receipt = useQuery({
-    queryKey: ["nativeDepositStatus", hash],
+    queryKey: ["transferDepositStatus", hash],
     queryFn: () => receiptPromise,
   });
 
