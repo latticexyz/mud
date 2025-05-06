@@ -9,15 +9,15 @@ import {
 } from "@reservoir0x/relay-sdk";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { debug } from "../../debug";
-import { useAppInfo } from "../../useAppInfo";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 
 export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayChain[] }> {
   const { chain } = useEntryKitConfig();
-  const appInfo = useAppInfo();
+  const appOrigin = location.host;
   const baseApiUrl = chain.testnet ? TESTNET_RELAY_API : MAINNET_RELAY_API;
+
   return useQuery({
-    queryKey: ["relayChains", baseApiUrl, appInfo.appOrigin],
+    queryKey: ["relayChains", baseApiUrl, appOrigin],
     queryFn: async () => {
       debug("fetching relay chains from", baseApiUrl);
       const chains = await fetchChainConfigs(baseApiUrl);
@@ -25,7 +25,7 @@ export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayC
       debug("got relay chains", chains);
       const client = createClient({
         baseApiUrl,
-        source: appInfo.appOrigin,
+        source: appOrigin,
         chains,
         logLevel: LogLevel.Verbose,
       });
