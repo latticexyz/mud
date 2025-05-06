@@ -9,9 +9,9 @@ const chains = [
     ...pyrope,
     rpcUrls: {
       ...pyrope.rpcUrls,
-      quarryPassIssuer: {
-        http: ["https://rpc.pyropechain.com"],
-      },
+      // quarryPassIssuer: {
+      // http: ["https://rpc.pyropechain.com"],
+      // },
     },
     // ...anvil,
     // rpcUrls: {
@@ -55,8 +55,5 @@ export const wagmiConfig = createWagmiConfig({
   transports,
   pollingInterval: {
     // [anvil.id]: 500,
-    [pyrope.id]: 500,
-    [sepolia.id]: 500,
-    [baseSepolia.id]: 500,
   },
 });

@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ConnectedClient } from "../common";
+import { Address } from "viem";
 import { twMerge } from "tailwind-merge";
+import { ConnectedClient } from "../common";
 import { usePrerequisites } from "./usePrerequisites";
 import { Wallet } from "./Wallet";
 import { Allowance } from "./quarry/Allowance";
 import { Session } from "./Session";
 import { Step } from "./common";
-import { Address } from "viem";
 import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
+import { GasBalance as GasBalanceQuarry } from "./quarry/GasBalance";
 import { DepositFormContainer } from "./deposit/DepositFormContainer";
 import { ArrowLeftIcon } from "../icons/ArrowLeftIcon";
 
@@ -19,12 +20,10 @@ export type Props = {
   initialUserAddress: Address | undefined;
 };
 
-export type DepositMethod = "allowance";
-
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
-  const [depositMethod, setDepositMethod] = useState<DepositMethod>();
+  const [showDepositForm, setShowDepositForm] = useState(false); // TODO: do this differently?
 
   const userAddress = userClient.account.address;
   const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
@@ -52,7 +51,8 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     }
   }, [closeAccountModal, isNewConnection, prerequisites]);
 
-  const { sessionAddress, hasAllowance, isSpender, hasDelegation, hasGasBalance } = prerequisites ?? {};
+  const { sessionAddress, hasAllowance, isSpender, hasDelegation, hasGasBalance, hasQuarryBalance } =
+    prerequisites ?? {};
 
   const steps = useMemo((): readonly Step[] => {
     if (!userAddress) {
@@ -82,13 +82,21 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         });
       }
     } else if (paymaster.type === "quarry") {
-      steps.push({
-        id: "allowance",
-        isComplete: !!hasAllowance,
-        content: (props) => (
-          <Allowance {...props} userAddress={userAddress} onTopUp={() => setDepositMethod("allowance")} />
-        ),
-      });
+      if (paymaster.isGasPass) {
+        steps.push({
+          id: "allowance",
+          isComplete: !!hasAllowance,
+          content: (props) => <Allowance {...props} userAddress={userAddress} />,
+        });
+      } else {
+        steps.push({
+          id: "gasBalanceQuarry",
+          isComplete: !!hasQuarryBalance,
+          content: (props) => (
+            <GasBalanceQuarry {...props} userAddress={userAddress} onTopUp={() => setShowDepositForm(true)} />
+          ),
+        });
+      }
     }
 
     steps.push({
@@ -100,7 +108,17 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     });
 
     return steps;
-  }, [hasAllowance, hasDelegation, hasGasBalance, isSpender, paymaster, sessionAddress, userAddress, userClient]);
+  }, [
+    hasAllowance,
+    hasDelegation,
+    hasGasBalance,
+    hasQuarryBalance,
+    isSpender,
+    paymaster,
+    sessionAddress,
+    userAddress,
+    userClient,
+  ]);
 
   const [selectedStepId] = useState<null | string>(null);
   const nextStep = steps.find((step) => step.content != null && !step.isComplete);
@@ -113,11 +131,11 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
 
   return (
     <>
-      {depositMethod && (
+      {showDepositForm && (
         <div className="absolute top-0 left-0">
           <div
             className="flex items-center justify-center w-10 h-10 text-white/20 hover:text-white/40 cursor-pointer"
-            onClick={() => setDepositMethod(undefined)}
+            onClick={() => setShowDepositForm(false)}
           >
             <ArrowLeftIcon className="m-0" />
           </div>
@@ -127,12 +145,12 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       <div
         className={twMerge(
           "px-8 flex flex-col",
-          !!depositMethod && "divide-y divide-neutral-800",
+          showDepositForm && "divide-y divide-neutral-800",
           "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
         )}
       >
-        {!!depositMethod && <DepositFormContainer />}
-        {!depositMethod &&
+        {showDepositForm && <DepositFormContainer />}
+        {!showDepositForm &&
           steps.map((step, i) => {
             const isActive = step === activeStep;
             const isExpanded = isActive || completedSteps.length === steps.length;

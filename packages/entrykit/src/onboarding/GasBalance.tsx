@@ -24,7 +24,6 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
   useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   const setBalance = useShowMutationError(useSetBalance());
-
   const relayChain = (relayChains as RelayChains)[chain.id];
 
   return (

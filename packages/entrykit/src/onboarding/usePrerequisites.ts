@@ -1,13 +1,14 @@
+import { Address, Chain, Client, Transport } from "viem";
+import { Config, useClient, useConfig } from "wagmi";
+import { getBalanceQueryOptions } from "wagmi/query";
+import { QueryClient, queryOptions, skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getPaymaster } from "../getPaymaster";
 import { getAllowanceQueryOptions } from "./quarry/useAllowance";
 import { getSpenderQueryOptions } from "./quarry/useSpender";
 import { getDelegationQueryOptions } from "./useDelegation";
-import { QueryClient, queryOptions, skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
-import { Config, useClient, useConfig } from "wagmi";
-import { Address, Chain, Client, Transport } from "viem";
 import { getSessionAccountQueryOptions } from "../useSessionAccount";
-import { getPaymaster } from "../getPaymaster";
-import { getBalanceQueryOptions } from "wagmi/query";
+import { getBalanceQueryOptions as getQuarryBalanceQueryOptions } from "./quarry/useBalance";
 
 export function getPrequisitesQueryOptions({
   queryClient,
@@ -32,7 +33,7 @@ export function getPrequisitesQueryOptions({
             const {
               account: { address: sessionAddress },
             } = await queryClient.fetchQuery(getSessionAccountQueryOptions({ client, userAddress }));
-            const [sessionBalance, allowance, spender, hasDelegation] = await Promise.all([
+            const [sessionBalance, allowance, spender, quarryBalance, hasDelegation] = await Promise.all([
               !paymaster
                 ? queryClient.fetchQuery(
                     getBalanceQueryOptions(config, { chainId: client.chain.id, address: sessionAddress }),
@@ -44,17 +45,23 @@ export function getPrequisitesQueryOptions({
               paymaster?.type === "quarry"
                 ? queryClient.fetchQuery(getSpenderQueryOptions({ client, userAddress, sessionAddress }))
                 : null,
+              paymaster?.type === "quarry"
+                ? queryClient.fetchQuery(getQuarryBalanceQueryOptions({ client, userAddress }))
+                : null,
               queryClient.fetchQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress })),
             ]);
             // TODO: figure out better approach than null for allowance/spender when no quarry paymaster
             const hasAllowance = allowance == null || allowance > 0n;
             const isSpender = spender == null ? true : spender;
             const hasGasBalance = sessionBalance == null || sessionBalance.value > 0n;
+            const hasQuarryBalance = quarryBalance == null || quarryBalance > 0n;
+
             return {
               sessionAddress,
               hasAllowance,
               isSpender,
               hasGasBalance,
+              hasQuarryBalance,
               hasDelegation,
               // we intentionally don't enforce an allowance/gas balance here
               complete: isSpender && hasDelegation,
