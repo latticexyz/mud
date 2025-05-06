@@ -17,7 +17,7 @@ export function Allowance({ isActive, isExpanded, userAddress, onTopUp }: Props)
   // const claimGasPass = useShowMutationError(useClaimGasPass());
   const balance = useShowQueryError(useBalance(userAddress));
 
-  // TODO: add back
+  // TODO: add back ??
   // useEffect(() => {
   //   // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
   //   // state between the two mutations. They're not treated as shared state but rather
