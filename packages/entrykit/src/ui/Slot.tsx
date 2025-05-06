@@ -8,8 +8,6 @@ export type AsChildProps<DefaultElementProps> =
   | ({ asChild?: false } & DefaultElementProps)
   | { asChild: true; children: React.ReactNode };
 
-// TODO: forwardRef
-
 export function Slot({
   children,
   ...props

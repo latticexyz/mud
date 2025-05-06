@@ -7,9 +7,6 @@ export type Props = AsChildProps<InputHTMLAttributes<HTMLInputElement>> & {
   className?: string;
 };
 
-// TODO: use radix slot and expect className on Input rather than child?
-// TODO: forward ref?
-
 export function Input({ asChild, className, ...props }: Props) {
   const Child = asChild ? Slot : "input";
   return (
