@@ -12,8 +12,6 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
 import { GasBalance as GasBalanceQuarry } from "./quarry/GasBalance";
-import { DepositFormContainer } from "./deposit/DepositFormContainer";
-import { ArrowLeftIcon } from "../icons/ArrowLeftIcon";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -23,7 +21,7 @@ export type Props = {
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
-  const [showDepositForm, setShowDepositForm] = useState(false); // TODO: do this differently?
+  const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const userAddress = userClient.account.address;
   const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
@@ -92,8 +90,14 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         steps.push({
           id: "gasBalanceQuarry",
           isComplete: !!hasQuarryBalance,
+          fullscreen: focusedId === "gasBalanceQuarry",
           content: (props) => (
-            <GasBalanceQuarry {...props} userAddress={userAddress} onTopUp={() => setShowDepositForm(true)} />
+            <GasBalanceQuarry
+              {...props}
+              userAddress={userAddress}
+              setFocused={(focused) => setFocusedId(focused ? "gasBalanceQuarry" : null)}
+              focused={focusedId === "gasBalanceQuarry"}
+            />
           ),
         });
       }
@@ -118,6 +122,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     sessionAddress,
     userAddress,
     userClient,
+    focusedId,
   ]);
 
   const [selectedStepId] = useState<null | string>(null);
@@ -130,45 +135,41 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const activeStepIndex = activeStep ? steps.indexOf(activeStep) : -1;
 
   return (
-    <>
-      {showDepositForm && (
-        <div className="absolute top-0 left-0">
-          <div
-            className="flex items-center justify-center w-10 h-10 text-white/20 hover:text-white/40 cursor-pointer"
-            onClick={() => setShowDepositForm(false)}
-          >
-            <ArrowLeftIcon className="m-0" />
-          </div>
-        </div>
+    <div
+      className={twMerge(
+        "px-8 flex flex-col",
+        focusedId && "divide-y divide-neutral-800",
+        "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
+    >
+      {steps.map((step, i) => {
+        const isActive = step === activeStep;
+        const isExpanded = isActive || completedSteps.length === steps.length;
+        const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
+        const isFocused = focusedId === step.id;
 
-      <div
-        className={twMerge(
-          "px-8 flex flex-col",
-          showDepositForm && "divide-y divide-neutral-800",
-          "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
-        )}
-      >
-        {showDepositForm && <DepositFormContainer />}
-        {!showDepositForm &&
-          steps.map((step, i) => {
-            const isActive = step === activeStep;
-            const isExpanded = isActive || completedSteps.length === steps.length;
-            const isDisabled = !step.isComplete && activeStepIndex !== -1 && i > activeStepIndex;
-            const content = step.content({ isActive, isExpanded });
+        const content = step.content({
+          isActive,
+          isExpanded,
+          isFocused,
+          setFocused: (focused: boolean) => setFocusedId(focused ? step.id : null),
+        });
 
-            return (
-              <div
-                key={step.id}
-                className={twMerge("py-8 flex flex-col justify-center", isActive ? "flex-grow" : null)}
-              >
-                <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
-                  {content}
-                </div>
-              </div>
-            );
-          })}
-      </div>
-    </>
+        if (focusedId) {
+          if (step.id === focusedId) {
+            return content;
+          }
+          return null;
+        }
+
+        return (
+          <div key={step.id} className={twMerge("py-8 flex flex-col justify-center", isActive ? "flex-grow" : null)}>
+            <div className={twMerge("flex flex-col", isDisabled ? "opacity-30 pointer-events-none" : null)}>
+              {content}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
