@@ -90,15 +90,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         steps.push({
           id: "gasBalanceQuarry",
           isComplete: !!hasQuarryBalance,
-          fullscreen: focusedId === "gasBalanceQuarry",
-          content: (props) => (
-            <GasBalanceQuarry
-              {...props}
-              userAddress={userAddress}
-              setFocused={(focused) => setFocusedId(focused ? "gasBalanceQuarry" : null)}
-              focused={focusedId === "gasBalanceQuarry"}
-            />
-          ),
+          content: (props) => <GasBalanceQuarry {...props} userAddress={userAddress} />,
         });
       }
     }
@@ -122,7 +114,6 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     sessionAddress,
     userAddress,
     userClient,
-    focusedId,
   ]);
 
   const [selectedStepId] = useState<null | string>(null);

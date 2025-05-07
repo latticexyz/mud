@@ -6,14 +6,12 @@ import { useBalance, useWatchBlockNumber } from "wagmi";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import relayChains from "../data/relayChains.json";
 import { useSetBalance } from "./useSetBalance";
-import { RelayChains } from "./common";
+import { RelayChains, StepContentProps } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { useShowQueryError } from "../errors/useShowQueryError";
 
-export type Props = {
-  isExpanded: boolean;
-  isActive: boolean;
+export type Props = StepContentProps & {
   sessionAddress: Hex;
 };
 

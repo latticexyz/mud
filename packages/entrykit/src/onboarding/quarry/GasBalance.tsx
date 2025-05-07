@@ -6,23 +6,19 @@ import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useBalance } from "./useBalance";
 import { DepositFormContainer } from "../deposit/DepositFormContainer";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
-import { Step } from "../common";
+import { StepContentProps } from "../common";
 
-export type Props = Step & {
-  isExpanded: boolean;
-  isActive: boolean;
-  focused: boolean;
+export type Props = StepContentProps & {
   userAddress: Hex;
-  setFocused: (focused: boolean) => void;
 };
 
-export function GasBalance({ isActive, isExpanded, userAddress, focused, setFocused }: Props) {
+export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAddress }: Props) {
   const balance = useShowQueryError(useBalance(userAddress));
 
-  if (focused) {
+  if (isFocused) {
     return (
       <>
-        {focused && (
+        {isFocused && (
           <div className="absolute top-0 left-0">
             <div
               className="flex items-center justify-center w-10 h-10 text-white/20 hover:text-white/40 cursor-pointer"
