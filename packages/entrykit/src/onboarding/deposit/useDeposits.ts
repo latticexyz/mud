@@ -21,7 +21,7 @@ export type TransferDeposit = Omit<DepositBase, "type"> & {
 
 export type RelayDeposit = Omit<DepositBase, "type"> & {
   readonly type: "relay";
-  readonly requestId: Hex;
+  readonly requestId: string;
   readonly depositPromise: Promise<unknown>;
 };
 

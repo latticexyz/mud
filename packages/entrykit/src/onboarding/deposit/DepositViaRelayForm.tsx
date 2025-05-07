@@ -69,7 +69,7 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
 
   const deposit = useMutation({
     mutationKey: ["depositViaRelay", sourceChain.id, amount?.toString()],
-    mutationFn: async (quote: Execute) => {
+    mutationFn: async ({ quote, amount }: { quote: Execute; amount: bigint }) => {
       if (!relayClient) throw new Error("No Relay client found.");
       if (!wallet) throw new Error("No wallet found.");
 
@@ -80,12 +80,13 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
             wallet,
             onProgress(progress) {
               const currentStep = progress.currentStep;
+              const requestId = currentStep?.requestId;
               const currentState = currentStep?.items[0]?.progressState;
 
-              if (currentState === "validating") {
+              if (requestId && currentState === "validating") {
                 addDeposit({
                   type: "relay",
-                  requestId: currentStep?.requestId,
+                  requestId,
                   amount,
                   chainL1Id: sourceChain.id,
                   chainL2Id: destinationChainId,
@@ -123,8 +124,8 @@ export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceC
       }}
       estimatedTime={"A few seconds"}
       onSubmit={async () => {
-        if (!quote.data) return;
-        await deposit.mutateAsync(quote.data);
+        if (!quote.data || !amount) return;
+        await deposit.mutateAsync({ quote: quote.data, amount });
       }}
       submitButton={
         <SubmitButton
