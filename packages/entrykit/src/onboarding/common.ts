@@ -1,9 +1,16 @@
 import { ReactNode } from "react";
 
+export type StepContentProps = {
+  isActive: boolean;
+  isExpanded: boolean;
+  isFocused: boolean;
+  setFocused: (isFocused: boolean) => void;
+};
+
 export type Step = {
   id: string;
   isComplete: boolean;
-  content: (props: { isActive: boolean; isExpanded: boolean }) => ReactNode;
+  content: (props: StepContentProps) => ReactNode;
 };
 
 export type RelayChain = {

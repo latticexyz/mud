@@ -5,10 +5,9 @@ import { useEffect } from "react";
 import { useSessionClient } from "../useSessionClient";
 import { useShowQueryError } from "../errors/useShowQueryError";
 import { useShowMutationError } from "../errors/useShowMutationError";
+import { StepContentProps } from "./common";
 
-export type Props = {
-  isActive: boolean;
-  isExpanded: boolean;
+export type Props = StepContentProps & {
   userClient: ConnectedClient;
   registerSpender: boolean;
   registerDelegation: boolean;

@@ -7,10 +7,9 @@ import { Balance } from "../../ui/Balance";
 import { useEffect } from "react";
 import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useShowMutationError } from "../../errors/useShowMutationError";
+import { StepContentProps } from "../common";
 
-export type Props = {
-  isExpanded: boolean;
-  isActive: boolean;
+export type Props = StepContentProps & {
   userAddress: Hex;
 };
 
