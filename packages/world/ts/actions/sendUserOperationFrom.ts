@@ -65,7 +65,7 @@ export function sendUserOperationFrom(
           // Wrap system calls from `batchCall` with delegator for a `batchCallFrom`
           // TODO: remove this specific workaround once https://github.com/latticexyz/mud/pull/3506 lands
           if (call.functionName === "batchCall") {
-            const batchCallArgs = call.args as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
+            const batchCallArgs = call as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
             const [systemCalls] = batchCallArgs.args;
             if (!systemCalls.length) {
               throw new Error("`batchCall` should have at least one system call.");
