@@ -1,22 +1,37 @@
+import { useEffect } from "react";
+import { Address } from "viem";
+import { useBalance, useWatchBlockNumber } from "wagmi";
 import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
 import { ConnectedClient } from "../common";
-import { useEffect } from "react";
 import { useSessionClient } from "../useSessionClient";
 import { useShowQueryError } from "../errors/useShowQueryError";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { StepContentProps } from "./common";
+import { useEntryKitConfig } from "../EntryKitConfigProvider";
 
 export type Props = StepContentProps & {
   userClient: ConnectedClient;
   registerSpender: boolean;
   registerDelegation: boolean;
+  sessionAddress: Address;
 };
 
-export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
+export function Session({
+  isActive,
+  isExpanded,
+  userClient,
+  registerSpender,
+  registerDelegation,
+  sessionAddress,
+}: Props) {
   const sessionClient = useShowQueryError(useSessionClient(userClient.account.address));
   const setup = useShowMutationError(useSetupSession({ userClient }));
   const hasSession = !registerDelegation && !registerDelegation;
+
+  const { chain } = useEntryKitConfig();
+  const balance = useShowQueryError(useBalance({ chainId: chain.id, address: sessionAddress }));
+  useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
@@ -24,7 +39,14 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
     // individual mutations, even though the keys match. And the one we want the status of
     // seems to stay pending. This is sorta resolved by triggering this after a timeout.
     const timer = setTimeout(() => {
-      if (isActive && setup.status === "idle" && sessionClient.data && !hasSession) {
+      if (
+        isActive &&
+        setup.status === "idle" &&
+        sessionClient.data &&
+        !hasSession &&
+        balance.data?.value != null &&
+        balance.data.value > 0n
+      ) {
         setup.mutate({
           sessionClient: sessionClient.data,
           registerSpender,
@@ -33,7 +55,7 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
       }
     });
     return () => clearTimeout(timer);
-  }, [hasSession, isActive, registerDelegation, registerSpender, sessionClient, setup]);
+  }, [hasSession, isActive, registerDelegation, registerSpender, sessionClient, setup, balance.data?.value]);
 
   return (
     <div className="flex flex-col gap-4">
