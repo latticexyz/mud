@@ -99,7 +99,13 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       id: "session",
       isComplete: !!isSpender && !!hasDelegation,
       content: (props) => (
-        <Session {...props} userClient={userClient} registerSpender={!isSpender} registerDelegation={!hasDelegation} />
+        <Session
+          {...props}
+          userClient={userClient}
+          registerSpender={!isSpender}
+          registerDelegation={!hasDelegation}
+          sessionAddress={sessionAddress}
+        />
       ),
     });
 
