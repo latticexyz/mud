@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Address } from "viem";
+import { Hex } from "viem";
 import { useBalance, useWatchBlockNumber } from "wagmi";
 import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
@@ -14,7 +14,7 @@ export type Props = StepContentProps & {
   userClient: ConnectedClient;
   registerSpender: boolean;
   registerDelegation: boolean;
-  sessionAddress: Address;
+  sessionAddress?: Hex;
 };
 
 export function Session({
