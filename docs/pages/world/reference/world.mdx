@@ -62,7 +62,7 @@ Initializes the World by installing the core module.
 _Only the initial creator can initialize. This can be done only once._
 
 ```solidity
-function initialize(IModule initModule) public prohibitDirectCallback;
+function initialize(IModule initModule) public virtual prohibitDirectCallback;
 ```
 
 **Parameters**
@@ -78,7 +78,7 @@ Installs a given root module in the World.
 _The caller must own the root namespace._
 
 ```solidity
-function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback;
+function installRootModule(IModule module, bytes memory encodedArgs) public virtual prohibitDirectCallback;
 ```
 
 **Parameters**
@@ -384,7 +384,7 @@ DYNAMIC FUNCTION SELECTORS
 Accepts ETH and adds to the root namespace's balance.
 
 ```solidity
-receive() external payable;
+receive() external payable virtual;
 ```
 
 #### fallback
@@ -392,7 +392,7 @@ receive() external payable;
 _Fallback function to call registered function selectors._
 
 ```solidity
-fallback() external payable prohibitDirectCallback;
+fallback() external payable virtual prohibitDirectCallback;
 ```
 
 ## WorldFactory
