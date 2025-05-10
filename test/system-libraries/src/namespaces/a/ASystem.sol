@@ -64,4 +64,10 @@ contract ASystem is System {
     Value.set(values[3]);
   }
   */
+
+  function set2dArray(uint256[][] memory array2d) external returns (uint256[][] memory) {
+    address addr = _msgSender();
+    AddressValue.set(addr);
+    return array2d;
+  }
 }
