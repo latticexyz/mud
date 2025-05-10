@@ -40,7 +40,7 @@ library BSystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setValueInA(thing);
   }
 
-  function getValueFromA(BSystemType self) internal view returns (uint256) {
+  function getValueFromA(BSystemType self) internal view returns (uint256 __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).getValueFromA();
   }
 
@@ -54,7 +54,7 @@ library BSystemLib {
       : _world().callFrom(self.from, self.systemId, systemCall);
   }
 
-  function getValueFromA(CallWrapper memory self) internal view returns (uint256) {
+  function getValueFromA(CallWrapper memory self) internal view returns (uint256 __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert BSystemLib_CallingFromRootSystem();
 
@@ -66,7 +66,10 @@ library BSystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {
@@ -74,11 +77,14 @@ library BSystemLib {
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
-  function getValueFromA(RootCallWrapper memory self) internal view returns (uint256) {
+  function getValueFromA(RootCallWrapper memory self) internal view returns (uint256 __auxRet0) {
     bytes memory systemCall = abi.encodeCall(_getValueFromA.getValueFromA, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function callFrom(BSystemType self, address from) internal pure returns (CallWrapper memory) {
