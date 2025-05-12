@@ -54,14 +54,14 @@ export function getPrequisitesQueryOptions({
             const hasAllowance = allowance == null || allowance > 0n;
             const isSpender = spender == null ? true : spender;
             const hasGasBalance = sessionBalance == null || sessionBalance.value > 0n;
-            const hasQuarryBalance = quarryBalance == null || quarryBalance > 0n;
+            const hasQuarryGasBalance = quarryBalance == null || quarryBalance > 0n;
 
             return {
               sessionAddress,
               hasAllowance,
               isSpender,
               hasGasBalance,
-              hasQuarryBalance,
+              hasQuarryGasBalance,
               hasDelegation,
               // we intentionally don't enforce an allowance/gas balance here
               complete: isSpender && hasDelegation,
