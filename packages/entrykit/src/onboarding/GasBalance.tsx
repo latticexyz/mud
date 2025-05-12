@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Hex, parseEther } from "viem";
 import { PendingIcon } from "../icons/PendingIcon";
 import { Button } from "../ui/Button";
@@ -10,6 +11,8 @@ import { RelayChains, StepContentProps } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { useShowQueryError } from "../errors/useShowQueryError";
+import { CopyIcon } from "../icons/CopyIcon";
+import { CheckIcon } from "../icons/CheckIcon";
 
 export type Props = StepContentProps & {
   sessionAddress: Hex;
@@ -17,12 +20,20 @@ export type Props = StepContentProps & {
 
 export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
   const { chain } = useEntryKitConfig();
+  const [copied, setCopied] = useState(false);
 
   const balance = useShowQueryError(useBalance({ chainId: chain.id, address: sessionAddress }));
   useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   const setBalance = useShowMutationError(useSetBalance());
   const relayChain = (relayChains as RelayChains)[chain.id];
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sessionAddress);
+
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -72,8 +83,13 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
           <p className="text-sm">Your session&apos;s gas balance is used to pay for onchain computation.</p>
           <p className="text-sm">
             Send funds to{" "}
-            <span className="font-mono text-white">
-              <TruncatedHex hex={sessionAddress} />
+            <span
+              className="inline-flex items-center gap-1 font-mono text-white cursor-pointer hover:text-white/80 transition-colors"
+              onClick={handleCopy}
+              title="Click to copy"
+            >
+              <TruncatedHex hex={sessionAddress} />{" "}
+              {copied ? <CheckIcon className="w-3.5 h-3.5" /> : <CopyIcon className="w-3.5 h-3.5" />}
             </span>{" "}
             on {chain.name} to top up your session balance.
           </p>
