@@ -20,6 +20,7 @@ export function SubmitButton({ amount, chainId, className, ...buttonProps }: Pro
     return (
       <Button
         type="button"
+        variant="primary"
         className={twMerge("w-full", className)}
         pending={switchChain.isPending}
         onClick={() => switchChain.switchChain({ chainId })}
