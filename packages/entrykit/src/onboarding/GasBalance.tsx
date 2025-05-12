@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Hex, parseEther } from "viem";
 import { PendingIcon } from "../icons/PendingIcon";
 import { Button } from "../ui/Button";
@@ -11,22 +11,18 @@ import { RelayChains, StepContentProps } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { useShowQueryError } from "../errors/useShowQueryError";
-import { usePrevious } from "../errors/usePrevious";
 import { CopyIcon } from "../icons/CopyIcon";
 import { CheckIcon } from "../icons/CheckIcon";
-import { useQueryClient } from "@tanstack/react-query";
 
 export type Props = StepContentProps & {
   sessionAddress: Hex;
 };
 
 export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
-  const queryClient = useQueryClient();
   const { chain } = useEntryKitConfig();
   const [copied, setCopied] = useState(false);
 
   const balance = useShowQueryError(useBalance({ chainId: chain.id, address: sessionAddress }));
-  const prevBalance = usePrevious(balance.data);
   useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
   const setBalance = useShowMutationError(useSetBalance());
@@ -38,12 +34,6 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  useEffect(() => {
-    if (balance.data != null && prevBalance?.value === 0n && balance.data.value > 0n) {
-      queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
-    }
-  }, [balance.data, prevBalance, setBalance, sessionAddress, queryClient]);
 
   return (
     <div className="flex flex-col gap-4">
