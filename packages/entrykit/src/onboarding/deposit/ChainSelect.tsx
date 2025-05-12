@@ -1,8 +1,8 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useAccount, useSwitchChain } from "wagmi";
 import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
 import { useFrame } from "../../ui/FrameProvider";
-import { useAccount, useChains } from "wagmi";
 import { useTheme } from "../../useTheme";
 import { ChevronUpIcon } from "../../icons/ChevronUpIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
@@ -20,8 +20,7 @@ export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
   const userAccount = useAccount();
-
-  const chains = useChains();
+  const { chains, switchChain } = useSwitchChain();
   const relay = useRelay();
   const relayChains = relay.data?.chains;
 
@@ -38,6 +37,14 @@ export function ChainSelect({ value, onChange }: Props) {
   }, [chains, relayChains]);
 
   const selectedChain = sourceChains.find((c) => c.id === value)!;
+
+  useEffect(() => {
+    if (sourceChains.length > 0 && !selectedChain) {
+      const defaultChain = sourceChains[0];
+      onChange(defaultChain.id);
+      switchChain({ chainId: defaultChain.id });
+    }
+  }, [value, selectedChain, sourceChains, onChange, switchChain]);
 
   return (
     <Select.Root
