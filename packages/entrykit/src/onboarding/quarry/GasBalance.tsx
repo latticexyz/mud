@@ -21,13 +21,10 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
   const prevBalance = usePrevious(balance.data || 0n);
 
   useEffect(() => {
-    const checkBalance = async () => {
-      if (balance.data != null && prevBalance === 0n && balance.data > 0n) {
-        await queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
-        setFocused(false);
-      }
-    };
-    checkBalance();
+    if (balance.data != null && prevBalance === 0n && balance.data > 0n) {
+      queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
+      setFocused(false);
+    }
   }, [balance.data, prevBalance, setFocused, queryClient, userAddress]);
 
   if (isFocused) {
