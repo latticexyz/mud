@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Hex } from "viem";
-import { useBalance, useWatchBlockNumber } from "wagmi";
 import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
 import { ConnectedClient } from "../common";
@@ -8,7 +7,7 @@ import { useSessionClient } from "../useSessionClient";
 import { useShowQueryError } from "../errors/useShowQueryError";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { StepContentProps } from "./common";
-import { useEntryKitConfig } from "../EntryKitConfigProvider";
+import { usePrerequisites } from "./usePrerequisites";
 
 export type Props = StepContentProps & {
   userClient: ConnectedClient;
@@ -17,21 +16,12 @@ export type Props = StepContentProps & {
   sessionAddress?: Hex;
 };
 
-export function Session({
-  isActive,
-  isExpanded,
-  userClient,
-  registerSpender,
-  registerDelegation,
-  sessionAddress,
-}: Props) {
+export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
   const sessionClient = useShowQueryError(useSessionClient(userClient.account.address));
   const setup = useShowMutationError(useSetupSession({ userClient }));
   const hasSession = !registerDelegation && !registerDelegation;
-
-  const { chain } = useEntryKitConfig();
-  const balance = useShowQueryError(useBalance({ chainId: chain.id, address: sessionAddress }));
-  useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
+  const { data: prerequisites } = usePrerequisites(userClient.account.address);
+  const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
 
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
@@ -44,8 +34,7 @@ export function Session({
         setup.status === "idle" &&
         sessionClient.data &&
         !hasSession &&
-        balance.data?.value != null &&
-        balance.data.value > 0n
+        (hasAllowance || hasGasBalance || hasQuarryGasBalance)
       ) {
         setup.mutate({
           sessionClient: sessionClient.data,
@@ -55,7 +44,17 @@ export function Session({
       }
     });
     return () => clearTimeout(timer);
-  }, [hasSession, isActive, registerDelegation, registerSpender, sessionClient, setup, balance.data?.value]);
+  }, [
+    hasSession,
+    isActive,
+    registerDelegation,
+    registerSpender,
+    sessionClient,
+    setup,
+    hasAllowance,
+    hasGasBalance,
+    hasQuarryGasBalance,
+  ]);
 
   return (
     <div className="flex flex-col gap-4">

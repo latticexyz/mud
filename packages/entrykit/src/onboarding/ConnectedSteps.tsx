@@ -49,7 +49,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     }
   }, [closeAccountModal, isNewConnection, prerequisites]);
 
-  const { sessionAddress, hasAllowance, isSpender, hasDelegation, hasGasBalance, hasQuarryBalance } =
+  const { sessionAddress, hasAllowance, isSpender, hasDelegation, hasGasBalance, hasQuarryGasBalance } =
     prerequisites ?? {};
 
   const steps = useMemo((): readonly Step[] => {
@@ -89,7 +89,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       } else {
         steps.push({
           id: "gasBalanceQuarry",
-          isComplete: !!hasQuarryBalance,
+          isComplete: !!hasQuarryGasBalance,
           content: (props) => <GasBalanceQuarry {...props} userAddress={userAddress} />,
         });
       }
@@ -99,13 +99,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       id: "session",
       isComplete: !!isSpender && !!hasDelegation,
       content: (props) => (
-        <Session
-          {...props}
-          userClient={userClient}
-          registerSpender={!isSpender}
-          registerDelegation={!hasDelegation}
-          sessionAddress={sessionAddress}
-        />
+        <Session {...props} userClient={userClient} registerSpender={!isSpender} registerDelegation={!hasDelegation} />
       ),
     });
 
@@ -114,7 +108,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     hasAllowance,
     hasDelegation,
     hasGasBalance,
-    hasQuarryBalance,
+    hasQuarryGasBalance,
     isSpender,
     paymaster,
     sessionAddress,
