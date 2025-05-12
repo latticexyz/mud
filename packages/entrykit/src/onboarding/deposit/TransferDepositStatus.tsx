@@ -74,7 +74,7 @@ export function TransferDepositStatus({
             >
               deposited
             </a>{" "}
-            <Balance wei={amount} /> !
+            <Balance wei={amount} />
           </>
         );
       })()}
