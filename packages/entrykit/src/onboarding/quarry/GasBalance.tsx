@@ -7,13 +7,28 @@ import { useBalance } from "./useBalance";
 import { DepositFormContainer } from "../deposit/DepositFormContainer";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { StepContentProps } from "../common";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { usePrevious } from "../../errors/usePrevious";
 
 export type Props = StepContentProps & {
   userAddress: Hex;
 };
 
 export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAddress }: Props) {
+  const queryClient = useQueryClient();
   const balance = useShowQueryError(useBalance(userAddress));
+  const prevBalance = usePrevious(balance.data || 0n);
+
+  useEffect(() => {
+    const checkBalance = async () => {
+      if (balance.data != null && prevBalance === 0n && balance.data > 0n) {
+        await queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
+        setFocused(false);
+      }
+    };
+    checkBalance();
+  }, [balance.data, prevBalance, setFocused, queryClient, userAddress]);
 
   if (isFocused) {
     return (
@@ -28,7 +43,6 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
             </div>
           </div>
         )}
-
         <DepositFormContainer />
       </>
     );
