@@ -2,4 +2,4 @@
 "@latticexyz/entrykit": patch
 ---
 
-Attempt to sign the session wallet only after it has been successfully topped up.
+The login flow now only attempts to register the session account after it has been successfully funded.
