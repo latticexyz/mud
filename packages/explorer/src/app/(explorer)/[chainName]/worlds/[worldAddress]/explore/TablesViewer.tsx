@@ -32,6 +32,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
+import { useReadOnly } from "../../../../hooks/useReadOnly";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { ExportButton } from "./ExportButton";
 import { PAGE_SIZE_OPTIONS } from "./consts";
@@ -47,6 +48,7 @@ const initialRows: TData["rows"] = [];
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
+    isReadOnly: boolean;
     tableConfig?: TableType;
   }
 }
@@ -59,6 +61,7 @@ type Props = {
 
 export function TablesViewer({ table, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
+  const isReadOnly = useReadOnly();
   const indexer = useIndexerForChainId(chainId);
   const [query, setQuery] = useSQLQueryState();
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
@@ -140,6 +143,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     },
     meta: {
       tableConfig: table,
+      isReadOnly,
     },
   });
 

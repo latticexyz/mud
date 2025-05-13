@@ -3,6 +3,7 @@
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useReadOnly } from "../app/(explorer)/hooks/useReadOnly";
 import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
 import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
@@ -13,12 +14,15 @@ import { ConnectButton } from "./ConnectButton";
 function NavigationLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
+  const currentPath = pathname.split("?")[0];
+  const targetPath = getLinkUrl(href).split("?")[0];
+
   return (
     <Link href={getLinkUrl(href)} className="group px-3 text-sm font-semibold uppercase">
       <span
         className={cn(
           "flex border-b-4 border-transparent pb-3 pt-4 transition group-hover:border-orange-500/30",
-          pathname === getLinkUrl(href) ? "border-orange-500 group-hover:border-orange-400" : null,
+          currentPath === targetPath ? "border-orange-500 group-hover:border-orange-400" : null,
         )}
       >
         {children}
@@ -28,13 +32,15 @@ function NavigationLink({ href, children }: { href: string; children: React.Reac
 }
 
 export function Navigation() {
+  const isReadOnly = useReadOnly();
   const { data, isFetched } = useWorldAbiQuery();
+
   return (
     <div className="pb-4">
       <div className="flex items-center justify-between">
         <div className="-mx-3 flex">
           <NavigationLink href="explore">Explore</NavigationLink>
-          <NavigationLink href="interact">Interact</NavigationLink>
+          {!isReadOnly && <NavigationLink href="interact">Interact</NavigationLink>}
           <NavigationLink href="observe">Observe</NavigationLink>
           <NavigationLink href="decode">Decode</NavigationLink>
         </div>
@@ -47,7 +53,7 @@ export function Navigation() {
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
-          <ConnectButton />
+          {!isReadOnly ? <ConnectButton /> : null}
         </div>
       </div>
 
