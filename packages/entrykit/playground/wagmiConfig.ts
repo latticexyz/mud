@@ -1,13 +1,17 @@
-import { Chain, http } from "viem";
-import { anvil } from "viem/chains";
+import { Chain, webSocket } from "viem";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
+import { garnet } from "@latticexyz/common/chains";
 
 const chains = [
   {
-    ...anvil,
+    ...garnet,
     rpcUrls: {
-      ...anvil.rpcUrls,
+      ...garnet.rpcUrls,
+      wiresaw: {
+        http: ["https://wiresaw.garnetchain.com"],
+        webSocket: ["wss://wiresaw.garnetchain.com"],
+      },
       // bundler: {
       //   http: ["http://127.0.0.1:4337"],
       // },
@@ -17,18 +21,18 @@ const chains = [
       // },
     },
     contracts: {
-      // quarryPaymaster: {
-      //   address: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
-      // },
-      paymaster: {
-        address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
+      quarryPaymaster: {
+        address: "0x0528104d96672dfdF47B92f809A32e7eA11Ee8d9",
       },
+      // paymaster: {
+      //   address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
+      // },
     },
   },
 ] as const satisfies Chain[];
 
 const transports = {
-  [anvil.id]: http(),
+  [garnet.id]: webSocket(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
@@ -38,6 +42,6 @@ export const wagmiConfig = createWagmiConfig({
   chains,
   transports,
   pollingInterval: {
-    [anvil.id]: 500,
+    [garnet.id]: 2000,
   },
 });
