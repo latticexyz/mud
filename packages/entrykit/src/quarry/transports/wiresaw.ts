@@ -67,7 +67,7 @@ export function wiresaw<const wiresawTransport extends Transport>(
               ((await originalRequest({
                 ...req,
                 params: [knownTransactionHash],
-                method: "eth_getTransactionReceipt",
+                method: "wiresaw_getTransactionReceipt",
               })) as RpcTransactionReceipt);
             transactionReceipts[knownTransactionHash] ??= transactionReceipt;
             return (
