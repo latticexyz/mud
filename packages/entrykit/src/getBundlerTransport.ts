@@ -8,12 +8,12 @@ export function getBundlerTransport(chain: Chain) {
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
   const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
   if (wiresawWebSocketUrl) {
-    return wiresaw(webSocket(wiresawWebSocketUrl), http(bundlerHttpUrl));
+    return wiresaw({ wiresaw: webSocket(wiresawWebSocketUrl), fallbackBundler: http(bundlerHttpUrl) });
   }
 
   const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
   if (wiresawHttpUrl) {
-    return wiresaw(http(wiresawHttpUrl), http(bundlerHttpUrl));
+    return wiresaw({ wiresaw: http(wiresawHttpUrl), fallbackBundler: http(bundlerHttpUrl) });
   }
 
   // TODO: bundler websocket

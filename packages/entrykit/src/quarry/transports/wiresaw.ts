@@ -6,12 +6,16 @@ type WiresawSendUserOperationResult = {
   userOpHash: Hex;
 };
 
-export function wiresaw<const transport extends Transport>(
-  originalTransport: transport,
-  bundlerFallbackTransport: HttpTransport,
-): transport {
+type WiresawOptions<transport extends Transport> = {
+  wiresaw: transport;
+  fallbackBundler: HttpTransport;
+};
+
+export function wiresaw<const wiresawTransport extends Transport>(
+  transport: WiresawOptions<wiresawTransport>,
+): wiresawTransport {
   return ((opts) => {
-    const { request: originalRequest, ...rest } = originalTransport(opts);
+    const { request: originalRequest, ...rest } = transport.wiresaw(opts);
 
     let chainId: Hex | null = null;
     const transactionHashes: { [userOpHash: Hex]: Hex } = {};
@@ -72,17 +76,17 @@ export function wiresaw<const transport extends Transport>(
               transactionReceipt && getUserOperationReceipt(userOpHash, transactionReceipt as RpcTransactionReceipt)
             );
           }
-          const { request: fallbackRequest } = bundlerFallbackTransport(opts);
+          const { request: fallbackRequest } = transport.fallbackBundler(opts);
           return fallbackRequest(req);
         }
 
         if (req.method === "eth_estimateUserOperationGas") {
-          const { request: fallbackRequest } = bundlerFallbackTransport(opts);
+          const { request: fallbackRequest } = transport.fallbackBundler(opts);
           return fallbackRequest(req);
         }
 
         return originalRequest(req);
       },
     };
-  }) as transport;
+  }) as wiresawTransport;
 }
