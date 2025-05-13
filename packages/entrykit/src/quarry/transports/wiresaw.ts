@@ -24,8 +24,6 @@ export function wiresaw<const wiresawTransport extends Transport>(
     return {
       ...rest,
       async request(req) {
-        console.log("rpc:", req.method, JSON.stringify(req.params ?? []));
-
         if (req.method === "eth_chainId") {
           if (chainId != null) return chainId;
           return (chainId = await originalRequest(req));
