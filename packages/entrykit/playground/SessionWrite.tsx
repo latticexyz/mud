@@ -33,6 +33,7 @@ export function SessionWrite() {
         disabled={!client || !worldContract}
         onClick={async () => {
           if (!client) throw new Error("Client not ready.");
+          if (!sessionClient) throw new Error("Session client not ready.");
           if (!worldContract) throw new Error("World contract not ready");
 
           const start = performance.now();
@@ -40,7 +41,11 @@ export function SessionWrite() {
           const hash = await worldContract.write.move([2, 2]);
           setHash(hash);
           console.log("got tx", hash);
-          const receipt = await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
+          const receipt = await getAction(
+            sessionClient,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+          )({ hash });
           const end = performance.now();
           setReceipt(receipt);
           console.log("got receipt", receipt);
