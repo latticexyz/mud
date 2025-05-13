@@ -7,8 +7,9 @@ export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
   cell: ({ getValue, row, column, table }: CellContext<TDataRow, unknown>) => {
     const value = getValue();
     const tableConfig = table.options.meta?.tableConfig;
+    const isReadOnly = table.options.meta?.isReadOnly;
 
-    if (!tableConfig) return value;
+    if (!tableConfig || isReadOnly) return value;
     try {
       const name = column.id;
       const keySchema = getKeySchema(tableConfig);
