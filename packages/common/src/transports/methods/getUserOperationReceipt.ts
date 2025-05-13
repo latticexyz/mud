@@ -12,8 +12,6 @@ import {
 } from "viem";
 import { entryPoint07Abi } from "viem/account-abstraction";
 
-// TODO: move to common package?
-
 const userOperationRevertReasonAbi = [
   entryPoint07Abi.find(
     (item): item is ExtractAbiItem<typeof entryPoint07Abi, "UserOperationRevertReason"> =>
