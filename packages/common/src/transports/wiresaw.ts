@@ -8,7 +8,7 @@ type WiresawSendUserOperationResult = {
 
 type WiresawOptions<transport extends Transport> = {
   wiresaw: transport;
-  fallbackBundler: HttpTransport;
+  fallbackBundler?: HttpTransport;
 };
 
 export function wiresaw<const wiresawTransport extends Transport>(
@@ -74,11 +74,13 @@ export function wiresaw<const wiresawTransport extends Transport>(
               transactionReceipt && getUserOperationReceipt(userOpHash, transactionReceipt as RpcTransactionReceipt)
             );
           }
+          if (!transport.fallbackBundler) throw new Error("[wiresaw] No fallback bundler provided");
           const { request: fallbackRequest } = transport.fallbackBundler(opts);
           return fallbackRequest(req);
         }
 
         if (req.method === "eth_estimateUserOperationGas") {
+          if (!transport.fallbackBundler) throw new Error("[wiresaw] No fallback bundler provided");
           const { request: fallbackRequest } = transport.fallbackBundler(opts);
           return fallbackRequest(req);
         }
