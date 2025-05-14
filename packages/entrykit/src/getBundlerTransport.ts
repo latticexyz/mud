@@ -2,7 +2,7 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, createClient, fallback, http, keccak256, stringToHex, webSocket } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { userOpExecutor } from "./quarry/transports/userOpExecutor";
-import { wiresaw } from "./quarry/transports/wiresaw";
+import { wiresaw } from "@latticexyz/common/internal";
 
 export function getBundlerTransport(chain: Chain) {
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];

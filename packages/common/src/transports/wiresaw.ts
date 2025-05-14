@@ -1,4 +1,4 @@
-import { Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
+import { EIP1193RequestFn, Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
 import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
 
 type WiresawSendUserOperationResult = {
@@ -23,7 +23,7 @@ export function wiresaw<const wiresawTransport extends Transport>(
 
     return {
       ...rest,
-      async request(req) {
+      async request(req): ReturnType<EIP1193RequestFn> {
         if (req.method === "eth_chainId") {
           if (chainId != null) return chainId;
           return (chainId = await originalRequest(req));
