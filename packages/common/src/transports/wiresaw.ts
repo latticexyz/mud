@@ -1,7 +1,6 @@
 import { EIP1193RequestFn, Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
 import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
-import { formatUserOperationGas } from "viem/account-abstraction";
 
 type WiresawSendUserOperationResult = {
   txHash: Hex;
@@ -45,7 +44,9 @@ export function wiresaw<const wiresawTransport extends Transport>(
 
         if (req.method === "eth_getTransactionReceipt") {
           const transactionHash = (req.params as [Hex])[0];
-          const receipt = transactionReceipts[transactionHash] ?? (await originalRequest(req));
+          const receipt =
+            transactionReceipts[transactionHash] ??
+            (await originalRequest({ ...req, method: "wiresaw_getTransactionReceipt" }));
           transactionReceipts[transactionHash] ??= receipt;
           return receipt;
         }
@@ -82,42 +83,20 @@ export function wiresaw<const wiresawTransport extends Transport>(
           }
         }
 
-        // TODO: remove transport.fallbackBundler from the
-        if (req.method === "eth_estimateUserOperationGas" && transport.fallbackBundler) {
+        if (req.method === "eth_estimateUserOperationGas") {
           try {
             // TODO: type `request` so we don't have to cast
-            const clientEstimates = await estimateUserOperationGas({
+            return await estimateUserOperationGas({
               request: originalRequest,
               params: req.params as never,
             });
-            const { request: fallbackRequest } = transport.fallbackBundler(opts);
-            const serverEstimates = await fallbackRequest(req);
-            const formattedServerEstimates = formatUserOperationGas(serverEstimates as never);
-            const formattedClientEstimates = formatUserOperationGas(clientEstimates);
-            const diff = Object.entries(formattedServerEstimates).reduce(
-              (acc, [key, value]) => {
-                acc[key] = (value - formattedClientEstimates[key as never]) as never;
-                return acc;
-              },
-              {} as Record<string, bigint>,
-            );
-
-            console.log("gas estimates", {
-              clientEstimates: formattedClientEstimates,
-              serverEstimates: formattedServerEstimates,
-              diff,
-            });
-
-            return serverEstimates;
           } catch (e) {
             console.warn("[wiresaw] estimating user operation gas failed, falling back to bundler", e);
           }
 
           if (transport.fallbackBundler) {
             const { request: fallbackRequest } = transport.fallbackBundler(opts);
-            const result = await fallbackRequest(req);
-            console.log("[wiresaw] fallback gas estimates", result);
-            return result;
+            return fallbackRequest(req);
           }
         }
 

@@ -70,7 +70,6 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
     "abitype": "1.0.6",

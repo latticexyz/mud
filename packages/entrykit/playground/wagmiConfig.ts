@@ -36,9 +36,9 @@ const chains = [
       },
     },
     contracts: {
-      // quarryPaymaster: {
-      //   address: "0x0528104d96672dfdF47B92f809A32e7eA11Ee8d9",
-      // },
+      quarryPaymaster: {
+        address: "0x0528104d96672dfdF47B92f809A32e7eA11Ee8d9",
+      },
     },
   },
 ] as const satisfies Chain[];
