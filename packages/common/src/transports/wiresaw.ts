@@ -1,5 +1,6 @@
 import { EIP1193RequestFn, Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
 import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
+import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 
 type WiresawSendUserOperationResult = {
   txHash: Hex;
@@ -80,9 +81,18 @@ export function wiresaw<const wiresawTransport extends Transport>(
           }
         }
 
-        if (req.method === "eth_estimateUserOperationGas" && transport.fallbackBundler) {
-          const { request: fallbackRequest } = transport.fallbackBundler(opts);
-          return fallbackRequest(req);
+        if (req.method === "eth_estimateUserOperationGas") {
+          try {
+            // TODO: type `request` so we don't have to cast
+            return await estimateUserOperationGas({ request: originalRequest, params: req.params as never });
+          } catch (e) {
+            console.warn("[wiresaw] estimating user operation gas failed, falling back to bundler", e);
+          }
+
+          if (transport.fallbackBundler) {
+            const { request: fallbackRequest } = transport.fallbackBundler(opts);
+            return fallbackRequest(req);
+          }
         }
 
         return originalRequest(req);
