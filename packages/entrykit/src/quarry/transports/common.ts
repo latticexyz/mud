@@ -1,6 +1,6 @@
 import { type EIP1193Parameters, type EIP1193RequestFn, type RpcSchema, UnionToTuple } from "viem";
 
-// TODO: move to common package?
+// TODO: import from common package
 
 export type getRpcMethod<rpcSchema extends RpcSchema, method extends rpcSchema[number]["Method"]> = Extract<
   rpcSchema[number],

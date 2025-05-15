@@ -1,6 +1,7 @@
 export * from "./assertExhaustive";
 export * from "./bigIntMax";
 export * from "./bigIntMin";
+export * from "./bigIntScalePercent";
 export * from "./bigIntSort";
 export * from "./chunk";
 export * from "./groupBy";
