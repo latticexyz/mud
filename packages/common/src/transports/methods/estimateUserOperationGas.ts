@@ -25,16 +25,11 @@ type EstimateUserOperationGasOptions = {
   params: rpcMethod["Parameters"];
 };
 
-type SimulationResult = DecodeFunctionResultReturnType<typeof entryPointSimulationsAbi>;
-
 export async function estimateUserOperationGas({
   request,
   params,
 }: EstimateUserOperationGasOptions): Promise<rpcMethod["ReturnType"]> {
-  console.log("estimating user operation gas", { request, params });
-
   const userOp = formatUserOperation(params[0]);
-
   const hasPaymaster = userOp.paymaster != null && userOp.paymaster !== zeroAddress;
 
   const [simulationResult, simulationResultWithPaymaster] = await Promise.all([
@@ -55,6 +50,8 @@ type SimulateHandleOpOptions = {
   removePaymaster?: boolean;
 };
 
+type SimulationResult = DecodeFunctionResultReturnType<typeof entryPointSimulationsAbi>;
+
 async function simulateHandleOp({
   userOp,
   removePaymaster,
@@ -74,6 +71,13 @@ async function simulateHandleOp({
   }
 
   // Prepare user operation for simulation
+  const paymasterGasLimits =
+    userOp.paymaster && !removePaymaster
+      ? {
+          paymasterPostOpGasLimit: 2_000_000n,
+          paymasterVerificationGasLimit: 5_000_000n,
+        }
+      : {};
   const simulationUserOp = {
     ...userOp,
     preVerificationGas: 0n,
@@ -81,12 +85,7 @@ async function simulateHandleOp({
     verificationGasLimit: 10_000_000n,
     // https://github.com/pimlicolabs/alto/blob/471998695e5ec75ef88dda3f8a534f47c24bcd1a/src/rpc/methods/eth_estimateUserOperationGas.ts#L117
     maxPriorityFeePerGas: userOp.maxFeePerGas,
-    ...(userOp.paymaster && !removePaymaster
-      ? {
-          paymasterPostOpGasLimit: 2_000_000n,
-          paymasterVerificationGasLimit: 5_000_000n,
-        }
-      : {}),
+    ...paymasterGasLimits,
   } satisfies UserOperation<"0.7">;
 
   const packedUserOp = toPackedUserOperation(simulationUserOp);
@@ -96,6 +95,7 @@ async function simulateHandleOp({
     args: [packedUserOp, zeroAddress, "0x"],
   });
 
+  const senderBalanceOverride = removePaymaster ? { [userOp.sender]: { balance: "0xFFFFFFFFFFFFFFFFFFFF" } } : {};
   const simulationParams = [
     {
       to: entryPoint07Address,
@@ -104,16 +104,11 @@ async function simulateHandleOp({
     "pending",
     {
       [entryPoint07Address]: { code: entryPointSimulationsDeployedBytecode },
-      ...(removePaymaster
-        ? {
-            [userOp.sender]: { balance: "0xFFFFFFFFFFFFFFFFFFFF" },
-          }
-        : {}),
+      ...senderBalanceOverride,
     },
   ];
-
   const encodedSimulationResult: Hex = await request({
-    method: "eth_call",
+    method: "wiresaw_call",
     params: simulationParams,
   });
 
@@ -145,18 +140,24 @@ function getGasEstimates({
 }: GetGasEstimatesOptions): GasEstimates {
   const hasPaymaster = simulationResultWithPaymaster != null;
 
+  // The verification gas is the total gas available during the validation phase, including the gas used by the paymaster
   const verificationGas = hasPaymaster ? simulationResultWithPaymaster.preOpGas : simulationResult.preOpGas;
+
+  // The paymaster verification gas is the difference between verification gas with and without paymaster
   const paymasterVerificationGas = hasPaymaster
     ? simulationResultWithPaymaster.preOpGas - simulationResult.preOpGas
     : 0n;
+
+  // The call gas is only the gas used by the user operation, not the paymaster
   const callGas = simulationResult.paid / userOp.maxFeePerGas - simulationResult.preOpGas;
+
+  // The paymaster post-op gas is the difference between non-verification gas with and without paymaster
   const paymasterPostOpGas = hasPaymaster
     ? simulationResultWithPaymaster.paid / userOp.maxFeePerGas - simulationResultWithPaymaster.preOpGas - callGas
     : 0n;
 
-  // https://github.com/pimlicolabs/alto/blob/471998695e5ec75ef88dda3f8a534f47c24bcd1a/src/rpc/methods/eth_estimateUserOperationGas.ts#L45
+  // Apply a 2x buffer to the calculated limits
   const verificationGasLimit = verificationGas * 2n;
-  // https://github.com/pimlicolabs/alto/blob/471998695e5ec75ef88dda3f8a534f47c24bcd1a/src/rpc/methods/eth_estimateUserOperationGas.ts#L52
   const callGasLimit = bigIntMax(callGas * 2n, 9000n);
   const paymasterVerificationGasLimit = paymasterVerificationGas * 2n;
   const paymasterPostOpGasLimit = paymasterPostOpGas * 2n;
