@@ -1,5 +1,44 @@
 # @latticexyz/explorer
 
+## 2.2.22
+
+### Patch Changes
+
+- bd9e19b: Removed Rhodolite chain support.
+- fdb727e: Editable table cells no longer lose focus during editing when the query is set to "live".
+- 7fd242e: World ABI endpoint is now includes the base world ABI.
+- f0c0b98: Fixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.
+- 7c2fe37: Added read-only mode with no wallet connection that only shows non-editable sections of the Explorer.
+- fc10a27: Removed the Explorer’s SQLite indexer API endpoint in favor of the equivalent `/q` endpoint from `@latticexyz/store-indexer`.
+- 13071c4: - Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+  - The search form for decoding selectors now uses all system ABIs for complete results.
+  - The `ABI` page has been renamed to `Decode`.
+- f7aa4c5: Table row data now correctly re-renders when updated outside the Explorer.
+- 34ec2ec: Chain switching between supported networks is now accessible on the homepage and the world page.
+- a3645c8: `systemIds` parameter is now optional for the system ABIs API endpoint.
+- Updated dependencies [6008573]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [582f718]
+- Updated dependencies [7902888]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6bb6a79]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/store-indexer@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
