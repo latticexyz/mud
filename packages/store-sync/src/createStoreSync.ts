@@ -32,6 +32,9 @@ import {
   throwError,
   mergeWith,
   ignoreElements,
+  switchMap,
+  Subject,
+  startWith,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -41,10 +44,10 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
-import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
+import { createPendingBlockStream } from "./createPendingBlockStream";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -207,7 +210,20 @@ export async function createStoreSync({
   );
 
   let latestBlockNumber: bigint | null = null;
-  const latestBlock$ = createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(shareReplay(1));
+  const recreateLatestBlockStream$ = new Subject<void>();
+  const latestBlock$ = recreateLatestBlockStream$.pipe(
+    startWith(undefined),
+    switchMap(() =>
+      createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(
+        catchError((error) => {
+          debug("error in latestBlock$, recreating");
+          recreateLatestBlockStream$.next();
+          return throwError(() => error);
+        }),
+      ),
+    ),
+    shareReplay(1),
+  );
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
@@ -223,15 +239,22 @@ export async function createStoreSync({
   const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
   const storedPendingLogs$ = pendingLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        switchMap((startBlock) =>
+          createPendingBlockStream({
+            ...opts,
+            fromBlock: startBlock,
+            pendingLogsUrl: pendingLogsWebSocketUrl,
+            chainId,
+            filters,
+            address,
+            latestBlockNumber$,
+            indexerUrl,
+          }),
+        ),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;
         }),
-        mergeWith(
-          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
-          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
-        ),
       )
     : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
 

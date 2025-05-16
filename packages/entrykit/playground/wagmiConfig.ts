@@ -1,9 +1,29 @@
 import { Chain, http } from "viem";
-import { anvil, mainnet } from "viem/chains";
+import { anvil, redstone, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
-import { garnet } from "@latticexyz/common/chains";
+import { garnet, pyrope } from "@latticexyz/common/chains";
 import { wiresaw } from "@latticexyz/common/internal";
+
+const redstoneWithPaymaster = {
+  ...redstone,
+  rpcUrls: {
+    ...redstone.rpcUrls,
+    wiresaw: {
+      http: ["https://wiresaw.redstonechain.com"],
+      webSocket: ["wss://wiresaw.redstonechain.com"],
+    },
+    bundler: {
+      http: ["https://rpc.redstonechain.com"],
+      webSocket: ["wss://rpc.redstonechain.com"],
+    },
+  },
+  contracts: {
+    quarryPaymaster: {
+      address: "0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f",
+    },
+  },
+};
 
 const garnetWithPaymaster = {
   ...garnet,
@@ -47,12 +67,29 @@ const anvilWithPaymaster = {
   },
 };
 
-const chains = [mainnet, garnetWithPaymaster, anvilWithPaymaster] as const satisfies Chain[];
+const pyropeWithPaymaster = {
+  ...pyrope,
+  contracts: {
+    quarryPaymaster: {
+      address: "0xD40C9cFc97b855B2183D7e1c8925edF77C309b85",
+    },
+  },
+};
+
+const chains = [
+  mainnet,
+  garnetWithPaymaster,
+  anvilWithPaymaster,
+  redstoneWithPaymaster,
+  pyropeWithPaymaster,
+] as const satisfies Chain[];
 
 const transports = {
   [mainnet.id]: http(),
   [anvil.id]: http(),
   [garnet.id]: wiresaw(),
+  [redstone.id]: wiresaw(),
+  [pyrope.id]: http(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
@@ -64,5 +101,8 @@ export const wagmiConfig = createWagmiConfig({
   pollingInterval: {
     [anvil.id]: 500,
     [garnet.id]: 2000,
+    [redstone.id]: 2000,
+    [mainnet.id]: 2000,
+    [pyrope.id]: 2000,
   },
 });
