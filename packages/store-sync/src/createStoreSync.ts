@@ -74,6 +74,7 @@ export async function createStoreSync({
   initialBlockLogs,
   ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
+  console.log("createStoreSync", opts);
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
