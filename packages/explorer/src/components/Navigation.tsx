@@ -9,6 +9,7 @@ import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { cn } from "../utils";
+import { ChainSwitch } from "./ChainSwitch";
 import { ConnectButton } from "./ConnectButton";
 
 function NavigationLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -53,6 +54,7 @@ export function Navigation() {
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
+          <ChainSwitch size="sm" />
           {!isReadOnly ? <ConnectButton /> : null}
         </div>
       </div>
