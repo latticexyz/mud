@@ -2,14 +2,15 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { anvil } from "viem/chains";
 import { supportedChains } from "../common";
-import { capitalize } from "../utils";
+import { capitalize, cn } from "../utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 
 type Props = {
+  className?: string;
   size?: "default" | "sm" | "lg" | "icon";
 };
 
-export function ChainSwitch({ size = "default" }: Props) {
+export function ChainSwitch({ className, size = "default" }: Props) {
   const router = useRouter();
   const { chainName } = useParams();
 
@@ -19,7 +20,7 @@ export function ChainSwitch({ size = "default" }: Props) {
 
   return (
     <Select value={chainName as string} onValueChange={onChainChange}>
-      <SelectTrigger className="w-auto" size={size}>
+      <SelectTrigger className={cn("w-auto", className)} size={size}>
         <SelectValue placeholder="Select chain" />
       </SelectTrigger>
       <SelectContent>
