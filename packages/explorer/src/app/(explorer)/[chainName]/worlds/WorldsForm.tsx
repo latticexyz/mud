@@ -8,6 +8,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChainSwitch } from "../../../../components/ChainSwitch";
 import { Button } from "../../../../components/ui/Button";
 import { Command, CommandGroup, CommandItem, CommandList } from "../../../../components/ui/Command";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../../../../components/ui/Form";
@@ -39,16 +40,16 @@ export function WorldsForm({ worlds, isLoading }: Props) {
     reValidateMode: "onChange",
   });
 
-  function onSubmit({ worldAddress }: z.infer<typeof formSchema>) {
+  const onSubmit = ({ worldAddress }: z.infer<typeof formSchema>) => {
     router.push(getWorldUrl(chainName as string, worldAddress));
-  }
+  };
 
-  function onLuckyWorld() {
+  const onLuckyWorld = () => {
     if (worlds.length > 0) {
       const luckyAddress = worlds[Math.floor(Math.random() * worlds.length)];
       router.push(getWorldUrl(chainName as string, luckyAddress as Address));
     }
-  }
+  };
 
   const handleOpenOptions = () => {
     if (!open && worlds.length > 0) {
@@ -66,40 +67,46 @@ export function WorldsForm({ worlds, isLoading }: Props) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <FormField
-                control={form.control}
-                name="worldAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <CommandPrimitive.Input
-                        asChild
-                        value={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                        onBlur={() => {
-                          field.onBlur();
-                          setOpen(false);
-                        }}
-                        onFocus={handleOpenOptions}
-                        placeholder={isLoading ? "Loading worlds..." : "Enter world address..."}
-                        // Need to manually trigger form submission as CommandPrimitive.Input captures Enter key events
-                        onKeyDown={(e) => {
-                          if (!open && e.key === "Enter") {
-                            e.preventDefault();
-                            form.handleSubmit(onSubmit)();
-                          }
-                        }}
-                        disabled={isLoading}
-                      >
-                        <Input className="h-12" />
-                      </CommandPrimitive.Input>
-                    </FormControl>
-                    <FormMessage className="uppercase" />
-                  </FormItem>
-                )}
-              />
+              <div className="flex items-center gap-x-2">
+                <div className="w-[260px] flex-shrink-0">
+                  <FormField
+                    control={form.control}
+                    name="worldAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <CommandPrimitive.Input
+                            asChild
+                            value={field.value}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                            }}
+                            onBlur={() => {
+                              field.onBlur();
+                              setOpen(false);
+                            }}
+                            onFocus={handleOpenOptions}
+                            placeholder={isLoading ? "Loading worlds..." : "Enter world address..."}
+                            // Need to manually trigger form submission as CommandPrimitive.Input captures Enter key events
+                            onKeyDown={(e) => {
+                              if (!open && e.key === "Enter") {
+                                e.preventDefault();
+                                form.handleSubmit(onSubmit)();
+                              }
+                            }}
+                            disabled={isLoading}
+                          >
+                            <Input className="h-12" />
+                          </CommandPrimitive.Input>
+                        </FormControl>
+                        <FormMessage className="uppercase" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <ChainSwitch className="w-full" />
+              </div>
 
               <div className="relative">
                 <CommandList>
