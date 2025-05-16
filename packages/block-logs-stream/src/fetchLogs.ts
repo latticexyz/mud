@@ -7,6 +7,7 @@ import {
   toEventSelector,
   parseEventLogs,
   BlockNotFoundError,
+  LogTopic,
 } from "viem";
 import { bigIntMax, bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
@@ -38,11 +39,20 @@ export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = BlockRange
          * Optional contract address(es) to fetch logs for.
          */
         address?: Address | Address[];
-        /**
-         * Events to fetch logs for.
-         */
-        events: abiEvents;
-      })
+      } & (
+          | {
+              /**
+               * Events to fetch logs for.
+               */
+              events: abiEvents;
+            }
+          | {
+              /**
+               * Topics to filter logs by.
+               */
+              topics: LogTopic[];
+            }
+        ))
   >;
 
 export type FetchLogsResult<abiEvents extends readonly AbiEvent[]> = BlockRange & {
@@ -112,7 +122,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
     (async (
       blockRange: BlockRange,
     ): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> => {
-      const topics = opts.events ? [opts.events.map((event) => toEventSelector(event))] : undefined;
+      const topics = opts.topics ?? (opts.events ? [opts.events.map((event) => toEventSelector(event))] : undefined);
       const logs = await getLogs({
         ...opts,
         ...blockRange,

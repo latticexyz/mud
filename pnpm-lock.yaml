@@ -1180,9 +1180,6 @@ importers:
       '@trpc/server':
         specifier: 10.34.0
         version: 10.34.0
-      change-case:
-        specifier: ^5.2.0
-        version: 5.2.0
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -6721,9 +6718,6 @@ packages:
     resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
-  change-case@5.2.0:
-    resolution: {integrity: sha512-L6VzznESnMIKKdKhVzCG+KPz4+x1FWbjOs1AdhoHStV3qo8aySMRGPUoqC0aL1ThKaQNGhAu6ZfHL/QAyQRuiw==}
-
   change-case@5.4.4:
     resolution: {integrity: sha512-HRQyTk2/YPEkt9TnUPbOpr64Uw3KOicFWPVBb+xiHvd6eBx/qPr9xqfBFDT8P2vWsvvz4jbEkfDe71W3VyNu2w==}
 
@@ -9559,10 +9553,6 @@ packages:
   nocache@3.0.4:
     resolution: {integrity: sha512-WDD0bdg9mbq6F4mRxEYcPWwfA1vxd0mrvKOyxI7Xj/atfRHVeutzuWByG//jfm4uPzp0y4Kj051EORCBSQMycw==}
     engines: {node: '>=12.0.0'}
-
-  node-abi@3.45.0:
-    resolution: {integrity: sha512-iwXuFrMAcFVi/ZoZiqq8BzAdsLw9kxDfTC0HMyjXfSL/6CSDAGD5UmR7azrAgWV1zKYq7dUUMj4owusBWKLsiQ==}
-    engines: {node: '>=10'}
 
   node-abi@3.52.0:
     resolution: {integrity: sha512-JJ98b02z16ILv7859irtXn4oUaFWADtvkzy2c0IAatNVX2Mc9Yoh8z6hZInn3QwvMEYhHuQloYi+TTQy67SIdQ==}
@@ -15374,7 +15364,7 @@ snapshots:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 20.17.16
+      '@types/node': 22.7.4
       '@types/yargs': 15.0.19
       chalk: 4.1.2
 
@@ -18340,7 +18330,7 @@ snapshots:
 
   '@types/better-sqlite3@7.6.4':
     dependencies:
-      '@types/node': 20.17.16
+      '@types/node': 22.7.4
 
   '@types/body-parser@1.19.5':
     dependencies:
@@ -18450,7 +18440,7 @@ snapshots:
 
   '@types/node-forge@1.3.11':
     dependencies:
-      '@types/node': 20.17.16
+      '@types/node': 22.7.4
 
   '@types/node@12.20.55': {}
 
@@ -19876,8 +19866,6 @@ snapshots:
 
   chalk@5.3.0: {}
 
-  change-case@5.2.0: {}
-
   change-case@5.4.4: {}
 
   char-regex@1.0.2: {}
@@ -19918,7 +19906,7 @@ snapshots:
 
   chrome-launcher@0.15.2:
     dependencies:
-      '@types/node': 20.17.16
+      '@types/node': 22.7.4
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -19927,7 +19915,7 @@ snapshots:
 
   chromium-edge-launcher@0.2.0:
     dependencies:
-      '@types/node': 20.17.16
+      '@types/node': 22.7.4
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -23417,10 +23405,6 @@ snapshots:
 
   nocache@3.0.4: {}
 
-  node-abi@3.45.0:
-    dependencies:
-      semver: 7.6.3
-
   node-abi@3.52.0:
     dependencies:
       semver: 7.6.3
@@ -24025,7 +24009,7 @@ snapshots:
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
       napi-build-utils: 1.0.2
-      node-abi: 3.45.0
+      node-abi: 3.52.0
       pump: 3.0.0
       rc: 1.2.8
       simple-get: 4.0.1
