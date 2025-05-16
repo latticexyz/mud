@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Remove Rhodolite chain support.
+Removed Rhodolite chain support.
