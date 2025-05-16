@@ -1,9 +1,9 @@
 import { anvil } from "viem/chains";
-import { garnet, pyrope, redstone, rhodolite } from "@latticexyz/common/chains";
+import { garnet, pyrope, redstone } from "@latticexyz/common/chains";
 
 export const internalNamespaces = ["world", "store", "metadata", "puppet", "erc20-puppet", "erc721-puppet"];
 
-export const supportedChains = { anvil, rhodolite, garnet, redstone, pyrope } as const;
+export const supportedChains = { anvil, garnet, redstone, pyrope } as const;
 export type supportedChains = typeof supportedChains;
 
 export type supportedChainName = keyof supportedChains;
