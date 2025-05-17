@@ -185,8 +185,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4
       dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
+        specifier: ^16.4.7
+        version: 16.4.7
       execa:
         specifier: ^9.5.2
         version: 9.5.2
@@ -1521,9 +1521,6 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../../packages/world-modules
-      dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
@@ -1548,9 +1545,6 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../../packages/world-modules
-      dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
@@ -1575,9 +1569,6 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../../packages/world-modules
-      dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
@@ -7307,6 +7298,10 @@ packages:
 
   dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+
+  dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
   drizzle-orm@0.28.5:
@@ -20413,6 +20408,8 @@ snapshots:
       webidl-conversions: 7.0.0
 
   dotenv@16.0.3: {}
+
+  dotenv@16.4.7: {}
 
   drizzle-orm@0.28.5(@opentelemetry/api@1.8.0)(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.6.0)(kysely@0.26.3)(postgres@3.3.5)(sql.js@1.8.0):
     optionalDependencies:
