@@ -145,6 +145,104 @@ library KeysWithValue {
   }
 
   /**
+   * @notice Get keysWithValue slice.
+   */
+  function getKeysWithValueSlice(
+    ResourceId _tableId,
+    bytes32 valueHash,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keysWithValue slice.
+   */
+  function _getKeysWithValueSlice(
+    ResourceId _tableId,
+    bytes32 valueHash,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keysWithValue (using the specified store) slice.
+   */
+  function getKeysWithValueSlice(
+    IStore _store,
+    ResourceId _tableId,
+    bytes32 valueHash,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keysWithValue slice.
+   */
+  function getSlice(
+    ResourceId _tableId,
+    bytes32 valueHash,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keysWithValue slice.
+   */
+  function _getSlice(
+    ResourceId _tableId,
+    bytes32 valueHash,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keysWithValue (using the specified store) slice.
+   */
+  function getSlice(
+    IStore _store,
+    ResourceId _tableId,
+    bytes32 valueHash,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
    * @notice Set keysWithValue.
    */
   function setKeysWithValue(ResourceId _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
