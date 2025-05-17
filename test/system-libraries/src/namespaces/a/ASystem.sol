@@ -45,6 +45,27 @@ contract ASystem is System {
     return addr;
   }
 
+  function setWithNamelessParameters(
+    address payable,
+    bytes calldata b,
+    bytes calldata,
+    string[] memory
+  ) external returns (address payable, bytes calldata, string[] memory) {
+    address addr = _msgSender();
+    AddressValue.set(addr);
+    return (payable(addr), b, new string[](0));
+  }
+
+  function getValueWithRevert() external pure returns (uint256) {
+    revert("reverted successfully");
+  }
+
+  function setAddressWithRevert() external returns (address) {
+    address addr = _msgSender();
+    AddressValue.set(addr);
+    revert("reverted successfully");
+  }
+
   function setValuesStaticArray(uint256[1] memory values) external {
     Value.set(values[0]);
   }
