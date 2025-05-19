@@ -28,6 +28,10 @@ export function wiresaw<const wiresawTransport extends Transport>(
       async request(req): ReturnType<EIP1193RequestFn> {
         if (req.method === "eth_chainId") {
           if (chainId != null) return chainId;
+          if (transport.fallbackEth) {
+            const { request: fallbackRequest } = transport.fallbackEth(opts);
+            return (chainId = await fallbackRequest(req));
+          }
           return (chainId = await originalRequest(req));
         }
 
@@ -82,6 +86,15 @@ export function wiresaw<const wiresawTransport extends Transport>(
             const { request: fallbackRequest } = transport.fallbackBundler(opts);
             return fallbackRequest(req);
           }
+        }
+
+        // Fallback to regular RPC for methods that don't require wiresaw
+        if (req.method === "eth_blockNumber" || req.method === "eth_getBlockByNumber") {
+          if (transport.fallbackEth) {
+            const { request: fallbackRequest } = transport.fallbackEth(opts);
+            return fallbackRequest(req);
+          }
+          return originalRequest(req);
         }
 
         return originalRequest(req);
