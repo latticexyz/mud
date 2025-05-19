@@ -89,7 +89,11 @@ export function wiresaw<const wiresawTransport extends Transport>(
         }
 
         // Fallback to regular RPC for methods that don't require wiresaw
-        if (req.method === "eth_blockNumber" || req.method === "eth_getBlockByNumber") {
+        if (
+          req.method === "eth_blockNumber" ||
+          req.method === "eth_getBlockByNumber" ||
+          req.method === "eth_maxPriorityFeePerGas"
+        ) {
           if (transport.fallbackEth) {
             const { request: fallbackRequest } = transport.fallbackEth(opts);
             return fallbackRequest(req);
@@ -107,6 +111,7 @@ export function wiresaw<const wiresawTransport extends Transport>(
           const pendingReceipt = (await originalRequest({
             ...req,
             method: "wiresaw_getTransactionReceipt",
+            params: [hash],
           })) as RpcTransactionReceipt | undefined;
           if (pendingReceipt) {
             transactionReceipts[hash] = pendingReceipt;
@@ -115,7 +120,11 @@ export function wiresaw<const wiresawTransport extends Transport>(
 
           if (transport.fallbackEth) {
             const { request: fallbackRequest } = transport.fallbackEth(opts);
-            const receipt = (await fallbackRequest(req)) as RpcTransactionReceipt | undefined;
+            const receipt = (await fallbackRequest({
+              ...req,
+              method: "eth_getTransactionReceipt",
+              params: [hash],
+            })) as RpcTransactionReceipt | undefined;
             if (receipt) {
               transactionReceipts[hash] = receipt;
               return receipt;
