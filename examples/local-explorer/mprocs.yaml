@@ -10,4 +10,4 @@ procs:
     shell: anvil --base-fee 0 --block-time 2
   explorer:
     cwd: packages/contracts
-    shell: pnpm explorer --chainId 17069
+    shell: pnpm explorer --dev
