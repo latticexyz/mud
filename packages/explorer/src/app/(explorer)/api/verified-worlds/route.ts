@@ -8,17 +8,6 @@ export type VerifiedWorld = {
   network: string;
 };
 
-let pool: Pool | null = null;
-
-function getPool() {
-  if (!pool && process.env.VERIFIED_WORLDS_DATABASE_URL) {
-    pool = new Pool({
-      connectionString: process.env.VERIFIED_WORLDS_DATABASE_URL,
-    });
-  }
-  return pool;
-}
-
 export const GET = async (request: Request) => {
   if (!process.env.VERIFIED_WORLDS_DATABASE_URL) {
     console.log("VERIFIED_WORLDS_DATABASE_URL not set, returning empty result");
@@ -29,11 +18,9 @@ export const GET = async (request: Request) => {
   const chainId = searchParams.get("chainId");
 
   try {
-    const client = getPool();
-    if (!client) {
-      throw new Error("Failed to create database connection");
-    }
-
+    const client = new Pool({
+      connectionString: process.env.VERIFIED_WORLDS_DATABASE_URL,
+    });
     const { rows } = await client.query("SELECT * FROM worlds WHERE network = $1", [chainId]);
     const result = rows.map((row) => ({
       ...row,
