@@ -1,5 +1,4 @@
 import { EIP1193RequestFn, Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
-import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 
 type WiresawSendUserOperationResult = {
@@ -10,6 +9,7 @@ type WiresawSendUserOperationResult = {
 type WiresawOptions<transport extends Transport> = {
   wiresaw: transport;
   fallbackBundler?: HttpTransport;
+  fallbackEth?: HttpTransport;
 };
 
 export function wiresaw<const wiresawTransport extends Transport>(
@@ -24,6 +24,7 @@ export function wiresaw<const wiresawTransport extends Transport>(
 
     return {
       ...rest,
+      // TODO: type `request` so we don't have to cast
       async request(req): ReturnType<EIP1193RequestFn> {
         if (req.method === "eth_chainId") {
           if (chainId != null) return chainId;
@@ -43,16 +44,10 @@ export function wiresaw<const wiresawTransport extends Transport>(
         }
 
         if (req.method === "eth_getTransactionReceipt") {
-          const transactionHash = (req.params as [Hex])[0];
-          const receipt =
-            transactionReceipts[transactionHash] ??
-            (await originalRequest({ ...req, method: "wiresaw_getTransactionReceipt" }));
-          transactionReceipts[transactionHash] ??= receipt;
-          return receipt;
+          return getTransactionReceipt((req.params as [Hex])[0]);
         }
 
         if (req.method === "eth_sendUserOperation") {
-          // TODO: type `request` so we don't have to cast
           const { userOpHash, txHash } = (await originalRequest({
             ...req,
             method: "wiresaw_sendUserOperation",
@@ -65,17 +60,7 @@ export function wiresaw<const wiresawTransport extends Transport>(
           const userOpHash = (req.params as [Hex])[0];
           const knownTransactionHash = transactionHashes[userOpHash];
           if (knownTransactionHash) {
-            const transactionReceipt =
-              transactionReceipts[knownTransactionHash] ??
-              ((await originalRequest({
-                ...req,
-                params: [knownTransactionHash],
-                method: "wiresaw_getTransactionReceipt",
-              })) as RpcTransactionReceipt);
-            transactionReceipts[knownTransactionHash] ??= transactionReceipt;
-            return (
-              transactionReceipt && getUserOperationReceipt(userOpHash, transactionReceipt as RpcTransactionReceipt)
-            );
+            return getTransactionReceipt(knownTransactionHash);
           }
           if (transport.fallbackBundler) {
             const { request: fallbackRequest } = transport.fallbackBundler(opts);
@@ -85,7 +70,6 @@ export function wiresaw<const wiresawTransport extends Transport>(
 
         if (req.method === "eth_estimateUserOperationGas") {
           try {
-            // TODO: type `request` so we don't have to cast
             return await estimateUserOperationGas({
               request: originalRequest,
               params: req.params as never,
@@ -101,6 +85,30 @@ export function wiresaw<const wiresawTransport extends Transport>(
         }
 
         return originalRequest(req);
+
+        async function getTransactionReceipt(hash: Hex): Promise<RpcTransactionReceipt | undefined> {
+          // Return cached receipt if available
+          if (transactionReceipts[hash]) return transactionReceipts[hash];
+
+          // Fetch pending receipt
+          const pendingReceipt = (await originalRequest({
+            ...req,
+            method: "wiresaw_getTransactionReceipt",
+          })) as RpcTransactionReceipt | undefined;
+          if (pendingReceipt) {
+            transactionReceipts[hash] = pendingReceipt;
+            return pendingReceipt;
+          }
+
+          if (transport.fallbackEth) {
+            const { request: fallbackRequest } = transport.fallbackEth(opts);
+            const receipt = (await fallbackRequest(req)) as RpcTransactionReceipt | undefined;
+            if (receipt) {
+              transactionReceipts[hash] = receipt;
+              return receipt;
+            }
+          }
+        }
       },
     };
   }) as wiresawTransport;

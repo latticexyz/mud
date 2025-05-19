@@ -5,15 +5,24 @@ import { userOpExecutor } from "./quarry/transports/userOpExecutor";
 import { wiresaw } from "@latticexyz/common/internal";
 
 export function getBundlerTransport(chain: Chain) {
+  const ethRpcUrl = chain.rpcUrls.default.http[0];
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
   const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
   if (wiresawWebSocketUrl) {
-    return wiresaw({ wiresaw: webSocket(wiresawWebSocketUrl), fallbackBundler: http(bundlerHttpUrl) });
+    return wiresaw({
+      wiresaw: webSocket(wiresawWebSocketUrl),
+      fallbackBundler: http(bundlerHttpUrl),
+      fallbackEth: http(ethRpcUrl),
+    });
   }
 
   const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
   if (wiresawHttpUrl) {
-    return wiresaw({ wiresaw: http(wiresawHttpUrl), fallbackBundler: http(bundlerHttpUrl) });
+    return wiresaw({
+      wiresaw: http(wiresawHttpUrl),
+      fallbackBundler: http(bundlerHttpUrl),
+      fallbackEth: http(ethRpcUrl),
+    });
   }
 
   // TODO: bundler websocket
