@@ -1,5 +1,6 @@
 "use client";
 
+import { BadgeCheckIcon } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Address, isAddress } from "viem";
@@ -14,6 +15,7 @@ import { Command, CommandGroup, CommandItem, CommandList } from "../../../../com
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../../../../components/ui/Form";
 import { Input } from "../../../../components/ui/Input";
 import mudLogo from "../../icon.svg";
+import { WorldSelectItem, WorldsQueryResult } from "../../queries/useWorldsQuery";
 import { getWorldUrl } from "../../utils/getWorldUrl";
 
 const formSchema = z.object({
@@ -26,7 +28,7 @@ const formSchema = z.object({
 });
 
 type Props = {
-  worlds: Address[];
+  worlds: WorldsQueryResult["worlds"];
   isLoading: boolean;
 };
 
@@ -46,8 +48,8 @@ export function WorldsForm({ worlds, isLoading }: Props) {
 
   const onLuckyWorld = () => {
     if (worlds.length > 0) {
-      const luckyAddress = worlds[Math.floor(Math.random() * worlds.length)];
-      router.push(getWorldUrl(chainName as string, luckyAddress as Address));
+      const luckyWorld = worlds[Math.floor(Math.random() * worlds.length)] as WorldSelectItem;
+      router.push(getWorldUrl(chainName as string, luckyWorld.address));
     }
   };
 
@@ -116,8 +118,8 @@ export function WorldsForm({ worlds, isLoading }: Props) {
                         {worlds?.map((world) => {
                           return (
                             <CommandItem
-                              key={world}
-                              value={world}
+                              key={world.address}
+                              value={world.address}
                               onMouseDown={(event) => {
                                 event.preventDefault();
                                 event.stopPropagation();
@@ -129,9 +131,10 @@ export function WorldsForm({ worlds, isLoading }: Props) {
                                 setOpen(false);
                                 form.handleSubmit(onSubmit)();
                               }}
-                              className="cursor-pointer font-mono"
+                              className="flex cursor-pointer items-center font-mono"
                             >
-                              {world}
+                              {world.name || world.address}
+                              {world.verified ? <BadgeCheckIcon className="ml-2 h-4 w-4 text-green-500" /> : null}
                             </CommandItem>
                           );
                         })}
