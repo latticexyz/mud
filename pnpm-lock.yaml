@@ -616,6 +616,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.4
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
       lucide-react:
         specifier: ^0.408.0
         version: 0.408.0(react@18.2.0)
