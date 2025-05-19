@@ -1,5 +1,6 @@
 import { EIP1193RequestFn, Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
+import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
 
 type WiresawSendUserOperationResult = {
   txHash: Hex;
@@ -64,7 +65,10 @@ export function wiresaw<const wiresawTransport extends Transport>(
           const userOpHash = (req.params as [Hex])[0];
           const knownTransactionHash = transactionHashes[userOpHash];
           if (knownTransactionHash) {
-            return getTransactionReceipt(knownTransactionHash);
+            const transactionReceipt = await getTransactionReceipt(knownTransactionHash);
+            if (transactionReceipt) {
+              return getUserOperationReceipt(userOpHash, transactionReceipt);
+            }
           }
           if (transport.fallbackBundler) {
             const { request: fallbackRequest } = transport.fallbackBundler(opts);
