@@ -128,8 +128,8 @@ export function DecodeForm() {
         setDecoded({ type: "resource", id: encodedData, resource });
         return;
       }
-    } catch (error) {
-      console.error("Error decoding resource:", error);
+    } catch {
+      // Error decoding resource
     }
 
     // Try to find in 4-byte database
@@ -143,8 +143,8 @@ export function DecodeForm() {
           selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
         });
       }
-    } catch (error) {
-      console.error("Error fetching 4byte data:", error);
+    } catch {
+      // Error fetching 4byte data
     }
   };
 
@@ -165,8 +165,8 @@ export function DecodeForm() {
           return { type: "signature", label: selector, decodedCall };
         });
       }
-    } catch (error) {
-      console.error("Error decoding function data:", error);
+    } catch {
+      // Error decoding function data
     }
     return [];
   }, [decoded, encoded]);
