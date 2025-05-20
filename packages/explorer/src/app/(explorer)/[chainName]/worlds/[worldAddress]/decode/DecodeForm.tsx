@@ -142,10 +142,13 @@ export function DecodeForm() {
           type: "signature",
           selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
         });
+        return;
       }
     } catch {
       // Error fetching 4byte data
     }
+
+    setDecoded(undefined);
   };
 
   const results = useMemo<Result[]>(() => {
