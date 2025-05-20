@@ -63,6 +63,20 @@ function isAbiError(item: AbiItem): item is AbiItem & { type: "error" } {
   return item.type === "error";
 }
 
+function stringifyValue(value: unknown): string {
+  if (value === null) return "null";
+  if (value === undefined) return "undefined";
+  if (typeof value === "object") {
+    if (Array.isArray(value)) {
+      return `[${value.map(stringifyValue).join(", ")}]`;
+    }
+    return `{${Object.entries(value as Record<string, unknown>)
+      .map(([key, val]) => `${key}: ${stringifyValue(val)}`)
+      .join(", ")}}`;
+  }
+  return String(value);
+}
+
 function decodeAbiItem(abiItem: AbiFunction | AbiError, data: Hex): DecodedFunctionCall {
   if (abiItem.type === "function") {
     const result = decodeFunctionData({ abi: [abiItem], data });
@@ -81,29 +95,6 @@ export function DecodeForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-
-  const results = useMemo<Result[]>(() => {
-    if (!decoded || !encoded) return [];
-    try {
-      if (decoded.type === "resource") {
-        return [{ type: decoded.resource.type, label: resourceToLabel(decoded.resource) }];
-      }
-      if (decoded.type === "function" || decoded.type === "error") {
-        const decodedCall = decodeAbiItem(decoded, encoded as Hex);
-        return [{ type: decoded.type, label: formatAbiItem(decoded), decodedCall }];
-      }
-      if (decoded.type === "signature") {
-        return decoded.selectors.map((selector) => {
-          const abiItem = parseAbiItem(`function ${selector}`) as AbiFunction;
-          const decodedCall = decodeAbiItem(abiItem, encoded as Hex);
-          return { type: "signature", label: selector, decodedCall };
-        });
-      }
-    } catch (error) {
-      console.error("Error decoding function data:", error);
-    }
-    return [];
-  }, [decoded, encoded]);
 
   const onSubmit = async ({ encodedData }: z.infer<typeof formSchema>) => {
     setEncoded(encodedData);
@@ -143,7 +134,6 @@ export function DecodeForm() {
 
     // Try to find in 4-byte database
     if (selector.length !== 10) return;
-
     try {
       const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
       const data = await response.json();
@@ -157,6 +147,29 @@ export function DecodeForm() {
       console.error("Error fetching 4byte data:", error);
     }
   };
+
+  const results = useMemo<Result[]>(() => {
+    if (!decoded || !encoded) return [];
+    try {
+      if (decoded.type === "resource") {
+        return [{ type: decoded.resource.type, label: resourceToLabel(decoded.resource) }];
+      }
+      if (decoded.type === "function" || decoded.type === "error") {
+        const decodedCall = decodeAbiItem(decoded, encoded as Hex);
+        return [{ type: decoded.type, label: formatAbiItem(decoded), decodedCall }];
+      }
+      if (decoded.type === "signature") {
+        return decoded.selectors.map((selector) => {
+          const abiItem = parseAbiItem(`function ${selector}`) as AbiFunction;
+          const decodedCall = decodeAbiItem(abiItem, encoded as Hex);
+          return { type: "signature", label: selector, decodedCall };
+        });
+      }
+    } catch (error) {
+      console.error("Error decoding function data:", error);
+    }
+    return [];
+  }, [decoded, encoded]);
 
   if (isWorldAbiLoading || isSystemAbisLoading) {
     return <Skeleton className="h-[152px] w-full" />;
@@ -184,17 +197,14 @@ export function DecodeForm() {
           <>
             {results.length > 0 ? (
               results.map(({ type, label, decodedCall }, index) => (
-                <pre
-                  className={"text-md relative mt-4 rounded border border-white/20 p-3 text-sm"}
-                  key={`call-${index}`}
-                >
+                <pre key={`call-${index}`} className="text-md relative mt-4 rounded border border-white/20 p-3 text-sm">
                   <span className="mr-2 text-sm opacity-50">{type}</span>
                   <span>{label}</span>
-                  <pre className={"whitespace-pre-wrap"}>
+                  <pre className="block whitespace-pre-wrap">
                     {decodedCall?.abi?.inputs?.map((input, inputIndex) => (
                       <p key={`input-${inputIndex}`} className={"ml-4"}>
-                        <span className={"opacity-50"}>{input.name ?? `arg ${inputIndex}`}: </span>
-                        <span>{String(decodedCall.args[inputIndex])}</span>
+                        <span className="opacity-50">{input.name ?? `arg ${inputIndex}`}: </span>
+                        <span>{stringifyValue(decodedCall.args[inputIndex])}</span>
                       </p>
                     ))}
                   </pre>
