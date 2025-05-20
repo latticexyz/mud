@@ -36,10 +36,20 @@ import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { getErrorSelector } from "./getErrorSelector";
 
 type AbiError = AbiItem & { type: "error" };
-
 type ResourceItem = { type: "resource"; id: string; resource: Resource };
 type SelectorDatabase = { type: "signature"; selectors: string[] };
-type Result = { type: string; label: string };
+type Result = {
+  type: string;
+  label: string;
+  decodedCall?: DecodedFunctionCall;
+};
+
+type DecodedFunctionCall = {
+  args: readonly unknown[];
+  abi: AbiFunction | AbiError;
+  functionName?: string;
+  errorName?: string;
+};
 
 const formSchema = z.object({
   encodedData: z.string().min(1).optional(),
@@ -53,6 +63,16 @@ function isAbiError(item: AbiItem): item is AbiItem & { type: "error" } {
   return item.type === "error";
 }
 
+function decodeAbiItem(abiItem: AbiFunction | AbiError, data: Hex): DecodedFunctionCall {
+  if (abiItem.type === "function") {
+    const result = decodeFunctionData({ abi: [abiItem], data });
+    return { args: result.args, abi: abiItem, functionName: result.functionName };
+  } else {
+    const result = decodeErrorResult({ abi: [abiItem], data });
+    return { args: result.args, abi: abiItem, errorName: result.errorName };
+  }
+}
+
 export function DecodeForm() {
   const { data: worldData, isLoading: isWorldAbiLoading } = useWorldAbiQuery();
   const { data: systemData, isLoading: isSystemAbisLoading } = useSystemAbisQuery();
@@ -63,51 +83,43 @@ export function DecodeForm() {
   });
 
   const results = useMemo<Result[]>(() => {
-    if (!decoded) return [];
-    if (decoded.type === "resource") {
-      return [{ type: decoded.resource.type, label: resourceToLabel(decoded.resource) }];
-    }
-    if (decoded.type === "function" || decoded.type === "error") {
-      return [{ type: decoded.type, label: formatAbiItem(decoded) }];
-    }
-    if (decoded.type === "signature") {
-      return decoded.selectors.map((selector) => ({ type: "signature", label: selector }));
-    }
-    return [];
-  }, [decoded]);
-
-  const decodedFunctionCalls = useMemo(() => {
+    if (!decoded || !encoded) return [];
     try {
-      if (!decoded || !encoded) return;
-      if (decoded.type === "function") {
-        return [{ ...decodeFunctionData({ abi: [decoded], data: encoded as Hex }), abi: decoded }];
+      if (decoded.type === "resource") {
+        return [{ type: decoded.resource.type, label: resourceToLabel(decoded.resource) }];
       }
-      if (decoded.type === "error") {
-        return [{ ...decodeErrorResult({ abi: [decoded], data: encoded as Hex }), abi: decoded }];
+      if (decoded.type === "function" || decoded.type === "error") {
+        const decodedCall = decodeAbiItem(decoded, encoded as Hex);
+        return [{ type: decoded.type, label: formatAbiItem(decoded), decodedCall }];
       }
       if (decoded.type === "signature") {
         return decoded.selectors.map((selector) => {
           const abiItem = parseAbiItem(`function ${selector}`) as AbiFunction;
-          return { ...decodeFunctionData({ abi: [abiItem], data: encoded as Hex }), abi: abiItem };
+          const decodedCall = decodeAbiItem(abiItem, encoded as Hex);
+          return { type: "signature", label: selector, decodedCall };
         });
       }
     } catch (error) {
-      console.error("Error decoding function data", error);
+      console.error("Error decoding function data:", error);
     }
+    return [];
   }, [decoded, encoded]);
 
-  async function onSubmit({ encodedData }: z.infer<typeof formSchema>) {
+  const onSubmit = async ({ encodedData }: z.infer<typeof formSchema>) => {
     setEncoded(encodedData);
     if (!encodedData) return;
+
     const selector = encodedData.substring(0, 10);
     const worldAbi = worldData?.abi || [];
     const systemsAbis = systemData ? Object.values(systemData) : [];
     const abis = [worldAbi, ...systemsAbis].flat();
 
+    // Try to find matching ABI item
     const abiItem = abis.find((item): item is AbiFunction | AbiError => {
       if (isAbiFunction(item)) {
         return toFunctionSelector(item) === selector;
-      } else if (isAbiError(item)) {
+      }
+      if (isAbiError(item)) {
         return getErrorSelector(item) === selector;
       }
       return false;
@@ -118,32 +130,33 @@ export function DecodeForm() {
       return;
     }
 
+    // Try to decode as resource
     try {
-      // Attempt to decode as table
       const resource = hexToResource(encodedData as Hex);
       if (resource) {
         setDecoded({ type: "resource", id: encodedData, resource });
-      }
-    } catch {
-      // an error here just means the encoded data is not a resource
-    }
-
-    // Attempt to find in 4byte database
-    try {
-      if (selector.length === 10) {
-        const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
-        const data = await response.json();
-        if (data.results.length > 0) {
-          setDecoded({
-            type: "signature",
-            selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
-          });
-        }
+        return;
       }
     } catch (error) {
-      console.error("Error fetching 4byte data", error);
+      console.error("Error decoding resource:", error);
     }
-  }
+
+    // Try to find in 4-byte database
+    if (selector.length !== 10) return;
+
+    try {
+      const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
+      const data = await response.json();
+      if (data.results.length > 0) {
+        setDecoded({
+          type: "signature",
+          selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching 4byte data:", error);
+    }
+  };
 
   if (isWorldAbiLoading || isSystemAbisLoading) {
     return <Skeleton className="h-[152px] w-full" />;
@@ -170,7 +183,7 @@ export function DecodeForm() {
         {form.formState.isSubmitted && (
           <>
             {results.length > 0 ? (
-              results.map(({ type, label }, index) => (
+              results.map(({ type, label, decodedCall }, index) => (
                 <pre
                   className={"text-md relative mt-4 rounded border border-white/20 p-3 text-sm"}
                   key={`call-${index}`}
@@ -178,10 +191,10 @@ export function DecodeForm() {
                   <span className="mr-2 text-sm opacity-50">{type}</span>
                   <span>{label}</span>
                   <pre className={"whitespace-pre-wrap"}>
-                    {decodedFunctionCalls?.[index]?.abi?.inputs?.map((input, inputIndex) => (
+                    {decodedCall?.abi?.inputs?.map((input, inputIndex) => (
                       <p key={`input-${inputIndex}`} className={"ml-4"}>
                         <span className={"opacity-50"}>{input.name ?? `arg ${inputIndex}`}: </span>
-                        <span>{String(decodedFunctionCalls[index]?.args[inputIndex])}</span>
+                        <span>{String(decodedCall.args[inputIndex])}</span>
                       </p>
                     ))}
                   </pre>
