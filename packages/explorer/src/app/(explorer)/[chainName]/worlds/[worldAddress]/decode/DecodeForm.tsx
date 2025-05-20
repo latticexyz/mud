@@ -176,7 +176,7 @@ export function DecodeForm() {
                 >
                   <span className="mr-2 text-sm opacity-50">{type}</span>
                   <span>{label}</span>
-                  <pre>
+                  <pre className={"whitespace-pre-wrap"}>
                     {decodedFunctionCalls &&
                       decodedFunctionCalls[index] &&
                       decodedFunctionCalls[index].abi.inputs.map((input, inputIndex) => (
