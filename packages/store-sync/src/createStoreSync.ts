@@ -41,10 +41,10 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
-import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
+import { createPendingBlockStream } from "./createPendingBlockStream";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -218,15 +218,22 @@ export async function createStoreSync({
   const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
   const storedPendingLogs$ = pendingLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        mergeMap((startBlock) =>
+          createPendingBlockStream({
+            ...opts,
+            fromBlock: startBlock,
+            pendingLogsUrl: pendingLogsWebSocketUrl,
+            chainId,
+            filters,
+            address,
+            latestBlockNumber$,
+            indexerUrl,
+          }),
+        ),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;
         }),
-        mergeWith(
-          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
-          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
-        ),
       )
     : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
 
