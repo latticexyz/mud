@@ -91,7 +91,6 @@ export function DecodeForm() {
       }
     } catch (error) {
       console.error("Error decoding function data", error);
-      // ignore error
     }
   }, [decoded, encoded]);
 
@@ -124,7 +123,7 @@ export function DecodeForm() {
         setDecoded({ type: "resource", id: encodedData, resource });
       }
     } catch {
-      // ignore error
+      // an error here just means the encoded data is not a resource
     }
 
     // Attempt to find in 4byte database
@@ -139,8 +138,8 @@ export function DecodeForm() {
           });
         }
       }
-    } catch {
-      // ignore error
+    } catch (error) {
+      console.error("Error fetching 4byte data", error);
     }
   }
 
