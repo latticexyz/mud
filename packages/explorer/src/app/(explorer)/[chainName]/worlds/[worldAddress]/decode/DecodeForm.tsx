@@ -160,7 +160,7 @@ export function DecodeForm() {
               <FormControl>
                 <Input placeholder="0xf0f0f0f0" type="text" {...field} />
               </FormControl>
-              <FormDescription>Decode function, error or resource</FormDescription>
+              <FormDescription>Decode function, error or resource data</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -195,7 +195,7 @@ export function DecodeForm() {
                   "border-red-400 bg-red-100": !decoded,
                 })}
               >
-                <span className="text-red-700">No matching function or error found for this selector</span>
+                <span className="text-red-700">No matching function, error or resource found for this data</span>
               </pre>
             )}
           </>
