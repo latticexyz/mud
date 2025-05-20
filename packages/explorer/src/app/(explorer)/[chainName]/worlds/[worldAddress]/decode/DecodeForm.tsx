@@ -61,6 +61,7 @@ export function DecodeForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
   const results = useMemo<Result[]>(() => {
     if (!decoded) return [];
     if (decoded.type === "resource") {
@@ -74,6 +75,7 @@ export function DecodeForm() {
     }
     return [];
   }, [decoded]);
+
   const decodedFunctionCalls = useMemo(() => {
     try {
       if (!decoded || !encoded) return;
