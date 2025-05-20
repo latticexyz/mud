@@ -32,6 +32,7 @@ import {
   throwError,
   mergeWith,
   ignoreElements,
+  switchMap,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -218,7 +219,7 @@ export async function createStoreSync({
   const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
   const storedPendingLogs$ = pendingLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) =>
+        switchMap((startBlock) =>
           createPendingBlockStream({
             ...opts,
             fromBlock: startBlock,
@@ -239,7 +240,7 @@ export async function createStoreSync({
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) => {
+        switchMap((startBlock) => {
           const url = new URL(
             `api/logs-live?${new URLSearchParams({
               input: JSON.stringify({ chainId, address, filters }),
