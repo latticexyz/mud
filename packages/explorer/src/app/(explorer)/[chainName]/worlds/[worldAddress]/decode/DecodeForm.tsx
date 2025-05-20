@@ -177,14 +177,12 @@ export function DecodeForm() {
                   <span className="mr-2 text-sm opacity-50">{type}</span>
                   <span>{label}</span>
                   <pre className={"whitespace-pre-wrap"}>
-                    {decodedFunctionCalls &&
-                      decodedFunctionCalls[index] &&
-                      decodedFunctionCalls[index].abi?.inputs?.map((input, inputIndex) => (
-                        <p key={`input-${inputIndex}`} className={"ml-4"}>
-                          <span className={"opacity-50"}>{input.name ?? `arg ${inputIndex}`}: </span>
-                          <span>{String(decodedFunctionCalls[index]?.args[inputIndex])}</span>
-                        </p>
-                      ))}
+                    {decodedFunctionCalls?.[index]?.abi?.inputs?.map((input, inputIndex) => (
+                      <p key={`input-${inputIndex}`} className={"ml-4"}>
+                        <span className={"opacity-50"}>{input.name ?? `arg ${inputIndex}`}: </span>
+                        <span>{String(decodedFunctionCalls[index]?.args[inputIndex])}</span>
+                      </p>
+                    ))}
                   </pre>
                   <CopyButton value={JSON.stringify(decoded, null, 2)} className="absolute right-1.5 top-1.5" />
                 </pre>
