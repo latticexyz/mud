@@ -1,6 +1,14 @@
 "use client";
 
-import { AbiFunction, AbiItem, Hex, toFunctionSelector } from "viem";
+import {
+  AbiFunction,
+  AbiItem,
+  Hex,
+  decodeErrorResult,
+  decodeFunctionData,
+  parseAbiItem,
+  toFunctionSelector,
+} from "viem";
 import { formatAbiItem } from "viem/utils";
 import * as z from "zod";
 import { useMemo, useState } from "react";
@@ -30,7 +38,8 @@ import { getErrorSelector } from "./getErrorSelector";
 type AbiError = AbiItem & { type: "error" };
 
 type ResourceItem = { type: "resource"; id: string; resource: Resource };
-type SelectorDatabase = { type: "remote"; selectors: string[] };
+type SelectorDatabase = { type: "signature"; selectors: string[] };
+type Result = { type: string; label: string };
 
 const formSchema = z.object({
   encodedData: z.string().min(1).optional(),
@@ -48,10 +57,11 @@ export function DecodeForm() {
   const { data: worldData, isLoading: isWorldAbiLoading } = useWorldAbiQuery();
   const { data: systemData, isLoading: isSystemAbisLoading } = useSystemAbisQuery();
   const [decoded, setDecoded] = useState<AbiFunction | AbiError | ResourceItem | SelectorDatabase>();
+  const [encoded, setEncoded] = useState<string | undefined>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-  const results = useMemo(() => {
+  const results = useMemo<Result[]>(() => {
     if (!decoded) return [];
     if (decoded.type === "resource") {
       return [{ type: decoded.resource.type, label: resourceToLabel(decoded.resource) }];
@@ -59,24 +69,45 @@ export function DecodeForm() {
     if (decoded.type === "function" || decoded.type === "error") {
       return [{ type: decoded.type, label: formatAbiItem(decoded) }];
     }
-    if (decoded.type === "remote") {
+    if (decoded.type === "signature") {
       return decoded.selectors.map((selector) => ({ type: "signature", label: selector }));
     }
     return [];
   }, [decoded]);
+  const decodedFunctionCalls = useMemo(() => {
+    try {
+      if (!decoded || !encoded) return;
+      if (decoded.type === "function") {
+        return [{ ...decodeFunctionData({ abi: [decoded], data: encoded as Hex }), abi: decoded }];
+      }
+      if (decoded.type === "error") {
+        return [{ ...decodeErrorResult({ abi: [decoded], data: encoded as Hex }), abi: decoded }];
+      }
+      if (decoded.type === "signature") {
+        return decoded.selectors.map((selector) => {
+          const abiItem = parseAbiItem(`function ${selector}`) as AbiFunction;
+          return { ...decodeFunctionData({ abi: [abiItem], data: encoded as Hex }), abi: abiItem };
+        });
+      }
+    } catch (error) {
+      console.error("Error decoding function data", error);
+      // ignore error
+    }
+  }, [decoded, encoded]);
 
   async function onSubmit({ encodedData }: z.infer<typeof formSchema>) {
+    setEncoded(encodedData);
     if (!encodedData) return;
-
+    const selector = encodedData.substring(0, 10);
     const worldAbi = worldData?.abi || [];
     const systemsAbis = systemData ? Object.values(systemData) : [];
     const abis = [worldAbi, ...systemsAbis].flat();
 
     const abiItem = abis.find((item): item is AbiFunction | AbiError => {
       if (isAbiFunction(item)) {
-        return toFunctionSelector(item) === encodedData;
+        return toFunctionSelector(item) === selector;
       } else if (isAbiError(item)) {
-        return getErrorSelector(item) === encodedData;
+        return getErrorSelector(item) === selector;
       }
       return false;
     });
@@ -96,17 +127,17 @@ export function DecodeForm() {
       // ignore error
     }
 
-    const selector = encodedData.substring(0, 10);
-
     // Attempt to find in 4byte database
     try {
-      const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
-      const data = await response.json();
-      if (data.results.length > 0) {
-        setDecoded({
-          type: "remote",
-          selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
-        });
+      if (selector.length === 10) {
+        const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
+        const data = await response.json();
+        if (data.results.length > 0) {
+          setDecoded({
+            type: "signature",
+            selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
+          });
+        }
       }
     } catch {
       // ignore error
@@ -136,23 +167,38 @@ export function DecodeForm() {
         />
 
         {form.formState.isSubmitted && (
-          <pre
-            className={cn("text-md relative mt-4 rounded border border-white/20 p-3 text-sm", {
-              "border-red-400 bg-red-100": !decoded,
-            })}
-          >
+          <>
             {results.length > 0 ? (
-              results.map(({ type, label }) => (
-                <>
+              results.map(({ type, label }, index) => (
+                <pre
+                  className={"text-md relative mt-4 rounded border border-white/20 p-3 text-sm"}
+                  key={`call-${index}`}
+                >
                   <span className="mr-2 text-sm opacity-50">{type}</span>
                   <span>{label}</span>
+                  <pre>
+                    {decodedFunctionCalls &&
+                      decodedFunctionCalls[index] &&
+                      decodedFunctionCalls[index].abi.inputs.map((input, inputIndex) => (
+                        <p key={`input-${inputIndex}`} className={"ml-4"}>
+                          <span className={"opacity-50"}>{input.name ?? `arg ${inputIndex}`}: </span>
+                          <span>{String(decodedFunctionCalls[index]?.args[inputIndex])}</span>
+                        </p>
+                      ))}
+                  </pre>
                   <CopyButton value={JSON.stringify(decoded, null, 2)} className="absolute right-1.5 top-1.5" />
-                </>
+                </pre>
               ))
             ) : (
-              <span className="text-red-700">No matching function or error found for this selector</span>
+              <pre
+                className={cn("text-md relative mt-4 rounded border border-white/20 p-3 text-sm", {
+                  "border-red-400 bg-red-100": !decoded,
+                })}
+              >
+                <span className="text-red-700">No matching function or error found for this selector</span>
+              </pre>
             )}
-          </pre>
+          </>
         )}
 
         <Button type="submit" size="sm">
