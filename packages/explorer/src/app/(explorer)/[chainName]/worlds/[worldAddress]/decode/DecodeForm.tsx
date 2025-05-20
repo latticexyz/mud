@@ -155,14 +155,22 @@ export function DecodeForm() {
         return [{ type: decoded.resource.type, label: resourceToLabel(decoded.resource) }];
       }
       if (decoded.type === "function" || decoded.type === "error") {
-        const decodedCall = decodeAbiItem(decoded, encoded as Hex);
-        return [{ type: decoded.type, label: formatAbiItem(decoded), decodedCall }];
+        try {
+          const decodedCall = decodeAbiItem(decoded, encoded as Hex);
+          return [{ type: decoded.type, label: formatAbiItem(decoded), decodedCall }];
+        } catch {
+          return [{ type: decoded.type, label: formatAbiItem(decoded) }];
+        }
       }
       if (decoded.type === "signature") {
         return decoded.selectors.map((selector) => {
           const abiItem = parseAbiItem(`function ${selector}`) as AbiFunction;
-          const decodedCall = decodeAbiItem(abiItem, encoded as Hex);
-          return { type: "signature", label: selector, decodedCall };
+          try {
+            const decodedCall = decodeAbiItem(abiItem, encoded as Hex);
+            return { type: "signature", label: selector, decodedCall };
+          } catch {
+            return { type: "signature", label: selector };
+          }
         });
       }
     } catch {
