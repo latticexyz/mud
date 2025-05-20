@@ -57,30 +57,26 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       // Need to use low level methods since viem's socket client only handles `eth_subscription` messages.
       // (https://github.com/wevm/viem/blob/f81d497f2afc11b9b81a79057d1f797694b69793/src/utils/rpc/socket.ts#L178)
       client.socket.addEventListener("message", (message) => {
-        try {
-          const response = JSON.parse(message.data);
-          if ("error" in response) {
-            debug("JSON-RPC error", response.error);
-            return;
-          }
+        const response = JSON.parse(message.data);
+        if ("error" in response) {
+          debug("JSON-RPC error", response.error);
+          return;
+        }
 
-          // Parse the logs from wiresaw_watchLogs
-          if ("params" in response && response.params.subscription === subscriptionId) {
-            const result: WatchLogsEvent = response.params.result;
-            const formattedLogs = result.logs.map((log) => formatLog(log));
-            const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
-            const blockNumber = BigInt(result.blockNumber);
-            if (caughtUp) {
-              subscriber.next({ blockNumber, logs: parsedLogs });
-              // Since this the event's block number corresponds to a pending block, we have to refetch this block in case of a restart
-              resumeBlock = blockNumber;
-            } else {
-              logBuffer.push(...parsedLogs);
-            }
-            return;
+        // Parse the logs from wiresaw_watchLogs
+        if ("params" in response && response.params.subscription === subscriptionId) {
+          const result: WatchLogsEvent = response.params.result;
+          const formattedLogs = result.logs.map((log) => formatLog(log));
+          const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
+          const blockNumber = BigInt(result.blockNumber);
+          if (caughtUp) {
+            subscriber.next({ blockNumber, logs: parsedLogs });
+            // Since this the event's block number corresponds to a pending block, we have to refetch this block in case of a restart
+            resumeBlock = blockNumber;
+          } else {
+            logBuffer.push(...parsedLogs);
           }
-        } catch (e) {
-          console.warn("caught error in watchLogs websocket subscription", e);
+          return;
         }
       });
 
