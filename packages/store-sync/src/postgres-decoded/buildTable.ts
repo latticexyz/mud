@@ -1,5 +1,5 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
-import { snakeCase } from "../snakeCase";
+import { snakeCase } from "change-case";
 import { asBigInt, asHex } from "../postgres/columnTypes";
 import { transformSchemaName } from "../postgres/transformSchemaName";
 import { buildColumn } from "./buildColumn";

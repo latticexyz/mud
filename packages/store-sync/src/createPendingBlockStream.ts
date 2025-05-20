@@ -39,21 +39,20 @@ type PendingBlockStreamOptions = GetRpcClientOptions & {
 };
 
 export function createPendingBlockStream(opts: PendingBlockStreamOptions): Observable<StorageAdapterBlock> {
-  console.log("creating pending block stream");
   const recreatePendingStream$ = new Subject<void>();
   const recreateLatestStream$ = new Subject<void>();
 
-  const seenBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
+  const processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
   let restartBlockNumber = opts.fromBlock;
 
   const latestBlock$ = recreateLatestStream$.pipe(
     startWith(undefined),
     switchMap(() =>
       createLatestBlockStream({ ...opts, fromBlock: restartBlockNumber }).pipe(
-        catchError((error) => {
-          debug("Error in latest block stream:", error);
+        catchError((e) => {
+          debug("Error in latest block stream, recreating", e);
           recreateLatestStream$.next();
-          return throwError(() => error);
+          return throwError(() => e);
         }),
       ),
     ),
@@ -67,46 +66,45 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
         url: opts.pendingLogsUrl,
         fromBlock: restartBlockNumber,
       }).logs$.pipe(
-        catchError((error) => {
-          debug("Error in pending logs stream:", error);
+        catchError((e) => {
+          debug("Error in pending logs stream, recreating", e);
           recreatePendingStream$.next();
-          return throwError(() => error);
+          return throwError(() => e);
         }),
       ),
     ),
     tap((block) => {
-      debug("[createPendingBlockStream] PENDING block", {
-        blockNumber: block.blockNumber,
-        numLogs: block.logs.length,
-        logs: block.logs,
-      });
       restartBlockNumber = block.blockNumber;
-      const seenLogs = (seenBlockLogs[String(block.blockNumber)] ??= {});
+      const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
       block.logs.forEach((log) => {
         seenLogs[log.logIndex!] = true;
       });
+      debug("got pending block", block.blockNumber, "with", block.logs.length, "logs");
     }),
   );
 
   const missingLogs$ = latestBlock$.pipe(
     map((block) => {
-      const blockNumber = String(block.blockNumber);
-      const seenLogs = seenBlockLogs[blockNumber] ?? {};
+      const seenLogs = processedBlockLogs[String(block.blockNumber)] ?? {};
       const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
-      debug("[createPendingBlockStream] LATEST block", {
-        blockNumber,
-        numLogs: block.logs.length,
-        missing: missingLogs.length,
-      });
-      delete seenBlockLogs[blockNumber];
+      debug(
+        "got latest block",
+        block.blockNumber,
+        "with",
+        block.logs.length,
+        "logs (missing",
+        missingLogs.length,
+        "logs)",
+      );
       return { blockNumber: block.blockNumber, logs: missingLogs };
     }),
     tap(({ blockNumber }) => {
+      delete processedBlockLogs[String(blockNumber)];
       restartBlockNumber = blockNumber + 1n;
     }),
     filter(({ logs }) => logs.length > 0),
-    tap(({ blockNumber, logs }) => {
-      debug("[createPendingBlockStream] missing logs", blockNumber, logs);
+    tap(({ blockNumber }) => {
+      debug("missing logs found in latest block", blockNumber, "recreating pending stream");
       recreatePendingStream$.next();
     }),
   );
@@ -114,6 +112,7 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
   return merge(pendingLogs$, missingLogs$);
 }
 
+// TODO: reduce duplication with indexer/rpc stream in `createStoreSync.ts`
 function createLatestBlockStream({
   fromBlock,
   indexerUrl,
@@ -124,7 +123,6 @@ function createLatestBlockStream({
   maxBlockRange,
   ...opts
 }: PendingBlockStreamOptions): Observable<StorageAdapterBlock> {
-  console.log("creating latest block stream");
   const indexerBlocks$ = indexerUrl
     ? of(indexerUrl).pipe(
         mergeMap((indexerUrl) => {
