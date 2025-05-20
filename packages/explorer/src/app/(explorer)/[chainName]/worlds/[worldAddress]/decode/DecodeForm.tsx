@@ -179,7 +179,7 @@ export function DecodeForm() {
                   <pre className={"whitespace-pre-wrap"}>
                     {decodedFunctionCalls &&
                       decodedFunctionCalls[index] &&
-                      decodedFunctionCalls[index].abi.inputs.map((input, inputIndex) => (
+                      decodedFunctionCalls[index].abi?.inputs?.map((input, inputIndex) => (
                         <p key={`input-${inputIndex}`} className={"ml-4"}>
                           <span className={"opacity-50"}>{input.name ?? `arg ${inputIndex}`}: </span>
                           <span>{String(decodedFunctionCalls[index]?.args[inputIndex])}</span>
