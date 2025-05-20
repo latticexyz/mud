@@ -39,15 +39,27 @@ type PendingBlockStreamOptions = GetRpcClientOptions & {
 };
 
 export function createPendingBlockStream(opts: PendingBlockStreamOptions): Observable<StorageAdapterBlock> {
-  console.log("creating pending block stream", opts);
-  const recreateStream$ = new Subject<void>();
-
-  const latestBlock$ = createLatestBlockStream(opts);
+  console.log("creating pending block stream");
+  const recreatePendingStream$ = new Subject<void>();
+  const recreateLatestStream$ = new Subject<void>();
 
   const seenBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
-
   let restartBlockNumber = opts.fromBlock;
-  const pendingLogs$ = recreateStream$.pipe(
+
+  const latestBlock$ = recreateLatestStream$.pipe(
+    startWith(undefined),
+    switchMap(() =>
+      createLatestBlockStream({ ...opts, fromBlock: restartBlockNumber }).pipe(
+        catchError((error) => {
+          debug("Error in latest block stream:", error);
+          recreateLatestStream$.next();
+          return throwError(() => error);
+        }),
+      ),
+    ),
+  );
+
+  const pendingLogs$ = recreatePendingStream$.pipe(
     startWith(restartBlockNumber),
     switchMap(() =>
       watchLogs({
@@ -57,15 +69,22 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
       }).logs$.pipe(
         catchError((error) => {
           debug("Error in pending logs stream:", error);
-          recreateStream$.next();
-          // TODO: do we need to throw here?
+          recreatePendingStream$.next();
           return throwError(() => error);
         }),
       ),
     ),
     tap((block) => {
-      debug("[createPendingBlockStream] new pending logs", block);
+      debug("[createPendingBlockStream] PENDING block", {
+        blockNumber: block.blockNumber,
+        numLogs: block.logs.length,
+        logs: block.logs,
+      });
       restartBlockNumber = block.blockNumber;
+      const seenLogs = (seenBlockLogs[String(block.blockNumber)] ??= {});
+      block.logs.forEach((log) => {
+        seenLogs[log.logIndex!] = true;
+      });
     }),
   );
 
@@ -74,17 +93,21 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
       const blockNumber = String(block.blockNumber);
       const seenLogs = seenBlockLogs[blockNumber] ?? {};
       const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
+      debug("[createPendingBlockStream] LATEST block", {
+        blockNumber,
+        numLogs: block.logs.length,
+        missing: missingLogs.length,
+      });
       delete seenBlockLogs[blockNumber];
       return { blockNumber: block.blockNumber, logs: missingLogs };
     }),
-    tap(({ blockNumber, logs }) => {
-      debug("[createPendingBlockStream] latest block", blockNumber, logs);
+    tap(({ blockNumber }) => {
       restartBlockNumber = blockNumber + 1n;
     }),
     filter(({ logs }) => logs.length > 0),
     tap(({ blockNumber, logs }) => {
       debug("[createPendingBlockStream] missing logs", blockNumber, logs);
-      recreateStream$.next();
+      recreatePendingStream$.next();
     }),
   );
 
@@ -101,7 +124,7 @@ function createLatestBlockStream({
   maxBlockRange,
   ...opts
 }: PendingBlockStreamOptions): Observable<StorageAdapterBlock> {
-  console.log("creating latest block stream", opts);
+  console.log("creating latest block stream");
   const indexerBlocks$ = indexerUrl
     ? of(indexerUrl).pipe(
         mergeMap((indexerUrl) => {

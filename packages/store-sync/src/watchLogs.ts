@@ -32,7 +32,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
   let resumeBlock = fromBlock;
 
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
-    debug("[watchLogs] logs$ subscribed");
+    debug("[watchLogs] logs$ subscribed, starting from", fromBlock);
 
     let client: SocketRpcClient<WebSocket>;
 
@@ -43,7 +43,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       let caughtUp = false;
       const logBuffer: StoreEventsLog[] = [];
 
-      client = await getWebSocketRpcClient(url, { keepAlive: false, reconnect: { attempts: 99, delay: 1_000 } });
+      client = await getWebSocketRpcClient(url, { keepAlive: true, reconnect: { attempts: 99, delay: 1_000 } });
 
       // Start watching pending logs
       const subscriptionId: Hex = (
@@ -74,7 +74,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
             const formattedLogs = result.logs.map((log) => formatLog(log));
             const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
             const blockNumber = BigInt(result.blockNumber);
-            debug("got logs", parsedLogs, "for pending block", blockNumber);
+            // debug("got logs", parsedLogs, "for pending block", blockNumber);
             if (caughtUp) {
               debug("handing off logs to subscriber");
               subscriber.next({ blockNumber, logs: parsedLogs });
@@ -117,9 +117,10 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
     return () => {
       debug("logs$ subscription closed");
       console.warn("closing client");
-      if (client?.socket.readyState === client?.socket.OPEN) {
-        console.log("client still open, closing");
-        client.socket.close();
+      try {
+        client.close();
+      } catch (e) {
+        console.log("failed to close client", e);
       }
     };
   });
@@ -143,6 +144,8 @@ async function fetchInitialLogs({
       },
     })
   ).result;
+
+  console.log("fetching initial logs from", Number(fromBlock), "to", parseInt(latestBlockNumber));
 
   // Request all logs from `fromBlock` to the latest block number
   const rawInitialLogs: RpcLog[] = await requestAsync(client, {
@@ -168,7 +171,7 @@ async function requestAsync(
     client.request({
       ...params,
       onResponse: (msg) => {
-        console.log("resolving", msg);
+        // console.log("resolving", msg);
         resolve(msg);
       },
       onError: (msg) => {

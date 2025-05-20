@@ -33,6 +33,8 @@ import {
   mergeWith,
   ignoreElements,
   switchMap,
+  Subject,
+  startWith,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -203,7 +205,20 @@ export async function createStoreSync({
   );
 
   let latestBlockNumber: bigint | null = null;
-  const latestBlock$ = createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(shareReplay(1));
+  const recreateLatestBlockStream$ = new Subject<void>();
+  const latestBlock$ = recreateLatestBlockStream$.pipe(
+    startWith(undefined),
+    switchMap(() =>
+      createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(
+        catchError((error) => {
+          debug("error in latestBlock$, recreating");
+          recreateLatestBlockStream$.next();
+          return throwError(() => error);
+        }),
+      ),
+    ),
+    shareReplay(1),
+  );
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
@@ -240,7 +255,7 @@ export async function createStoreSync({
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
-        switchMap((startBlock) => {
+        mergeMap((startBlock) => {
           const url = new URL(
             `api/logs-live?${new URLSearchParams({
               input: JSON.stringify({ chainId, address, filters }),
