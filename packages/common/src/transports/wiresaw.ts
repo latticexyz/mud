@@ -1,4 +1,4 @@
-import { EIP1193RequestFn, Hex, HttpTransport, RpcTransactionReceipt, Transport } from "viem";
+import { EIP1193RequestFn, Hex, RpcTransactionReceipt, Transport } from "viem";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
 
@@ -9,8 +9,8 @@ type WiresawSendUserOperationResult = {
 
 type WiresawOptions<transport extends Transport> = {
   wiresaw: transport;
-  fallbackBundler?: HttpTransport;
-  fallbackEth?: HttpTransport;
+  fallbackBundler?: Transport;
+  fallbackEth?: Transport;
 };
 
 export function wiresaw<const wiresawTransport extends Transport>(

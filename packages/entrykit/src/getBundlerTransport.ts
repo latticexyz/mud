@@ -38,6 +38,7 @@ export function getBundlerTransport(chain: Chain) {
         account: privateKeyToAccount(keccak256(stringToHex("local user op executor"))),
         pollingInterval: 10,
       }).extend(transactionQueue()),
+      fallbackEth: http(ethRpcUrl),
     });
   }
 
