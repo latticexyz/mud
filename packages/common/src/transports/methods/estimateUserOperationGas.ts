@@ -16,7 +16,7 @@ import {
   UserOperation,
 } from "viem/account-abstraction";
 import { bigIntMax } from "../../utils";
-import { entryPointSimulationsAbi, entryPointSimulationsDeployedBytecode } from "../entryPointSimulations";
+import { entryPointSimulationsAbi } from "../entryPointSimulationsAbi";
 
 type rpcMethod = getRpcMethod<BundlerRpcSchema, "eth_estimateUserOperationGas">;
 
@@ -103,12 +103,11 @@ async function simulateHandleOp({
     },
     "pending",
     {
-      [entryPoint07Address]: { code: entryPointSimulationsDeployedBytecode },
       ...senderBalanceOverride,
     },
   ];
   const encodedSimulationResult: Hex = await request({
-    method: "wiresaw_call",
+    method: "wiresaw_callEntryPointSimulations",
     params: simulationParams,
   });
 
