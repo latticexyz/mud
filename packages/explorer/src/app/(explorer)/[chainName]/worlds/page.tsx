@@ -19,7 +19,7 @@ export default function WorldsPage({ params: { chainName } }: Props) {
 
   const worlds = data?.worlds || [];
   if (worlds.length === 1) {
-    redirect(`/${chainName}/worlds/${worlds[0]}`);
+    redirect(`/${chainName}/worlds/${worlds[0]?.address}`);
   }
 
   return <WorldsForm worlds={worlds} isLoading={isLoading} />;
