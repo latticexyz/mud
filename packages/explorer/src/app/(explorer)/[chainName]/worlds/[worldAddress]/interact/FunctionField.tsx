@@ -113,9 +113,12 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs.map((value, index) =>
-            functionAbi.inputs[index]?.type === "tuple" ? JSON.parse(value) : value,
-          ),
+          args: values.inputs.map((value, index) => {
+            const type = functionAbi.inputs[index]?.type;
+            if (type === "tuple") return JSON.parse(value);
+            if (type === "bool") return value === "true";
+            return value;
+          }),
           ...(values.value && { value: BigInt(values.value) }),
           chainId,
         });
