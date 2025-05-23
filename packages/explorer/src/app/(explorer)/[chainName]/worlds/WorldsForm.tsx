@@ -53,12 +53,6 @@ export function WorldsForm({ worlds, isLoading }: Props) {
     }
   };
 
-  const handleOpenOptions = () => {
-    if (!open && worlds.length > 0) {
-      setOpen(true);
-    }
-  };
-
   return (
     <div className="mx-auto flex min-h-screen w-[450px] flex-col items-center justify-center p-4">
       <h1 className="flex items-center gap-6 self-start font-mono text-4xl font-bold uppercase">
@@ -80,15 +74,13 @@ export function WorldsForm({ worlds, isLoading }: Props) {
                           <CommandPrimitive.Input
                             asChild
                             value={field.value}
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                            }}
+                            onValueChange={(value) => field.onChange(value)}
                             onBlur={() => {
                               field.onBlur();
                               setOpen(false);
                             }}
-                            onFocus={handleOpenOptions}
-                            placeholder={isLoading ? "Loading worlds..." : "Enter world address..."}
+                            onFocus={() => setOpen(true)}
+                            placeholder="Enter world address..."
                             // Need to manually trigger form submission as CommandPrimitive.Input captures Enter key events
                             onKeyDown={(e) => {
                               if (!open && e.key === "Enter") {
@@ -96,7 +88,6 @@ export function WorldsForm({ worlds, isLoading }: Props) {
                                 form.handleSubmit(onSubmit)();
                               }
                             }}
-                            disabled={isLoading}
                           >
                             <Input className="h-12" />
                           </CommandPrimitive.Input>
@@ -112,32 +103,36 @@ export function WorldsForm({ worlds, isLoading }: Props) {
 
               <div className="relative">
                 <CommandList>
-                  {open && worlds.length > 0 ? (
+                  {open ? (
                     <div className="absolute top-3 z-10 max-h-[200px] w-full overflow-y-auto rounded-md border bg-popover text-popover-foreground outline-none animate-in">
                       <CommandGroup>
                         {worlds?.map((world) => {
+                          const displayValue = world.name ? `${world.name} (${world.address})` : world.address;
                           return (
                             <CommandItem
                               key={world.address}
-                              value={world.address}
+                              className="flex cursor-pointer items-center font-mono"
+                              value={displayValue}
                               onMouseDown={(event) => {
                                 event.preventDefault();
                                 event.stopPropagation();
                               }}
-                              onSelect={(value) => {
-                                form.setValue("worldAddress", value as Address, {
+                              onSelect={() => {
+                                form.setValue("worldAddress", world.address, {
                                   shouldValidate: true,
                                 });
                                 setOpen(false);
                                 form.handleSubmit(onSubmit)();
                               }}
-                              className="flex cursor-pointer items-center font-mono"
                             >
                               {world.name || world.address}
                               {world.verified ? <BadgeCheckIcon className="ml-2 h-4 w-4 text-green-500" /> : null}
                             </CommandItem>
                           );
                         })}
+                        {isLoading && !form.getValues("worldAddress") && (
+                          <div className="px-2 py-1.5 text-sm text-muted-foreground">Loading worlds...</div>
+                        )}
                       </CommandGroup>
                     </div>
                   ) : null}
@@ -146,7 +141,12 @@ export function WorldsForm({ worlds, isLoading }: Props) {
             </div>
 
             <div className="flex w-full items-center gap-x-2">
-              <Button type="submit" className="flex-1 uppercase" variant="default" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="flex-1 uppercase"
+                variant="default"
+                disabled={!form.getValues("worldAddress")}
+              >
                 Explore the world
               </Button>
               <Button

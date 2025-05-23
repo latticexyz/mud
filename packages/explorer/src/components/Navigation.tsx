@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader } from "lucide-react";
+import { LoaderIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useReadOnly } from "../app/(explorer)/hooks/useReadOnly";
@@ -48,7 +48,7 @@ export function Navigation() {
 
         {isFetched && !data?.isWorldDeployed && (
           <h4 className="font-mono text-sm font-bold uppercase opacity-70">
-            Waiting for world deploy <Loader className="inline-block h-4 w-4 animate-spin" />
+            Waiting for world deploy <LoaderIcon className="inline-block h-4 w-4 animate-spin" />
           </h4>
         )}
 

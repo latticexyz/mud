@@ -1,7 +1,8 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import { supportedChainName } from "../../../../common";
+import { anvil } from "viem/chains";
+import { supportedChainName, supportedChains } from "../../../../common";
 import { useWorldsQuery } from "../../queries/useWorldsQuery";
 import { WorldsForm } from "./WorldsForm";
 
@@ -18,9 +19,10 @@ export default function WorldsPage({ params: { chainName } }: Props) {
   }
 
   const worlds = data?.worlds || [];
-  if (worlds.length === 1) {
+  const chain = supportedChains[chainName];
+  if (worlds.length === 1 && chain.id === anvil.id) {
     redirect(`/${chainName}/worlds/${worlds[0]?.address}`);
   }
 
-  return <WorldsForm worlds={worlds} isLoading={isLoading} />;
+  return <WorldsForm worlds={worlds} isLoading={isLoading.verified || isLoading.indexer} />;
 }

@@ -1,7 +1,8 @@
 import { useParams } from "next/navigation";
 import { Address, getAddress } from "viem";
+import { useMemo } from "react";
 import { MUDChain } from "@latticexyz/common/chains";
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supportedChains, validateChainName } from "../../../common";
 import { VerifiedWorld } from "../api/verified-worlds/route";
 import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
@@ -14,6 +15,17 @@ export type WorldSelectItem = {
 
 export type WorldsQueryResult = {
   worlds: WorldSelectItem[];
+};
+
+export type WorldsQueryState = {
+  data: WorldsQueryResult;
+  isLoading: {
+    verified: boolean;
+    indexer: boolean;
+  };
+  isError: boolean;
+  error: Error | null;
+  isSuccess: boolean;
 };
 
 type ApiResponse = {
@@ -74,56 +86,77 @@ async function getExternalWorlds(chain: MUDChain) {
   return data.items.map((world) => getAddress(world.address.hash));
 }
 
-export function useWorldsQuery(): UseQueryResult<WorldsQueryResult> {
+function useVerifiedWorldsQuery(chain: MUDChain) {
+  return useQuery({
+    queryKey: ["verifiedWorlds", chain.id],
+    queryFn: async () => {
+      try {
+        const verifiedWorlds = await getVerifiedWorlds(chain);
+        return new Map(verifiedWorlds.map((world) => [world.address, world.name]));
+      } catch (error) {
+        console.error("Failed to fetch verified worlds:", error);
+        return new Map<Address, string>();
+      }
+    },
+    refetchInterval: 5000,
+  });
+}
+
+function useIndexerWorldsQuery(chain: MUDChain, indexer: ReturnType<typeof useIndexerForChainId>) {
+  return useQuery({
+    queryKey: ["indexerWorlds", chain.id, indexer.type],
+    queryFn: async () => {
+      if (indexer.type === "sqlite") {
+        return await getLocalWorlds(indexer);
+      } else {
+        return await getExternalWorlds(chain);
+      }
+    },
+    refetchInterval: 5000,
+  });
+}
+
+export function useWorldsQuery(): WorldsQueryState {
   const { chainName } = useParams();
   validateChainName(chainName);
   const chain = supportedChains[chainName];
   const indexer = useIndexerForChainId(chain.id);
 
-  return useQuery({
-    queryKey: ["worlds", chainName],
-    queryFn: async () => {
-      const worlds: WorldSelectItem[] = [];
-      const worldsAddresses = new Set<Address>();
+  const verifiedWorldsQuery = useVerifiedWorldsQuery(chain);
+  const indexerWorldsQuery = useIndexerWorldsQuery(chain, indexer);
 
-      let indexerWorlds: Address[] = [];
-      if (indexer.type === "sqlite") {
-        indexerWorlds = await getLocalWorlds(indexer);
-      } else {
-        indexerWorlds = await getExternalWorlds(chain);
+  const result = useMemo(() => {
+    const worlds: WorldSelectItem[] = [];
+    const worldsAddresses = new Set<Address>();
+
+    if (verifiedWorldsQuery.data) {
+      for (const [address, name] of verifiedWorldsQuery.data) {
+        worldsAddresses.add(address);
+        worlds.push({ address, name, verified: true });
       }
+    }
 
-      for (const world of indexerWorlds) {
-        worldsAddresses.add(world);
-        worlds.push({ address: world, name: "", verified: false });
-      }
-
-      let verifiedWorldsMap = new Map<Address, string>();
-      try {
-        const verifiedWorlds = await getVerifiedWorlds(chain);
-        verifiedWorldsMap = new Map(verifiedWorlds.map((world) => [world.address, world.name]));
-
-        for (const [address, name] of verifiedWorldsMap) {
-          if (!worldsAddresses.has(address)) {
-            worlds.push({ address, name, verified: true });
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch verified worlds:", error);
-      }
-
-      for (const world of worlds) {
-        const name = verifiedWorldsMap.get(world.address);
-        if (name) {
-          world.name = name;
-          world.verified = true;
+    if (indexerWorldsQuery.data) {
+      for (const world of indexerWorldsQuery.data) {
+        if (!worldsAddresses.has(world)) {
+          worlds.push({ address: world, name: "", verified: false });
         }
       }
+    }
 
-      return {
-        worlds: worlds.sort((a) => (a.verified ? -1 : 1)),
-      };
+    return {
+      worlds: worlds.sort((a) => (a.verified ? -1 : 1)),
+    };
+  }, [verifiedWorldsQuery.data, indexerWorldsQuery.data]);
+
+  return {
+    data: result,
+    isLoading: {
+      verified: verifiedWorldsQuery.isLoading,
+      indexer: indexerWorldsQuery.isLoading,
     },
-    refetchInterval: 5000,
-  });
+    isError: verifiedWorldsQuery.isError || indexerWorldsQuery.isError,
+    error: verifiedWorldsQuery.error || indexerWorldsQuery.error,
+    isSuccess: verifiedWorldsQuery.isSuccess || indexerWorldsQuery.isSuccess,
+  };
 }
