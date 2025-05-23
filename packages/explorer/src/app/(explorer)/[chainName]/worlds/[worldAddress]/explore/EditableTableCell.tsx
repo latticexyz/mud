@@ -1,4 +1,4 @@
-import { Loader } from "lucide-react";
+import { LoaderIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
@@ -99,7 +99,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
           onCheckedChange={handleSubmit}
           disabled={isPending}
         />
-        {isPending && <Loader className="h-4 w-4 animate-spin" />}
+        {isPending && <LoaderIcon className="h-4 w-4 animate-spin" />}
       </div>
     );
   }
@@ -130,7 +130,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
       {isPending && (
         <>
           {String(value)}
-          <Loader className="h-4 w-4 animate-spin" />
+          <LoaderIcon className="h-4 w-4 animate-spin" />
         </>
       )}
     </div>
