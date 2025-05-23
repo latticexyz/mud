@@ -1,5 +1,38 @@
 # @latticexyz/entrykit
 
+## 2.2.22
+
+### Patch Changes
+
+- d616110: Onboarding prerequisites are now re-fetched when the quarry gas balance is updated.
+- b94aca6: Loosened minimum gas balance requirement in onboarding to allow for any gas balance above zero.
+- 6008573: EntryKit's `SessionClient` now automatically routes `sendUserOperation` through `callFrom` like it does with `writeContract` calls.
+- 9f06079: - EntryKit now returns to the login flow modal after a successful top-up.
+  - The default chain is now selected as the source chain if the connected chain is not part of selectable chains.
+  - The "Switch chain" button now uses the primary color, making it appear clickable.
+  - The successful deposit status message has been updated.
+- 050dfd5: Added explicit gas estimation for Pyrope to avoid overpaying.
+- d621dc7: Updated React Query usages to use `skipToken` instead of conditional a `queryFn` to avoid warnings in newer versions of React Query.
+- 5f6c71d: Added support for Quarry paymaster top-up via relay.link deposit form.
+- daa34f0: Session wallet address can now be copied from EntryKit modal.
+- fbf1be1: Increased required balance/allowance to greater than zero.
+- 9dc032a: The login flow now only attempts to register the session account after it has been successfully funded.
+- Updated dependencies [6008573]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/paymaster@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
