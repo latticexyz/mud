@@ -1,7 +1,7 @@
 import { MUDChain } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
-import { entryPoint07Abi } from "viem/account-abstraction";
+import { GetTransactionReceiptErrorType, Hex, OneOf, parseEventLogs } from "viem";
+import { GetUserOperationReceiptErrorType, entryPoint07Abi, getUserOperationReceipt } from "viem/account-abstraction";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -335,7 +335,9 @@ export async function createStoreSync({
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
-  async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
+  async function waitForTransaction(
+    tx: Hex | OneOf<{ userOperationHash: Hex } | { transactionHash: Hex }>,
+  ): Promise<WaitForTransactionResult> {
     debug("waiting for tx", tx);
 
     // This currently blocks for async call on each block processed
@@ -344,17 +346,28 @@ export async function createStoreSync({
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (storedBlocks) => {
-        for (const storedBlock of storedBlocks) {
-          // If stored block had Store event logs associated with tx, it must have succeeded.
-          if (storedBlock.logs.some((log) => log.transactionHash === tx)) {
-            return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: tx } as const;
-          }
-        }
-
         try {
+          const hash = await (async (): Promise<Hex> => {
+            if (typeof tx === "string") return tx;
+            if (tx.transactionHash) return tx.transactionHash;
+            const userOpReceipt = await getAction(
+              publicClient,
+              getUserOperationReceipt,
+              "getUserOperationReceipt",
+            )({ hash: tx.userOperationHash });
+            return userOpReceipt.receipt.transactionHash;
+          })();
+
+          for (const storedBlock of storedBlocks) {
+            // If stored block had Store event logs associated with tx, it must have succeeded.
+            if (storedBlock.logs.some((log) => log.transactionHash === hash)) {
+              return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: hash } as const;
+            }
+          }
+
           const lastStoredBlock = storedBlocks[0];
           debug("fetching tx receipt for block", lastStoredBlock.blockNumber);
-          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash: tx });
+          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash });
 
           // Skip if sync hasn't caught up to this transaction's block.
           if (lastStoredBlock.blockNumber < receipt.blockNumber) return;
@@ -367,6 +380,8 @@ export async function createStoreSync({
           });
           if (userOpEvents.length) {
             debug("tx receipt appears to be a user op, using user op status instead");
+            // TODO: remove this check since non-wiresaw bundlers will likely have multiple user ops
+            // TODO: cache and look up specific user op hash(es) for this tx
             if (userOpEvents.length > 1) {
               const issueLink = `https://github.com/latticexyz/mud/issues/new${new URLSearchParams({
                 title: "waitForTransaction found more than one user op",
@@ -377,6 +392,10 @@ export async function createStoreSync({
                 `Receipt for transaction ${tx} had more than one \`UserOperationEvent\`. This may have unexpected behavior.\n\nIf you encounter this, please open an issue:\n${issueLink}`,
               );
             }
+
+            // console.log(userOpEvents[0]);
+            // console.log(hexToString(userOpEvents[0].data));
+            // console.log(decodeErrorResult({ abi: worldAbi, data: userOpEvents[0].data }));
 
             return {
               status: userOpEvents[0].args.success ? "success" : "reverted",
@@ -391,8 +410,8 @@ export async function createStoreSync({
             transactionHash: receipt.transactionHash,
           };
         } catch (e) {
-          const error = e as GetTransactionReceiptErrorType;
-          if (error.name === "TransactionReceiptNotFoundError") {
+          const error = e as GetTransactionReceiptErrorType | GetUserOperationReceiptErrorType;
+          if (error.name === "TransactionReceiptNotFoundError" || error.name === "UserOperationReceiptNotFoundError") {
             return;
           }
           throw error;

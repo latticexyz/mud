@@ -23,7 +23,7 @@ export async function getSessionClient({
   }
 
   const bundlerClient = createBundlerClient({
-    transport: getBundlerTransport(client.chain),
+    transport: getBundlerTransport(client),
     client,
     account: sessionAccount,
   });

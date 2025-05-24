@@ -1,4 +1,4 @@
-import { Address, Block, Hex, Log, TransactionReceipt } from "viem";
+import { Address, Block, Hex, Log, OneOf, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
@@ -118,7 +118,9 @@ export type SyncResult = {
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
-  waitForTransaction: (tx: Hex) => Promise<WaitForTransactionResult>;
+  waitForTransaction: (
+    tx: Hex | OneOf<{ userOperationHash: Hex } | { transactionHash: Hex }>,
+  ) => Promise<WaitForTransactionResult>;
 };
 
 export type SyncAdapter = (opts: SyncOptions) => Promise<SyncResult>;
