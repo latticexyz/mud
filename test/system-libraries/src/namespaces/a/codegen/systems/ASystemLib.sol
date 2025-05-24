@@ -81,6 +81,10 @@ library ASystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setValuesStaticArray(values);
   }
 
+  function set2dArray(ASystemType self, uint256[][] memory array2d) internal returns (uint256[][] memory) {
+    return CallWrapper(self.toResourceId(), address(0)).set2dArray(array2d);
+  }
+
   function setValue(CallWrapper memory self, ASystemThing memory value) internal {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
@@ -125,7 +129,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_setPositions_PositionArray.setPositions, (positions));
+    bytes memory systemCall = abi.encodeCall(_setPositions_Position0x5b5d.setPositions, (positions));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -206,6 +210,18 @@ library ASystemLib {
       : _world().callFrom(self.from, self.systemId, systemCall);
   }
 
+  function set2dArray(CallWrapper memory self, uint256[][] memory array2d) internal returns (uint256[][] memory) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_set2dArray_uint2560x5b5d5b5d.set2dArray, (array2d));
+
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+    return abi.decode(result, (uint256[][]));
+  }
+
   function setValue(RootCallWrapper memory self, ASystemThing memory value) internal {
     bytes memory systemCall = abi.encodeCall(_setValue_ASystemThing.setValue, (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -227,7 +243,7 @@ library ASystemLib {
   }
 
   function setPositions(RootCallWrapper memory self, Position[] memory positions) internal {
-    bytes memory systemCall = abi.encodeCall(_setPositions_PositionArray.setPositions, (positions));
+    bytes memory systemCall = abi.encodeCall(_setPositions_Position0x5b5d.setPositions, (positions));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
@@ -268,6 +284,13 @@ library ASystemLib {
       (values)
     );
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function set2dArray(RootCallWrapper memory self, uint256[][] memory array2d) internal returns (uint256[][] memory) {
+    bytes memory systemCall = abi.encodeCall(_set2dArray_uint2560x5b5d5b5d.set2dArray, (array2d));
+
+    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+    return abi.decode(result, (uint256[][]));
   }
 
   function callFrom(ASystemType self, address from) internal pure returns (CallWrapper memory) {
@@ -324,7 +347,7 @@ interface _setPosition_uint256_uint256_uint256 {
   function setPosition(uint256 x, uint256 y, uint256 z) external;
 }
 
-interface _setPositions_PositionArray {
+interface _setPositions_Position0x5b5d {
   function setPositions(Position[] memory positions) external;
 }
 
@@ -350,6 +373,10 @@ interface _setValuesStaticArray_uint2560x5b325d {
 
 interface _setValuesStaticArray_uint2560x5b54485245455d {
   function setValuesStaticArray(uint256[THREE] memory values) external;
+}
+
+interface _set2dArray_uint2560x5b5d5b5d {
+  function set2dArray(uint256[][] memory array2d) external;
 }
 
 using ASystemLib for ASystemType global;
