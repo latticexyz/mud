@@ -208,7 +208,11 @@ export function DecodeForm() {
               <FormItem className="flex-1">
                 <div className="flex w-full items-center justify-between">
                   <FormLabel>Encoded data</FormLabel>
-                  <CopyButton value={encoded} disabled={!form.watch("encodedData")} className="ml-4 h-8 w-8" />
+                  <CopyButton
+                    value={window.location.href}
+                    disabled={!form.watch("encodedData")}
+                    className="ml-4 h-8 w-8"
+                  />
                 </div>
 
                 <FormControl>
