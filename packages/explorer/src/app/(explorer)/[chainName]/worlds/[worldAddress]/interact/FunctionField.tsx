@@ -3,12 +3,13 @@
 import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
-import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify } from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionSignature } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -82,70 +83,91 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
   const inputLabels = functionAbi.inputs.map(getInputLabel);
 
+  const [functionArgs, setFunctionArgs] = useQueryState(
+    `args_${toFunctionSignature(functionAbi)}`,
+    parseAsString.withDefault(""),
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: [],
+      inputs: functionArgs ? JSON.parse(functionArgs) : [],
+      value: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!account.isConnected) {
-      return openConnectModal?.();
-    }
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      if (!account.isConnected) {
+        return openConnectModal?.();
+      }
 
-    setIsLoading(true);
-    let toastId;
-    try {
-      if (operationType === FunctionType.READ) {
-        const result = await readContract(wagmiConfig, {
-          abi: worldAbi,
-          address: worldAddress as Address,
-          functionName: functionAbi.name,
-          args: values.inputs,
-          chainId,
-        });
+      setIsLoading(true);
+      let toastId;
+      try {
+        if (operationType === FunctionType.READ) {
+          const result = await readContract(wagmiConfig, {
+            abi: worldAbi,
+            address: worldAddress as Address,
+            functionName: functionAbi.name,
+            args: values.inputs,
+            chainId,
+          });
 
-        setResult(stringify(result, null, 2));
-      } else {
-        toastId = toast.loading("Transaction submitted");
-        const txHash = await writeContract(wagmiConfig, {
-          abi: worldAbi,
-          address: worldAddress as Address,
-          functionName: functionAbi.name,
-          args: values.inputs.map((value, index) => {
-            const type = functionAbi.inputs[index]?.type;
-            if (type === "tuple") return JSON.parse(value);
-            if (type === "bool") return value === "true";
-            return value;
-          }),
-          ...(values.value && { value: BigInt(values.value) }),
-          chainId,
-        });
-        setTxHash(txHash);
+          setResult(stringify(result, null, 2));
+        } else {
+          toastId = toast.loading("Transaction submitted");
+          const txHash = await writeContract(wagmiConfig, {
+            abi: worldAbi,
+            address: worldAddress as Address,
+            functionName: functionAbi.name,
+            args: values.inputs.map((value, index) => {
+              const type = functionAbi.inputs[index]?.type;
+              if (type === "tuple") return JSON.parse(value);
+              if (type === "bool") return value === "true";
+              return value;
+            }),
+            ...(values.value && { value: BigInt(values.value) }),
+            chainId,
+          });
+          setTxHash(txHash);
 
-        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-        const events = receipt?.logs.map((log) => decodeEventLog({ ...log, abi: worldAbi }));
-        setEvents(events);
+          const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+          const events = receipt?.logs.map((log) => decodeEventLog({ ...log, abi: worldAbi }));
+          setEvents(events);
 
-        toast.success(`Transaction successful with hash: ${txHash}`, {
+          toast.success(`Transaction successful with hash: ${txHash}`, {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error((error as Error).message || "Something went wrong. Please try again.", {
           id: toastId,
         });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error((error as Error).message || "Something went wrong. Please try again.", {
-        id: toastId,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    },
+    [account.isConnected, chainId, functionAbi, openConnectModal, operationType, wagmiConfig, worldAbi, worldAddress],
+  );
+
+  // TODO: double-check
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      if (value.inputs?.length) {
+        setFunctionArgs(JSON.stringify(value.inputs));
+      } else {
+        setFunctionArgs(null);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, setFunctionArgs]);
 
   return (
     <div className="pb-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionSignature(functionAbi)} className="space-y-4">
           <h3 className="font-semibold">
             <span className="text-orange-500">{functionAbi.name}</span>
             <span className="opacity-50"> ({inputLabels.join(", ")})</span>
@@ -167,7 +189,13 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <FormItem>
                   <FormLabel>{input.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={getInputPlaceholder(input)} {...field} />
+                    <Input
+                      placeholder={getInputPlaceholder(input)}
+                      value={field.value}
+                      onChange={(evt) => {
+                        field.onChange(evt.target.value);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

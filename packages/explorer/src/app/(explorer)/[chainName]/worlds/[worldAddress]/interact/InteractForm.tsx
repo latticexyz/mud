@@ -2,8 +2,8 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { AbiFunction, AbiItem, stringify } from "viem";
-import { useDeferredValue, useMemo } from "react";
+import { AbiFunction, AbiItem, toFunctionSignature } from "viem";
+import { useDeferredValue, useEffect, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -28,6 +28,27 @@ export function InteractForm() {
         isFunction(item) && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
     );
   }, [data?.abi, deferredFilterValue]);
+
+  // Find function with pre-filled args
+  const functionWithArgs = useMemo(() => {
+    if (!data?.abi) return null;
+    return data.abi.find((item): item is AbiFunction => {
+      if (!isFunction(item)) return false;
+      const url = new URL(window.location.href);
+      return url.searchParams.has(`args_${toFunctionSignature(item)}`);
+    });
+  }, [data?.abi]);
+
+  // Scroll to function with pre-filled args
+  useEffect(() => {
+    if (functionWithArgs) {
+      const functionKey = toFunctionSignature(functionWithArgs);
+      const element = document.getElementById(functionKey);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [functionWithArgs]);
 
   return (
     <>
@@ -56,13 +77,15 @@ export function InteractForm() {
               })}
 
             {filteredFunctions?.map((abi, index) => {
+              const functionKey = toFunctionSignature(abi);
+              const hasArgs = new URL(window.location.href).searchParams.has(`args_${functionKey}`);
               return (
                 <li key={index}>
                   <a
-                    href={`#${abi.name}`}
+                    href={`#${functionKey}`}
                     className={cn(
                       "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-                      abi.name === hash ? "text-orange-500" : null,
+                      abi.name === hash || hasArgs ? "text-orange-500" : null,
                     )}
                   >
                     <span className="opacity-50">
@@ -96,8 +119,8 @@ export function InteractForm() {
           )}
 
           {data?.abi &&
-            filteredFunctions.map((abi) => (
-              <FunctionField key={stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
+            filteredFunctions.map((abi, index) => (
+              <FunctionField key={`${toFunctionSignature(abi)}_${index}`} worldAbi={data.abi} functionAbi={abi} />
             ))}
         </div>
       </div>
