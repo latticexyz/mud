@@ -1,11 +1,11 @@
 "use client";
 
-import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
+import { Coins, ExternalLinkIcon, Eye, Link as LinkIcon, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
-import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionSignature } from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionHash } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
@@ -84,7 +84,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const inputLabels = functionAbi.inputs.map(getInputLabel);
 
   const [functionArgs, setFunctionArgs] = useQueryState(
-    `args_${toFunctionSignature(functionAbi)}`,
+    `args_${toFunctionHash(functionAbi)}`,
     parseAsString.withDefault(""),
   );
 
@@ -152,6 +152,18 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     [account.isConnected, chainId, functionAbi, openConnectModal, operationType, wagmiConfig, worldAbi, worldAddress],
   );
 
+  const handleCopyUrl = useCallback(() => {
+    const values = form.getValues();
+    if (!values.inputs?.length) return;
+
+    const url = new URL(window.location.href);
+    url.search = "";
+    url.searchParams.set(`args_${toFunctionHash(functionAbi)}`, JSON.stringify(values.inputs));
+
+    navigator.clipboard.writeText(url.toString());
+    toast.success("URL copied to clipboard");
+  }, [form, functionAbi]);
+
   // TODO: double-check
   useEffect(() => {
     const subscription = form.watch((value) => {
@@ -167,18 +179,30 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   return (
     <div className="pb-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionSignature(functionAbi)} className="space-y-4">
-          <h3 className="font-semibold">
-            <span className="text-orange-500">{functionAbi.name}</span>
-            <span className="opacity-50"> ({inputLabels.join(", ")})</span>
-            <span className="ml-2 opacity-50">
-              {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-              {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
-                <Eye className="mr-2 inline-block h-4 w-4" />
-              )}
-              {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
-            </span>
-          </h3>
+        <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionHash(functionAbi)} className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold">
+              <span className="text-orange-500">{functionAbi.name}</span>
+              <span className="opacity-50"> ({inputLabels.join(", ")})</span>
+              <span className="ml-2 opacity-50">
+                {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
+                  <Eye className="mr-2 inline-block h-4 w-4" />
+                )}
+                {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+              </span>
+            </h3>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={handleCopyUrl}
+              disabled={!form.getValues().inputs?.length}
+            >
+              <LinkIcon className="mr-2 h-4 w-4" />
+              Copy URL
+            </Button>
+          </div>
 
           {functionAbi.inputs.map((input, index) => (
             <FormField

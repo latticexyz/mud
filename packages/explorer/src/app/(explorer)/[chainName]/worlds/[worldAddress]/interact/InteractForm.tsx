@@ -2,7 +2,7 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { AbiFunction, AbiItem, toFunctionSignature } from "viem";
+import { AbiFunction, AbiItem, toFunctionHash } from "viem";
 import { useDeferredValue, useEffect, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
@@ -35,14 +35,14 @@ export function InteractForm() {
     return data.abi.find((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
       const url = new URL(window.location.href);
-      return url.searchParams.has(`args_${toFunctionSignature(item)}`);
+      return url.searchParams.has(`args_${toFunctionHash(item)}`);
     });
   }, [data?.abi]);
 
   // Scroll to function with pre-filled args
   useEffect(() => {
     if (functionWithArgs) {
-      const functionKey = toFunctionSignature(functionWithArgs);
+      const functionKey = toFunctionHash(functionWithArgs);
       const element = document.getElementById(functionKey);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
@@ -77,7 +77,7 @@ export function InteractForm() {
               })}
 
             {filteredFunctions?.map((abi, index) => {
-              const functionKey = toFunctionSignature(abi);
+              const functionKey = toFunctionHash(abi);
               const hasArgs = new URL(window.location.href).searchParams.has(`args_${functionKey}`);
               return (
                 <li key={index}>
@@ -120,7 +120,7 @@ export function InteractForm() {
 
           {data?.abi &&
             filteredFunctions.map((abi, index) => (
-              <FunctionField key={`${toFunctionSignature(abi)}_${index}`} worldAbi={data.abi} functionAbi={abi} />
+              <FunctionField key={`${toFunctionHash(abi)}_${index}`} worldAbi={data.abi} functionAbi={abi} />
             ))}
         </div>
       </div>
