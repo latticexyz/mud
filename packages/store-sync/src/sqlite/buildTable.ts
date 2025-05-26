@@ -1,7 +1,7 @@
 import { SQLiteColumnBuilderBase, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
 import { buildColumn } from "./buildColumn";
 import { getTableName } from "./getTableName";
-import { snakeCase } from "change-case";
+import { snakeCase } from "../snakeCase";
 import { PartialTable } from "./common";
 
 export const metaColumns = {
