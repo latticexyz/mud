@@ -71,16 +71,15 @@ export function InteractForm() {
                 );
               })}
 
-            {filteredFunctions?.map((abi, index) => {
+            {filteredFunctions?.map((abi) => {
               const functionKey = toFunctionHash(abi);
-              const hasArgs = new URL(window.location.href).searchParams.has(`interact_${functionKey}`);
               return (
-                <li key={`nav_${functionKey}_${index}`}>
+                <li key={functionKey}>
                   <a
                     href={`#${functionKey}`}
                     className={cn(
                       "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-                      abi.name === hash || hasArgs ? "text-orange-500" : null,
+                      abi.name === hash ? "text-orange-500" : null,
                     )}
                   >
                     <span className="opacity-50">
