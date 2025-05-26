@@ -1,6 +1,7 @@
 "use client";
 
 import { Coins, Eye, Send } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, toFunctionHash } from "viem";
 import { useDeferredValue, useEffect, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
