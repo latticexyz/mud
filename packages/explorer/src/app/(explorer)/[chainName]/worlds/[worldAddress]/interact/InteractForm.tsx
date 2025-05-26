@@ -29,18 +29,15 @@ export function InteractForm() {
     );
   }, [data?.abi, deferredFilterValue]);
 
-  // Find function with pre-filled args
-  const functionWithArgs = useMemo(() => {
-    if (!data?.abi) return null;
-    return data.abi.find((item): item is AbiFunction => {
+  useEffect(() => {
+    if (!data?.abi) return;
+
+    const functionWithArgs = data.abi.find((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
       const url = new URL(window.location.href);
-      return url.searchParams.has(`args_${toFunctionHash(item)}`);
+      return url.searchParams.has(`interact_${toFunctionHash(item)}`);
     });
-  }, [data?.abi]);
 
-  // Scroll to function with pre-filled args
-  useEffect(() => {
     if (functionWithArgs) {
       const functionKey = toFunctionHash(functionWithArgs);
       const element = document.getElementById(functionKey);
@@ -48,7 +45,7 @@ export function InteractForm() {
         element.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }, [functionWithArgs]);
+  }, [data?.abi]);
 
   return (
     <>
@@ -78,7 +75,7 @@ export function InteractForm() {
 
             {filteredFunctions?.map((abi, index) => {
               const functionKey = toFunctionHash(abi);
-              const hasArgs = new URL(window.location.href).searchParams.has(`args_${functionKey}`);
+              const hasArgs = new URL(window.location.href).searchParams.has(`interact_${functionKey}`);
               return (
                 <li key={index}>
                   <a

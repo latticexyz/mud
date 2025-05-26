@@ -1,15 +1,15 @@
 "use client";
 
-import { Coins, ExternalLinkIcon, Eye, Link as LinkIcon, LoaderIcon, Send } from "lucide-react";
+import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsJson, useQueryState } from "nuqs";
 import { toast } from "sonner";
 import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionHash } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -76,6 +76,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const account = useAccount();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const [functionArgs] = useQueryState(`interact_${toFunctionHash(functionAbi)}`, parseAsJson<string[]>());
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -83,18 +84,24 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
   const inputLabels = functionAbi.inputs.map(getInputLabel);
 
-  const [functionArgs, setFunctionArgs] = useQueryState(
-    `args_${toFunctionHash(functionAbi)}`,
-    parseAsString.withDefault(""),
-  );
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: functionArgs ? JSON.parse(functionArgs) : [],
+      inputs: functionArgs || [],
       value: "",
     },
   });
+
+  const getShareableUrl = useCallback(() => {
+    const values = form.watch();
+    if (!values.inputs?.length) return "";
+
+    const url = new URL(window.location.href);
+    url.search = "";
+
+    url.searchParams.set(`interact_${toFunctionHash(functionAbi)}`, JSON.stringify(values.inputs));
+    return url.toString();
+  }, [form, functionAbi]);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
@@ -152,30 +159,6 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     [account.isConnected, chainId, functionAbi, openConnectModal, operationType, wagmiConfig, worldAbi, worldAddress],
   );
 
-  const handleCopyUrl = useCallback(() => {
-    const values = form.getValues();
-    if (!values.inputs?.length) return;
-
-    const url = new URL(window.location.href);
-    url.search = "";
-    url.searchParams.set(`args_${toFunctionHash(functionAbi)}`, JSON.stringify(values.inputs));
-
-    navigator.clipboard.writeText(url.toString());
-    toast.success("URL copied to clipboard");
-  }, [form, functionAbi]);
-
-  // TODO: double-check
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      if (value.inputs?.length) {
-        setFunctionArgs(JSON.stringify(value.inputs));
-      } else {
-        setFunctionArgs(null);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form, setFunctionArgs]);
-
   return (
     <div className="pb-6">
       <Form {...form}>
@@ -192,16 +175,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
               </span>
             </h3>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={handleCopyUrl}
-              disabled={!form.getValues().inputs?.length}
-            >
-              <LinkIcon className="mr-2 h-4 w-4" />
-              Copy URL
-            </Button>
+            <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
           </div>
 
           {functionAbi.inputs.map((input, index) => (
