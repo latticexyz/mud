@@ -2,7 +2,7 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { AbiFunction, AbiItem, toFunctionHash } from "viem";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -18,7 +18,7 @@ function isFunction(abi: AbiItem): abi is AbiFunction {
 export function InteractForm() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
-  const [filterValue, setFilterValue] = useState("");
+  const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
   const filteredFunctions = useMemo(() => {
     if (!data?.abi) return [];
