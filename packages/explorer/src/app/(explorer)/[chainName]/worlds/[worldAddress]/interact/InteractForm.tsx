@@ -39,8 +39,8 @@ export function InteractForm() {
     });
 
     if (functionAbiItem) {
-      const functionKey = toFunctionHash(functionAbiItem);
-      const element = document.getElementById(functionKey);
+      const functionHash = toFunctionHash(functionAbiItem);
+      const element = document.getElementById(functionHash);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
@@ -72,14 +72,14 @@ export function InteractForm() {
               })}
 
             {filteredFunctions?.map((abi) => {
-              const functionKey = toFunctionHash(abi);
+              const functionHash = toFunctionHash(abi);
               return (
-                <li key={functionKey}>
+                <li key={functionHash}>
                   <a
-                    href={`#${functionKey}`}
+                    href={`#${functionHash}`}
                     className={cn(
                       "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-                      abi.name === hash ? "text-orange-500" : null,
+                      functionHash === hash ? "text-orange-500" : null,
                     )}
                   >
                     <span className="opacity-50">
