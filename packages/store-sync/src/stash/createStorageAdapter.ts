@@ -1,4 +1,4 @@
-import { Stash, PendingStashUpdate, TableRecord, applyUpdates, getRecord } from "@latticexyz/stash/internal";
+import { Stash, PendingStashUpdate, TableRecord, applyUpdates, getRecord, Key } from "@latticexyz/stash/internal";
 import {
   decodeKey,
   decodeValueArgs,
@@ -31,6 +31,14 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
     const pendingRecords: Record<string, PendingStashUpdate> = {};
     const updates: PendingStashUpdate[] = [];
 
+    function getPendingRecord(id: string, table: Table, key: Key<Table>): TableRecord | undefined {
+      return pendingRecords[id]
+        ? pendingRecords[id].value
+          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+          : undefined
+        : getRecord({ stash, table, key });
+    }
+
     for (const log of logs) {
       const table = tablesById[log.args.tableId];
       if (!table) continue;
@@ -45,12 +53,7 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
         const value = decodeValueArgs(valueSchema, log.args);
         updates.push((pendingRecords[id] = { table, key, value }));
       } else if (log.eventName === "Store_SpliceStaticData") {
-        const previousValue = pendingRecords[id]
-          ? pendingRecords[id].value
-            ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
-            : undefined
-          : getRecord({ stash, table, key });
-
+        const previousValue = getPendingRecord(id, table, key);
         const {
           staticData: previousStaticData,
           encodedLengths,
@@ -66,10 +69,7 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
 
         updates.push((pendingRecords[id] = { table, key, value }));
       } else if (log.eventName === "Store_SpliceDynamicData") {
-        const previousValue = pendingRecords[id]
-          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
-          : getRecord({ stash, table, key });
-
+        const previousValue = getPendingRecord(id, table, key);
         const { staticData, dynamicData: previousDynamicData } = previousValue
           ? encodeValueArgs(valueSchema, previousValue)
           : emptyValueArgs;
