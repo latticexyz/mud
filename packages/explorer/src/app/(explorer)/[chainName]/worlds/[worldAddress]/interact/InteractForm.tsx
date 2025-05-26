@@ -8,6 +8,7 @@ import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { cn } from "../../../../../../utils";
+import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
 import { useHashState } from "../../../../hooks/useHashState";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { FunctionField } from "./FunctionField";
@@ -75,8 +76,8 @@ export function InteractForm() {
               const functionHash = toFunctionHash(abi);
               return (
                 <li key={functionHash}>
-                  <a
-                    href={`#${functionHash}`}
+                  <ScrollIntoViewLink
+                    elementId={functionHash}
                     className={cn(
                       "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
                       functionHash === hash ? "text-orange-500" : null,
@@ -92,7 +93,7 @@ export function InteractForm() {
 
                     <span>{(abi as AbiFunction).name}</span>
                     {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
-                  </a>
+                  </ScrollIntoViewLink>
                 </li>
               );
             })}

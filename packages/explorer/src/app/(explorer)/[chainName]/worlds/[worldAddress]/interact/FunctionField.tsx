@@ -18,6 +18,7 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
+import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
 
@@ -166,16 +167,8 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionHash(functionAbi)} className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const url = new URL(window.location.href);
-                  url.searchParams.set("interact_function", toFunctionHash(functionAbi));
-                  url.searchParams.set("interact_args", JSON.stringify(form.getValues().inputs));
-                  window.history.pushState({}, "", url.toString());
-                  document.getElementById(toFunctionHash(functionAbi))?.scrollIntoView({ behavior: "smooth" });
-                }}
+              <ScrollIntoViewLink
+                elementId={toFunctionHash(functionAbi)}
                 className="group inline-flex items-center hover:no-underline"
               >
                 <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>
@@ -187,7 +180,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                   )}
                   {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
                 </span>
-              </a>
+              </ScrollIntoViewLink>
             </h3>
             <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
           </div>
