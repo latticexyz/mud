@@ -3,7 +3,7 @@
 import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { parseAsJson, useQueryState } from "nuqs";
+import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
 import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionHash } from "viem";
 import { useAccount, useConfig } from "wagmi";
@@ -76,7 +76,8 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const account = useAccount();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const [functionArgs] = useQueryState(`interact_${toFunctionHash(functionAbi)}`, parseAsJson<string[]>());
+  const [functionName] = useQueryState("interact_function", parseAsString.withDefault(""));
+  const [functionArgs] = useQueryState("interact_args", parseAsJson<string[]>().withDefault([]));
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -87,7 +88,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: functionArgs || [],
+      inputs: functionName === toFunctionHash(functionAbi) ? functionArgs : [],
       value: "",
     },
   });
@@ -97,9 +98,9 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     if (!values.inputs?.length) return "";
 
     const url = new URL(window.location.href);
-    url.search = "";
+    url.searchParams.set("interact_function", toFunctionHash(functionAbi));
+    url.searchParams.set("interact_args", JSON.stringify(values.inputs));
 
-    url.searchParams.set(`interact_${toFunctionHash(functionAbi)}`, JSON.stringify(values.inputs));
     return url.toString();
   }, [form, functionAbi]);
 

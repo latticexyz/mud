@@ -1,9 +1,8 @@
 "use client";
 
 import { Coins, Eye, Send } from "lucide-react";
-import { useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, toFunctionHash } from "viem";
-import { useDeferredValue, useEffect, useMemo } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -19,7 +18,7 @@ function isFunction(abi: AbiItem): abi is AbiFunction {
 export function InteractForm() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
-  const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
+  const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
   const filteredFunctions = useMemo(() => {
     if (!data?.abi) return [];
@@ -32,14 +31,14 @@ export function InteractForm() {
   useEffect(() => {
     if (!data?.abi) return;
 
-    const functionWithArgs = data.abi.find((item): item is AbiFunction => {
+    const functionAbiItem = data.abi.find((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
       const url = new URL(window.location.href);
-      return url.searchParams.has(`interact_${toFunctionHash(item)}`);
+      return url.searchParams.get("interact_function") === toFunctionHash(item);
     });
 
-    if (functionWithArgs) {
-      const functionKey = toFunctionHash(functionWithArgs);
+    if (functionAbiItem) {
+      const functionKey = toFunctionHash(functionAbiItem);
       const element = document.getElementById(functionKey);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
@@ -57,9 +56,7 @@ export function InteractForm() {
               type="text"
               placeholder="Filter functions..."
               value={deferredFilterValue}
-              onChange={(evt) => {
-                setFilterValue(evt.target.value);
-              }}
+              onChange={(evt) => setFilterValue(evt.target.value)}
             />
           </div>
 
@@ -77,7 +74,7 @@ export function InteractForm() {
               const functionKey = toFunctionHash(abi);
               const hasArgs = new URL(window.location.href).searchParams.has(`interact_${functionKey}`);
               return (
-                <li key={index}>
+                <li key={`nav_${functionKey}_${index}`}>
                   <a
                     href={`#${functionKey}`}
                     className={cn(
@@ -116,8 +113,8 @@ export function InteractForm() {
           )}
 
           {data?.abi &&
-            filteredFunctions.map((abi, index) => (
-              <FunctionField key={`${toFunctionHash(abi)}_${index}`} worldAbi={data.abi} functionAbi={abi} />
+            filteredFunctions.map((abi) => (
+              <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
             ))}
         </div>
       </div>
