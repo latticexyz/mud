@@ -231,6 +231,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           <CopyButton value={result} className="absolute right-1.5 top-1.5" />
         </pre>
       )}
+
       {events && (
         <div className="relative mt-4 flex-grow break-all rounded border border-white/20 p-2 pb-3">
           <ul>
@@ -255,6 +256,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           <CopyButton value={stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
         </div>
       )}
+
       {txUrl && (
         <div className="mt-3">
           <Link

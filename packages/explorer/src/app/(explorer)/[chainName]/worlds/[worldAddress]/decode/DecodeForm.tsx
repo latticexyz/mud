@@ -91,24 +91,17 @@ function decodeAbiItem(abiItem: AbiFunction | AbiError, data: Hex): DecodedFunct
 export function DecodeForm() {
   const { data: worldData, isLoading: isWorldAbiLoading } = useWorldAbiQuery();
   const { data: systemData, isLoading: isSystemAbisLoading } = useSystemAbisQuery();
-  const [decoded, setDecoded] = useState<AbiFunction | AbiError | ResourceItem | SelectorDatabase>();
   const [encoded, setEncoded] = useQueryState("encoded", parseAsString.withDefault(""));
+  const [decoded, setDecoded] = useState<AbiFunction | AbiError | ResourceItem | SelectorDatabase>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      encodedData: encoded || "",
-    },
   });
 
   const onSubmit = useCallback(
     async ({ encodedData }: z.infer<typeof formSchema>) => {
-      if (!encodedData) {
-        setEncoded(null);
-        setDecoded(undefined);
-        return;
-      }
+      setEncoded(encodedData || null);
+      if (!encodedData) return;
 
-      setEncoded(encodedData);
       const selector = encodedData.substring(0, 10);
       const worldAbi = worldData?.abi || [];
       const systemsAbis = systemData ? Object.values(systemData) : [];
@@ -159,7 +152,7 @@ export function DecodeForm() {
 
       setDecoded(undefined);
     },
-    [setEncoded, worldData, systemData],
+    [setEncoded, worldData?.abi, systemData],
   );
 
   const results = useMemo<Result[]>(() => {
@@ -193,7 +186,6 @@ export function DecodeForm() {
     return [];
   }, [decoded, encoded]);
 
-  // Update form when URL changes
   useEffect(() => {
     if (encoded) {
       form.setValue("encodedData", encoded);
@@ -208,20 +200,26 @@ export function DecodeForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="encodedData"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Encoded data</FormLabel>
-              <FormControl>
-                <Input placeholder="0xf0f0f0f0" type="text" {...field} />
-              </FormControl>
-              <FormDescription>Decode function, error or resource data</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex items-center justify-between">
+          <FormField
+            control={form.control}
+            name="encodedData"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel>Encoded data</FormLabel>
+                  <CopyButton value={encoded} disabled={!form.watch("encodedData")} className="ml-4 h-8 w-8" />
+                </div>
+
+                <FormControl>
+                  <Input placeholder="0xf0f0f0f0" type="text" {...field} />
+                </FormControl>
+                <FormDescription>Decode function, error or resource data</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {form.formState.isSubmitted && (
           <>
