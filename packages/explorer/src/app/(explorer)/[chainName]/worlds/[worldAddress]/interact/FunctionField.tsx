@@ -166,15 +166,28 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionHash(functionAbi)} className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
-              <span className="text-orange-500">{functionAbi.name}</span>
-              <span className="opacity-50"> ({inputLabels.join(", ")})</span>
-              <span className="ml-2 opacity-50">
-                {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-                {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
-                  <Eye className="mr-2 inline-block h-4 w-4" />
-                )}
-                {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
-              </span>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const url = new URL(window.location.href);
+                  url.searchParams.set("interact_function", toFunctionHash(functionAbi));
+                  url.searchParams.set("interact_args", JSON.stringify(form.getValues().inputs));
+                  window.history.pushState({}, "", url.toString());
+                  document.getElementById(toFunctionHash(functionAbi))?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="group inline-flex items-center hover:no-underline"
+              >
+                <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>
+                <span className="opacity-50"> ({inputLabels.join(", ")})</span>
+                <span className="ml-2 opacity-50">
+                  {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                  {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
+                    <Eye className="mr-2 inline-block h-4 w-4" />
+                  )}
+                  {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+                </span>
+              </a>
             </h3>
             <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
           </div>
