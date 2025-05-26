@@ -1,5 +1,6 @@
 "use client";
 
+import { parseAsString, useQueryState } from "nuqs";
 import {
   AbiFunction,
   AbiItem,
@@ -11,7 +12,7 @@ import {
 } from "viem";
 import { formatAbiItem } from "viem/utils";
 import * as z from "zod";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "react18-json-view/src/dark.css";
 import "react18-json-view/src/style.css";
 import { useForm } from "react-hook-form";
@@ -91,65 +92,75 @@ export function DecodeForm() {
   const { data: worldData, isLoading: isWorldAbiLoading } = useWorldAbiQuery();
   const { data: systemData, isLoading: isSystemAbisLoading } = useSystemAbisQuery();
   const [decoded, setDecoded] = useState<AbiFunction | AbiError | ResourceItem | SelectorDatabase>();
-  const [encoded, setEncoded] = useState<string | undefined>();
+  const [encoded, setEncoded] = useQueryState("encoded", parseAsString.withDefault(""));
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      encodedData: encoded || "",
+    },
   });
 
-  const onSubmit = async ({ encodedData }: z.infer<typeof formSchema>) => {
-    setEncoded(encodedData);
-    if (!encodedData) return;
-
-    const selector = encodedData.substring(0, 10);
-    const worldAbi = worldData?.abi || [];
-    const systemsAbis = systemData ? Object.values(systemData) : [];
-    const abis = [worldAbi, ...systemsAbis].flat();
-
-    // Try to find matching ABI item
-    const abiItem = abis.find((item): item is AbiFunction | AbiError => {
-      if (isAbiFunction(item)) {
-        return toFunctionSelector(item) === selector;
-      }
-      if (isAbiError(item)) {
-        return getErrorSelector(item) === selector;
-      }
-      return false;
-    });
-
-    if (abiItem) {
-      setDecoded(abiItem);
-      return;
-    }
-
-    // Try to decode as resource
-    try {
-      const resource = hexToResource(encodedData as Hex);
-      if (resource) {
-        setDecoded({ type: "resource", id: encodedData, resource });
+  const onSubmit = useCallback(
+    async ({ encodedData }: z.infer<typeof formSchema>) => {
+      if (!encodedData) {
+        setEncoded(null);
+        setDecoded(undefined);
         return;
       }
-    } catch {
-      // Error decoding resource
-    }
 
-    // Try to find in 4-byte database
-    if (selector.length !== 10) return;
-    try {
-      const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
-      const data = await response.json();
-      if (data.results.length > 0) {
-        setDecoded({
-          type: "signature",
-          selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
-        });
+      setEncoded(encodedData);
+      const selector = encodedData.substring(0, 10);
+      const worldAbi = worldData?.abi || [];
+      const systemsAbis = systemData ? Object.values(systemData) : [];
+      const abis = [worldAbi, ...systemsAbis].flat();
+
+      // Try to find matching ABI item
+      const abiItem = abis.find((item): item is AbiFunction | AbiError => {
+        if (isAbiFunction(item)) {
+          return toFunctionSelector(item) === selector;
+        }
+        if (isAbiError(item)) {
+          return getErrorSelector(item) === selector;
+        }
+        return false;
+      });
+
+      if (abiItem) {
+        setDecoded(abiItem);
         return;
       }
-    } catch {
-      // Error fetching 4byte data
-    }
 
-    setDecoded(undefined);
-  };
+      // Try to decode as resource
+      try {
+        const resource = hexToResource(encodedData as Hex);
+        if (resource) {
+          setDecoded({ type: "resource", id: encodedData, resource });
+          return;
+        }
+      } catch {
+        // Error decoding resource
+      }
+
+      // Try to find in 4-byte database
+      if (selector.length !== 10) return;
+      try {
+        const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
+        const data = await response.json();
+        if (data.results.length > 0) {
+          setDecoded({
+            type: "signature",
+            selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
+          });
+          return;
+        }
+      } catch {
+        // Error fetching 4byte data
+      }
+
+      setDecoded(undefined);
+    },
+    [setEncoded, worldData, systemData],
+  );
 
   const results = useMemo<Result[]>(() => {
     if (!decoded || !encoded) return [];
@@ -181,6 +192,14 @@ export function DecodeForm() {
     }
     return [];
   }, [decoded, encoded]);
+
+  // Update form when URL changes
+  useEffect(() => {
+    if (encoded) {
+      form.setValue("encodedData", encoded);
+      form.handleSubmit(onSubmit)();
+    }
+  }, [encoded, form, onSubmit]);
 
   if (isWorldAbiLoading || isSystemAbisLoading) {
     return <Skeleton className="h-[152px] w-full" />;
