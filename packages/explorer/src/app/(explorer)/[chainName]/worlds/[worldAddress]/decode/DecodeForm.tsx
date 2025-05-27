@@ -1,5 +1,6 @@
 "use client";
 
+import { parseAsString, useQueryState } from "nuqs";
 import {
   AbiFunction,
   AbiItem,
@@ -11,7 +12,7 @@ import {
 } from "viem";
 import { formatAbiItem } from "viem/utils";
 import * as z from "zod";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "react18-json-view/src/dark.css";
 import "react18-json-view/src/style.css";
 import { useForm } from "react-hook-form";
@@ -90,66 +91,69 @@ function decodeAbiItem(abiItem: AbiFunction | AbiError, data: Hex): DecodedFunct
 export function DecodeForm() {
   const { data: worldData, isLoading: isWorldAbiLoading } = useWorldAbiQuery();
   const { data: systemData, isLoading: isSystemAbisLoading } = useSystemAbisQuery();
+  const [encoded, setEncoded] = useQueryState("encoded", parseAsString.withDefault(""));
   const [decoded, setDecoded] = useState<AbiFunction | AbiError | ResourceItem | SelectorDatabase>();
-  const [encoded, setEncoded] = useState<string | undefined>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = async ({ encodedData }: z.infer<typeof formSchema>) => {
-    setEncoded(encodedData);
-    if (!encodedData) return;
+  const onSubmit = useCallback(
+    async ({ encodedData }: z.infer<typeof formSchema>) => {
+      setEncoded(encodedData || null);
+      if (!encodedData) return;
 
-    const selector = encodedData.substring(0, 10);
-    const worldAbi = worldData?.abi || [];
-    const systemsAbis = systemData ? Object.values(systemData) : [];
-    const abis = [worldAbi, ...systemsAbis].flat();
+      const selector = encodedData.substring(0, 10);
+      const worldAbi = worldData?.abi || [];
+      const systemsAbis = systemData ? Object.values(systemData) : [];
+      const abis = [worldAbi, ...systemsAbis].flat();
 
-    // Try to find matching ABI item
-    const abiItem = abis.find((item): item is AbiFunction | AbiError => {
-      if (isAbiFunction(item)) {
-        return toFunctionSelector(item) === selector;
-      }
-      if (isAbiError(item)) {
-        return getErrorSelector(item) === selector;
-      }
-      return false;
-    });
+      // Try to find matching ABI item
+      const abiItem = abis.find((item): item is AbiFunction | AbiError => {
+        if (isAbiFunction(item)) {
+          return toFunctionSelector(item) === selector;
+        }
+        if (isAbiError(item)) {
+          return getErrorSelector(item) === selector;
+        }
+        return false;
+      });
 
-    if (abiItem) {
-      setDecoded(abiItem);
-      return;
-    }
-
-    // Try to decode as resource
-    try {
-      const resource = hexToResource(encodedData as Hex);
-      if (resource) {
-        setDecoded({ type: "resource", id: encodedData, resource });
+      if (abiItem) {
+        setDecoded(abiItem);
         return;
       }
-    } catch {
-      // Error decoding resource
-    }
 
-    // Try to find in 4-byte database
-    if (selector.length !== 10) return;
-    try {
-      const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
-      const data = await response.json();
-      if (data.results.length > 0) {
-        setDecoded({
-          type: "signature",
-          selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
-        });
-        return;
+      // Try to decode as resource
+      try {
+        const resource = hexToResource(encodedData as Hex);
+        if (resource) {
+          setDecoded({ type: "resource", id: encodedData, resource });
+          return;
+        }
+      } catch {
+        // Error decoding resource
       }
-    } catch {
-      // Error fetching 4byte data
-    }
 
-    setDecoded(undefined);
-  };
+      // Try to find in 4-byte database
+      if (selector.length !== 10) return;
+      try {
+        const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
+        const data = await response.json();
+        if (data.results.length > 0) {
+          setDecoded({
+            type: "signature",
+            selectors: data.results.map((result: { text_signature: string }) => result.text_signature),
+          });
+          return;
+        }
+      } catch {
+        // Error fetching 4byte data
+      }
+
+      setDecoded(undefined);
+    },
+    [setEncoded, worldData?.abi, systemData],
+  );
 
   const results = useMemo<Result[]>(() => {
     if (!decoded || !encoded) return [];
@@ -182,6 +186,13 @@ export function DecodeForm() {
     return [];
   }, [decoded, encoded]);
 
+  useEffect(() => {
+    if (encoded) {
+      form.setValue("encodedData", encoded);
+      form.handleSubmit(onSubmit)();
+    }
+  }, [encoded, form, onSubmit]);
+
   if (isWorldAbiLoading || isSystemAbisLoading) {
     return <Skeleton className="h-[152px] w-full" />;
   }
@@ -189,20 +200,30 @@ export function DecodeForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="encodedData"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Encoded data</FormLabel>
-              <FormControl>
-                <Input placeholder="0xf0f0f0f0" type="text" {...field} />
-              </FormControl>
-              <FormDescription>Decode function, error or resource data</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex items-center justify-between">
+          <FormField
+            control={form.control}
+            name="encodedData"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel>Encoded data</FormLabel>
+                  <CopyButton
+                    value={window.location.href}
+                    disabled={!form.watch("encodedData")}
+                    className="ml-4 h-8 w-8"
+                  />
+                </div>
+
+                <FormControl>
+                  <Input placeholder="0xf0f0f0f0" type="text" {...field} />
+                </FormControl>
+                <FormDescription>Decode function, error or resource data</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {form.formState.isSubmitted && (
           <>

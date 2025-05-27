@@ -3,12 +3,13 @@
 import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
-import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify } from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionHash } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -17,6 +18,7 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
+import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
 
@@ -75,6 +77,8 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const account = useAccount();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const [functionName] = useQueryState("interact_function", parseAsString.withDefault(""));
+  const [functionArgs] = useQueryState("interact_args", parseAsJson<string[]>().withDefault([]));
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -85,78 +89,101 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: [],
+      inputs: functionName === toFunctionHash(functionAbi) ? functionArgs : [],
+      value: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!account.isConnected) {
-      return openConnectModal?.();
-    }
+  const getShareableUrl = useCallback(() => {
+    const values = form.watch();
+    if (!values.inputs?.length) return "";
 
-    setIsLoading(true);
-    let toastId;
-    try {
-      if (operationType === FunctionType.READ) {
-        const result = await readContract(wagmiConfig, {
-          abi: worldAbi,
-          address: worldAddress as Address,
-          functionName: functionAbi.name,
-          args: values.inputs,
-          chainId,
-        });
+    const url = new URL(window.location.href);
+    url.searchParams.set("interact_function", toFunctionHash(functionAbi));
+    url.searchParams.set("interact_args", JSON.stringify(values.inputs));
 
-        setResult(stringify(result, null, 2));
-      } else {
-        toastId = toast.loading("Transaction submitted");
-        const txHash = await writeContract(wagmiConfig, {
-          abi: worldAbi,
-          address: worldAddress as Address,
-          functionName: functionAbi.name,
-          args: values.inputs.map((value, index) => {
-            const type = functionAbi.inputs[index]?.type;
-            if (type === "tuple") return JSON.parse(value);
-            if (type === "bool") return value === "true";
-            return value;
-          }),
-          ...(values.value && { value: BigInt(values.value) }),
-          chainId,
-        });
-        setTxHash(txHash);
+    return url.toString();
+  }, [form, functionAbi]);
 
-        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-        const events = receipt?.logs.map((log) => decodeEventLog({ ...log, abi: worldAbi }));
-        setEvents(events);
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      if (!account.isConnected) {
+        return openConnectModal?.();
+      }
 
-        toast.success(`Transaction successful with hash: ${txHash}`, {
+      setIsLoading(true);
+      let toastId;
+      try {
+        if (operationType === FunctionType.READ) {
+          const result = await readContract(wagmiConfig, {
+            abi: worldAbi,
+            address: worldAddress as Address,
+            functionName: functionAbi.name,
+            args: values.inputs,
+            chainId,
+          });
+
+          setResult(stringify(result, null, 2));
+        } else {
+          toastId = toast.loading("Transaction submitted");
+          const txHash = await writeContract(wagmiConfig, {
+            abi: worldAbi,
+            address: worldAddress as Address,
+            functionName: functionAbi.name,
+            args: values.inputs.map((value, index) => {
+              const type = functionAbi.inputs[index]?.type;
+              if (type === "tuple") return JSON.parse(value);
+              if (type === "bool") return value === "true";
+              return value;
+            }),
+            ...(values.value && { value: BigInt(values.value) }),
+            chainId,
+          });
+          setTxHash(txHash);
+
+          const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+          const events = receipt?.logs.map((log) => decodeEventLog({ ...log, abi: worldAbi }));
+          setEvents(events);
+
+          toast.success(`Transaction successful with hash: ${txHash}`, {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error((error as Error).message || "Something went wrong. Please try again.", {
           id: toastId,
         });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error((error as Error).message || "Something went wrong. Please try again.", {
-        id: toastId,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    },
+    [account.isConnected, chainId, functionAbi, openConnectModal, operationType, wagmiConfig, worldAbi, worldAddress],
+  );
 
   return (
     <div className="pb-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4">
-          <h3 className="font-semibold">
-            <span className="text-orange-500">{functionAbi.name}</span>
-            <span className="opacity-50"> ({inputLabels.join(", ")})</span>
-            <span className="ml-2 opacity-50">
-              {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-              {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
-                <Eye className="mr-2 inline-block h-4 w-4" />
-              )}
-              {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
-            </span>
-          </h3>
+        <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionHash(functionAbi)} className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold">
+              <ScrollIntoViewLink
+                elementId={toFunctionHash(functionAbi)}
+                className="group inline-flex items-center hover:no-underline"
+              >
+                <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>
+                <span className="opacity-50"> ({inputLabels.join(", ")})</span>
+                <span className="ml-2 opacity-50">
+                  {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                  {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
+                    <Eye className="mr-2 inline-block h-4 w-4" />
+                  )}
+                  {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+                </span>
+              </ScrollIntoViewLink>
+            </h3>
+            <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
+          </div>
 
           {functionAbi.inputs.map((input, index) => (
             <FormField
@@ -167,7 +194,13 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <FormItem>
                   <FormLabel>{input.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={getInputPlaceholder(input)} {...field} />
+                    <Input
+                      placeholder={getInputPlaceholder(input)}
+                      value={field.value}
+                      onChange={(evt) => {
+                        field.onChange(evt.target.value);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -204,6 +237,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           <CopyButton value={result} className="absolute right-1.5 top-1.5" />
         </pre>
       )}
+
       {events && (
         <div className="relative mt-4 flex-grow break-all rounded border border-white/20 p-2 pb-3">
           <ul>
@@ -228,6 +262,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           <CopyButton value={stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
         </div>
       )}
+
       {txUrl && (
         <div className="mt-3">
           <Link

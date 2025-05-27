@@ -2,12 +2,13 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { AbiFunction, AbiItem, stringify } from "viem";
-import { useDeferredValue, useMemo } from "react";
+import { AbiFunction, AbiItem, toFunctionHash } from "viem";
+import { useDeferredValue, useEffect, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { cn } from "../../../../../../utils";
+import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
 import { useHashState } from "../../../../hooks/useHashState";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { FunctionField } from "./FunctionField";
@@ -29,6 +30,24 @@ export function InteractForm() {
     );
   }, [data?.abi, deferredFilterValue]);
 
+  useEffect(() => {
+    if (!data?.abi) return;
+
+    const functionAbiItem = data.abi.find((item): item is AbiFunction => {
+      if (!isFunction(item)) return false;
+      const url = new URL(window.location.href);
+      return url.searchParams.get("interact_function") === toFunctionHash(item);
+    });
+
+    if (functionAbiItem) {
+      const functionHash = toFunctionHash(functionAbiItem);
+      const element = document.getElementById(functionHash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [data?.abi]);
+
   return (
     <>
       <div className="-mr-1g -ml-1 flex gap-x-4 overflow-y-hidden">
@@ -39,9 +58,7 @@ export function InteractForm() {
               type="text"
               placeholder="Filter functions..."
               value={deferredFilterValue}
-              onChange={(evt) => {
-                setFilterValue(evt.target.value);
-              }}
+              onChange={(evt) => setFilterValue(evt.target.value)}
             />
           </div>
 
@@ -55,14 +72,15 @@ export function InteractForm() {
                 );
               })}
 
-            {filteredFunctions?.map((abi, index) => {
+            {filteredFunctions?.map((abi) => {
+              const functionHash = toFunctionHash(abi);
               return (
-                <li key={index}>
-                  <a
-                    href={`#${abi.name}`}
+                <li key={functionHash}>
+                  <ScrollIntoViewLink
+                    elementId={functionHash}
                     className={cn(
                       "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-                      abi.name === hash ? "text-orange-500" : null,
+                      functionHash === hash ? "text-orange-500" : null,
                     )}
                   >
                     <span className="opacity-50">
@@ -75,7 +93,7 @@ export function InteractForm() {
 
                     <span>{(abi as AbiFunction).name}</span>
                     {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
-                  </a>
+                  </ScrollIntoViewLink>
                 </li>
               );
             })}
@@ -97,7 +115,7 @@ export function InteractForm() {
 
           {data?.abi &&
             filteredFunctions.map((abi) => (
-              <FunctionField key={stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
+              <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
             ))}
         </div>
       </div>
