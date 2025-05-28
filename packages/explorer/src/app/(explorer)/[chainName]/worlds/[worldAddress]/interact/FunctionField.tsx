@@ -166,7 +166,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id={toFunctionHash(functionAbi)}
-          className="space-y-4 rounded border border-white/20 p-3 pb-4"
+          className="space-y-2 rounded border border-white/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
@@ -188,49 +188,59 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
             <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
           </div>
 
-          {functionAbi.inputs.map((input, index) => (
-            <FormField
-              key={index}
-              control={form.control}
-              name={`inputs.${index}`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{input.name}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={getInputPlaceholder(input)}
-                      value={field.value}
-                      onChange={(evt) => {
-                        field.onChange(evt.target.value);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
+          <div className="space-y-1">
+            {functionAbi.inputs.map((input, index) => (
+              <FormField
+                key={index}
+                control={form.control}
+                name={`inputs.${index}`}
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-4">
+                    <FormLabel className="w-[100px] shrink-0 truncate text-right" title={input.name}>
+                      {input.name}
+                    </FormLabel>
+                    <div className="flex-1">
+                      <FormControl>
+                        <Input
+                          placeholder={getInputPlaceholder(input)}
+                          value={field.value}
+                          onChange={(evt) => {
+                            field.onChange(evt.target.value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            ))}
 
-          {functionAbi.stateMutability === "payable" && (
-            <FormField
-              control={form.control}
-              name="value"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ETH value</FormLabel>
-                  <FormControl>
-                    <Input placeholder="uint256" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+            {functionAbi.stateMutability === "payable" && (
+              <FormField
+                control={form.control}
+                name="value"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-4">
+                    <FormLabel className="w-[120px] shrink-0 text-right">ETH value</FormLabel>
+                    <div className="flex-1">
+                      <FormControl>
+                        <Input placeholder="uint256" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
 
-          <Button type="submit" size="sm" disabled={isLoading || !account.isConnected}>
-            {isLoading && <LoaderIcon className="-ml-1 mr-2 h-4 w-4 animate-spin" />}
-            {operationType === FunctionType.READ ? "Read" : "Write"}
-          </Button>
+          <div>
+            <Button type="submit" size="sm" className="mt-2" disabled={isLoading || !account.isConnected}>
+              {isLoading && <LoaderIcon className="-ml-1 mr-2 h-4 w-4 animate-spin" />}
+              {operationType === FunctionType.READ ? "Read" : "Write"}
+            </Button>
+          </div>
         </form>
       </Form>
 
