@@ -6,6 +6,7 @@ import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
 import { useDeferredValue, useMemo, useState } from "react";
 import { hexToResource } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import { Badge } from "../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../components/ui/Collapsible";
 import { Input } from "../../../../../../components/ui/Input";
@@ -31,30 +32,27 @@ export function InteractForm() {
   const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
 
-  console.log("IBaseWorldAbi", IBaseWorldAbi);
-
   const filteredSystemFunctions = useMemo(() => {
     if (!systemData) return [];
 
-    // Filter IBaseWorld functions
     const coreFunctions = (IBaseWorldAbi as AbiItem[]).filter((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
       return item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
     });
 
-    // Add Core section if there are matching functions
+    // TODO: add IBaseWorld even before systems are fetched
     const coreSection =
       coreFunctions.length > 0
         ? [
             {
               systemId: "core",
               name: "Core",
+              namespace: "",
               functions: coreFunctions,
             },
           ]
         : [];
 
-    // Get other system functions
     const systemFunctions = Object.entries(systemData).map(([systemId, systemAbi]) => {
       const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
         if (!isFunction(item)) return false;
@@ -77,6 +75,8 @@ export function InteractForm() {
       [systemId]: !prev[systemId],
     }));
   };
+
+  console.log("filteredSystemFunctions", filteredSystemFunctions);
 
   return (
     <>
@@ -115,11 +115,19 @@ export function InteractForm() {
                     className="w-full space-y-1"
                   >
                     <CollapsibleTrigger asChild>
-                      <div className="group flex w-full cursor-pointer items-center justify-between space-x-4">
-                        <h4 className="text-sm font-semibold">{system.name}</h4>
-                        <Button variant="ghost" size="sm" className="group-hover:bg-accent">
-                          <ChevronsUpDown className="h-4 w-4" />
-                        </Button>
+                      <div className="group flex w-full cursor-pointer items-center justify-between space-x-1">
+                        <h4 className="truncate text-sm font-semibold">
+                          {system.name}{" "}
+                          {system.namespace ? <span className="opacity-50">({system.namespace})</span> : ""}
+                        </h4>
+                        <div className="flex items-center gap-1">
+                          <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
+                            {system.functions.length}
+                          </Badge>
+                          <Button variant="ghost" size="sm" className="group-hover:bg-accent">
+                            <ChevronsUpDown className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </CollapsibleTrigger>
 
