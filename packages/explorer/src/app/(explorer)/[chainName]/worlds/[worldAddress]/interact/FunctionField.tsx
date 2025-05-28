@@ -166,7 +166,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id={toFunctionHash(functionAbi)}
-          className="space-y-4 rounded border border-white/20 bg-black/70 p-3 pb-4"
+          className="space-y-4 rounded border border-white/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">

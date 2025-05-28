@@ -25,6 +25,23 @@ function isFunction(abi: AbiItem): abi is AbiFunction {
   return abi.type === "function";
 }
 
+type System = {
+  systemId: string;
+  name: string;
+  namespace: string;
+  functions: AbiFunction[];
+};
+
+type NamespaceSection = {
+  namespace: string;
+  systems: System[];
+};
+
+type FilteredFunctions = {
+  core: System[];
+  namespaces: NamespaceSection[];
+};
+
 export function InteractForm() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
@@ -41,9 +58,10 @@ export function InteractForm() {
   });
   const deferredFilterValue = useDeferredValue(filterValue);
 
-  const filteredSystemFunctions = useMemo(() => {
-    if (!systemData) return [];
+  const filteredSystemFunctions = useMemo<FilteredFunctions>(() => {
+    if (!systemData) return { core: [], namespaces: [] };
 
+    // Filter core functions
     const coreFunctions = (IBaseWorldAbi as AbiItem[]).filter((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
       const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
@@ -51,6 +69,7 @@ export function InteractForm() {
       return matchesName && matchesType;
     });
 
+    // Add Core section if there are matching functions
     const coreSection =
       coreFunctions.length > 0
         ? [
@@ -63,22 +82,44 @@ export function InteractForm() {
           ]
         : [];
 
-    const systemFunctions = Object.entries(systemData).map(([systemId, systemAbi]) => {
-      const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
-        if (!isFunction(item)) return false;
-        const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
-        const matchesType = typeFilters.all || (typeFilters[item.stateMutability] ?? false);
-        return matchesName && matchesType;
-      });
+    // Group systems by namespace
+    const systemsByNamespace = Object.entries(systemData).reduce<Record<string, System[]>>(
+      (acc, [systemId, systemAbi]) => {
+        const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
+          if (!isFunction(item)) return false;
+          const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+          const matchesType = typeFilters.all || (typeFilters[item.stateMutability] ?? false);
+          return matchesName && matchesType;
+        });
 
-      return {
-        systemId,
-        ...hexToResource(systemId as Hex),
-        functions: filteredFunctions,
-      };
-    });
+        if (filteredFunctions.length === 0) return acc;
 
-    return [...coreSection, ...systemFunctions];
+        const system = {
+          systemId,
+          ...hexToResource(systemId as Hex),
+          functions: filteredFunctions,
+        };
+
+        const namespace = system.namespace || "Root";
+        if (!acc[namespace]) {
+          acc[namespace] = [];
+        }
+        acc[namespace].push(system);
+        return acc;
+      },
+      {},
+    );
+
+    // Convert to array format for rendering
+    const namespaceSections = Object.entries(systemsByNamespace).map(([namespace, systems]) => ({
+      namespace,
+      systems,
+    }));
+
+    return {
+      core: coreSection,
+      namespaces: namespaceSections,
+    };
   }, [systemData, deferredFilterValue, typeFilters]);
 
   const handleTypeFilterChange = (type: string, checked: boolean) => {
@@ -210,24 +251,18 @@ export function InteractForm() {
                 );
               })}
 
-            {filteredSystemFunctions?.map((system) => {
+            {/* Core section */}
+            {filteredSystemFunctions.core.map((system: System) => {
               if (system.functions.length === 0) return null;
 
               const isExpanded = expandedSystems[system.systemId];
 
               return (
                 <li key={system.systemId}>
-                  <Collapsible
-                    open={isExpanded}
-                    onOpenChange={() => toggleSystem(system.systemId)}
-                    className="w-full space-y-1"
-                  >
+                  <Collapsible open={isExpanded} onOpenChange={() => toggleSystem(system.systemId)}>
                     <CollapsibleTrigger asChild>
                       <div className="group flex w-full cursor-pointer items-center justify-between space-x-1">
-                        <h4 className="truncate text-sm font-semibold">
-                          {system.name}{" "}
-                          {system.namespace ? <span className="opacity-50">({system.namespace})</span> : ""}
-                        </h4>
+                        <h4 className="truncate text-sm font-semibold">{system.name}</h4>
                         <div className="flex items-center gap-1">
                           <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
                             {system.functions.length}
@@ -238,10 +273,9 @@ export function InteractForm() {
                         </div>
                       </div>
                     </CollapsibleTrigger>
-
                     <CollapsibleContent className="space-y-2">
                       <ul className="mb-4 mt-0 space-y-1">
-                        {system.functions.map((abi) => {
+                        {system.functions.map((abi: AbiFunction) => {
                           const functionHash = toFunctionHash(abi);
                           return (
                             <li key={functionHash}>
@@ -273,6 +307,85 @@ export function InteractForm() {
                 </li>
               );
             })}
+
+            {/* Namespace sections */}
+            {filteredSystemFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
+              <li key={namespace}>
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <div className="group flex w-full cursor-pointer items-center justify-between space-x-1">
+                      <h4 className="truncate text-sm font-semibold">{namespace}</h4>
+                      <Button variant="ghost" size="sm" className="group-hover:bg-accent">
+                        <ChevronsUpDown className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <ul className="ml-4 space-y-1">
+                      {systems.map((system: System) => {
+                        if (system.functions.length === 0) return null;
+
+                        const isExpanded = expandedSystems[system.systemId];
+
+                        return (
+                          <li key={system.systemId}>
+                            <Collapsible open={isExpanded} onOpenChange={() => toggleSystem(system.systemId)}>
+                              <CollapsibleTrigger asChild>
+                                <div className="group flex w-full cursor-pointer items-center justify-between space-x-1">
+                                  <h4 className="truncate text-sm font-semibold">{system.name}</h4>
+                                  <div className="flex items-center gap-1">
+                                    <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
+                                      {system.functions.length}
+                                    </Badge>
+                                    <Button variant="ghost" size="sm" className="group-hover:bg-accent">
+                                      <ChevronsUpDown className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="space-y-2">
+                                <ul className="mb-4 mt-0 space-y-1">
+                                  {system.functions.map((abi: AbiFunction) => {
+                                    const functionHash = toFunctionHash(abi);
+                                    return (
+                                      <li key={functionHash}>
+                                        <ScrollIntoViewLink
+                                          elementId={functionHash}
+                                          className={cn(
+                                            "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
+                                            functionHash === hash ? "text-orange-500" : null,
+                                          )}
+                                        >
+                                          <span className="opacity-50">
+                                            {abi.stateMutability === "payable" && (
+                                              <Coins className="mr-2 inline-block h-4 w-4" />
+                                            )}
+                                            {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
+                                              <Eye className="mr-2 inline-block h-4 w-4" />
+                                            )}
+                                            {abi.stateMutability === "nonpayable" && (
+                                              <Send className="mr-2 inline-block h-4 w-4" />
+                                            )}
+                                          </span>
+                                          <span>{abi.name}</span>
+                                          {abi.inputs.length > 0 && (
+                                            <span className="opacity-50"> ({abi.inputs.length})</span>
+                                          )}
+                                        </ScrollIntoViewLink>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </CollapsibleContent>
+                </Collapsible>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -289,23 +402,44 @@ export function InteractForm() {
             </>
           )}
 
-          {data?.abi &&
-            filteredSystemFunctions.map((system) => (
-              <div key={system.systemId}>
-                <div className="mb-2 flex items-center gap-2">
-                  <h4 className="my-4 text-2xl font-semibold">
-                    {system.name} {system.namespace ? <span className="opacity-50">({system.namespace})</span> : ""}
-                  </h4>
-
-                  <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
-                    {system.functions.length}
-                  </Badge>
+          {data?.abi && (
+            <>
+              {/* Core section */}
+              {filteredSystemFunctions.core.map((system: System) => (
+                <div key={system.systemId}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <h4 className="my-4 text-2xl font-semibold">{system.name}</h4>
+                    <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
+                      {system.functions.length}
+                    </Badge>
+                  </div>
+                  {system.functions.map((abi: AbiFunction) => (
+                    <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
+                  ))}
                 </div>
-                {system.functions.map((abi) => (
-                  <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
-                ))}
-              </div>
-            ))}
+              ))}
+
+              {/* Namespace sections */}
+              {filteredSystemFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
+                <div key={namespace}>
+                  <h4 className="my-4 text-2xl font-semibold">{namespace}</h4>
+                  {systems.map((system: System) => (
+                    <div key={system.systemId}>
+                      <div className="mb-2 flex items-center gap-2">
+                        <h4 className="my-4 text-2xl font-semibold">{system.name}</h4>
+                        <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
+                          {system.functions.length}
+                        </Badge>
+                      </div>
+                      {system.functions.map((abi: AbiFunction) => (
+                        <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </>
