@@ -104,10 +104,21 @@ export function InteractForm() {
   }, [systemData, deferredFilterValue]);
 
   const toggleSystem = (systemId: string) => {
-    setExpandedSystems((prev) => ({
-      ...prev,
-      [systemId]: !prev[systemId],
-    }));
+    setExpandedSystems((prev) => {
+      const newState = { ...prev };
+      const isExpanding = !prev[systemId];
+
+      if (isExpanding === false) {
+        const namespace = systemId;
+        const systems = filteredSystemFunctions.namespaces.find((ns) => ns.namespace === namespace)?.systems || [];
+        systems.forEach((system) => {
+          newState[system.systemId] = false;
+        });
+      }
+
+      newState[systemId] = isExpanding;
+      return newState;
+    });
   };
 
   return (
