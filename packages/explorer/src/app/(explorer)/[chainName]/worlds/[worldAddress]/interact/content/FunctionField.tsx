@@ -202,7 +202,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 control={form.control}
                 name={`inputs.${index}`}
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-2 space-y-0">
+                  <FormItem className="flex items-center gap-4 space-y-0">
                     <FormLabel className="shrink-0 font-mono text-sm opacity-70">{input.name}</FormLabel>
                     <div className="flex-1">
                       <FormControl>
