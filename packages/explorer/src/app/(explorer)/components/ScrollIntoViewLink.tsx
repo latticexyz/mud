@@ -9,6 +9,7 @@ type Props = {
   className?: string;
 } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
+// TODO: Fix this
 export function ScrollIntoViewLink({ elementId, children, ...rest }: Props) {
   const [hash, setHash] = useHashState();
 

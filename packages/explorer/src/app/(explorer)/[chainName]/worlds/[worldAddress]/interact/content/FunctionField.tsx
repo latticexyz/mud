@@ -5,13 +5,24 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
-import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify, toFunctionHash } from "viem";
-import { useAccount, useConfig } from "wagmi";
-import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
+import {
+  Abi,
+  AbiFunction,
+  AbiParameter,
+  Address,
+  Hex,
+  decodeEventLog,
+  encodeFunctionData,
+  stringify,
+  toFunctionHash,
+} from "viem";
+import { useAccount, useConfig, usePublicClient } from "wagmi";
+import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+// import { encodeSystemCall } from "@latticexyz/world/internal";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { CopyButton } from "../../../../../../../components/CopyButton";
 import { Button } from "../../../../../../../components/ui/Button";
@@ -74,6 +85,7 @@ const getInputPlaceholder = (input: AbiParameter): string => {
 };
 
 export function FunctionField({ worldAbi, functionAbi }: Props) {
+  const publicClient = usePublicClient();
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
       ? FunctionType.READ
@@ -115,23 +127,49 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     async (values: z.infer<typeof formSchema>) => {
       if (!account.isConnected) {
         return openConnectModal?.();
+      } else if (!publicClient) {
+        toast.error("Public client not found");
+        return;
       }
 
       setIsLoading(true);
       let toastId;
+
       try {
         if (operationType === FunctionType.READ) {
-          const result = await readContract(wagmiConfig, {
-            abi: worldAbi,
-            address: worldAddress as Address,
-            functionName: functionAbi.name,
-            args: values.inputs,
-            chainId,
+          const { data: result } = await publicClient.call({
+            account: account.address,
+            data: encodeFunctionData({
+              abi: [...worldAbi, functionAbi],
+              functionName: functionAbi.name,
+              args: values.inputs,
+            }),
+            to: worldAddress as Address,
           });
 
-          setResult(stringify(result, null, 2));
+          setResult(stringify(result, null, 2).replace(/^"|"$/g, ""));
         } else {
           toastId = toast.loading("Transaction submitted");
+
+          // abi, systemId, functionName, args
+          // const encoded = encodeSystemCall({
+          //   abi: [functionAbi],
+          //   functionName: functionAbi.name,
+          //   args: ["0x74627063746f6b656e00000000000000416c6c6f77616e636573000000000000"], // values.inputs,
+          //   // value: values.value ? BigInt(values.value) : undefined,
+          //   systemId: "0x73790000000000000000000000000000416374697661746553797374656d0000", // worldAddress as Hex,
+          // });
+          // console.log("encoded", encoded);
+
+          // const tx = await writeContract(wagmiConfig, {
+          //   abi: worldAbi,
+          //   functionName: "call",
+          //   args: encoded,
+          //   // value: values.value ? BigInt(values.value) : undefined,
+          //   address: worldAddress as Address,
+          //   chainId,
+          // });
+
           const txHash = await writeContract(wagmiConfig, {
             abi: worldAbi,
             address: worldAddress as Address,
@@ -164,7 +202,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         setIsLoading(false);
       }
     },
-    [account.isConnected, chainId, functionAbi, openConnectModal, operationType, wagmiConfig, worldAbi, worldAddress],
+    [account, chainId, functionAbi, openConnectModal, operationType, publicClient, wagmiConfig, worldAbi, worldAddress],
   );
 
   return (
@@ -173,7 +211,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id={toFunctionHash(functionAbi)}
-          className="space-y-2 rounded border border-white/20 p-3 pb-4"
+          className="space-y-4 rounded border border-white/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
@@ -192,108 +230,108 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 </span>
               </ScrollIntoViewLink>
             </h3>
-            <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
+            <CopyButton value={getShareableUrl()} className="h-8 w-8" />
           </div>
 
-          <div className="space-y-2">
-            {functionAbi.inputs.map((input, index) => (
-              <FormField
-                key={index}
-                control={form.control}
-                name={`inputs.${index}`}
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-4 space-y-0">
-                    {input.name && (
-                      <FormLabel className="shrink-0 font-mono text-sm opacity-70">{input.name}</FormLabel>
-                    )}
-                    <div className="flex-1">
-                      <FormControl>
-                        <Input
-                          placeholder={getInputPlaceholder(input)}
-                          value={field.value}
-                          onChange={(evt) => {
-                            field.onChange(evt.target.value);
-                          }}
-                          className="font-mono text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-            ))}
+          {functionAbi.inputs.length > 0 && (
+            <div className="space-y-2">
+              {functionAbi.inputs.map((input, index) => (
+                <FormField
+                  key={index}
+                  control={form.control}
+                  name={`inputs.${index}`}
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-4 space-y-0">
+                      {input.name && (
+                        <FormLabel className="shrink-0 pt-1 font-mono text-sm opacity-70">{input.name}</FormLabel>
+                      )}
+                      <div className="flex-1">
+                        <FormControl>
+                          <Input
+                            placeholder={getInputPlaceholder(input)}
+                            value={field.value}
+                            onChange={(evt) => {
+                              field.onChange(evt.target.value);
+                            }}
+                            className="font-mono text-sm"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              ))}
 
-            {functionAbi.stateMutability === "payable" && (
-              <FormField
-                control={form.control}
-                name="value"
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-2">
-                    <FormLabel className="shrink-0 font-mono text-sm opacity-70">value</FormLabel>
-                    <div className="min-w-[200px] flex-1">
-                      <FormControl>
-                        <Input placeholder="uint256" {...field} className="font-mono text-sm" />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-            )}
-          </div>
+              {functionAbi.stateMutability === "payable" && (
+                <FormField
+                  control={form.control}
+                  name="value"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-2">
+                      <FormLabel className="shrink-0 font-mono text-sm opacity-70">value</FormLabel>
+                      <div className="min-w-[200px] flex-1">
+                        <FormControl>
+                          <Input placeholder="uint256" {...field} className="font-mono text-sm" />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+          )}
 
           <div>
-            <Button type="submit" size="sm" className="mt-2" disabled={isLoading || !account.isConnected}>
+            <Button type="submit" size="sm" disabled={isLoading || !account.isConnected}>
               {isLoading && <LoaderIcon className="-ml-1 mr-2 h-4 w-4 animate-spin" />}
               {operationType === FunctionType.READ ? "Read" : "Write"}
             </Button>
           </div>
+
+          {result && (
+            <pre className="text-md relative rounded border p-3 text-sm">
+              {result}
+              <CopyButton value={result} className="absolute right-1.5 top-1.5" />
+            </pre>
+          )}
+
+          {events && (
+            <div className="relative flex-grow break-all rounded border border-white/20 p-2 pb-3">
+              <ul>
+                {events.map((event, idx) => (
+                  <li key={idx}>
+                    {event.eventName && <span className="text-xs">{event.eventName}:</span>}
+                    {event.args && (
+                      <ul className="list-inside">
+                        {Object.entries(event.args).map(([key, value]) => (
+                          <li key={key} className="mt-1 flex">
+                            <span className="text-xs text-white/60">{key}:</span>{" "}
+                            <span className="text-xs">{String(value)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              <CopyButton value={stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
+            </div>
+          )}
+
+          {txUrl && (
+            <Link
+              href={txUrl}
+              target="_blank"
+              className="flex items-center text-xs text-muted-foreground hover:underline"
+            >
+              <ExternalLinkIcon className="mr-2 h-3 w-3" /> View on block explorer
+            </Link>
+          )}
         </form>
       </Form>
-
-      {result && (
-        <pre className="text-md relative mt-4 rounded border p-3 text-sm">
-          {result}
-          <CopyButton value={result} className="absolute right-1.5 top-1.5" />
-        </pre>
-      )}
-
-      {events && (
-        <div className="relative mt-4 flex-grow break-all rounded border border-white/20 p-2 pb-3">
-          <ul>
-            {events.map((event, idx) => (
-              <li key={idx}>
-                {event.eventName && <span className="text-xs">{event.eventName}:</span>}
-                {event.args && (
-                  <ul className="list-inside">
-                    {Object.entries(event.args).map(([key, value]) => (
-                      <li key={key} className="mt-1 flex">
-                        <span className="text-xs text-white/60">{key}:</span>{" "}
-                        <span className="text-xs">{String(value)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          <CopyButton value={stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
-        </div>
-      )}
-
-      {txUrl && (
-        <div className="mt-3">
-          <Link
-            href={txUrl}
-            target="_blank"
-            className="flex items-center text-xs text-muted-foreground hover:underline"
-          >
-            <ExternalLinkIcon className="mr-2 h-3 w-3" /> View on block explorer
-          </Link>
-        </div>
-      )}
     </div>
   );
 }
