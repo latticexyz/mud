@@ -92,7 +92,7 @@ export function InteractForm() {
             />
           </div>
 
-          <ul className="mt-4 max-h-max space-y-1 overflow-y-auto pb-4 pr-4">
+          <ul className="mt-4 max-h-max overflow-y-auto pb-4 pr-4">
             {!isFetched &&
               Array.from({ length: 10 }).map((_, index) => {
                 return (
