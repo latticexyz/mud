@@ -91,7 +91,10 @@ export function InteractForm() {
         if (!acc[namespaceName]) {
           acc[namespaceName] = [];
         }
-        acc[namespaceName].push(system);
+        const namespaceArray = acc[namespaceName];
+        if (namespaceArray) {
+          namespaceArray.push(system);
+        }
         return acc;
       },
       {},
@@ -151,7 +154,7 @@ export function InteractForm() {
     setExpandedSystems(newExpandedState);
   }, [deferredFilterValue, filteredSystemFunctions]);
 
-  // Expand matching systems when Explorer is opened with a hash
+  // Expand matching systems when opened with a hash
   useEffect(() => {
     if (!hash || !systemData) return;
 
