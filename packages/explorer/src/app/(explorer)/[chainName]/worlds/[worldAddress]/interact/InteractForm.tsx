@@ -184,6 +184,15 @@ export function InteractForm() {
           {data?.abi &&
             filteredSystemFunctions.map((system) => (
               <div key={system.systemId}>
+                <div className="mb-2 flex items-center gap-2">
+                  <h4 className="my-4 text-2xl font-semibold">
+                    {system.name} {system.namespace ? <span className="opacity-50">({system.namespace})</span> : ""}
+                  </h4>
+
+                  <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
+                    {system.functions.length}
+                  </Badge>
+                </div>
                 {system.functions.map((abi) => (
                   <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
                 ))}
