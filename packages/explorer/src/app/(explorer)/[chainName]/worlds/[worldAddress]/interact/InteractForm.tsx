@@ -10,7 +10,6 @@ import { Badge } from "../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../components/ui/Collapsible";
 import { Input } from "../../../../../../components/ui/Input";
-import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { cn } from "../../../../../../utils";
 import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
@@ -136,15 +135,14 @@ export function InteractForm() {
 
           <ul className="mt-4 max-h-max overflow-y-auto pb-4 pr-4">
             {!isFetched &&
-              Array.from({ length: 10 }).map((_, index) => {
+              Array.from({ length: 6 }).map((_, index) => {
                 return (
                   <li key={index} className="pr-4 pt-2">
-                    <Skeleton className="h-[25px]" />
+                    <Skeleton className="h-[30px]" />
                   </li>
                 );
               })}
 
-            {/* Namespace sections */}
             {filteredSystemFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
               <li key={namespace}>
                 <Collapsible>
@@ -283,15 +281,13 @@ export function InteractForm() {
 
         <div className="w-full overflow-y-auto pl-1 pr-1">
           {!isFetched && (
-            <>
-              <Skeleton className="h-[100px]" />
-              <Separator className="my-4" />
-              <Skeleton className="h-[100px]" />
-              <Separator className="my-4" />
-              <Skeleton className="h-[100px]" />
-              <Separator className="my-4" />
-              <Skeleton className="h-[100px]" />
-            </>
+            <div className="space-y-4">
+              <Skeleton className="h-[150px]" />
+              <Skeleton className="h-[150px]" />
+              <Skeleton className="h-[150px]" />
+              <Skeleton className="h-[150px]" />
+              <Skeleton className="h-[150px]" />
+            </div>
           )}
 
           {data?.abi && (
