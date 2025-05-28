@@ -13,3 +13,4 @@ extra_output_files = [
   "abi",
   "evm.bytecode"
 ]
+script_execution_protection = false

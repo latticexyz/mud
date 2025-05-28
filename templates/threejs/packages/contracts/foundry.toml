@@ -21,6 +21,7 @@ extra_output_files = [
   "evm.bytecode"
 ]
 fs_permissions = [{ access = "read", path = "./"}]
+script_execution_protection = false
 
 [profile.garnet]
 eth_rpc_url = "https://rpc.garnetchain.com"
