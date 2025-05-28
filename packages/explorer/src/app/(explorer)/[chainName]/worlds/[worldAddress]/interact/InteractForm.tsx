@@ -1,10 +1,13 @@
 "use client";
 
-import { ChevronDown, Coins, Eye, Send } from "lucide-react";
+import { ChevronsUpDown, Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
 import { useDeferredValue, useMemo, useState } from "react";
 import { hexToResource } from "@latticexyz/common";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import { Button } from "../../../../../../components/ui/Button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../components/ui/Collapsible";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -28,10 +31,31 @@ export function InteractForm() {
   const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
 
+  console.log("IBaseWorldAbi", IBaseWorldAbi);
+
   const filteredSystemFunctions = useMemo(() => {
     if (!systemData) return [];
 
-    return Object.entries(systemData).map(([systemId, systemAbi]) => {
+    // Filter IBaseWorld functions
+    const coreFunctions = (IBaseWorldAbi as AbiItem[]).filter((item): item is AbiFunction => {
+      if (!isFunction(item)) return false;
+      return item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+    });
+
+    // Add Core section if there are matching functions
+    const coreSection =
+      coreFunctions.length > 0
+        ? [
+            {
+              systemId: "core",
+              name: "Core",
+              functions: coreFunctions,
+            },
+          ]
+        : [];
+
+    // Get other system functions
+    const systemFunctions = Object.entries(systemData).map(([systemId, systemAbi]) => {
       const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
         if (!isFunction(item)) return false;
         return item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
@@ -43,6 +67,8 @@ export function InteractForm() {
         functions: filteredFunctions,
       };
     });
+
+    return [...coreSection, ...systemFunctions];
   }, [systemData, deferredFilterValue]);
 
   const toggleSystem = (systemId: string) => {
@@ -66,7 +92,7 @@ export function InteractForm() {
             />
           </div>
 
-          <ul className="mt-4 max-h-max space-y-2 overflow-y-auto pb-4">
+          <ul className="mt-4 max-h-max space-y-1 overflow-y-auto pb-4 pr-4">
             {!isFetched &&
               Array.from({ length: 10 }).map((_, index) => {
                 return (
@@ -82,43 +108,52 @@ export function InteractForm() {
               const isExpanded = expandedSystems[system.systemId];
 
               return (
-                <li key={system.systemId} className="space-y-1">
-                  <button
-                    onClick={() => toggleSystem(system.systemId)}
-                    className="flex w-full items-center justify-between py-1 text-sm font-medium hover:text-orange-500"
+                <li key={system.systemId}>
+                  <Collapsible
+                    open={isExpanded}
+                    onOpenChange={() => toggleSystem(system.systemId)}
+                    className="w-full space-y-1"
                   >
-                    <span>{system.name}</span>
-                    <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded ? "rotate-180" : "")} />
-                  </button>
+                    <CollapsibleTrigger asChild>
+                      <div className="group flex w-full cursor-pointer items-center justify-between space-x-4">
+                        <h4 className="text-sm font-semibold">{system.name}</h4>
+                        <Button variant="ghost" size="sm" className="group-hover:bg-accent">
+                          <ChevronsUpDown className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CollapsibleTrigger>
 
-                  {isExpanded && (
-                    <ul className="ml-4 space-y-1">
-                      {system.functions.map((abi) => {
-                        const functionHash = toFunctionHash(abi);
-                        return (
-                          <li key={functionHash}>
-                            <ScrollIntoViewLink
-                              elementId={functionHash}
-                              className={cn(
-                                "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-                                functionHash === hash ? "text-orange-500" : null,
-                              )}
-                            >
-                              <span className="opacity-50">
-                                {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-                                {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
-                                  <Eye className="mr-2 inline-block h-4 w-4" />
+                    <CollapsibleContent className="space-y-2">
+                      <ul className="mb-4 mt-0 space-y-1">
+                        {system.functions.map((abi) => {
+                          const functionHash = toFunctionHash(abi);
+                          return (
+                            <li key={functionHash}>
+                              <ScrollIntoViewLink
+                                elementId={functionHash}
+                                className={cn(
+                                  "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
+                                  functionHash === hash ? "text-orange-500" : null,
                                 )}
-                                {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
-                              </span>
-                              <span>{abi.name}</span>
-                              {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
-                            </ScrollIntoViewLink>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
+                              >
+                                <span className="opacity-50">
+                                  {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                                  {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
+                                    <Eye className="mr-2 inline-block h-4 w-4" />
+                                  )}
+                                  {abi.stateMutability === "nonpayable" && (
+                                    <Send className="mr-2 inline-block h-4 w-4" />
+                                  )}
+                                </span>
+                                <span>{abi.name}</span>
+                                {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
+                              </ScrollIntoViewLink>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </li>
               );
             })}

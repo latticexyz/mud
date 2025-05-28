@@ -12,9 +12,7 @@ type Props = {
 export function ScrollIntoViewLink({ elementId, children, ...rest }: Props) {
   const [hash, setHash] = useHashState();
 
-  const handleClick = (evt: React.MouseEvent<HTMLAnchorElement>) => {
-    evt.preventDefault();
-
+  const handleClick = () => {
     setHash(elementId);
     const url = new URL(window.location.href);
     url.hash = elementId;
