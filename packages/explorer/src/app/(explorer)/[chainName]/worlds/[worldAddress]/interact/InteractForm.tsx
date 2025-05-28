@@ -5,13 +5,12 @@ import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
 import { useDeferredValue, useMemo, useState } from "react";
 import { hexToResource } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { Badge } from "../../../../../../components/ui/Badge";
 import { Input } from "../../../../../../components/ui/Input";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { useHashState } from "../../../../hooks/useHashState";
 import { useSystemAbisQuery } from "../../../../queries/useSystemAbisQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
-import { FunctionField } from "./FunctionField";
+import { SystemContent } from "./content/SystemContent";
 import { FunctionSidebarItem } from "./sidebar/FunctionSidebarItem";
 import { SystemSidebarItem } from "./sidebar/SystemSidebarItem";
 
@@ -130,7 +129,7 @@ export function InteractForm() {
             {!isFetched &&
               Array.from({ length: 6 }).map((_, index) => {
                 return (
-                  <li key={index} className="pr-4 pt-2">
+                  <li key={index} className="pt-2">
                     <Skeleton className="h-[30px]" />
                   </li>
                 );
@@ -200,36 +199,22 @@ export function InteractForm() {
           {data?.abi && (
             <>
               {filteredSystemFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
-                <div key={namespace}>
-                  <h4 className="mt-4 text-4xl font-semibold opacity-50">{namespace}</h4>
-                  {systems.map((system: System) => (
-                    <div key={system.systemId}>
-                      <div className="mb-2 flex items-center gap-2">
-                        <h4 className="my-4 text-2xl font-semibold">{system.name}</h4>
-                        <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
-                          {system.functions.length}
-                        </Badge>
-                      </div>
-                      {system.functions.map((abi: AbiFunction) => (
-                        <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                <SystemContent
+                  key={namespace}
+                  name={namespace}
+                  systems={systems}
+                  worldAbi={data.abi as AbiItem[]}
+                  isNamespace
+                />
               ))}
 
               {filteredSystemFunctions.core.map((system: System) => (
-                <div key={system.systemId}>
-                  <div className="mb-2 flex items-center gap-2">
-                    <h4 className="my-4 text-2xl font-semibold">{system.name}</h4>
-                    <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
-                      {system.functions.length}
-                    </Badge>
-                  </div>
-                  {system.functions.map((abi: AbiFunction) => (
-                    <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
-                  ))}
-                </div>
+                <SystemContent
+                  key={system.systemId}
+                  name={system.name}
+                  functions={system.functions}
+                  worldAbi={data.abi as AbiItem[]}
+                />
               ))}
             </>
           )}

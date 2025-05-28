@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
+import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
@@ -177,11 +177,11 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>
                 <span className="opacity-50"> ({inputLabels.join(", ")})</span>
                 <span className="ml-2 opacity-50">
-                  {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                  {functionAbi.stateMutability === "payable" && <CoinsIcon className="mr-2 inline-block h-4 w-4" />}
                   {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
-                    <Eye className="mr-2 inline-block h-4 w-4" />
+                    <EyeIcon className="mr-2 inline-block h-4 w-4" />
                   )}
-                  {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+                  {functionAbi.stateMutability === "nonpayable" && <SendIcon className="mr-2 inline-block h-4 w-4" />}
                 </span>
               </ScrollIntoViewLink>
             </h3>
@@ -266,7 +266,6 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                     ))}
                   </ul>
                 )}
-                {/* {idx < events.length - 1 && <Separator className="my-4" />} */}
               </li>
             ))}
           </ul>
@@ -286,8 +285,6 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           </Link>
         </div>
       )}
-
-      {/* <Separator className="mt-6" /> */}
     </div>
   );
 }
