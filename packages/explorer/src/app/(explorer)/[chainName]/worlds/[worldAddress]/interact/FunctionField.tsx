@@ -164,7 +164,11 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   return (
     <div className="pb-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} id={toFunctionHash(functionAbi)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          id={toFunctionHash(functionAbi)}
+          className="space-y-4 rounded border border-white/20 p-3 pb-4"
+        >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
               <ScrollIntoViewLink
