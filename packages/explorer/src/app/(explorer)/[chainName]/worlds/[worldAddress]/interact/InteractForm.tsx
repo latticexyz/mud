@@ -48,9 +48,11 @@ export function InteractForm() {
   const filteredSystemFunctions = useMemo<FilteredFunctions>(() => {
     if (!systemData) return { core: [], namespaces: [] };
 
+    const searchLower = deferredFilterValue.toLowerCase();
+
     const coreFunctions = (IBaseWorldAbi as AbiItem[]).filter((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
-      const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+      const matchesName = `core_core_${item.name}`.toLowerCase().includes(searchLower);
       return matchesName;
     });
 
@@ -68,25 +70,28 @@ export function InteractForm() {
 
     const systemsByNamespace = Object.entries(systemData).reduce<Record<string, System[]>>(
       (acc, [systemId, systemAbi]) => {
+        const { namespace, name: systemName } = hexToResource(systemId as Hex);
+        const namespaceName = namespace || "root";
+
         const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
           if (!isFunction(item)) return false;
-          const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
-          return matchesName;
+          const searchString = `${namespaceName}_${systemName}_${item.name}`.toLowerCase();
+          return searchString.includes(searchLower);
         });
 
         if (filteredFunctions.length === 0) return acc;
 
         const system = {
           systemId,
-          ...hexToResource(systemId as Hex),
+          namespace: namespaceName,
+          name: systemName,
           functions: filteredFunctions,
         };
 
-        const namespace = system.namespace || "root";
-        if (!acc[namespace]) {
-          acc[namespace] = [];
+        if (!acc[namespaceName]) {
+          acc[namespaceName] = [];
         }
-        acc[namespace].push(system);
+        acc[namespaceName].push(system);
         return acc;
       },
       {},
@@ -162,14 +167,12 @@ export function InteractForm() {
         <div className="w-[320px] flex-shrink-0 overflow-y-auto border-r pl-1">
           <div className="pr-4">
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
-            <div className="flex gap-2">
-              <Input
-                type="search"
-                placeholder="Filter functions..."
-                value={deferredFilterValue}
-                onChange={(evt) => setFilterValue(evt.target.value)}
-              />
-            </div>
+            <Input
+              type="search"
+              placeholder="Filter by namespace, system, or function..."
+              value={deferredFilterValue}
+              onChange={(evt) => setFilterValue(evt.target.value)}
+            />
           </div>
 
           <ul className="mt-4 max-h-max overflow-y-auto pb-4 pr-4">
@@ -204,7 +207,7 @@ export function InteractForm() {
                         onToggle={() => toggleSystem(system.systemId)}
                         functionCount={system.functions.length}
                       >
-                        <ul className="mb-4 mt-0 space-y-1">
+                        <ul className="mt-0 space-y-1">
                           {system.functions.map((abi: AbiFunction) => (
                             <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
                           ))}
@@ -228,7 +231,7 @@ export function InteractForm() {
                   onToggle={() => toggleSystem(system.systemId)}
                   functionCount={system.functions.length}
                 >
-                  <ul className="mb-4 mt-0 space-y-1">
+                  <ul className="mt-0 space-y-1">
                     {system.functions.map((abi: AbiFunction) => (
                       <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
                     ))}
