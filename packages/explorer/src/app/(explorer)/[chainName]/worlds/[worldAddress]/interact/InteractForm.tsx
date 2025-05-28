@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { hexToResource } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { Input } from "../../../../../../components/ui/Input";
@@ -40,7 +40,7 @@ export function InteractForm() {
   const { data, isFetched } = useWorldAbiQuery();
   const { data: systemData } = useSystemAbisQuery();
   const [expandedSystems, setExpandedSystems] = useState<Record<string, boolean>>({
-    Root: true,
+    root: true,
   });
   const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
@@ -59,7 +59,7 @@ export function InteractForm() {
         ? [
             {
               systemId: "core",
-              name: "Core",
+              name: "core",
               namespace: "",
               functions: coreFunctions,
             },
@@ -82,7 +82,7 @@ export function InteractForm() {
           functions: filteredFunctions,
         };
 
-        const namespace = system.namespace || "Root";
+        const namespace = system.namespace || "root";
         if (!acc[namespace]) {
           acc[namespace] = [];
         }
@@ -120,6 +120,41 @@ export function InteractForm() {
       return newState;
     });
   };
+
+  useEffect(() => {
+    if (!hash || !systemData) return;
+
+    const coreFunction = (IBaseWorldAbi as AbiItem[]).find((item) => {
+      if (item.type !== "function") return false;
+      return toFunctionHash(item) === hash;
+    });
+
+    if (coreFunction) {
+      setExpandedSystems((prev) => ({
+        ...prev,
+        root: false,
+        core: true,
+      }));
+      return;
+    }
+
+    for (const [systemId, systemAbi] of Object.entries(systemData)) {
+      const functionWithHash = systemAbi.find((item) => {
+        if (item.type !== "function") return false;
+        return toFunctionHash(item) === hash;
+      });
+
+      if (functionWithHash) {
+        const { namespace } = hexToResource(systemId as Hex);
+        setExpandedSystems((prev) => ({
+          ...prev,
+          [namespace || "root"]: true,
+          [systemId]: true,
+        }));
+        break;
+      }
+    }
+  }, [hash, systemData]);
 
   return (
     <>
