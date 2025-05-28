@@ -6,7 +6,6 @@ import { debug } from "./debug";
 import { getId } from "./getId";
 import { size } from "viem";
 import {
-  KeySchema,
   decodeKey,
   decodeValueArgs,
   getKeySchema,
@@ -139,7 +138,21 @@ export function createStorageAdapter<tables extends Tables>({
             // TODO: warn if no table
 
             // TODO: update decodeKey to use more recent types
-            const key = decodeKey(getSchemaTypes(getKeySchema(table)) as KeySchema, rawRecord.keyTuple);
+            const keySchema = getSchemaTypes(getKeySchema(table));
+            const keyTupleLength = rawRecord.keyTuple.length;
+            const keySchemaLength = Object.keys(keySchema).length;
+            if (keySchemaLength !== keyTupleLength) {
+              debug(
+                `key tuple length ${keyTupleLength} does not match key schema length ${keySchemaLength}, skipping record`,
+                {
+                  table,
+                  rawRecord,
+                },
+              );
+              return undefined;
+            }
+            const key = decodeKey(keySchema, rawRecord.keyTuple);
+
             // TODO: update decodeValueArgs to use more recent types
             const value = decodeValueArgs(getSchemaTypes(getValueSchema(table)), rawRecord);
 
