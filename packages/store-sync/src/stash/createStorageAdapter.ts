@@ -48,7 +48,6 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
 
       const valueSchema = getSchemaTypes(getValueSchema(table));
       const keySchema = getSchemaTypes(getKeySchema(table));
-
       const keyTupleLength = log.args.keyTuple.length;
       const keySchemaLength = Object.keys(keySchema).length;
       if (keySchemaLength !== keyTupleLength) {
@@ -58,7 +57,6 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
         });
         continue;
       }
-
       const key = decodeKey(keySchema, log.args.keyTuple);
 
       if (log.eventName === "Store_SetRecord") {
