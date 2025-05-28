@@ -17,7 +17,6 @@ import { CopyButton } from "../../../../../../components/CopyButton";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
-import { Separator } from "../../../../../../components/ui/Separator";
 import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
@@ -167,7 +166,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id={toFunctionHash(functionAbi)}
-          className="space-y-4 rounded border border-white/20 p-3 pb-4"
+          className="space-y-4 rounded border border-white/20 bg-black/70 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
@@ -258,7 +257,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                     ))}
                   </ul>
                 )}
-                {idx < events.length - 1 && <Separator className="my-4" />}
+                {/* {idx < events.length - 1 && <Separator className="my-4" />} */}
               </li>
             ))}
           </ul>
@@ -279,7 +278,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         </div>
       )}
 
-      <Separator className="mt-6" />
+      {/* <Separator className="mt-6" /> */}
     </div>
   );
 }

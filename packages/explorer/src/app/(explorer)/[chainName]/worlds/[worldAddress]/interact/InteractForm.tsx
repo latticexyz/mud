@@ -8,8 +8,10 @@ import { hexToResource } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { Badge } from "../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../components/ui/Button";
+import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../components/ui/Collapsible";
 import { Input } from "../../../../../../components/ui/Input";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { cn } from "../../../../../../utils";
@@ -30,6 +32,13 @@ export function InteractForm() {
   const [expandedSystems, setExpandedSystems] = useState<Record<string, boolean>>({});
 
   const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
+  const [typeFilters, setTypeFilters] = useState<Record<string, boolean>>({
+    all: true,
+    view: false,
+    pure: false,
+    nonpayable: false,
+    payable: false,
+  });
   const deferredFilterValue = useDeferredValue(filterValue);
 
   const filteredSystemFunctions = useMemo(() => {
@@ -37,10 +46,11 @@ export function InteractForm() {
 
     const coreFunctions = (IBaseWorldAbi as AbiItem[]).filter((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
-      return item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+      const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+      const matchesType = typeFilters.all || (typeFilters[item.stateMutability] ?? false);
+      return matchesName && matchesType;
     });
 
-    // TODO: add IBaseWorld even before systems are fetched
     const coreSection =
       coreFunctions.length > 0
         ? [
@@ -56,7 +66,9 @@ export function InteractForm() {
     const systemFunctions = Object.entries(systemData).map(([systemId, systemAbi]) => {
       const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
         if (!isFunction(item)) return false;
-        return item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+        const matchesName = item.name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+        const matchesType = typeFilters.all || (typeFilters[item.stateMutability] ?? false);
+        return matchesName && matchesType;
       });
 
       return {
@@ -67,7 +79,34 @@ export function InteractForm() {
     });
 
     return [...coreSection, ...systemFunctions];
-  }, [systemData, deferredFilterValue]);
+  }, [systemData, deferredFilterValue, typeFilters]);
+
+  const handleTypeFilterChange = (type: string, checked: boolean) => {
+    setTypeFilters((prev) => {
+      if (type === "all") {
+        return {
+          all: true,
+          view: false,
+          pure: false,
+          nonpayable: false,
+          payable: false,
+        };
+      }
+
+      const newFilters = {
+        ...prev,
+        [type]: checked,
+        all: false,
+      };
+
+      // If no filters are selected, select "all"
+      if (!Object.entries(newFilters).some(([key, value]) => key !== "all" && value)) {
+        newFilters.all = true;
+      }
+
+      return newFilters;
+    });
+  };
 
   const toggleSystem = (systemId: string) => {
     setExpandedSystems((prev) => ({
@@ -84,12 +123,81 @@ export function InteractForm() {
         <div className="w-[320px] flex-shrink-0 overflow-y-auto border-r pl-1">
           <div className="pr-4">
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
-            <Input
-              type="text"
-              placeholder="Filter functions..."
-              value={deferredFilterValue}
-              onChange={(evt) => setFilterValue(evt.target.value)}
-            />
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Filter functions..."
+                value={deferredFilterValue}
+                onChange={(evt) => setFilterValue(evt.target.value)}
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-[120px] justify-between">
+                    <span>Type</span>
+                    <ChevronsUpDown className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="all"
+                        checked={typeFilters.all}
+                        onCheckedChange={(checked) => handleTypeFilterChange("all", checked as boolean)}
+                      />
+                      <label htmlFor="all" className="flex items-center gap-2 text-sm">
+                        <Eye className="h-4 w-4" />
+                        <span>All</span>
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="view"
+                        checked={typeFilters.view}
+                        onCheckedChange={(checked) => handleTypeFilterChange("view", checked as boolean)}
+                      />
+                      <label htmlFor="view" className="flex items-center gap-2 text-sm">
+                        <Eye className="h-4 w-4" />
+                        <span>Read</span>
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="pure"
+                        checked={typeFilters.pure}
+                        onCheckedChange={(checked) => handleTypeFilterChange("pure", checked as boolean)}
+                      />
+                      <label htmlFor="pure" className="flex items-center gap-2 text-sm">
+                        <Eye className="h-4 w-4" />
+                        <span>Pure</span>
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="nonpayable"
+                        checked={typeFilters.nonpayable}
+                        onCheckedChange={(checked) => handleTypeFilterChange("nonpayable", checked as boolean)}
+                      />
+                      <label htmlFor="nonpayable" className="flex items-center gap-2 text-sm">
+                        <Send className="h-4 w-4" />
+                        <span>Write</span>
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="payable"
+                        checked={typeFilters.payable}
+                        onCheckedChange={(checked) => handleTypeFilterChange("payable", checked as boolean)}
+                      />
+                      <label htmlFor="payable" className="flex items-center gap-2 text-sm">
+                        <Coins className="h-4 w-4" />
+                        <span>Payable</span>
+                      </label>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           <ul className="mt-4 max-h-max overflow-y-auto pb-4 pr-4">
