@@ -1,6 +1,6 @@
 import { AbiFunction, AbiItem, toFunctionHash } from "viem";
 import { Badge } from "../../../../../../../components/ui/Badge";
-import { FunctionField } from "../FunctionField";
+import { FunctionField } from "./FunctionField";
 
 type System = {
   systemId: string;
@@ -44,7 +44,9 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
       <div>
         <div className="mb-2 flex items-center gap-2">
           <h4 className="my-4 text-2xl font-semibold">{name}</h4>
-          <Badge className="h-5 min-w-[20px] rounded-full px-1.5">{functions.length}</Badge>
+          <Badge variant="secondary" className="h-5 min-w-[20px] rounded-full px-1.5">
+            {functions.length}
+          </Badge>
         </div>
         {functions.map((abi: AbiFunction) => (
           <FunctionField key={toFunctionHash(abi)} worldAbi={worldAbi} functionAbi={abi} />

@@ -3,7 +3,7 @@ import { Badge } from "../../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../../components/ui/Collapsible";
 
-type SystemNavItemProps = {
+type SystemSidebarItemProps = {
   name: string;
   isExpanded?: boolean;
   onToggle?: () => void;
@@ -19,7 +19,7 @@ export function SystemSidebarItem({
   children,
   functionCount,
   isNamespace,
-}: SystemNavItemProps) {
+}: SystemSidebarItemProps) {
   return (
     <li>
       <Collapsible open={isExpanded} onOpenChange={onToggle}>

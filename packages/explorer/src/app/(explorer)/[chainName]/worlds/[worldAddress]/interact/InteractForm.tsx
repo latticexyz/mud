@@ -39,8 +39,9 @@ export function InteractForm() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
   const { data: systemData } = useSystemAbisQuery();
-  const [expandedSystems, setExpandedSystems] = useState<Record<string, boolean>>({});
-
+  const [expandedSystems, setExpandedSystems] = useState<Record<string, boolean>>({
+    Root: true,
+  });
   const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
 
@@ -136,7 +137,13 @@ export function InteractForm() {
               })}
 
             {filteredSystemFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
-              <SystemSidebarItem key={namespace} name={namespace} isNamespace>
+              <SystemSidebarItem
+                key={namespace}
+                name={namespace}
+                isNamespace
+                isExpanded={expandedSystems[namespace]}
+                onToggle={() => toggleSystem(namespace)}
+              >
                 <ul className="ml-4 space-y-1">
                   {systems.map((system: System) => {
                     if (system.functions.length === 0) return null;
