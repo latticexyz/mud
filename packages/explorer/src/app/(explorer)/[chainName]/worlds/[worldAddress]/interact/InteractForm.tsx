@@ -189,6 +189,7 @@ export function InteractForm() {
                 isNamespace
                 isExpanded={expandedSystems[namespace]}
                 onToggle={() => toggleSystem(namespace)}
+                functionCount={systems.reduce((total, system) => total + system.functions.length, 0)}
               >
                 <ul className="ml-4 space-y-1">
                   {systems.map((system: System) => {
