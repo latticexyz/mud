@@ -22,7 +22,7 @@ import { z } from "zod";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { encodeSystemCall } from "@latticexyz/world/internal";
+import { encodeSystemCall } from "@latticexyz/world/internal";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { CopyButton } from "../../../../../../../components/CopyButton";
 import { Button } from "../../../../../../../components/ui/Button";
@@ -38,6 +38,7 @@ import { Input } from "../../../../../../../components/ui/Input";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
+import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
 
 export enum FunctionType {
   READ,
@@ -47,6 +48,7 @@ export enum FunctionType {
 type Props = {
   worldAbi: Abi;
   functionAbi: AbiFunction;
+  systemId?: Hex;
 };
 
 type DecodedEvent = {
@@ -84,7 +86,7 @@ const getInputPlaceholder = (input: AbiParameter): string => {
   return `[${componentsString}]`;
 };
 
-export function FunctionField({ worldAbi, functionAbi }: Props) {
+export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const publicClient = usePublicClient();
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -142,7 +144,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
             data: encodeFunctionData({
               abi: [...worldAbi, functionAbi],
               functionName: functionAbi.name,
-              args: values.inputs,
+              args: encodeFunctionArgs(values.inputs, functionAbi),
             }),
             to: worldAddress as Address,
           });
@@ -151,38 +153,34 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         } else {
           toastId = toast.loading("Transaction submitted");
 
-          // abi, systemId, functionName, args
-          // const encoded = encodeSystemCall({
-          //   abi: [functionAbi],
-          //   functionName: functionAbi.name,
-          //   args: ["0x74627063746f6b656e00000000000000416c6c6f77616e636573000000000000"], // values.inputs,
-          //   // value: values.value ? BigInt(values.value) : undefined,
-          //   systemId: "0x73790000000000000000000000000000416374697661746553797374656d0000", // worldAddress as Hex,
-          // });
-          // console.log("encoded", encoded);
+          let txHash;
+          if (systemId) {
+            const encoded = encodeSystemCall({
+              abi: [functionAbi],
+              functionName: functionAbi.name,
+              args: encodeFunctionArgs(values.inputs, functionAbi),
+              systemId,
+            });
 
-          // const tx = await writeContract(wagmiConfig, {
-          //   abi: worldAbi,
-          //   functionName: "call",
-          //   args: encoded,
-          //   // value: values.value ? BigInt(values.value) : undefined,
-          //   address: worldAddress as Address,
-          //   chainId,
-          // });
+            txHash = await writeContract(wagmiConfig, {
+              abi: [...worldAbi, functionAbi],
+              address: worldAddress as Address,
+              functionName: "call",
+              args: encoded,
+              ...(values.value && { value: BigInt(values.value) }),
+              chainId,
+            });
+          } else {
+            txHash = await writeContract(wagmiConfig, {
+              abi: worldAbi,
+              address: worldAddress as Address,
+              functionName: functionAbi.name,
+              args: encodeFunctionArgs(values.inputs, functionAbi),
+              ...(values.value && { value: BigInt(values.value) }),
+              chainId,
+            });
+          }
 
-          const txHash = await writeContract(wagmiConfig, {
-            abi: worldAbi,
-            address: worldAddress as Address,
-            functionName: functionAbi.name,
-            args: values.inputs.map((value, index) => {
-              const type = functionAbi.inputs[index]?.type;
-              if (type === "tuple") return JSON.parse(value);
-              if (type === "bool") return value === "true";
-              return value;
-            }),
-            ...(values.value && { value: BigInt(values.value) }),
-            chainId,
-          });
           setTxHash(txHash);
 
           const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });

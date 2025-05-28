@@ -70,8 +70,6 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
 
-  console.log("tableData:", table, query);
-
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
     (updater) => {
       const newPaginationState = typeof updater === "function" ? updater(pagination) : updater;

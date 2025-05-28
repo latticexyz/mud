@@ -31,7 +31,12 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
               </Badge>
             </div>
             {system.functions.map((abi: AbiFunction) => (
-              <FunctionField key={toFunctionHash(abi)} worldAbi={worldAbi} functionAbi={abi} />
+              <FunctionField
+                key={toFunctionHash(abi)}
+                systemId={system.systemId}
+                worldAbi={worldAbi}
+                functionAbi={abi}
+              />
             ))}
           </div>
         ))}
