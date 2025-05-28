@@ -188,17 +188,15 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
             <CopyButton value={getShareableUrl()} disabled={!form.getValues().inputs?.length} className="h-8 w-8" />
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             {functionAbi.inputs.map((input, index) => (
               <FormField
                 key={index}
                 control={form.control}
                 name={`inputs.${index}`}
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-4">
-                    <FormLabel className="w-[100px] shrink-0 truncate text-right" title={input.name}>
-                      {input.name}
-                    </FormLabel>
+                  <FormItem className="flex items-center gap-2 space-y-0">
+                    <FormLabel className="shrink-0 font-mono text-sm opacity-70">{input.name}</FormLabel>
                     <div className="flex-1">
                       <FormControl>
                         <Input
@@ -207,6 +205,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                           onChange={(evt) => {
                             field.onChange(evt.target.value);
                           }}
+                          className="font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -221,11 +220,11 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 control={form.control}
                 name="value"
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-4">
-                    <FormLabel className="w-[120px] shrink-0 text-right">ETH value</FormLabel>
-                    <div className="flex-1">
+                  <FormItem className="flex items-center gap-2">
+                    <FormLabel className="shrink-0 font-mono text-sm opacity-70">value</FormLabel>
+                    <div className="min-w-[200px] flex-1">
                       <FormControl>
-                        <Input placeholder="uint256" {...field} />
+                        <Input placeholder="uint256" {...field} className="font-mono text-sm" />
                       </FormControl>
                       <FormMessage />
                     </div>
