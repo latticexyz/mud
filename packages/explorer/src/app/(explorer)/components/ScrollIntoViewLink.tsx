@@ -9,12 +9,12 @@ type Props = {
   className?: string;
 } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
-// TODO: Fix this
 export function ScrollIntoViewLink({ elementId, children, ...rest }: Props) {
   const [hash, setHash] = useHashState();
 
   const handleClick = () => {
     setHash(elementId);
+
     const url = new URL(window.location.href);
     url.hash = elementId;
     navigator.clipboard.writeText(url.toString());

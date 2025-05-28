@@ -3,7 +3,7 @@
 import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { parseAsJson, useQueryState } from "nuqs";
 import { toast } from "sonner";
 import {
   Abi,
@@ -37,6 +37,7 @@ import {
 import { Input } from "../../../../../../../components/ui/Input";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../../hooks/useChain";
+import { useHashState } from "../../../../../hooks/useHashState";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
 
@@ -97,8 +98,8 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const account = useAccount();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const [functionName] = useQueryState("interact_function", parseAsString.withDefault(""));
-  const [functionArgs] = useQueryState("interact_args", parseAsJson<string[]>().withDefault([]));
+  const [functionHash] = useHashState();
+  const [functionArgs] = useQueryState("args", parseAsJson<string[]>().withDefault([]));
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -109,7 +110,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: functionName === toFunctionHash(functionAbi) ? functionArgs : [],
+      inputs: functionHash === toFunctionHash(functionAbi) ? functionArgs : [],
       value: "",
     },
   });
@@ -119,8 +120,8 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
     if (!values.inputs?.length) return "";
 
     const url = new URL(window.location.href);
-    url.searchParams.set("interact_function", toFunctionHash(functionAbi));
-    url.searchParams.set("interact_args", JSON.stringify(values.inputs));
+    url.hash = toFunctionHash(functionAbi);
+    url.searchParams.set("args", JSON.stringify(values.inputs));
 
     return url.toString();
   }, [form, functionAbi]);
@@ -200,7 +201,19 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
         setIsLoading(false);
       }
     },
-    [account, chainId, functionAbi, openConnectModal, operationType, publicClient, wagmiConfig, worldAbi, worldAddress],
+    [
+      account.address,
+      account.isConnected,
+      chainId,
+      functionAbi,
+      openConnectModal,
+      operationType,
+      publicClient,
+      systemId,
+      wagmiConfig,
+      worldAbi,
+      worldAddress,
+    ],
   );
 
   return (
@@ -232,7 +245,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
           </div>
 
           {functionAbi.inputs.length > 0 && (
-            <div className="space-y-2">
+            <div className="!mt-2 space-y-2">
               {functionAbi.inputs.map((input, index) => (
                 <FormField
                   key={index}

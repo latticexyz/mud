@@ -1,4 +1,4 @@
-import { AbiFunction, AbiItem, toFunctionHash } from "viem";
+import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
 import { Badge } from "../../../../../../../components/ui/Badge";
 import { FunctionField } from "./FunctionField";
 
@@ -33,7 +33,7 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
             {system.functions.map((abi: AbiFunction) => (
               <FunctionField
                 key={toFunctionHash(abi)}
-                systemId={system.systemId}
+                systemId={system.systemId as Hex}
                 worldAbi={worldAbi}
                 functionAbi={abi}
               />
