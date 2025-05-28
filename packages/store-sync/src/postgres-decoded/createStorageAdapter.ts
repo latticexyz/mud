@@ -64,6 +64,15 @@ export async function createStorageAdapter({
 
         const sqlTable = buildTable(table);
         const keyBytes = concatHex(log.args.keyTuple as Hex[]);
+        const keyTupleLength = log.args.keyTuple.length;
+        const keySchemaLength = Object.keys(table.keySchema).length;
+        if (keySchemaLength !== keyTupleLength) {
+          debug(
+            `key tuple length ${keyTupleLength} does not match key schema length ${keySchemaLength}, skipping log`,
+            { table, log },
+          );
+          continue;
+        }
         const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (
