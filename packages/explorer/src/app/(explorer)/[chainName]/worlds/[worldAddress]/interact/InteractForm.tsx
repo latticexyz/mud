@@ -118,7 +118,7 @@ export function InteractForm() {
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
             <div className="flex gap-2">
               <Input
-                type="text"
+                type="search"
                 placeholder="Filter functions..."
                 value={deferredFilterValue}
                 onChange={(evt) => setFilterValue(evt.target.value)}
