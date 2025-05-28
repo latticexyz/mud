@@ -149,7 +149,7 @@ export function createStorageAdapter<tables extends Tables>({
                   rawRecord,
                 },
               );
-              return undefined;
+              return;
             }
             const key = decodeKey(keySchema, rawRecord.keyTuple);
 
