@@ -126,6 +126,32 @@ export function InteractForm() {
     });
   };
 
+  // Expand matching systems when the filter value is changed
+  useEffect(() => {
+    if (!deferredFilterValue) {
+      setExpandedSystems({ root: true });
+      return;
+    }
+
+    const newExpandedState: Record<string, boolean> = {};
+
+    if (filteredSystemFunctions.core.length > 0) {
+      newExpandedState.core = true;
+    }
+
+    filteredSystemFunctions.namespaces.forEach(({ namespace, systems }) => {
+      if (systems.length > 0) {
+        newExpandedState[namespace] = true;
+        systems.forEach((system) => {
+          newExpandedState[system.systemId] = true;
+        });
+      }
+    });
+
+    setExpandedSystems(newExpandedState);
+  }, [deferredFilterValue, filteredSystemFunctions]);
+
+  // Expand matching systems when Explorer is opened with a hash
   useEffect(() => {
     if (!hash || !systemData) return;
 
