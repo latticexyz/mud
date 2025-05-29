@@ -1,23 +1,23 @@
 import { useAccount } from "wagmi";
 import { Button } from "./ui/Button";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useModal } from "connectkit";
 import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
-  const { openConnectModal, connectModalOpen } = useConnectModal();
+  const { open, setOpen } = useModal();
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
 
   // automatically open connect modal once
   // TODO: remove this once we have more than "connect wallet" as an option
   useEffect(() => {
-    if (!connectModalOpen && !hasAutoOpened) {
-      openConnectModal?.();
+    if (!open && !hasAutoOpened) {
+      setOpen(true);
       setHasAutoOpened(true);
     }
-  }, [connectModalOpen, hasAutoOpened, openConnectModal]);
+  }, [hasAutoOpened, open, setOpen]);
 
   // TODO: show error states?
 
@@ -35,7 +35,7 @@ export function ConnectWallet() {
           variant="secondary"
           className="self-auto flex justify-center"
           disabled={userAccount.status === "connecting"}
-          onClick={openConnectModal}
+          onClick={() => setOpen(true)}
           autoFocus
         >
           Connect wallet
