@@ -59,7 +59,7 @@
     "tsx": "4.19.0",
     "turbo": "^1.9.3",
     "typescript": "5.4.2",
-    "viem": "2.23.2",
+    "viem": "2.30.5",
     "vitest": "2.1.2",
     "with-anvil": "workspace:*"
   },
