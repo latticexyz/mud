@@ -3,21 +3,21 @@ import { toFunctionHash } from "viem";
 import { AbiFunction } from "viem";
 import { cn } from "../../../../../../../utils";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
+import { useHashState } from "../../../../../hooks/useHashState";
 
 type FunctionNavItemProps = {
   abi: AbiFunction;
-  hash?: string;
 };
 
-export function FunctionSidebarItem({ abi, hash }: FunctionNavItemProps) {
-  const functionHash = toFunctionHash(abi);
+export function FunctionSidebarItem({ abi }: FunctionNavItemProps) {
+  const [functionHash] = useHashState();
   return (
-    <li key={functionHash}>
+    <li>
       <ScrollIntoViewLink
-        elementId={functionHash}
+        elementId={toFunctionHash(abi)}
         className={cn(
           "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-          functionHash === hash ? "text-orange-500" : null,
+          functionHash === toFunctionHash(abi) ? "text-orange-500" : null,
         )}
       >
         <span className="opacity-50">

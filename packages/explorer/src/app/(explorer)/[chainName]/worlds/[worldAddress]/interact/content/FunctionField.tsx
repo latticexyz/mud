@@ -118,10 +118,13 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
 
   const getShareableUrl = useCallback(() => {
     const values = form.watch();
-    if (!values.inputs?.length) return "";
-
     const params = new URLSearchParams(searchParams.toString());
-    params.set("args", JSON.stringify(values.inputs));
+
+    if (values.inputs?.length) {
+      params.set("args", JSON.stringify(values.inputs));
+    } else {
+      params.delete("args");
+    }
 
     const url = new URL(window.location.href);
     url.hash = toFunctionHash(functionAbi);

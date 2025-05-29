@@ -18,7 +18,7 @@ type Props = {
 
 export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Props) {
   const { data: systemData } = useSystemAbisQuery();
-  const [hash] = useHashState();
+  const [functionHash] = useHashState();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [expandedSystems, setExpandedSystems] = useState<Record<string, boolean>>({
@@ -32,7 +32,7 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
     } else {
       params.delete("filter");
     }
-    router.replace(`?${params.toString()}`);
+    router.replace(`?${params.toString()}${window.location.hash}`);
   }, [filterValue, searchParams, router]);
 
   const toggleSystem = (systemId: string) => {
@@ -55,11 +55,11 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
 
   // Expand matching systems when opened with a hash
   useEffect(() => {
-    if (!hash || !systemData) return;
+    if (!functionHash || !systemData) return;
 
     const coreFunction = (IBaseWorldAbi as AbiItem[]).find((item) => {
       if (item.type !== "function") return false;
-      return toFunctionHash(item) === hash;
+      return toFunctionHash(item) === functionHash;
     });
 
     if (coreFunction) {
@@ -74,7 +74,7 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
     for (const [systemId, systemAbi] of Object.entries(systemData)) {
       const functionWithHash = systemAbi.find((item) => {
         if (item.type !== "function") return false;
-        return toFunctionHash(item) === hash;
+        return toFunctionHash(item) === functionHash;
       });
 
       if (functionWithHash) {
@@ -87,7 +87,7 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
         break;
       }
     }
-  }, [hash, systemData]);
+  }, [functionHash, systemData]);
 
   // Expand matching systems when the filter value is changed
   useEffect(() => {
@@ -150,7 +150,7 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
                   >
                     <ul className="mt-0 space-y-1">
                       {system.functions.map((abi: AbiFunction) => (
-                        <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
+                        <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
                       ))}
                     </ul>
                   </SystemSidebarItem>
@@ -175,7 +175,7 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
             >
               <ul className="mt-0 space-y-1">
                 {system.functions.map((abi: AbiFunction) => (
-                  <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
+                  <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
                 ))}
               </ul>
             </SystemSidebarItem>
