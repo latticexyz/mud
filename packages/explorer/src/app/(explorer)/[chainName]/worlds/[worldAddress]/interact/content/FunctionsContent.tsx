@@ -23,7 +23,7 @@ export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Pro
         </div>
       )}
 
-      {worldAbi && (
+      {!isLoading && (
         <>
           {filteredFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
             <SystemContent
