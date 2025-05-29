@@ -2,19 +2,27 @@ import { useAccount, useBalance, useSwitchChain } from "wagmi";
 import { Button, type Props as ButtonProps } from "../../ui/Button";
 import { twMerge } from "tailwind-merge";
 import { parseEther } from "viem";
+import { useEffect } from "react";
 
 export type Props = Omit<ButtonProps, "type"> & {
   amount?: bigint | undefined;
   chainId?: number | undefined;
+  onChainSwitched?: () => void;
 };
 
 const MAX_DEPOSIT_AMOUNT = "0.1";
 
-export function SubmitButton({ amount, chainId, className, ...buttonProps }: Props) {
+export function SubmitButton({ amount, chainId, className, onChainSwitched, ...buttonProps }: Props) {
   const { chainId: userChainId, address: userAddress } = useAccount();
   const { data: userBalance } = useBalance({ address: userAddress });
   const shouldSwitchChain = chainId != null && chainId !== userChainId;
   const switchChain = useSwitchChain();
+
+  useEffect(() => {
+    if (switchChain.isSuccess && onChainSwitched) {
+      onChainSwitched();
+    }
+  }, [switchChain.isSuccess, onChainSwitched]);
 
   if (shouldSwitchChain) {
     return (
