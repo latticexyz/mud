@@ -10,6 +10,7 @@ export function useHashState() {
     () => () => (typeof window !== "undefined" ? window.location.hash.replace(/^#!?/, "") : ""),
     [],
   );
+
   const router = useRouter();
   const params = useParams();
   const [hash, _setHash] = useState<string>(getCurrentHash());

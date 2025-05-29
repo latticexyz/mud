@@ -2,7 +2,7 @@
 
 import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { parseAsJson, useQueryState } from "nuqs";
 import { toast } from "sonner";
 import {
@@ -88,6 +88,7 @@ const getInputPlaceholder = (input: AbiParameter): string => {
 };
 
 export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
+  const searchParams = useSearchParams();
   const publicClient = usePublicClient();
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -119,12 +120,15 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
     const values = form.watch();
     if (!values.inputs?.length) return "";
 
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("args", JSON.stringify(values.inputs));
+
     const url = new URL(window.location.href);
     url.hash = toFunctionHash(functionAbi);
-    url.searchParams.set("args", JSON.stringify(values.inputs));
+    url.search = params.toString();
 
     return url.toString();
-  }, [form, functionAbi]);
+  }, [form, functionAbi, searchParams]);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {

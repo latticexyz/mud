@@ -125,60 +125,62 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
           );
         })}
 
-      {filteredFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
-        <SystemSidebarItem
-          key={namespace}
-          name={namespace}
-          isNamespace
-          isExpanded={expandedSystems[namespace]}
-          onToggle={() => toggleSystem(namespace)}
-          functionCount={systems.reduce((total, system) => total + system.functions.length, 0)}
-        >
-          <ul className="ml-4 space-y-1">
-            {systems.map((system: System) => {
-              if (system.functions.length === 0) return null;
-
-              const isExpanded = expandedSystems[system.systemId];
-              return (
-                <SystemSidebarItem
-                  key={system.systemId}
-                  name={system.name}
-                  isExpanded={isExpanded}
-                  onToggle={() => toggleSystem(system.systemId)}
-                  functionCount={system.functions.length}
-                >
-                  <ul className="mt-0 space-y-1">
-                    {system.functions.map((abi: AbiFunction) => (
-                      <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
-                    ))}
-                  </ul>
-                </SystemSidebarItem>
-              );
-            })}
-          </ul>
-        </SystemSidebarItem>
-      ))}
-
-      {filteredFunctions.core.map((system: System) => {
-        if (system.functions.length === 0) return null;
-
-        const isExpanded = expandedSystems[system.systemId];
-        return (
+      {!isLoading &&
+        filteredFunctions.namespaces.map(({ namespace, systems }: NamespaceSection) => (
           <SystemSidebarItem
-            key={system.systemId}
-            name={system.name}
-            isExpanded={isExpanded}
-            onToggle={() => toggleSystem(system.systemId)}
-            functionCount={system.functions.length}
+            key={namespace}
+            name={namespace}
+            isNamespace
+            isExpanded={expandedSystems[namespace]}
+            onToggle={() => toggleSystem(namespace)}
+            functionCount={systems.reduce((total, system) => total + system.functions.length, 0)}
           >
-            <ul className="mt-0 space-y-1">
-              {system.functions.map((abi: AbiFunction) => (
-                <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
-              ))}
+            <ul className="ml-4 space-y-1">
+              {systems.map((system: System) => {
+                if (system.functions.length === 0) return null;
+
+                const isExpanded = expandedSystems[system.systemId];
+                return (
+                  <SystemSidebarItem
+                    key={system.systemId}
+                    name={system.name}
+                    isExpanded={isExpanded}
+                    onToggle={() => toggleSystem(system.systemId)}
+                    functionCount={system.functions.length}
+                  >
+                    <ul className="mt-0 space-y-1">
+                      {system.functions.map((abi: AbiFunction) => (
+                        <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
+                      ))}
+                    </ul>
+                  </SystemSidebarItem>
+                );
+              })}
             </ul>
           </SystemSidebarItem>
-        );
-      })}
+        ))}
+
+      {!isLoading &&
+        filteredFunctions.core.map((system: System) => {
+          if (system.functions.length === 0) return null;
+
+          const isExpanded = expandedSystems[system.systemId];
+          return (
+            <SystemSidebarItem
+              key={system.systemId}
+              name={system.name}
+              isExpanded={isExpanded}
+              onToggle={() => toggleSystem(system.systemId)}
+              functionCount={system.functions.length}
+            >
+              <ul className="mt-0 space-y-1">
+                {system.functions.map((abi: AbiFunction) => (
+                  <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} hash={hash} />
+                ))}
+              </ul>
+            </SystemSidebarItem>
+          );
+        })}
     </ul>
   );
 }
