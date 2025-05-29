@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:bookworm-slim as base
+FROM docker.io/library/debian:bookworm-slim AS base
 ENV SHELL /bin/bash
 
 WORKDIR /opt
@@ -20,7 +20,7 @@ RUN mkdir -p /etc/apt/keyrings && \
     npm --version
 
 # foundry
-ENV PATH="${PATH}:/root/.foundry/bin"
+ENV PATH $PATH:/root/.foundry/bin
 RUN curl -L https://foundry.paradigm.xyz/ | bash && \
     ${HOME}/.foundry/bin/foundryup && \
     forge --version && \
@@ -29,8 +29,8 @@ RUN curl -L https://foundry.paradigm.xyz/ | bash && \
     chisel --version
 
 # pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="${PATH}:${PNPM_HOME}"
+ENV PNPM_HOME /pnpm
+ENV PATH $PATH:$PNPM_HOME
 RUN npm install pnpm@9.6.0 --global && pnpm --version
 
 FROM base AS mud
