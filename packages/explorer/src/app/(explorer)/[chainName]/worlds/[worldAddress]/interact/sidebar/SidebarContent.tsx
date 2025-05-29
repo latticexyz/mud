@@ -53,6 +53,27 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
     });
   };
 
+  // Expand matching systems when the filter value is changed
+  useEffect(() => {
+    if (!filterValue) return;
+
+    const newExpandedState: Record<string, boolean> = {};
+    if (filteredFunctions.core.length > 0) {
+      newExpandedState.core = true;
+    }
+
+    filteredFunctions.namespaces.forEach(({ namespace, systems }) => {
+      if (systems.length > 0) {
+        newExpandedState[namespace] = true;
+        systems.forEach((system) => {
+          newExpandedState[system.systemId] = true;
+        });
+      }
+    });
+
+    setExpandedSystems(newExpandedState);
+  }, [filterValue, filteredFunctions]);
+
   // Expand matching systems when opened with a hash
   useEffect(() => {
     if (!functionHash || !systemData) return;
@@ -88,31 +109,6 @@ export function SidebarContent({ filterValue, filteredFunctions, isLoading }: Pr
       }
     }
   }, [functionHash, systemData]);
-
-  // Expand matching systems when the filter value is changed
-  useEffect(() => {
-    if (!filterValue) {
-      setExpandedSystems({ root: true });
-      return;
-    }
-
-    const newExpandedState: Record<string, boolean> = {};
-
-    if (filteredFunctions.core.length > 0) {
-      newExpandedState.core = true;
-    }
-
-    filteredFunctions.namespaces.forEach(({ namespace, systems }) => {
-      if (systems.length > 0) {
-        newExpandedState[namespace] = true;
-        systems.forEach((system) => {
-          newExpandedState[system.systemId] = true;
-        });
-      }
-    });
-
-    setExpandedSystems(newExpandedState);
-  }, [filterValue, filteredFunctions]);
 
   return (
     <ul className="mt-4 max-h-max overflow-y-auto pb-4 pr-4">
