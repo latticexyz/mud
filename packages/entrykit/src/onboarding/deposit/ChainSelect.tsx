@@ -86,8 +86,7 @@ export function ChainSelect({ value, onChange }: Props) {
               <Select.Group
                 className={twMerge(
                   "flex flex-col border divide-y",
-                  "bg-neutral-100 text-neutral-700 border-neutral-300 divide-neutral-300",
-                  "dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 dark:divide-neutral-700",
+                  "bg-neutral-800 text-neutral-300 border-neutral-700 divide-neutral-700",
                 )}
               >
                 {sourceChains.map((chain) => (
@@ -98,13 +97,12 @@ export function ChainSelect({ value, onChange }: Props) {
                     className={twMerge(
                       "group flex p-2.5 gap-2.5 items-center cursor-pointer outline-none",
                       // TODO: different style for checked/active state
-                      "text-black focus:bg-white data-[state=checked]:bg-neutral-200",
-                      "dark:text-white dark:focus:bg-neutral-700 dark:data-[state=checked]:bg-neutral-900",
+                      "text-white focus:bg-neutral-700 data-[state=checked]:bg-neutral-900",
                     )}
                   >
                     <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} />
                     <span className="flex-grow flex-shrink-0">{chain.name}</span>
-                    <span className="flex-shrink-0 font-mono text-sm text-neutral-500 dark:text-neutral-400">
+                    <span className="flex-shrink-0 font-mono text-sm text-neutral-400">
                       <ChainBalance chainId={chain.id} address={userAccount.address} />
                     </span>
                   </Select.Item>

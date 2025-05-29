@@ -18,11 +18,7 @@ export const AmountInput = forwardRef<HTMLInputElement, Props>(function AmountIn
       <label>
         <input
           ref={forwardedRef}
-          className={twMerge(
-            "peer flex-grow outline-none bg-transparent",
-            "placeholder:text-neutral-400",
-            "dark:placeholder:text-neutral-500",
-          )}
+          className={twMerge("peer flex-grow outline-none bg-transparent", "placeholder:text-neutral-500")}
           placeholder="0.005"
           required
           autoFocus
@@ -44,13 +40,7 @@ export const AmountInput = forwardRef<HTMLInputElement, Props>(function AmountIn
             onChange(parseEther(value));
           }}
         />
-        <span
-          className={twMerge(
-            "flex-shrink-0 text-2xl",
-            "peer-placeholder-shown:text-neutral-400",
-            "dark:peer-placeholder-shown:text-neutral-500",
-          )}
-        >
+        <span className={twMerge("flex-shrink-0 text-2xl", "peer-placeholder-shown:text-neutral-500")}>
           <EthIcon />
         </span>
       </label>

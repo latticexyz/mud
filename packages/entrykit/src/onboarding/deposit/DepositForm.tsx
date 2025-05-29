@@ -92,8 +92,7 @@ export function DepositForm({
       <dl
         className={twMerge(
           "grid grid-cols-2 divide-y text-sm leading-loose [&_>_:is(dt,dd)]:px-1 [&_>_dd]:text-right",
-          "divide-neutral-200 text-neutral-500",
-          "dark:divide-neutral-700 dark:text-neutral-400",
+          "divide-neutral-700 text-neutral-400",
         )}
       >
         <dt>Available to deposit</dt>
