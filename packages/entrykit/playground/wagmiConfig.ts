@@ -7,7 +7,11 @@ const chains = [
   {
     ...anvil,
     rpcUrls: {
-      ...anvil.rpcUrls,
+      // ...anvil.rpcUrls,
+      default: {
+        http: ["https://anvil.tunnel.offchain.dev"],
+        webSocket: ["wss://anvil.tunnel.offchain.dev"],
+      },
       // bundler: {
       //   http: ["http://127.0.0.1:4337"],
       // },
