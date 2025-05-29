@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:bullseye-slim as base
+FROM docker.io/library/debian:bookworm-slim as base
 ENV SHELL /bin/bash
 
 WORKDIR /opt
