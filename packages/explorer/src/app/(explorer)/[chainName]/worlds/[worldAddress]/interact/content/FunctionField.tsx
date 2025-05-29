@@ -3,7 +3,6 @@
 import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { parseAsJson, useQueryState } from "nuqs";
 import { toast } from "sonner";
 import {
   Abi,
@@ -100,7 +99,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const [functionHash] = useHashState();
-  const [functionArgs] = useQueryState("args", parseAsJson<string[]>().withDefault([]));
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -111,8 +109,8 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: functionHash === toFunctionHash(functionAbi) ? functionArgs : [],
-      value: "",
+      inputs: functionHash === toFunctionHash(functionAbi) ? JSON.parse(searchParams.get("args") || "[]") : [],
+      value: functionHash === toFunctionHash(functionAbi) ? searchParams.get("value") ?? "" : "",
     },
   });
 
@@ -124,6 +122,12 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
       params.set("args", JSON.stringify(values.inputs));
     } else {
       params.delete("args");
+    }
+
+    if (values.value) {
+      params.set("value", values.value);
+    } else {
+      params.delete("value");
     }
 
     const url = new URL(window.location.href);
@@ -286,9 +290,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
                   control={form.control}
                   name="value"
                   render={({ field }) => (
-                    <FormItem className="flex items-center gap-2">
-                      <FormLabel className="shrink-0 font-mono text-sm opacity-70">value</FormLabel>
-                      <div className="min-w-[200px] flex-1">
+                    <FormItem className="flex items-center gap-4 space-y-0">
+                      <FormLabel className="flex shrink-0 items-center gap-x-2 pt-1 font-mono text-sm opacity-70">
+                        value <CoinsIcon className="h-4 w-4" />
+                      </FormLabel>
+                      <div className="flex-1">
                         <FormControl>
                           <Input placeholder="uint256" {...field} className="font-mono text-sm" />
                         </FormControl>
