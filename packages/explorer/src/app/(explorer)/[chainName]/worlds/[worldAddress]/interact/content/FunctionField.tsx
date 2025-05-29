@@ -222,7 +222,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id={toFunctionHash(functionAbi)}
-          className="space-y-4 rounded border border-white/10 bg-black/5 p-3 pb-4"
+          className="space-y-4 rounded border border-white/10 bg-black/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">

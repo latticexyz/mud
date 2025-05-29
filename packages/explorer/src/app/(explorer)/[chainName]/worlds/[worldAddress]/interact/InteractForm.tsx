@@ -113,7 +113,7 @@ export function InteractForm() {
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
             <Input
               type="search"
-              placeholder="Filter by namespace, system, or function..."
+              placeholder="Filter functions…"
               value={filterValue}
               onChange={(evt) => setFilterValue(evt.target.value)}
             />
