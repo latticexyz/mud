@@ -31,7 +31,14 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   getBundlerTransport(chain);
 
   return (
-    <ConnectKitProvider theme="midnight">
+    <ConnectKitProvider
+      theme="midnight"
+      options={{
+        // Prevent Wagmi trying to switch chains after connection
+        // https://github.com/wevm/wagmi/blob/f5b717ccf8a5b283263cadc984ba00b354bcefae/packages/core/src/connectors/injected.ts#L174-L182
+        initialChainId: 0,
+      }}
+    >
       <Context.Provider value={{ ...config, chain }}>{children}</Context.Provider>
     </ConnectKitProvider>
   );

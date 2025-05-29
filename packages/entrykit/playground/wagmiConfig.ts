@@ -1,9 +1,10 @@
 import { Chain, http } from "viem";
-import { anvil } from "viem/chains";
+import { anvil, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 
 const chains = [
+  mainnet,
   {
     ...anvil,
     rpcUrls: {
@@ -32,6 +33,7 @@ const chains = [
 ] as const satisfies Chain[];
 
 const transports = {
+  [mainnet.id]: http(),
   [anvil.id]: http(),
 } as const;
 
