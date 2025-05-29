@@ -37,7 +37,7 @@ const transports = {
 
 export const wagmiConfig = createWagmiConfig({
   chainId,
-  walletConnectProjectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
+  walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
   appName: document.title,
   chains,
   transports,
