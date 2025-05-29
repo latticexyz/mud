@@ -222,7 +222,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id={toFunctionHash(functionAbi)}
-          className="space-y-4 rounded border border-white/20 p-3 pb-4"
+          className="space-y-4 rounded border border-white/10 bg-black/5 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
@@ -313,13 +313,13 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
               <ul>
                 {events.map((event, idx) => (
                   <li key={idx}>
-                    {event.eventName && <span className="text-xs">{event.eventName}:</span>}
+                    {event.eventName && <span className="text-sm">{event.eventName}:</span>}
                     {event.args && (
                       <ul className="list-inside">
                         {Object.entries(event.args).map(([key, value]) => (
                           <li key={key} className="mt-1 flex">
-                            <span className="text-xs text-white/60">{key}:</span>{" "}
-                            <span className="text-xs">{String(value)}</span>
+                            <span className="text-sm text-white/60">{key}:</span>{" "}
+                            <span className="text-sm">{String(value)}</span>
                           </li>
                         ))}
                       </ul>
