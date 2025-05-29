@@ -28,6 +28,7 @@ export function createWagmiConfig<
     pollingInterval: config.pollingInterval,
     appName: config.appName,
     walletConnectProjectId: config.walletConnectProjectId,
+    enableFamily: false,
   });
   return createConfig(configParams) as never;
 }

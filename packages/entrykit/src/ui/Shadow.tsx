@@ -52,7 +52,9 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
           inset: "0",
           width: "100%",
           height: "100%",
-          zIndex: "2147483646",
+          // one less than ConnectKit's modal z-index
+          // so that ConnectKit can overlap properly
+          zIndex: "2147483645",
         }
       : frameSize.width && frameSize.height
         ? {
