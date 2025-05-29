@@ -1,52 +1,109 @@
 "use client";
 
-import { Coins, Eye, Send } from "lucide-react";
-import { useQueryState } from "nuqs";
-import { AbiFunction, AbiItem, toFunctionHash } from "viem";
-import { useDeferredValue, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { AbiFunction, AbiItem, Hex } from "viem";
+import { useDeferredValue, useMemo, useState } from "react";
+import { hexToResource } from "@latticexyz/common";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { Input } from "../../../../../../components/ui/Input";
-import { Separator } from "../../../../../../components/ui/Separator";
-import { Skeleton } from "../../../../../../components/ui/Skeleton";
-import { cn } from "../../../../../../utils";
-import { ScrollIntoViewLink } from "../../../../components/ScrollIntoViewLink";
-import { useHashState } from "../../../../hooks/useHashState";
+import { useSystemAbisQuery } from "../../../../queries/useSystemAbisQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
-import { FunctionField } from "./FunctionField";
+import { FunctionsContent } from "./content/FunctionsContent";
+import { SidebarContent } from "./sidebar/SidebarContent";
 
 function isFunction(abi: AbiItem): abi is AbiFunction {
   return abi.type === "function";
 }
 
+export type System = {
+  systemId: string;
+  name: string;
+  namespace: string;
+  functions: AbiFunction[];
+};
+
+export type NamespaceSection = {
+  namespace: string;
+  systems: System[];
+};
+
+export type FilteredFunctions = {
+  core: System[];
+  namespaces: NamespaceSection[];
+};
+
 export function InteractForm() {
-  const [hash] = useHashState();
-  const { data, isFetched } = useWorldAbiQuery();
-  const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
+  const searchParams = useSearchParams();
+  const { data: worldAbiData, isFetched: isWorldAbiFetched } = useWorldAbiQuery();
+  const { data: systemAbis, isFetched: isSystemAbisFetched } = useSystemAbisQuery();
+  const isFetched = isWorldAbiFetched && isSystemAbisFetched;
+  const [filterValue, setFilterValue] = useState(searchParams.get("filter") || "");
   const deferredFilterValue = useDeferredValue(filterValue);
-  const filteredFunctions = useMemo(() => {
-    if (!data?.abi) return [];
-    return data.abi.filter(
-      (item): item is AbiFunction =>
-        isFunction(item) && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
-    );
-  }, [data?.abi, deferredFilterValue]);
 
-  useEffect(() => {
-    if (!data?.abi) return;
+  const filteredSystemFunctions = useMemo<FilteredFunctions>(() => {
+    if (!systemAbis) return { core: [], namespaces: [] };
 
-    const functionAbiItem = data.abi.find((item): item is AbiFunction => {
+    const searchLower = deferredFilterValue.toLowerCase();
+    const coreFunctions = (IBaseWorldAbi as AbiItem[]).filter((item): item is AbiFunction => {
       if (!isFunction(item)) return false;
-      const url = new URL(window.location.href);
-      return url.searchParams.get("interact_function") === toFunctionHash(item);
+      const matchesName = `core_core_${item.name}`.toLowerCase().includes(searchLower);
+      return matchesName;
     });
 
-    if (functionAbiItem) {
-      const functionHash = toFunctionHash(functionAbiItem);
-      const element = document.getElementById(functionHash);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [data?.abi]);
+    const coreSection =
+      coreFunctions.length > 0
+        ? [
+            {
+              systemId: "core",
+              name: "core",
+              namespace: "",
+              functions: coreFunctions,
+            },
+          ]
+        : [];
+
+    const systemsByNamespace = Object.entries(systemAbis).reduce<Record<string, System[]>>(
+      (acc, [systemId, systemAbi]) => {
+        const { namespace, name: systemName } = hexToResource(systemId as Hex);
+        const namespaceName = namespace || "root";
+
+        const filteredFunctions = systemAbi.filter((item): item is AbiFunction => {
+          if (!isFunction(item)) return false;
+          const searchString = `${namespaceName}_${systemName}_${item.name}`.toLowerCase();
+          return searchString.includes(searchLower);
+        });
+
+        if (filteredFunctions.length === 0) return acc;
+
+        const system = {
+          systemId,
+          namespace: namespaceName,
+          name: systemName,
+          functions: filteredFunctions,
+        };
+
+        if (!acc[namespaceName]) {
+          acc[namespaceName] = [];
+        }
+        const namespaceArray = acc[namespaceName];
+        if (namespaceArray) {
+          namespaceArray.push(system);
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const namespaceSections = Object.entries(systemsByNamespace).map(([namespace, systems]) => ({
+      namespace,
+      systems,
+    }));
+
+    return {
+      core: coreSection,
+      namespaces: namespaceSections,
+    };
+  }, [systemAbis, deferredFilterValue]);
 
   return (
     <>
@@ -55,69 +112,26 @@ export function InteractForm() {
           <div className="pr-4">
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
             <Input
-              type="text"
-              placeholder="Filter functions..."
-              value={deferredFilterValue}
+              type="search"
+              placeholder="Filter functions…"
+              value={filterValue}
               onChange={(evt) => setFilterValue(evt.target.value)}
             />
           </div>
 
-          <ul className="mt-4 max-h-max space-y-2 overflow-y-auto pb-4">
-            {!isFetched &&
-              Array.from({ length: 10 }).map((_, index) => {
-                return (
-                  <li key={index} className="pr-4 pt-2">
-                    <Skeleton className="h-[25px]" />
-                  </li>
-                );
-              })}
-
-            {filteredFunctions?.map((abi) => {
-              const functionHash = toFunctionHash(abi);
-              return (
-                <li key={functionHash}>
-                  <ScrollIntoViewLink
-                    elementId={functionHash}
-                    className={cn(
-                      "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-                      functionHash === hash ? "text-orange-500" : null,
-                    )}
-                  >
-                    <span className="opacity-50">
-                      {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-                      {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
-                        <Eye className="mr-2 inline-block h-4 w-4" />
-                      )}
-                      {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
-                    </span>
-
-                    <span>{(abi as AbiFunction).name}</span>
-                    {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
-                  </ScrollIntoViewLink>
-                </li>
-              );
-            })}
-          </ul>
+          <SidebarContent
+            filteredFunctions={filteredSystemFunctions}
+            filterValue={deferredFilterValue}
+            isLoading={!isFetched}
+          />
         </div>
 
-        <div className="w-full overflow-y-auto pl-1 pr-1">
-          {!isFetched && (
-            <>
-              <Skeleton className="h-[100px]" />
-              <Separator className="my-4" />
-              <Skeleton className="h-[100px]" />
-              <Separator className="my-4" />
-              <Skeleton className="h-[100px]" />
-              <Separator className="my-4" />
-              <Skeleton className="h-[100px]" />
-            </>
-          )}
-
-          {data?.abi &&
-            filteredFunctions.map((abi) => (
-              <FunctionField key={toFunctionHash(abi)} worldAbi={data.abi} functionAbi={abi} />
-            ))}
-        </div>
+        <FunctionsContent
+          worldAbi={worldAbiData?.abi}
+          filteredFunctions={filteredSystemFunctions}
+          filterValue={deferredFilterValue}
+          isLoading={!isFetched}
+        />
       </div>
     </>
   );
