@@ -50,3 +50,8 @@ jobs:
       - name: Outdated files, run `pnpm docs:generate:api` and commit them
         if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v4.2.1
+        with:
+          context: .
