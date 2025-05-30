@@ -1,6 +1,9 @@
 import { Address } from "viem";
-import { useAccount, usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
+import { getAction } from "viem/utils";
+import { waitForTransactionReceipt } from "viem/actions";
+import { useAccount, useClient, useSwitchChain, useWriteContract } from "wagmi";
 import { twMerge } from "tailwind-merge";
+import { useMutation } from "@tanstack/react-query";
 import { getPaymaster } from "../../getPaymaster";
 import { paymasterAbi } from "../../quarry/common";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
@@ -8,19 +11,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useBalance } from "./useBalance";
 import { PendingIcon } from "../../icons/PendingIcon";
-import { useMutation } from "@tanstack/react-query";
 
 export type Props = {
   userAddress: Address;
 };
 
 export function WithdrawGasBalanceButton({ userAddress }: Props) {
-  const queryClient = useQueryClient();
-  const publicClient = usePublicClient();
   const { writeContractAsync } = useWriteContract();
   const { switchChain } = useSwitchChain();
   const { chain, chainId } = useEntryKitConfig();
   const { chainId: userChainId } = useAccount();
+  const queryClient = useQueryClient();
+  const client = useClient({ chainId });
   const shouldSwitchChain = chainId != null && chainId !== userChainId;
   const paymaster = getPaymaster(chain);
   const balance = useShowQueryError(useBalance(userAddress));
@@ -28,9 +30,9 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
   const withdraw = useMutation({
     mutationKey: ["withdraw", userAddress],
     mutationFn: async () => {
-      if (!paymaster) throw new Error("No paymaster configured to withdraw from.");
-      if (!publicClient) throw new Error("Public client not found");
-      if (!balance.data) throw new Error("No paymaster balance to withdraw.");
+      if (!client) throw new Error("Client not ready.");
+      if (!paymaster) throw new Error("Paymaster not found");
+      if (!balance.data) throw new Error("No gas balance to withdraw.");
 
       try {
         const hash = await writeContractAsync({
@@ -38,8 +40,9 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
           abi: paymasterAbi,
           functionName: "withdrawTo",
           args: [userAddress, balance.data],
+          chainId,
         });
-        await publicClient.waitForTransactionReceipt({ hash });
+        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
 
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ["balance"] }),
@@ -56,16 +59,14 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
     return null;
   }
 
-  const handleClick = () => {
-    if (shouldSwitchChain) {
-      return switchChain({ chainId });
-    }
-    withdraw.mutate();
-  };
-
   return (
     <button
-      onClick={handleClick}
+      onClick={() => {
+        if (shouldSwitchChain) {
+          return switchChain({ chainId });
+        }
+        withdraw.mutate();
+      }}
       className={twMerge(
         "text-sm font-medium text-white/50 group whitespace-nowrap",
         withdraw.isPending ? "opacity-50 pointer-events-none" : "cursor-pointer hover:text-white",
