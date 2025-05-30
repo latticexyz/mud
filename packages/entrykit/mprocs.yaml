@@ -16,3 +16,6 @@ procs:
   # bundler:
   #   cwd: ../../../alto
   #   shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
+
+  tunnel:
+    shell: cloudflared tunnel run

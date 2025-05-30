@@ -22,7 +22,7 @@ export function DepositStatus({ status, progress, children, onDismiss }: Props) 
   }, []);
 
   return (
-    <div className="group bg-white dark:bg-neutral-900 flex flex-col animate-in fade-in slide-in-from-bottom-2 animate-out fade-out">
+    <div className="group bg-neutral-900 flex flex-col animate-in fade-in slide-in-from-bottom-2 animate-out fade-out">
       <div className="py-1 text-sm flex items-center gap-2">
         <div className="flex-grow">{children}</div>
         <div className="flex-shrink-0 grid">
@@ -32,7 +32,7 @@ export function DepositStatus({ status, progress, children, onDismiss }: Props) 
             ) : status === "error" ? (
               <WarningIcon className="text-amber-500" />
             ) : (
-              <PendingIcon className="text-neutral-400 dark:text-neutral-500 transition" />
+              <PendingIcon className="text-neutral-500 transition" />
             )}
           </span>
           <button
@@ -41,8 +41,7 @@ export function DepositStatus({ status, progress, children, onDismiss }: Props) 
               "col-start-1 row-start-1 flex items-center justify-center transition",
               "opacity-0 pointer-events-none",
               "group-hover:opacity-100 group-hover:pointer-events-auto",
-              "text-neutral-400 hover:text-black",
-              "dark:text-neutral-500 dark:hover:text-white",
+              "text-neutral-500 hover:text-white",
             )}
             title="Dismiss"
             onClick={onDismiss}
@@ -56,11 +55,7 @@ export function DepositStatus({ status, progress, children, onDismiss }: Props) 
         <div
           className={twMerge(
             "w-full h-full transition ease-linear",
-            status === "success"
-              ? "bg-green-500 dark:bg-green-600"
-              : status === "error"
-                ? "bg-red-500 dark:bg-red-600"
-                : "bg-blue-500 dark:bg-blue-600",
+            status === "success" ? "bg-green-600" : status === "error" ? "bg-red-600" : "bg-blue-600",
             status === "pending" ? "opacity-100" : "opacity-0",
           )}
           style={

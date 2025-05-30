@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "viem": "2.23.2"
+    "viem": "2.30.5"
   },
   "peerDependencies": {
     "@aws-sdk/client-kms": "3.x",

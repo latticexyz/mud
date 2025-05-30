@@ -14,8 +14,7 @@ export function Input({ asChild, className, ...props }: Props) {
       className={twMerge(
         "p-2.5 gap-1 border text-lg font-medium transition",
         "outline-none ring-2 ring-transparent focus-within:ring-orange-500 focus-within:border-transparent",
-        "bg-white border-neutral-300 text-black placeholder:text-neutral-400",
-        "dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder:text-neutral-500",
+        "bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-500",
         className,
       )}
       {...props}

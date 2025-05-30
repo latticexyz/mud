@@ -1,13 +1,18 @@
 import { Chain, http } from "viem";
-import { anvil } from "viem/chains";
+import { anvil, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 
 const chains = [
+  mainnet,
   {
     ...anvil,
     rpcUrls: {
-      ...anvil.rpcUrls,
+      // ...anvil.rpcUrls,
+      default: {
+        http: ["https://anvil.tunnel.offchain.dev"],
+        webSocket: ["wss://anvil.tunnel.offchain.dev"],
+      },
       // bundler: {
       //   http: ["http://127.0.0.1:4337"],
       // },
@@ -28,12 +33,13 @@ const chains = [
 ] as const satisfies Chain[];
 
 const transports = {
+  [mainnet.id]: http(),
   [anvil.id]: http(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
   chainId,
-  walletConnectProjectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
+  walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
   appName: document.title,
   chains,
   transports,

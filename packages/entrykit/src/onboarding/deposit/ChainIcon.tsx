@@ -22,7 +22,7 @@ export const ChainIcon = forwardRef<HTMLSpanElement, Props>(function ChainIcon({
         <span
           className={twMerge(
             "inline-flex items-center justify-center w-full h-full rounded-full",
-            "border-2 border-dashed border-black/20 dark:border-white/50 opacity-50",
+            "border-2 border-dashed border-white/50 opacity-50",
           )}
         >
           {name?.slice(0, 1)}

@@ -26,8 +26,8 @@
     "react-dom": "18.2.0",
     "react-error-boundary": "5.0.0",
     "tailwind-merge": "^2.6.0",
-    "viem": "2.23.2",
-    "wagmi": "2.12.11"
+    "viem": "2.30.5",
+    "wagmi": "2.15.4"
   },
   "devDependencies": {
     "@types/react": "18.2.22",
