@@ -39,14 +39,12 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
           functionName: "withdrawTo",
           args: [userAddress, balance.data],
         });
-        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        await publicClient.waitForTransactionReceipt({ hash });
 
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ["balance"] }),
           queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
         ]);
-
-        return receipt;
       } catch (error) {
         console.error("Error while withdrawing", error);
         throw error;
