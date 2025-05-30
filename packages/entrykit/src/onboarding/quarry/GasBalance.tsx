@@ -30,7 +30,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
 
   if (isFocused) {
     return (
-      <>
+      <div>
         {isFocused && (
           <div className="absolute top-0 left-0">
             <div
@@ -42,7 +42,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
           </div>
         )}
         <DepositFormContainer />
-      </>
+      </div>
     );
   }
 

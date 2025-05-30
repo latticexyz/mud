@@ -129,7 +129,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     <div
       className={twMerge(
         "px-8 flex flex-col",
-        !focusedId && "divide-y divide-neutral-800",
+        "divide-y divide-neutral-800",
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
