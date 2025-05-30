@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Hex } from "viem";
+import { useQueryClient } from "@tanstack/react-query";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { Button } from "../../ui/Button";
 import { Balance } from "../../ui/Balance";
@@ -7,9 +9,8 @@ import { useBalance } from "./useBalance";
 import { DepositFormContainer } from "../deposit/DepositFormContainer";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { StepContentProps } from "../common";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { usePrevious } from "../../errors/usePrevious";
+import { WithdrawGasBalanceButton } from "./WithdrawGasBalanceButton";
 
 export type Props = StepContentProps & {
   userAddress: Hex;
@@ -29,7 +30,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
 
   if (isFocused) {
     return (
-      <>
+      <div>
         {isFocused && (
           <div className="absolute top-0 left-0">
             <div
@@ -41,7 +42,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
           </div>
         )}
         <DepositFormContainer />
-      </>
+      </div>
     );
   }
 
@@ -54,15 +55,20 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
             {balance.data != null ? <Balance wei={balance.data} /> : <PendingIcon className="text-sm" />}
           </div>
         </div>
-        <Button
-          variant={isActive ? "primary" : "tertiary"}
-          className="flex-shrink-0 text-sm p-1 w-28"
-          autoFocus={isActive || isExpanded}
-          pending={balance.status === "pending"}
-          onClick={() => setFocused(true)}
-        >
-          Top up
-        </Button>
+
+        <div className="flex flex-col gap-1 justify-center items-center">
+          <Button
+            variant={isActive ? "primary" : "tertiary"}
+            className="flex-shrink-0 text-sm p-1 w-28"
+            autoFocus={isActive || isExpanded}
+            pending={balance.status === "pending"}
+            onClick={() => setFocused(true)}
+          >
+            Top up
+          </Button>
+
+          <WithdrawGasBalanceButton userAddress={userAddress} />
+        </div>
       </div>
       {isExpanded ? <p className="text-sm">Your gas balance is used to pay for onchain computation.</p> : null}
     </div>
