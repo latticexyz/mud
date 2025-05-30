@@ -54,9 +54,25 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
   return (
     <button
       onClick={handleWithdraw}
-      className="text-sm font-medium text-white/50 underline decoration-[#737373] underline-offset-4 hover:text-white hover:decoration-[#f97316]"
+      className={`
+        group
+        text-sm font-medium text-white/50
+        underline decoration-[#737373] underline-offset-4
+        hover:text-white hover:decoration-[#f97316]
+        relative h-6 overflow-hidden
+        grid place-items-center
+      `}
     >
-      Withdraw
+      <span className="grid place-items-center">
+        <span className="col-start-1 row-start-1 transition-transform duration-200 ease-[cubic-bezier(0.785,0.135,0.15,0.86)] group-hover:-translate-y-[150%]">
+          Withdraw
+        </span>
+        {shouldSwitchChain && (
+          <span className="col-start-1 row-start-1 transition-transform duration-200 ease-[cubic-bezier(0.785,0.135,0.15,0.86)] translate-y-[150%] group-hover:translate-y-0">
+            Switch chain
+          </span>
+        )}
+      </span>
     </button>
   );
 }
