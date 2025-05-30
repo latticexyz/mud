@@ -13,6 +13,9 @@ import {
   numberToHex,
 } from "viem";
 
+// This is a fork of wagmi's WalletConnect connector and adjusts when the `switchChain` call is made
+// TODO: remove once https://github.com/wevm/wagmi/pull/4691 lands
+
 type WalletConnectConnector = Connector & {
   onDisplayUri(uri: string): void;
   onSessionDelete(data: { topic: string }): void;

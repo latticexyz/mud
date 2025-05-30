@@ -23,6 +23,7 @@ export function createWagmiConfig<
   const chains extends readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport>,
 >(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
+  // TODO: remove connectors and use ConnectKit's default once https://github.com/wevm/wagmi/pull/4691 lands
   const connectors: CreateConnectorFn[] = [];
 
   // If we're in an iframe, include the SafeConnector
