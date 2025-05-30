@@ -68,8 +68,7 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
       onClick={handleClick}
       className={twMerge(
         "text-sm font-medium text-white/50 group whitespace-nowrap",
-        !withdraw.isPending && "cursor-pointer hover:text-white",
-        withdraw.isPending && "opacity-50 cursor-not-allowed",
+        withdraw.isPending ? "opacity-50 pointer-events-none" : "cursor-pointer hover:text-white",
       )}
       disabled={withdraw.isPending}
     >
