@@ -1,11 +1,14 @@
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { Address } from "viem";
+import { useAccount, usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
+import { twMerge } from "tailwind-merge";
 import { getPaymaster } from "../../getPaymaster";
 import { paymasterAbi } from "../../quarry/common";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useBalance } from "./useBalance";
-import { Address } from "viem";
+import { PendingIcon } from "../../icons/PendingIcon";
+import { useMutation } from "@tanstack/react-query";
 
 export type Props = {
   userAddress: Address;
@@ -13,6 +16,7 @@ export type Props = {
 
 export function WithdrawGasBalanceButton({ userAddress }: Props) {
   const queryClient = useQueryClient();
+  const publicClient = usePublicClient();
   const { writeContractAsync } = useWriteContract();
   const { switchChain } = useSwitchChain();
   const { chain, chainId } = useEntryKitConfig();
@@ -21,54 +25,70 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
   const paymaster = getPaymaster(chain);
   const balance = useShowQueryError(useBalance(userAddress));
 
-  const handleWithdraw = async () => {
-    if (!paymaster) throw new Error("No paymaster configured to withdraw from.");
-    if (!balance.data) throw new Error("No paymaster balance to withdraw.");
+  const withdraw = useMutation({
+    mutationKey: ["withdraw", userAddress],
+    mutationFn: async () => {
+      if (!paymaster) throw new Error("No paymaster configured to withdraw from.");
+      if (!publicClient) throw new Error("Public client not found");
+      if (!balance.data) throw new Error("No paymaster balance to withdraw.");
 
-    try {
-      if (shouldSwitchChain) {
-        await switchChain({ chainId });
+      try {
+        const hash = await writeContractAsync({
+          address: paymaster.address,
+          abi: paymasterAbi,
+          functionName: "withdrawTo",
+          args: [userAddress, balance.data],
+        });
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["balance"] }),
+          queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
+        ]);
+
+        return receipt;
+      } catch (error) {
+        console.error("Error while withdrawing", error);
+        throw error;
       }
-
-      await writeContractAsync({
-        address: paymaster.address,
-        abi: paymasterAbi,
-        functionName: "withdrawTo",
-        args: [userAddress, balance.data],
-      });
-
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["balance"] }),
-        queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
-      ]);
-    } catch (error) {
-      console.error("Error while withdrawing", error);
-      throw error;
-    }
-  };
+    },
+  });
 
   if (balance.data == null || balance.data === 0n) {
     return null;
   }
 
+  const handleClick = () => {
+    if (shouldSwitchChain) {
+      return switchChain({ chainId });
+    }
+    withdraw.mutate();
+  };
+
   return (
     <button
-      onClick={handleWithdraw}
-      className={`
-        group
-        text-sm font-medium text-white/50
-        underline decoration-[#737373] underline-offset-4
-        hover:text-white hover:decoration-[#f97316]
-        relative h-6 overflow-hidden
-        grid place-items-center
-      `}
+      onClick={handleClick}
+      className={twMerge(
+        "text-sm font-medium text-white/50 group whitespace-nowrap",
+        !withdraw.isPending && "cursor-pointer hover:text-white",
+        withdraw.isPending && "opacity-50 cursor-not-allowed",
+      )}
+      disabled={withdraw.isPending}
     >
-      <span className="grid place-items-center">
-        <span className="col-start-1 row-start-1 transition-transform duration-200 ease-[cubic-bezier(0.785,0.135,0.15,0.86)] group-hover:-translate-y-[150%]">
+      <span className="inline-block">
+        <span
+          className={twMerge(
+            "inline-flex items-center gap-1 underline decoration-[#737373] underline-offset-4",
+            !withdraw.isPending && "hover:decoration-[#f97316]",
+            shouldSwitchChain && "group-hover:hidden",
+          )}
+        >
+          {withdraw.isPending && <PendingIcon className="w-3 h-3" />}
           Withdraw
         </span>
+
         {shouldSwitchChain && (
-          <span className="col-start-1 row-start-1 transition-transform duration-200 ease-[cubic-bezier(0.785,0.135,0.15,0.86)] translate-y-[150%] group-hover:translate-y-0">
+          <span className="hidden group-hover:inline-block underline decoration-[#737373] underline-offset-4 hover:decoration-[#f97316]">
             Switch chain
           </span>
         )}
