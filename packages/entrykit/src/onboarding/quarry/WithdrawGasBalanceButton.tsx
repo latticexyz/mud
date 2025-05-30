@@ -23,9 +23,9 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
   const { chainId: userChainId } = useAccount();
   const queryClient = useQueryClient();
   const client = useClient({ chainId });
-  const shouldSwitchChain = chainId != null && chainId !== userChainId;
   const paymaster = getPaymaster(chain);
   const balance = useShowQueryError(useBalance(userAddress));
+  const shouldSwitchChain = chainId != null && chainId !== userChainId;
 
   const withdraw = useMutation({
     mutationKey: ["withdraw", userAddress],
