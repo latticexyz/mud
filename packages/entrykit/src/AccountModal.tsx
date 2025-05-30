@@ -2,7 +2,7 @@ import { Modal } from "./ui/Modal";
 import { useAccountModal } from "./useAccountModal";
 import { twMerge } from "tailwind-merge";
 import { AccountModalContent } from "./AccountModalContent";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { Dialog } from "radix-ui";
 import { CloseIcon } from "./icons/CloseIcon";
 import { Logo } from "./icons/Logo";
 import { ErrorBoundary } from "react-error-boundary";
@@ -41,7 +41,7 @@ export function AccountModal() {
           </a>
 
           <div className="absolute top-0 right-0">
-            <DialogClose
+            <Dialog.Close
               className={twMerge(
                 "pointer-events-auto leading-none p-2 transition",
                 "text-white/20 hover:text-white/40",
@@ -49,7 +49,7 @@ export function AccountModal() {
               title="Close"
             >
               <CloseIcon className="m-0" />
-            </DialogClose>
+            </Dialog.Close>
           </div>
         </div>
       ) : null}

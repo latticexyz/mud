@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
 import { twMerge } from "tailwind-merge";
-import * as Select from "@radix-ui/react-select";
+import { Select } from "radix-ui";
 import { useFrame } from "../../ui/FrameProvider";
 import { useTheme } from "../../useTheme";
 import { ChevronUpIcon } from "../../icons/ChevronUpIcon";
