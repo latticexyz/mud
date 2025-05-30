@@ -32,7 +32,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
   const { switchChain } = useSwitchChain();
 
   const handleWithdraw = async () => {
-    if (!paymaster) throw new Error("Paymaster not found");
+    if (!paymaster) throw new Error("No paymaster configured to withdraw from.");
     if (!balance.data) throw new Error("No paymaster balance to withdraw.");
 
     try {
