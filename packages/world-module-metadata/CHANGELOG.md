@@ -1,5 +1,28 @@
 # @latticexyz/world-module-metadata
 
+## 2.2.22
+
+### Patch Changes
+
+- 6344ced: Adding/deleting resource tags no longer checks if resource exists, only if you're the resource namespace owner.
+- 2048adf: Added experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.
+
+  ```solidity
+  import { metadataSystem } from "@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol";
+
+  metadataSystem.setResourceTag(namespaceId, bytes32("label"), "hello");
+  ```
+
+- Updated dependencies [6008573]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [d83a0fd]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
