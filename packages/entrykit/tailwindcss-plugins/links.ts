@@ -4,5 +4,4 @@ import plugin from "tailwindcss/plugin";
 
 export const links = plugin(function ({ addVariant }) {
   addVariant("links", "& a[href]:not(.links-unset)");
-  addVariant("links", "& a[role='button']");
 });

@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Hex } from "viem";
+import { useQueryClient } from "@tanstack/react-query";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { Button } from "../../ui/Button";
 import { Balance } from "../../ui/Balance";
@@ -7,55 +9,17 @@ import { useBalance } from "./useBalance";
 import { DepositFormContainer } from "../deposit/DepositFormContainer";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { StepContentProps } from "../common";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { usePrevious } from "../../errors/usePrevious";
-import { useEntryKitConfig } from "../../EntryKitConfigProvider";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { getPaymaster } from "../../getPaymaster";
-import { paymasterAbi } from "../../quarry/common";
+import { WithdrawGasBalanceButton } from "./WithdrawGasBalanceButton";
 
 export type Props = StepContentProps & {
   userAddress: Hex;
 };
 
 export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAddress }: Props) {
-  const { chain, chainId } = useEntryKitConfig();
-  const paymaster = getPaymaster(chain);
-  const { writeContractAsync } = useWriteContract();
   const queryClient = useQueryClient();
   const balance = useShowQueryError(useBalance(userAddress));
   const prevBalance = usePrevious(balance.data || 0n);
-
-  const { chainId: userChainId } = useAccount();
-  const shouldSwitchChain = chainId != null && chainId !== userChainId;
-  const { switchChain } = useSwitchChain();
-
-  const handleWithdraw = async () => {
-    if (!paymaster) throw new Error("No paymaster configured to withdraw from.");
-    if (!balance.data) throw new Error("No paymaster balance to withdraw.");
-
-    try {
-      if (shouldSwitchChain) {
-        await switchChain({ chainId });
-      }
-
-      await writeContractAsync({
-        address: paymaster.address,
-        abi: paymasterAbi,
-        functionName: "withdrawTo",
-        args: [userAddress, balance.data],
-      });
-
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["balance"] }),
-        queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
-      ]);
-    } catch (error) {
-      console.error("Error while withdrawing", error);
-      throw error;
-    }
-  };
 
   useEffect(() => {
     if (balance.data != null && prevBalance === 0n && balance.data > 0n) {
@@ -103,11 +67,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
             Top up
           </Button>
 
-          {balance.data != null && balance.data > 0n && (
-            <a role="button" onClick={handleWithdraw} className="text-sm opacity-40 hover:opacity-100">
-              Withdraw
-            </a>
-          )}
+          <WithdrawGasBalanceButton userAddress={userAddress} />
         </div>
       </div>
       {isExpanded ? <p className="text-sm">Your gas balance is used to pay for onchain computation.</p> : null}
