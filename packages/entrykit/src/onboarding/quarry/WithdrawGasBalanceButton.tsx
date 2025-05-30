@@ -78,8 +78,8 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
       <span className="inline-block">
         <span
           className={twMerge(
-            "inline-flex items-center gap-1 underline decoration-[#737373] underline-offset-4",
-            !withdraw.isPending && "hover:decoration-[#f97316]",
+            "inline-flex items-center gap-1 underline decoration-neutral-500 underline-offset-4",
+            !withdraw.isPending && "hover:decoration-orange-500",
             shouldSwitchChain && "group-hover:hidden",
           )}
         >
@@ -88,7 +88,7 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
         </span>
 
         {shouldSwitchChain && (
-          <span className="hidden group-hover:inline-block underline decoration-[#737373] underline-offset-4 hover:decoration-[#f97316]">
+          <span className="hidden group-hover:inline-block underline decoration-neutral-500 underline-offset-4 hover:decoration-orange-500">
             Switch chain
           </span>
         )}
