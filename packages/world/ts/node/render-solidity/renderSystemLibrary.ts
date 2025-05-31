@@ -289,9 +289,9 @@ function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
   const { name, parameters } = contractFunction;
   const paramTypes = parameters
     .map((param) => param.split(" ")[0])
-    .map((type) => type.replace("[]", "Array"))
     // Static arrays may contain multiple disallowed symbols, for name uniqueness toHex is easier than escaping
-    .map((type) => type.replace(/\[.+\]/, (match) => stringToHex(match)))
+    // Multidimensional arrays are also captured by `.*`
+    .map((type) => type.replace(/\[.*\]/, (match) => stringToHex(match)))
     .join("_");
   return `_${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
 }
