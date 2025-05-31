@@ -1,4 +1,4 @@
-export const entryPointSimulationsAbi = [
+export const entryPointGasSimulationsAbi = [
   {
     inputs: [
       {
@@ -53,53 +53,33 @@ export const entryPointSimulationsAbi = [
         name: "op",
         type: "tuple",
       },
-      {
-        internalType: "address",
-        name: "target",
-        type: "address",
-      },
-      {
-        internalType: "bytes",
-        name: "targetCallData",
-        type: "bytes",
-      },
     ],
-    name: "simulateHandleOp",
+    name: "estimateGas",
     outputs: [
       {
         components: [
           {
             internalType: "uint256",
-            name: "preOpGas",
+            name: "verificationGas",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "paid",
+            name: "callGas",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "accountValidationData",
+            name: "paymasterVerificationGas",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "paymasterValidationData",
+            name: "paymasterPostOpGas",
             type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "targetSuccess",
-            type: "bool",
-          },
-          {
-            internalType: "bytes",
-            name: "targetResult",
-            type: "bytes",
           },
         ],
-        internalType: "struct IEntryPointSimulations.ExecutionResult",
+        internalType: "struct EntryPoint.GasInfo",
         name: "",
         type: "tuple",
       },
