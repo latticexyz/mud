@@ -16,7 +16,7 @@ import {
   UserOperation,
 } from "viem/account-abstraction";
 import { bigIntMax } from "../../utils";
-import { entryPointSimulationsAbi } from "../entryPointSimulationsAbi";
+import { entryPointGasSimulationsAbi } from "../entryPointGasSimulations";
 
 type rpcMethod = getRpcMethod<BundlerRpcSchema, "eth_estimateUserOperationGas">;
 
@@ -30,54 +30,29 @@ export async function estimateUserOperationGas({
   params,
 }: EstimateUserOperationGasOptions): Promise<rpcMethod["ReturnType"]> {
   const userOp = formatUserOperation(params[0]);
-  const hasPaymaster = userOp.paymaster != null && userOp.paymaster !== zeroAddress;
-
-  const [simulationResult, simulationResultWithPaymaster] = await Promise.all([
-    simulateHandleOp({ userOp, removePaymaster: hasPaymaster, request }),
-    hasPaymaster ? simulateHandleOp({ userOp, request }) : undefined,
-  ]);
-
-  const gasEstimates = getGasEstimates({ userOp, simulationResult, simulationResultWithPaymaster });
+  const gasSimulation = await simulateGas({ userOp, request });
+  const gasLimits = {
+    verificationGasLimit: gasSimulation.verificationGas * 2n,
+    callGasLimit: bigIntMax(gasSimulation.callGas * 2n, 9000n),
+    paymasterVerificationGasLimit: gasSimulation.paymasterVerificationGas * 2n,
+    paymasterPostOpGasLimit: gasSimulation.paymasterPostOpGas * 2n,
+    preVerificationGas: 20_000n,
+  };
 
   return formatUserOperationRequest({
-    ...gasEstimates,
+    ...gasLimits,
   });
 }
 
-type SimulateHandleOpOptions = {
+type SimulateGasOptions = {
   request: EIP1193RequestFn;
   userOp: UserOperation<"0.7">;
-  removePaymaster?: boolean;
 };
 
-type SimulationResult = DecodeFunctionResultReturnType<typeof entryPointSimulationsAbi>;
+type SimulateGasResult = DecodeFunctionResultReturnType<typeof entryPointGasSimulationsAbi>;
 
-async function simulateHandleOp({
-  userOp,
-  removePaymaster,
-  request,
-}: SimulateHandleOpOptions): Promise<SimulationResult> {
-  if (removePaymaster) {
-    const {
-      /* eslint-disable */
-      paymaster,
-      paymasterData,
-      paymasterPostOpGasLimit,
-      paymasterVerificationGasLimit,
-      /* eslint-enable */
-      ...userOpWithoutPaymaster
-    } = userOp;
-    userOp = userOpWithoutPaymaster;
-  }
-
+async function simulateGas({ request, userOp }: SimulateGasOptions): Promise<SimulateGasResult> {
   // Prepare user operation for simulation
-  const paymasterGasLimits =
-    userOp.paymaster && !removePaymaster
-      ? {
-          paymasterPostOpGasLimit: 2_000_000n,
-          paymasterVerificationGasLimit: 5_000_000n,
-        }
-      : {};
   const simulationUserOp = {
     ...userOp,
     preVerificationGas: 0n,
@@ -85,17 +60,19 @@ async function simulateHandleOp({
     verificationGasLimit: 10_000_000n,
     // https://github.com/pimlicolabs/alto/blob/471998695e5ec75ef88dda3f8a534f47c24bcd1a/src/rpc/methods/eth_estimateUserOperationGas.ts#L117
     maxPriorityFeePerGas: userOp.maxFeePerGas,
-    ...paymasterGasLimits,
+    paymasterPostOpGasLimit: 2_000_000n,
+    paymasterVerificationGasLimit: 5_000_000n,
   } satisfies UserOperation<"0.7">;
 
   const packedUserOp = toPackedUserOperation(simulationUserOp);
   const simulationData = encodeFunctionData({
-    abi: entryPointSimulationsAbi,
-    functionName: "simulateHandleOp",
-    args: [packedUserOp, zeroAddress, "0x"],
+    abi: entryPointGasSimulationsAbi,
+    functionName: "estimateGas",
+    args: [packedUserOp],
   });
 
-  const senderBalanceOverride = removePaymaster ? { [userOp.sender]: { balance: "0xFFFFFFFFFFFFFFFFFFFF" } } : {};
+  const hasPaymaster = userOp.paymaster != null && userOp.paymaster !== zeroAddress;
+  const senderBalanceOverride = hasPaymaster ? {} : { [userOp.sender]: { balance: "0xFFFFFFFFFFFFFFFFFFFF" } };
   const simulationParams = [
     {
       to: entryPoint07Address,
@@ -112,60 +89,8 @@ async function simulateHandleOp({
   });
 
   return decodeFunctionResult({
-    abi: entryPointSimulationsAbi,
-    functionName: "simulateHandleOp",
+    abi: entryPointGasSimulationsAbi,
+    functionName: "estimateGas",
     data: encodedSimulationResult,
   });
-}
-
-type GetGasEstimatesOptions = {
-  userOp: UserOperation<"0.7">;
-  simulationResult: SimulationResult;
-  simulationResultWithPaymaster?: SimulationResult;
-};
-
-type GasEstimates = {
-  verificationGasLimit: bigint;
-  callGasLimit: bigint;
-  paymasterVerificationGasLimit: bigint;
-  paymasterPostOpGasLimit: bigint;
-  preVerificationGas: bigint;
-};
-
-function getGasEstimates({
-  userOp,
-  simulationResult,
-  simulationResultWithPaymaster,
-}: GetGasEstimatesOptions): GasEstimates {
-  const hasPaymaster = simulationResultWithPaymaster != null;
-
-  // The verification gas is the total gas available during the validation phase, including the gas used by the paymaster
-  const verificationGas = hasPaymaster ? simulationResultWithPaymaster.preOpGas : simulationResult.preOpGas;
-
-  // The paymaster verification gas is the difference between verification gas with and without paymaster
-  const paymasterVerificationGas = hasPaymaster
-    ? simulationResultWithPaymaster.preOpGas - simulationResult.preOpGas
-    : 0n;
-
-  // The call gas is only the gas used by the user operation, not the paymaster
-  const callGas = simulationResult.paid / userOp.maxFeePerGas - simulationResult.preOpGas;
-
-  // The paymaster post-op gas is the difference between non-verification gas with and without paymaster
-  const paymasterPostOpGas = hasPaymaster
-    ? simulationResultWithPaymaster.paid / userOp.maxFeePerGas - simulationResultWithPaymaster.preOpGas - callGas
-    : 0n;
-
-  // Apply a 2x buffer to the calculated limits
-  const verificationGasLimit = verificationGas * 2n;
-  const callGasLimit = bigIntMax(callGas * 2n, 9000n);
-  const paymasterVerificationGasLimit = paymasterVerificationGas * 2n;
-  const paymasterPostOpGasLimit = paymasterPostOpGas * 2n;
-
-  return {
-    verificationGasLimit,
-    callGasLimit,
-    paymasterVerificationGasLimit,
-    paymasterPostOpGasLimit,
-    preVerificationGas: 20_000n,
-  };
 }
