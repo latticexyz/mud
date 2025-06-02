@@ -4,17 +4,7 @@ import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "luci
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import {
-  Abi,
-  AbiFunction,
-  AbiParameter,
-  Address,
-  Hex,
-  decodeEventLog,
-  encodeFunctionData,
-  stringify,
-  toFunctionHash,
-} from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, encodeFunctionData, stringify } from "viem";
 import { useAccount, useConfig, usePublicClient } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
@@ -37,6 +27,7 @@ import { Input } from "../../../../../../../components/ui/Input";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
+import { getFunctionElementId } from "../../../../../utils/getFunctionElementId";
 import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
 
 export enum FunctionType {
@@ -54,10 +45,6 @@ type Props = {
 type DecodedEvent = {
   eventName: string | undefined;
   args: readonly unknown[] | undefined;
-};
-
-export const getFunctionElementId = (systemId: Hex | undefined, functionAbi: AbiFunction) => {
-  return `${systemId || "core"}-${toFunctionHash(functionAbi)}`;
 };
 
 const formSchema = z.object({
@@ -134,7 +121,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
     }
 
     const url = new URL(window.location.href);
-    url.hash = getFunctionElementId(systemId, functionAbi);
+    url.hash = getFunctionElementId(functionAbi, systemId);
     url.search = params.toString();
 
     return url.toString();
@@ -235,13 +222,13 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          id={getFunctionElementId(systemId, functionAbi)}
+          id={getFunctionElementId(functionAbi, systemId)}
           className="space-y-4 rounded border border-white/10 bg-black/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
               <ScrollIntoViewLink
-                elementId={getFunctionElementId(systemId, functionAbi)}
+                elementId={getFunctionElementId(functionAbi, systemId)}
                 className="group inline-flex items-center hover:no-underline"
               >
                 <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>

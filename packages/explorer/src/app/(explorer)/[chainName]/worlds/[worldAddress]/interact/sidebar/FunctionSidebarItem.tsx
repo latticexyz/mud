@@ -1,18 +1,18 @@
 import { CoinsIcon, EyeIcon, SendIcon } from "lucide-react";
-import { AbiFunction, Hex } from "viem";
+import { AbiFunction } from "viem";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
-import { getFunctionElementId } from "../content/FunctionField";
+import { getFunctionElementId } from "../../../../../utils/getFunctionElementId";
 
 type FunctionNavItemProps = {
   abi: AbiFunction;
-  systemId: Hex | undefined;
+  systemId: string | undefined;
 };
 
 export function FunctionSidebarItem({ abi, systemId }: FunctionNavItemProps) {
   return (
     <li>
       <ScrollIntoViewLink
-        elementId={getFunctionElementId(systemId, abi)}
+        elementId={getFunctionElementId(abi, systemId)}
         className="whitespace-nowrap text-sm hover:text-orange-500 hover:underline"
       >
         <span className="opacity-50">

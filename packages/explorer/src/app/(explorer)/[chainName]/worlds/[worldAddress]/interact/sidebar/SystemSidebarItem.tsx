@@ -1,5 +1,5 @@
 import { ChevronsUpDown } from "lucide-react";
-import { parseAsBoolean, useQueryState } from "nuqs";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { Badge } from "../../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../../components/ui/Collapsible";
@@ -20,11 +20,23 @@ export function SystemSidebarItem({
   isNamespace,
   defaultExpanded = false,
 }: SystemSidebarItemProps) {
-  const [isExpanded, setIsExpanded] = useQueryState(`isExpanded-${name}`, parseAsBoolean.withDefault(defaultExpanded));
+  const [isExpanded, setIsExpanded] = useQueryState(
+    "expanded",
+    parseAsArrayOf(parseAsString).withDefault(defaultExpanded ? [name] : []),
+  );
+
+  const handleToggleExpanded = () => {
+    setIsExpanded((prev) => {
+      if (prev.includes(name)) {
+        return prev.filter((item) => item !== name);
+      }
+      return [...prev, name];
+    });
+  };
 
   return (
     <li>
-      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+      <Collapsible open={isExpanded.includes(name)} onOpenChange={handleToggleExpanded}>
         <CollapsibleTrigger asChild>
           <div className="group flex w-full cursor-pointer items-center justify-between space-x-1">
             <h4 className="truncate text-sm font-semibold">{name}</h4>

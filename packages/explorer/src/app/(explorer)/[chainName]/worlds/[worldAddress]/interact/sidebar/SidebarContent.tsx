@@ -39,8 +39,8 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
 
       {!isLoading && (
         <>
-          {filteredFunctions.namespaces.map(({ namespace, systems }) => (
-            <SystemSidebarItem key={namespace} name={namespace} isNamespace>
+          {filteredFunctions.namespaces.map(({ namespace, systems }, index) => (
+            <SystemSidebarItem key={namespace} name={namespace} defaultExpanded={index === 0} isNamespace>
               <ul className="pl-4">
                 {systems.map((system) => (
                   <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
@@ -56,7 +56,12 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
           ))}
 
           {filteredFunctions.core.map((system) => (
-            <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
+            <SystemSidebarItem
+              key={system.systemId}
+              name={system.name}
+              functionCount={system.functions.length}
+              defaultExpanded={filteredFunctions.namespaces.length === 0}
+            >
               <ul>
                 {system.functions.map((abi) => (
                   <FunctionSidebarItem key={toFunctionHash(abi)} systemId={system.systemId} abi={abi} />
