@@ -13,6 +13,7 @@ type Props = {
 
 export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Props) {
   const initialFunctionHash = useRef(window.location.hash.slice(1)).current;
+
   return (
     <div className="w-full overflow-y-auto pl-1 pr-1">
       {isLoading && (

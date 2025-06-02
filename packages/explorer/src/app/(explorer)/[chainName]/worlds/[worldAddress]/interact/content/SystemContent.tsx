@@ -1,6 +1,6 @@
 import { ChevronsUpDown } from "lucide-react";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
-import { useState } from "react";
 import { Button } from "../../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../../components/ui/Collapsible";
 import { FunctionField } from "./FunctionField";
@@ -29,7 +29,7 @@ export function SystemContent({
   isNamespace,
   initialFunctionHash,
 }: SystemContentProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useQueryState(`isExpanded-${name}`, parseAsBoolean.withDefault(false));
 
   if (isNamespace && systems) {
     return (

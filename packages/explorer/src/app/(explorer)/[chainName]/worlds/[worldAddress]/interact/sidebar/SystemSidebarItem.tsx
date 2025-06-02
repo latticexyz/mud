@@ -1,5 +1,5 @@
 import { ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { Badge } from "../../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../../components/ui/Collapsible";
@@ -20,7 +20,8 @@ export function SystemSidebarItem({
   isNamespace,
   defaultExpanded = false,
 }: SystemSidebarItemProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [isExpanded, setIsExpanded] = useQueryState(`isExpanded-${name}`, parseAsBoolean.withDefault(defaultExpanded));
+
   return (
     <li>
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
