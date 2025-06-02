@@ -3,12 +3,13 @@
 import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, encodeFunctionData, stringify } from "viem";
 import { useAccount, useConfig, usePublicClient } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { encodeSystemCall } from "@latticexyz/world/internal";
@@ -95,6 +96,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
   const inputLabels = functionAbi.inputs.map(getInputLabel);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -103,6 +105,15 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
       value: useSearchParamsArgs ? searchParams.get("value") ?? "" : "",
     },
   });
+
+  useEffect(() => {
+    if (useSearchParamsArgs) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("args");
+      params.delete("value");
+      router.replace(`?${params.toString()}${window.location.hash}`);
+    }
+  }, [useSearchParamsArgs, searchParams, router]);
 
   const getShareableUrl = useCallback(() => {
     const values = form.watch();
