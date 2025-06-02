@@ -1,8 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, Hex } from "viem";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { hexToResource } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { Input } from "../../../../../../components/ui/Input";
@@ -34,6 +35,7 @@ export type FilteredFunctions = {
 
 export function InteractForm() {
   const searchParams = useSearchParams();
+  const [expanded, setExpanded] = useQueryState("expanded", parseAsArrayOf(parseAsString).withDefault([]));
   const { data: worldAbiData, isFetched: isWorldAbiFetched } = useWorldAbiQuery();
   const { data: systemAbis, isFetched: isSystemAbisFetched } = useSystemAbisQuery();
   const isFetched = isWorldAbiFetched && isSystemAbisFetched;
@@ -105,6 +107,15 @@ export function InteractForm() {
     };
   }, [systemAbis, deferredFilterValue]);
 
+  useEffect(() => {
+    if (isFetched && expanded.length === 0) {
+      const firstNamespace = filteredSystemFunctions.namespaces[0];
+      if (firstNamespace) {
+        setExpanded([firstNamespace.namespace]);
+      }
+    }
+  }, [isFetched, expanded, filteredSystemFunctions, setExpanded]);
+
   return (
     <>
       <div className="-mr-1g -ml-1 flex gap-x-4 overflow-y-hidden">
@@ -123,6 +134,15 @@ export function InteractForm() {
             filteredFunctions={filteredSystemFunctions}
             filterValue={deferredFilterValue}
             isLoading={!isFetched}
+            expanded={expanded}
+            onToggleExpanded={(name) => {
+              setExpanded((prev) => {
+                if (prev.includes(name)) {
+                  return prev.filter((item) => item !== name);
+                }
+                return [...prev, name];
+              });
+            }}
           />
         </div>
 
@@ -131,6 +151,15 @@ export function InteractForm() {
           filteredFunctions={filteredSystemFunctions}
           filterValue={deferredFilterValue}
           isLoading={!isFetched}
+          expanded={expanded}
+          onToggleExpanded={(name: string) => {
+            setExpanded((prev) => {
+              if (prev.includes(name)) {
+                return prev.filter((item) => item !== name);
+              }
+              return [...prev, name];
+            });
+          }}
         />
       </div>
     </>

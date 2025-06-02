@@ -10,9 +10,11 @@ type Props = {
   filteredFunctions: FilteredFunctions;
   filterValue: string;
   isLoading: boolean;
+  expanded: string[];
+  onToggleExpanded: (name: string) => void;
 };
 
-export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Props) {
+export function SidebarContent({ filteredFunctions, filterValue, isLoading, expanded, onToggleExpanded }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -39,11 +41,23 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
 
       {!isLoading && (
         <>
-          {filteredFunctions.namespaces.map(({ namespace, systems }, index) => (
-            <SystemSidebarItem key={namespace} name={namespace} defaultExpanded={index === 0} isNamespace>
+          {filteredFunctions.namespaces.map(({ namespace, systems }) => (
+            <SystemSidebarItem
+              key={namespace}
+              name={namespace}
+              isNamespace
+              isExpanded={expanded.includes(namespace)}
+              onToggleExpanded={onToggleExpanded}
+            >
               <ul className="pl-4">
                 {systems.map((system) => (
-                  <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
+                  <SystemSidebarItem
+                    key={system.systemId}
+                    name={system.name}
+                    functionCount={system.functions.length}
+                    isExpanded={expanded.includes(system.systemId)}
+                    onToggleExpanded={onToggleExpanded}
+                  >
                     <ul className="space-y-1 py-1">
                       {system.functions.map((abi) => (
                         <FunctionSidebarItem key={toFunctionHash(abi)} systemId={system.systemId} abi={abi} />
@@ -60,7 +74,8 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
               key={system.systemId}
               name={system.name}
               functionCount={system.functions.length}
-              defaultExpanded={filteredFunctions.namespaces.length === 0}
+              isExpanded={expanded.includes(system.systemId)}
+              onToggleExpanded={onToggleExpanded}
             >
               <ul>
                 {system.functions.map((abi) => (
