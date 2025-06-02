@@ -48,12 +48,16 @@ type Props = {
   worldAbi: Abi;
   functionAbi: AbiFunction;
   systemId?: Hex;
-  isSelected: boolean;
+  useSearchParamsArgs: boolean;
 };
 
 type DecodedEvent = {
   eventName: string | undefined;
   args: readonly unknown[] | undefined;
+};
+
+export const getFunctionElementId = (systemId: Hex | undefined, functionAbi: AbiFunction) => {
+  return `${systemId || "core"}-${toFunctionHash(functionAbi)}`;
 };
 
 const formSchema = z.object({
@@ -86,7 +90,7 @@ const getInputPlaceholder = (input: AbiParameter): string => {
   return `[${componentsString}]`;
 };
 
-export function FunctionField({ systemId, worldAbi, functionAbi, isSelected }: Props) {
+export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParamsArgs }: Props) {
   const searchParams = useSearchParams();
   const publicClient = usePublicClient();
   const operationType: FunctionType =
@@ -108,8 +112,8 @@ export function FunctionField({ systemId, worldAbi, functionAbi, isSelected }: P
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: isSelected ? JSON.parse(searchParams.get("args") || "[]") : [],
-      value: isSelected ? searchParams.get("value") ?? "" : "",
+      inputs: useSearchParamsArgs ? JSON.parse(searchParams.get("args") || "[]") : [],
+      value: useSearchParamsArgs ? searchParams.get("value") ?? "" : "",
     },
   });
 
@@ -130,11 +134,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi, isSelected }: P
     }
 
     const url = new URL(window.location.href);
-    url.hash = toFunctionHash(functionAbi);
+    url.hash = getFunctionElementId(systemId, functionAbi);
     url.search = params.toString();
 
     return url.toString();
-  }, [form, functionAbi, searchParams]);
+  }, [form, functionAbi, searchParams, systemId]);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
@@ -231,13 +235,13 @@ export function FunctionField({ systemId, worldAbi, functionAbi, isSelected }: P
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          id={toFunctionHash(functionAbi)}
+          id={getFunctionElementId(systemId, functionAbi)}
           className="space-y-4 rounded border border-white/10 bg-black/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
               <ScrollIntoViewLink
-                elementId={toFunctionHash(functionAbi)}
+                elementId={getFunctionElementId(systemId, functionAbi)}
                 className="group inline-flex items-center hover:no-underline"
               >
                 <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>

@@ -53,7 +53,7 @@ export function SystemContent({
                     systemId={system.systemId as Hex}
                     worldAbi={worldAbi}
                     functionAbi={abi}
-                    isSelected={initialFunctionHash === toFunctionHash(abi)}
+                    useSearchParamsArgs={initialFunctionHash === toFunctionHash(abi)}
                   />
                 ))}
               </div>
@@ -82,7 +82,7 @@ export function SystemContent({
                 key={toFunctionHash(abi)}
                 worldAbi={worldAbi}
                 functionAbi={abi}
-                isSelected={initialFunctionHash === toFunctionHash(abi)}
+                useSearchParamsArgs={initialFunctionHash === toFunctionHash(abi)}
               />
             ))}
           </CollapsibleContent>

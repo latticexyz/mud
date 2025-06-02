@@ -46,7 +46,7 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
                   <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
                     <ul className="space-y-1 py-1">
                       {system.functions.map((abi) => (
-                        <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
+                        <FunctionSidebarItem key={toFunctionHash(abi)} systemId={system.systemId} abi={abi} />
                       ))}
                     </ul>
                   </SystemSidebarItem>
@@ -59,7 +59,7 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
             <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
               <ul>
                 {system.functions.map((abi) => (
-                  <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
+                  <FunctionSidebarItem key={toFunctionHash(abi)} systemId={system.systemId} abi={abi} />
                 ))}
               </ul>
             </SystemSidebarItem>
