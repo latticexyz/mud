@@ -127,13 +127,49 @@ export function InteractForm() {
         }
       }
 
-      const firstNamespace = filteredSystemFunctions.namespaces[0];
-      if (firstNamespace) {
-        setExpanded([firstNamespace.namespace]);
+      const initialNamespace = filteredSystemFunctions.namespaces[0];
+      if (initialNamespace) {
+        setExpanded([initialNamespace.namespace]);
         hasSetInitialExpanded.current = true;
       }
     }
   }, [isFetched, filteredSystemFunctions, setExpanded]);
+
+  useEffect(() => {
+    if (isFetched && deferredFilterValue) {
+      const expandedItems: string[] = [];
+
+      for (const { namespace, systems } of filteredSystemFunctions.namespaces) {
+        const hasMatchingSystem = systems.some(
+          (system) =>
+            system.name.toLowerCase().includes(deferredFilterValue.toLowerCase()) ||
+            system.functions.some((func) => func.name.toLowerCase().includes(deferredFilterValue.toLowerCase())),
+        );
+        if (hasMatchingSystem) {
+          expandedItems.push(namespace);
+          systems.forEach((system) => {
+            if (
+              system.name.toLowerCase().includes(deferredFilterValue.toLowerCase()) ||
+              system.functions.some((func) => func.name.toLowerCase().includes(deferredFilterValue.toLowerCase()))
+            ) {
+              expandedItems.push(system.systemId);
+            }
+          });
+        }
+      }
+
+      for (const system of filteredSystemFunctions.core) {
+        if (
+          system.name.toLowerCase().includes(deferredFilterValue.toLowerCase()) ||
+          system.functions.some((func) => func.name.toLowerCase().includes(deferredFilterValue.toLowerCase()))
+        ) {
+          expandedItems.push(system.systemId);
+        }
+      }
+
+      setExpanded(expandedItems);
+    }
+  }, [isFetched, deferredFilterValue, filteredSystemFunctions, setExpanded]);
 
   return (
     <>
