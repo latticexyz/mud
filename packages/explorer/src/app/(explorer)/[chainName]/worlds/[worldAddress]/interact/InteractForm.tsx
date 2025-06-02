@@ -125,6 +125,17 @@ export function InteractForm() {
             }
           }
         }
+
+        for (const system of filteredSystemFunctions.core) {
+          for (const func of system.functions) {
+            const functionId = getFunctionElementId(func, system.systemId);
+            if (hash === functionId) {
+              setExpanded(["core", system.systemId]);
+              hasSetInitialExpanded.current = true;
+              return;
+            }
+          }
+        }
       }
 
       const initialNamespace = filteredSystemFunctions.namespaces[0];
