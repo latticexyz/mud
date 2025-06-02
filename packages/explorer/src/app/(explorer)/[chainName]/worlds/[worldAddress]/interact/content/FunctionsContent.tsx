@@ -4,10 +4,10 @@ import { FilteredFunctions, NamespaceSection, System } from "../InteractForm";
 import { SystemContent } from "./SystemContent";
 
 type Props = {
-  worldAbi?: Abi;
   filteredFunctions: FilteredFunctions;
   filterValue: string;
   isLoading: boolean;
+  worldAbi?: Abi;
 };
 
 export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Props) {

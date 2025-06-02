@@ -40,7 +40,7 @@ export function SystemSidebarItem({
             </div>
           </div>
         </CollapsibleTrigger>
-        <CollapsibleContent className={isNamespace ? undefined : "space-y-2"}>{children}</CollapsibleContent>
+        <CollapsibleContent className={isNamespace ? undefined : "space-y-1"}>{children}</CollapsibleContent>
       </Collapsible>
     </li>
   );

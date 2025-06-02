@@ -1,6 +1,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { toFunctionHash } from "viem";
 import { useEffect } from "react";
+import { Skeleton } from "../../../../../../../components/ui/Skeleton";
 import { FilteredFunctions } from "../InteractForm";
 import { FunctionSidebarItem } from "./FunctionSidebarItem";
 import { SystemSidebarItem } from "./SystemSidebarItem";
@@ -11,7 +12,7 @@ type Props = {
   isLoading: boolean;
 };
 
-export function SidebarContent({ filteredFunctions, filterValue }: Props) {
+export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,13 +27,22 @@ export function SidebarContent({ filteredFunctions, filterValue }: Props) {
   }, [filterValue, searchParams, router]);
 
   return (
-    <ul className="space-y-1 pr-2">
+    <ul className="space-y-1 py-4 pr-4">
+      {isLoading &&
+        Array.from({ length: 6 }).map((_, index) => {
+          return (
+            <li key={index} className="pt-2">
+              <Skeleton className="h-[30px]" />
+            </li>
+          );
+        })}
+
       {filteredFunctions.namespaces.map(({ namespace, systems }) => (
         <SystemSidebarItem key={namespace} name={namespace} isNamespace>
-          <ul className="space-y-2 pl-4">
+          <ul className="space-y-1 pl-4">
             {systems.map((system) => (
               <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                   {system.functions.map((abi) => (
                     <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
                   ))}
