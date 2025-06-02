@@ -36,7 +36,6 @@ import {
 import { Input } from "../../../../../../../components/ui/Input";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../../hooks/useChain";
-import { useHashState } from "../../../../../hooks/useHashState";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
 
@@ -49,6 +48,7 @@ type Props = {
   worldAbi: Abi;
   functionAbi: AbiFunction;
   systemId?: Hex;
+  isSelected: boolean;
 };
 
 type DecodedEvent = {
@@ -86,7 +86,7 @@ const getInputPlaceholder = (input: AbiParameter): string => {
   return `[${componentsString}]`;
 };
 
-export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
+export function FunctionField({ systemId, worldAbi, functionAbi, isSelected }: Props) {
   const searchParams = useSearchParams();
   const publicClient = usePublicClient();
   const operationType: FunctionType =
@@ -98,7 +98,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const account = useAccount();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const [functionHash] = useHashState();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -109,8 +108,8 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: functionHash === toFunctionHash(functionAbi) ? JSON.parse(searchParams.get("args") || "[]") : [],
-      value: functionHash === toFunctionHash(functionAbi) ? searchParams.get("value") ?? "" : "",
+      inputs: isSelected ? JSON.parse(searchParams.get("args") || "[]") : [],
+      value: isSelected ? searchParams.get("value") ?? "" : "",
     },
   });
 

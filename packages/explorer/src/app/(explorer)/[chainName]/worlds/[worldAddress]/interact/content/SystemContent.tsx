@@ -1,4 +1,5 @@
 import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
+import { useRef } from "react";
 import { FunctionField } from "./FunctionField";
 
 type System = {
@@ -17,6 +18,8 @@ type SystemContentProps = {
 };
 
 export function SystemContent({ name, systems, functions, worldAbi, isNamespace }: SystemContentProps) {
+  const currentHash = useRef(window.location.hash.slice(1)).current;
+
   if (isNamespace && systems) {
     return (
       <div>
@@ -30,6 +33,7 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
                 systemId={system.systemId as Hex}
                 worldAbi={worldAbi}
                 functionAbi={abi}
+                isSelected={currentHash === toFunctionHash(abi)}
               />
             ))}
           </div>
@@ -43,7 +47,12 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
       <div>
         <h4 className="my-4 text-2xl font-semibold">{name}</h4>
         {functions.map((abi: AbiFunction) => (
-          <FunctionField key={toFunctionHash(abi)} worldAbi={worldAbi} functionAbi={abi} />
+          <FunctionField
+            key={toFunctionHash(abi)}
+            worldAbi={worldAbi}
+            functionAbi={abi}
+            isSelected={currentHash === toFunctionHash(abi)}
+          />
         ))}
       </div>
     );
