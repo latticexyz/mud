@@ -36,7 +36,7 @@ export type FilteredFunctions = {
 
 export function InteractForm() {
   const searchParams = useSearchParams();
-  const [expanded, setExpanded] = useQueryState("expanded", parseAsArrayOf(parseAsString).withDefault([]));
+  const [, setExpanded] = useQueryState("expanded", parseAsArrayOf(parseAsString).withDefault([]));
   const hasSetInitialExpanded = useRef(false);
   const { data: worldAbiData, isFetched: isWorldAbiFetched } = useWorldAbiQuery();
   const { data: systemAbis, isFetched: isSystemAbisFetched } = useSystemAbisQuery();
@@ -153,15 +153,6 @@ export function InteractForm() {
             filteredFunctions={filteredSystemFunctions}
             filterValue={deferredFilterValue}
             isLoading={!isFetched}
-            expanded={expanded}
-            onToggleExpanded={(name) => {
-              setExpanded((prev) => {
-                if (prev.includes(name)) {
-                  return prev.filter((item) => item !== name);
-                }
-                return [...prev, name];
-              });
-            }}
           />
         </div>
 
@@ -170,15 +161,6 @@ export function InteractForm() {
           filteredFunctions={filteredSystemFunctions}
           filterValue={deferredFilterValue}
           isLoading={!isFetched}
-          expanded={expanded}
-          onToggleExpanded={(name: string) => {
-            setExpanded((prev) => {
-              if (prev.includes(name)) {
-                return prev.filter((item) => item !== name);
-              }
-              return [...prev, name];
-            });
-          }}
         />
       </div>
     </>
