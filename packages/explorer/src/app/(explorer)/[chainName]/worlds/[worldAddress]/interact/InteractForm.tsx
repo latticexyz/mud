@@ -206,7 +206,6 @@ export function InteractForm() {
         <FunctionsContent
           worldAbi={worldAbiData?.abi}
           filteredFunctions={filteredSystemFunctions}
-          filterValue={deferredFilterValue}
           isLoading={!isFetched}
         />
       </div>

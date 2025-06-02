@@ -6,7 +6,6 @@ import { SystemContent } from "./SystemContent";
 
 type Props = {
   filteredFunctions: FilteredFunctions;
-  filterValue: string;
   isLoading: boolean;
   worldAbi?: Abi;
 };
