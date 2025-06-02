@@ -20,7 +20,6 @@ export function SystemSidebarItem({
   defaultExpanded = false,
 }: SystemSidebarItemProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-
   return (
     <li>
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
