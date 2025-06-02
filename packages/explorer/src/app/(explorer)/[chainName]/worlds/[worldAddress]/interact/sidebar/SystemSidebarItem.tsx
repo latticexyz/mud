@@ -10,6 +10,7 @@ type SystemSidebarItemProps = {
   functionCount?: number;
   isNamespace?: boolean;
   defaultExpanded?: boolean;
+  filterValue?: string;
 };
 
 export function SystemSidebarItem({

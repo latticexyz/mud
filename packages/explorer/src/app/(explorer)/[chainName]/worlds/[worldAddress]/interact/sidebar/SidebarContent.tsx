@@ -27,7 +27,7 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
   }, [filterValue, searchParams, router]);
 
   return (
-    <ul className="space-y-1 py-4 pr-4">
+    <ul className="py-4 pr-4">
       {isLoading &&
         Array.from({ length: 6 }).map((_, index) => {
           return (
@@ -41,10 +41,10 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
         <>
           {filteredFunctions.namespaces.map(({ namespace, systems }) => (
             <SystemSidebarItem key={namespace} name={namespace} isNamespace>
-              <ul className="space-y-1 pl-4">
+              <ul className="pl-4">
                 {systems.map((system) => (
                   <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
-                    <ul className="space-y-1">
+                    <ul className="space-y-1 py-1">
                       {system.functions.map((abi) => (
                         <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
                       ))}
@@ -57,7 +57,7 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
 
           {filteredFunctions.core.map((system) => (
             <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
-              <ul className="space-y-1">
+              <ul>
                 {system.functions.map((abi) => (
                   <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
                 ))}
