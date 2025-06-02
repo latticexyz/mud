@@ -37,31 +37,35 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Pr
           );
         })}
 
-      {filteredFunctions.namespaces.map(({ namespace, systems }) => (
-        <SystemSidebarItem key={namespace} name={namespace} isNamespace>
-          <ul className="space-y-1 pl-4">
-            {systems.map((system) => (
-              <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
-                <ul className="space-y-1">
-                  {system.functions.map((abi) => (
-                    <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
-                  ))}
-                </ul>
-              </SystemSidebarItem>
-            ))}
-          </ul>
-        </SystemSidebarItem>
-      ))}
+      {!isLoading && (
+        <>
+          {filteredFunctions.namespaces.map(({ namespace, systems }) => (
+            <SystemSidebarItem key={namespace} name={namespace} isNamespace>
+              <ul className="space-y-1 pl-4">
+                {systems.map((system) => (
+                  <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
+                    <ul className="space-y-1">
+                      {system.functions.map((abi) => (
+                        <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
+                      ))}
+                    </ul>
+                  </SystemSidebarItem>
+                ))}
+              </ul>
+            </SystemSidebarItem>
+          ))}
 
-      {filteredFunctions.core.map((system) => (
-        <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
-          <ul className="space-y-1">
-            {system.functions.map((abi) => (
-              <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
-            ))}
-          </ul>
-        </SystemSidebarItem>
-      ))}
+          {filteredFunctions.core.map((system) => (
+            <SystemSidebarItem key={system.systemId} name={system.name} functionCount={system.functions.length}>
+              <ul className="space-y-1">
+                {system.functions.map((abi) => (
+                  <FunctionSidebarItem key={toFunctionHash(abi)} abi={abi} />
+                ))}
+              </ul>
+            </SystemSidebarItem>
+          ))}
+        </>
+      )}
     </ul>
   );
 }
