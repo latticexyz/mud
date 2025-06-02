@@ -1,5 +1,4 @@
 import { AbiFunction, AbiItem, Hex, toFunctionHash } from "viem";
-import { useHashState } from "../../../../../hooks/useHashState";
 import { FunctionField } from "./FunctionField";
 
 type System = {
@@ -15,11 +14,17 @@ type SystemContentProps = {
   functions?: AbiFunction[];
   worldAbi: AbiItem[];
   isNamespace?: boolean;
+  initialFunctionHash?: string;
 };
 
-export function SystemContent({ name, systems, functions, worldAbi, isNamespace }: SystemContentProps) {
-  const [functionHash] = useHashState();
-
+export function SystemContent({
+  name,
+  systems,
+  functions,
+  worldAbi,
+  isNamespace,
+  initialFunctionHash,
+}: SystemContentProps) {
   if (isNamespace && systems) {
     return (
       <div>
@@ -33,7 +38,7 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
                 systemId={system.systemId as Hex}
                 worldAbi={worldAbi}
                 functionAbi={abi}
-                isSelected={functionHash === toFunctionHash(abi)}
+                isSelected={initialFunctionHash === toFunctionHash(abi)}
               />
             ))}
           </div>
@@ -51,7 +56,7 @@ export function SystemContent({ name, systems, functions, worldAbi, isNamespace 
             key={toFunctionHash(abi)}
             worldAbi={worldAbi}
             functionAbi={abi}
-            isSelected={functionHash === toFunctionHash(abi)}
+            isSelected={initialFunctionHash === toFunctionHash(abi)}
           />
         ))}
       </div>
