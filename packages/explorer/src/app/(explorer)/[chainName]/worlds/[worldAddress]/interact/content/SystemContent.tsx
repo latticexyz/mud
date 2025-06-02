@@ -1,4 +1,5 @@
 import { ChevronsUpDown } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, Hex } from "viem";
 import { Button } from "../../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../../components/ui/Collapsible";
@@ -19,8 +20,6 @@ type SystemContentProps = {
   worldAbi: AbiItem[];
   isNamespace?: boolean;
   initialFunctionHash?: string;
-  isExpanded: boolean;
-  onToggleExpanded: (name: string) => void;
 };
 
 export function SystemContent({
@@ -30,13 +29,22 @@ export function SystemContent({
   worldAbi,
   isNamespace,
   initialFunctionHash,
-  isExpanded,
-  onToggleExpanded,
 }: SystemContentProps) {
+  const [isExpanded, setIsExpanded] = useQueryState("expanded", parseAsArrayOf(parseAsString).withDefault([]));
+
+  const handleToggleExpanded = () => {
+    setIsExpanded((prev) => {
+      if (prev.includes(name)) {
+        return prev.filter((item) => item !== name);
+      }
+      return [...prev, name];
+    });
+  };
+
   if (isNamespace && systems) {
     return (
       <div>
-        <Collapsible open={isExpanded} onOpenChange={() => onToggleExpanded(name)}>
+        <Collapsible open={isExpanded.includes(name)} onOpenChange={handleToggleExpanded}>
           <CollapsibleTrigger asChild>
             <div className="group flex w-full cursor-pointer items-center justify-between">
               <h4 className="mt-4 text-2xl font-semibold">{name}</h4>
@@ -69,7 +77,7 @@ export function SystemContent({
   if (functions) {
     return (
       <div>
-        <Collapsible open={isExpanded} onOpenChange={() => onToggleExpanded(name)}>
+        <Collapsible open={isExpanded.includes(name)} onOpenChange={handleToggleExpanded}>
           <CollapsibleTrigger asChild>
             <div className="group flex w-full cursor-pointer items-center justify-between">
               <h4 className="my-4 text-2xl font-semibold">{name}</h4>

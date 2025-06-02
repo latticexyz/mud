@@ -10,11 +10,9 @@ type Props = {
   filteredFunctions: FilteredFunctions;
   filterValue: string;
   isLoading: boolean;
-  expanded: string[];
-  onToggleExpanded: (name: string) => void;
 };
 
-export function SidebarContent({ filteredFunctions, filterValue, isLoading, expanded, onToggleExpanded }: Props) {
+export function SidebarContent({ filteredFunctions, filterValue, isLoading }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -42,21 +40,14 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading, expa
       {!isLoading && (
         <>
           {filteredFunctions.namespaces.map(({ namespace, systems }) => (
-            <SystemSidebarItem
-              key={namespace}
-              name={namespace}
-              isNamespace
-              isExpanded={expanded.includes(namespace)}
-              onToggleExpanded={onToggleExpanded}
-            >
+            <SystemSidebarItem key={namespace} systemId={namespace} name={namespace} isNamespace>
               <ul className="pl-4">
                 {systems.map((system) => (
                   <SystemSidebarItem
                     key={system.systemId}
+                    systemId={system.systemId}
                     name={system.name}
                     functionCount={system.functions.length}
-                    isExpanded={expanded.includes(system.systemId)}
-                    onToggleExpanded={onToggleExpanded}
                   >
                     <ul className="space-y-1 py-1">
                       {system.functions.map((abi) => (
@@ -72,10 +63,9 @@ export function SidebarContent({ filteredFunctions, filterValue, isLoading, expa
           {filteredFunctions.core.map((system) => (
             <SystemSidebarItem
               key={system.systemId}
+              systemId={system.systemId}
               name={system.name}
               functionCount={system.functions.length}
-              isExpanded={expanded.includes(system.systemId)}
-              onToggleExpanded={onToggleExpanded}
             >
               <ul>
                 {system.functions.map((abi) => (

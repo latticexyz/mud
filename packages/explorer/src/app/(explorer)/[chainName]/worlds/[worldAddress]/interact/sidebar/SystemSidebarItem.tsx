@@ -1,28 +1,33 @@
 import { ChevronsUpDown } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { Badge } from "../../../../../../../components/ui/Badge";
 import { Button } from "../../../../../../../components/ui/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../../../../components/ui/Collapsible";
 
 type SystemSidebarItemProps = {
   name: string;
+  systemId: string;
   children?: React.ReactNode;
   functionCount?: number;
   isNamespace?: boolean;
-  isExpanded: boolean;
-  onToggleExpanded: (name: string) => void;
+  filterValue?: string;
 };
 
-export function SystemSidebarItem({
-  name,
-  children,
-  functionCount,
-  isNamespace,
-  isExpanded,
-  onToggleExpanded,
-}: SystemSidebarItemProps) {
+export function SystemSidebarItem({ systemId, name, children, functionCount, isNamespace }: SystemSidebarItemProps) {
+  const [isExpanded, setIsExpanded] = useQueryState("expanded", parseAsArrayOf(parseAsString).withDefault([]));
+
+  const handleToggleExpanded = () => {
+    setIsExpanded((prev) => {
+      if (prev.includes(systemId)) {
+        return prev.filter((item) => item !== systemId);
+      }
+      return [...prev, systemId];
+    });
+  };
+
   return (
     <li>
-      <Collapsible open={isExpanded} onOpenChange={() => onToggleExpanded(name)}>
+      <Collapsible open={isExpanded.includes(systemId)} onOpenChange={handleToggleExpanded}>
         <CollapsibleTrigger asChild>
           <div className="group flex w-full cursor-pointer items-center justify-between space-x-1">
             <h4 className="truncate text-sm font-semibold">{name}</h4>

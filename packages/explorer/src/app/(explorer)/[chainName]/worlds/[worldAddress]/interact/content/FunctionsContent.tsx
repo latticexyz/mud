@@ -9,11 +9,9 @@ type Props = {
   filterValue: string;
   isLoading: boolean;
   worldAbi?: Abi;
-  expanded: string[];
-  onToggleExpanded: (name: string) => void;
 };
 
-export function FunctionsContent({ worldAbi, filteredFunctions, isLoading, expanded, onToggleExpanded }: Props) {
+export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Props) {
   const initialFunctionHash = useRef(window.location.hash.slice(1)).current;
   return (
     <div className="w-full overflow-y-auto pl-1 pr-1">
@@ -37,8 +35,6 @@ export function FunctionsContent({ worldAbi, filteredFunctions, isLoading, expan
               worldAbi={worldAbi as AbiItem[]}
               initialFunctionHash={initialFunctionHash}
               isNamespace
-              isExpanded={expanded.includes(namespace)}
-              onToggleExpanded={onToggleExpanded}
             />
           ))}
 
@@ -49,8 +45,6 @@ export function FunctionsContent({ worldAbi, filteredFunctions, isLoading, expan
               functions={system.functions}
               worldAbi={worldAbi as AbiItem[]}
               initialFunctionHash={initialFunctionHash}
-              isExpanded={expanded.includes(system.systemId)}
-              onToggleExpanded={onToggleExpanded}
             />
           ))}
         </>

@@ -3,12 +3,13 @@
 import { useSearchParams } from "next/navigation";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { AbiFunction, AbiItem, Hex } from "viem";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { hexToResource } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { Input } from "../../../../../../components/ui/Input";
 import { useSystemAbisQuery } from "../../../../queries/useSystemAbisQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
+import { getFunctionElementId } from "../../../../utils/getFunctionElementId";
 import { FunctionsContent } from "./content/FunctionsContent";
 import { SidebarContent } from "./sidebar/SidebarContent";
 
@@ -36,6 +37,7 @@ export type FilteredFunctions = {
 export function InteractForm() {
   const searchParams = useSearchParams();
   const [expanded, setExpanded] = useQueryState("expanded", parseAsArrayOf(parseAsString).withDefault([]));
+  const hasSetInitialExpanded = useRef(false);
   const { data: worldAbiData, isFetched: isWorldAbiFetched } = useWorldAbiQuery();
   const { data: systemAbis, isFetched: isSystemAbisFetched } = useSystemAbisQuery();
   const isFetched = isWorldAbiFetched && isSystemAbisFetched;
@@ -108,13 +110,30 @@ export function InteractForm() {
   }, [systemAbis, deferredFilterValue]);
 
   useEffect(() => {
-    if (isFetched && expanded.length === 0) {
+    if (isFetched && !hasSetInitialExpanded.current) {
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        for (const { namespace, systems } of filteredSystemFunctions.namespaces) {
+          for (const system of systems) {
+            for (const func of system.functions) {
+              const functionId = getFunctionElementId(func, system.systemId);
+              if (hash === functionId) {
+                setExpanded([namespace, system.systemId]);
+                hasSetInitialExpanded.current = true;
+                return;
+              }
+            }
+          }
+        }
+      }
+
       const firstNamespace = filteredSystemFunctions.namespaces[0];
       if (firstNamespace) {
         setExpanded([firstNamespace.namespace]);
+        hasSetInitialExpanded.current = true;
       }
     }
-  }, [isFetched, expanded, filteredSystemFunctions, setExpanded]);
+  }, [isFetched, filteredSystemFunctions, setExpanded]);
 
   return (
     <>
