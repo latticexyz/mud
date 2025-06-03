@@ -115,7 +115,7 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": "5.x",
-    "react": "18.x",
+    "react": "18.x || 19.x",
     "viem": "2.x",
     "wagmi": "2.x"
   },
@@ -132,5 +132,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "optionalPeerDependencies": {
+    "react": "18.x || 19.x"
   }
 }
