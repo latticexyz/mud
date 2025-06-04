@@ -1,24 +1,19 @@
 import { CoinsIcon, EyeIcon, SendIcon } from "lucide-react";
-import { toFunctionHash } from "viem";
 import { AbiFunction } from "viem";
-import { cn } from "../../../../../../../utils";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
-import { useHashState } from "../../../../../hooks/useHashState";
+import { getFunctionElementId } from "../../../../../utils/getFunctionElementId";
 
 type FunctionNavItemProps = {
   abi: AbiFunction;
+  systemId: string | undefined;
 };
 
-export function FunctionSidebarItem({ abi }: FunctionNavItemProps) {
-  const [functionHash] = useHashState();
+export function FunctionSidebarItem({ abi, systemId }: FunctionNavItemProps) {
   return (
     <li>
       <ScrollIntoViewLink
-        elementId={toFunctionHash(abi)}
-        className={cn(
-          "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
-          functionHash === toFunctionHash(abi) ? "text-orange-500" : null,
-        )}
+        elementId={getFunctionElementId(abi, systemId)}
+        className="whitespace-nowrap text-sm hover:text-orange-500 hover:underline"
       >
         <span className="opacity-50">
           {abi.stateMutability === "payable" && <CoinsIcon className="mr-2 inline-block h-4 w-4" />}

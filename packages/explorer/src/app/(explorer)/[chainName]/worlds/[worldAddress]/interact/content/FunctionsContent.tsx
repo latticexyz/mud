@@ -1,16 +1,17 @@
 import { Abi, AbiItem } from "viem";
+import { useRef } from "react";
 import { Skeleton } from "../../../../../../../components/ui/Skeleton";
 import { FilteredFunctions, NamespaceSection, System } from "../InteractForm";
 import { SystemContent } from "./SystemContent";
 
 type Props = {
-  worldAbi?: Abi;
   filteredFunctions: FilteredFunctions;
-  filterValue: string;
   isLoading: boolean;
+  worldAbi?: Abi;
 };
 
 export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Props) {
+  const initialFunctionHash = useRef(window.location.hash.slice(1)).current;
   return (
     <div className="w-full overflow-y-auto pl-1 pr-1">
       {isLoading && (
@@ -31,6 +32,7 @@ export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Pro
               name={namespace}
               systems={systems}
               worldAbi={worldAbi as AbiItem[]}
+              initialFunctionHash={initialFunctionHash}
               isNamespace
             />
           ))}
@@ -41,6 +43,7 @@ export function FunctionsContent({ worldAbi, filteredFunctions, isLoading }: Pro
               name={system.name}
               functions={system.functions}
               worldAbi={worldAbi as AbiItem[]}
+              initialFunctionHash={initialFunctionHash}
             />
           ))}
         </>

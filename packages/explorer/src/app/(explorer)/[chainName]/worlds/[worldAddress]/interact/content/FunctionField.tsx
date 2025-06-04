@@ -3,22 +3,13 @@
 import { CoinsIcon, ExternalLinkIcon, EyeIcon, LoaderIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  Abi,
-  AbiFunction,
-  AbiParameter,
-  Address,
-  Hex,
-  decodeEventLog,
-  encodeFunctionData,
-  stringify,
-  toFunctionHash,
-} from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, encodeFunctionData, stringify } from "viem";
 import { useAccount, useConfig, usePublicClient } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { encodeSystemCall } from "@latticexyz/world/internal";
@@ -36,8 +27,8 @@ import {
 import { Input } from "../../../../../../../components/ui/Input";
 import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink";
 import { useChain } from "../../../../../hooks/useChain";
-import { useHashState } from "../../../../../hooks/useHashState";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
+import { getFunctionElementId } from "../../../../../utils/getFunctionElementId";
 import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
 
 export enum FunctionType {
@@ -49,6 +40,7 @@ type Props = {
   worldAbi: Abi;
   functionAbi: AbiFunction;
   systemId?: Hex;
+  useSearchParamsArgs: boolean;
 };
 
 type DecodedEvent = {
@@ -86,7 +78,7 @@ const getInputPlaceholder = (input: AbiParameter): string => {
   return `[${componentsString}]`;
 };
 
-export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
+export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParamsArgs }: Props) {
   const searchParams = useSearchParams();
   const publicClient = usePublicClient();
   const operationType: FunctionType =
@@ -98,21 +90,30 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
   const account = useAccount();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const [functionHash] = useHashState();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
   const inputLabels = functionAbi.inputs.map(getInputLabel);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: functionHash === toFunctionHash(functionAbi) ? JSON.parse(searchParams.get("args") || "[]") : [],
-      value: functionHash === toFunctionHash(functionAbi) ? searchParams.get("value") ?? "" : "",
+      inputs: useSearchParamsArgs ? JSON.parse(searchParams.get("args") || "[]") : [],
+      value: useSearchParamsArgs ? searchParams.get("value") ?? "" : "",
     },
   });
+
+  useEffect(() => {
+    if (useSearchParamsArgs) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("args");
+      params.delete("value");
+      router.replace(`?${params.toString()}${window.location.hash}`);
+    }
+  }, [useSearchParamsArgs, searchParams, router]);
 
   const getShareableUrl = useCallback(() => {
     const values = form.watch();
@@ -131,11 +132,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
     }
 
     const url = new URL(window.location.href);
-    url.hash = toFunctionHash(functionAbi);
+    url.hash = getFunctionElementId(functionAbi, systemId);
     url.search = params.toString();
 
     return url.toString();
-  }, [form, functionAbi, searchParams]);
+  }, [form, functionAbi, searchParams, systemId]);
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
@@ -232,13 +233,13 @@ export function FunctionField({ systemId, worldAbi, functionAbi }: Props) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          id={toFunctionHash(functionAbi)}
+          id={getFunctionElementId(functionAbi, systemId)}
           className="space-y-4 rounded border border-white/10 bg-black/20 p-3 pb-4"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
               <ScrollIntoViewLink
-                elementId={toFunctionHash(functionAbi)}
+                elementId={getFunctionElementId(functionAbi, systemId)}
                 className="group inline-flex items-center hover:no-underline"
               >
                 <span className="text-orange-500 group-hover:underline">{functionAbi.name}</span>
