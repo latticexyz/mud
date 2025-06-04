@@ -81,7 +81,10 @@ export function ChainSelect({ value, onChange }: Props) {
       {frame.contentDocument ? (
         <Select.Portal container={frame.contentDocument.body}>
           {/* TODO: hardcoded width */}
-          <Select.Content position="popper" className="w-[352px] mt-1 animate-in fade-in slide-in-from-top-2">
+          <Select.Content
+            position="popper"
+            className="w-[352px] max-h-[230px] overflow-y-auto mt-1 animate-in fade-in slide-in-from-top-2"
+          >
             <Select.Viewport>
               <Select.Group
                 className={twMerge(
