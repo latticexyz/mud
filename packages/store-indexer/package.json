@@ -87,7 +87,7 @@
     "@types/koa__cors": "^4.0.3",
     "@types/koa__router": "^12.0.4",
     "concurrently": "^8.2.2",
-    "viem": "2.30.5"
+    "viem": "2.30.6"
   },
   "peerDependencies": {
     "viem": "2.x"
