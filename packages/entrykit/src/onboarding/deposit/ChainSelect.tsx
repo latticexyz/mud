@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useSwitchChain } from "wagmi";
 import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
 import { useFrame } from "../../ui/FrameProvider";
@@ -7,9 +7,12 @@ import { useTheme } from "../../useTheme";
 import { ChevronUpIcon } from "../../icons/ChevronUpIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { Input } from "../../ui/Input";
-import { ChainBalance } from "./ChainBalance";
 import { ChainIcon } from "./ChainIcon";
 import { useRelay } from "./useRelay";
+import { useShowQueryError } from "../../errors/useShowQueryError";
+import { useChainBalances } from "./useChainBalances";
+import { Balance } from "../../ui/Balance";
+import { PendingIcon } from "../../icons/PendingIcon";
 
 export type Props = {
   value: number;
@@ -19,7 +22,6 @@ export type Props = {
 export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
-  const userAccount = useAccount();
   const { chains, switchChain } = useSwitchChain();
   const relay = useRelay();
   const relayChains = relay.data?.chains;
@@ -37,14 +39,23 @@ export function ChainSelect({ value, onChange }: Props) {
   }, [chains, relayChains]);
 
   const selectedChain = sourceChains.find((c) => c.id === value)!;
+  const { data: chainsBalances, isLoading } = useShowQueryError(useChainBalances({ chains: sourceChains }));
+
+  const chainsWithBalance = useMemo(() => {
+    if (!chainsBalances) return [];
+    return sourceChains.filter((chain) => {
+      const balance = chainsBalances[chain.id];
+      return balance && balance.value > 0n;
+    });
+  }, [sourceChains, chainsBalances]);
 
   useEffect(() => {
-    if (sourceChains.length > 0 && !selectedChain) {
-      const defaultChain = sourceChains[0];
+    if (chainsWithBalance.length > 0 && !selectedChain) {
+      const defaultChain = chainsWithBalance[0];
       onChange(defaultChain.id);
       switchChain({ chainId: defaultChain.id });
     }
-  }, [value, selectedChain, sourceChains, onChange, switchChain]);
+  }, [value, selectedChain, chainsWithBalance, onChange, switchChain]);
 
   return (
     <Select.Root
@@ -52,7 +63,7 @@ export function ChainSelect({ value, onChange }: Props) {
       onValueChange={(value) => {
         // TODO: figure out why onValueChange triggers twice, once with value and once without
         if (value) {
-          const chain = sourceChains.find((chain) => chain.id.toString() === value);
+          const chain = chainsWithBalance.find((chain) => chain.id.toString() === value);
           if (!chain) throw new Error(`Unknown chain selected: ${value}`);
           onChange(chain.id);
         }
@@ -92,24 +103,31 @@ export function ChainSelect({ value, onChange }: Props) {
                   "bg-neutral-800 text-neutral-300 border-neutral-700 divide-neutral-700",
                 )}
               >
-                {sourceChains.map((chain) => (
-                  // TODO: figure out why up/down arrow jump to top/bottom rather than cycling through items
-                  <Select.Item
-                    key={chain.id}
-                    value={chain.id.toString()}
-                    className={twMerge(
-                      "group flex p-2.5 gap-2.5 items-center cursor-pointer outline-none",
-                      // TODO: different style for checked/active state
-                      "text-white focus:bg-neutral-700 data-[state=checked]:bg-neutral-900",
-                    )}
-                  >
-                    <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} />
-                    <span className="flex-grow flex-shrink-0">{chain.name}</span>
-                    <span className="flex-shrink-0 font-mono text-sm text-neutral-400">
-                      <ChainBalance chainId={chain.id} address={userAccount.address} />
-                    </span>
-                  </Select.Item>
-                ))}
+                {isLoading ? (
+                  <div className="flex items-center justify-center p-4">
+                    <PendingIcon className="h-6 w-6 animate-spin text-gray-400" />
+                  </div>
+                ) : (
+                  chainsWithBalance.map((chain) => {
+                    const balance = chainsBalances?.[chain.id];
+                    return (
+                      <Select.Item
+                        key={chain.id}
+                        value={chain.id.toString()}
+                        className={twMerge(
+                          "group flex p-2.5 gap-2.5 items-center cursor-pointer outline-none",
+                          "text-white focus:bg-neutral-700 data-[state=checked]:bg-neutral-900",
+                        )}
+                      >
+                        <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} />
+                        <span className="flex-grow flex-shrink-0">{chain.name}</span>
+                        <span className="flex-shrink-0 font-mono text-sm text-neutral-400">
+                          <Balance wei={balance?.value ?? 0n} />
+                        </span>
+                      </Select.Item>
+                    );
+                  })
+                )}
               </Select.Group>
             </Select.Viewport>
           </Select.Content>
