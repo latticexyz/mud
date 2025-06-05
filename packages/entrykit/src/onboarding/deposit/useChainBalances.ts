@@ -34,5 +34,6 @@ export function useChainBalances({ chains }: UseChainBalancesOptions) {
       );
     },
     refetchInterval: 1000 * 60,
+    retry: false,
   });
 }
