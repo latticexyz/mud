@@ -30,7 +30,7 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
   const pendingUpdates = pendingStashUpdates.get(stash) ?? {};
   if (!pendingStashUpdates.has(stash)) pendingStashUpdates.set(stash, pendingUpdates);
 
-  for (const { table, key, value } of updates) {
+  for (const { table, key, value, log } of updates) {
     if (stash.get().config[table.namespaceLabel]?.[table.label] == null) {
       registerTable({ stash, table });
     }
@@ -66,6 +66,7 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
       key,
       previous: prevRecord,
       current: nextRecord,
+      log,
     });
   }
 

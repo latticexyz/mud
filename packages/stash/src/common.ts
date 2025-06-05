@@ -1,6 +1,7 @@
 import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { Table } from "@latticexyz/config";
 import { QueryFragment } from "./queryFragments";
+import { Log } from "viem";
 
 export type StoreConfig = {
   namespaces: {
@@ -134,6 +135,7 @@ export type TableUpdate<table extends Table = Table> = {
   key: Key<table>;
   previous: TableRecord<table> | undefined;
   current: TableRecord<table> | undefined;
+  log?: Log;
 };
 
 export type TableUpdates<table extends Table = Table> = TableUpdate<table>[];
