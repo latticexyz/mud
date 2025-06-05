@@ -20,14 +20,16 @@ export function useChainBalances({ chains }: UseChainBalancesOptions) {
             return await getBalance(wagmiConfig, { chainId: chain.id, address: userAccount.address as Address });
           } catch (error) {
             console.warn(`Failed to fetch balance for chain ${chain.id}:`, error);
-            return { value: 0n };
+            return undefined;
           }
         }),
       );
 
       return balances.reduce(
         (acc, balance, index) => {
-          acc[chains[index].id] = balance;
+          if (balance !== undefined) {
+            acc[chains[index].id] = balance;
+          }
           return acc;
         },
         {} as Record<number, (typeof balances)[0]>,
