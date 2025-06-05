@@ -8,7 +8,7 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import { spliceHex } from "@latticexyz/common";
-import { Hex, concatHex, size } from "viem";
+import { Hex, Log, concatHex, size } from "viem";
 import { Table } from "@latticexyz/config";
 import { StorageAdapter, StorageAdapterBlock, emptyValueArgs } from "../common";
 import { debug } from "./debug";
@@ -77,7 +77,7 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
           dynamicData,
         });
 
-        updates.push((pendingRecords[id] = { table, key, value }));
+        updates.push((pendingRecords[id] = { table, key, value, log: log as Log }));
       } else if (log.eventName === "Store_SpliceDynamicData") {
         const previousValue = getPendingRecord(id, table, key);
         const { staticData, dynamicData: previousDynamicData } = previousValue
@@ -91,9 +91,9 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
           dynamicData,
         });
 
-        updates.push((pendingRecords[id] = { table, key, value }));
+        updates.push((pendingRecords[id] = { table, key, value, log: log as Log }));
       } else if (log.eventName === "Store_DeleteRecord") {
-        updates.push((pendingRecords[id] = { table, key, value: undefined }));
+        updates.push((pendingRecords[id] = { table, key, value: undefined, log: log as Log }));
       }
     }
 
