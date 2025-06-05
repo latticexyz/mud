@@ -23,7 +23,7 @@ import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { storeEventsAbi } from "@latticexyz/store";
-import { bigIntMax } from "@latticexyz/common/utils";
+import { bigIntMax, isDefined } from "@latticexyz/common/utils";
 import { getRpcClient, GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 import { debug } from "./debug";
 
@@ -86,7 +86,7 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
       ),
     ),
     tap((block) => {
-      debug("pending logs stream initialized");
+      debug("pending block", block.blockNumber, "with", block.logs.length, "logs");
       pendingLogsState = "initialized";
       restartBlockNumber = block.blockNumber;
       const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
@@ -99,45 +99,57 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
 
   const missingLogs$ = latestBlock$.pipe(
     map((block) => {
+      const missingBlock = processedBlockLogs[String(block.blockNumber)] == null;
       const seenLogs = processedBlockLogs[String(block.blockNumber)] ?? {};
       const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
+      delete processedBlockLogs[String(block.blockNumber)];
+      restartBlockNumber = block.blockNumber + 1n;
+
       debug(
         "got latest block",
         block.blockNumber,
         "with",
         block.logs.length,
         "logs (",
-        missingLogs.length,
-        "new logs)",
+        missingBlock ? "missing block," : "block seen,",
+        `${missingLogs.length} new logs`,
+        ")",
       );
-      return { blockNumber: block.blockNumber, logs: missingLogs };
-    }),
-    tap(({ blockNumber }) => {
-      delete processedBlockLogs[String(blockNumber)];
-      restartBlockNumber = blockNumber + 1n;
-      if (
-        pendingLogsState === "waiting" && // pending logs stream not initialized yet
-        initialCatchUpBlockNumber != null && // initial catch up block fetched
-        blockNumber >= initialCatchUpBlockNumber // initial catch up block reached
-      ) {
-        debug("initial catch up block number reached, creating pending stream");
-        recreatePendingStream$.next();
-        return;
+
+      if (pendingLogsState === "waiting") {
+        // Once the initial catch up block is reached, we can start the pending logs stream
+        if (
+          initialCatchUpBlockNumber != null && // initial catch up block fetched
+          block.blockNumber >= initialCatchUpBlockNumber // initial catch up block reached
+        ) {
+          debug("initial catch up block number", initialCatchUpBlockNumber, "reached, creating pending stream");
+          recreatePendingStream$.next();
+        }
+        // While the pending logs stream is waiting, pass the block through
+        return block;
       }
-    }),
-    filter(({ logs }) => logs.length > 0),
-    tap(({ blockNumber }) => {
+
+      // While the pending logs stream is initializing, don't recreate it and pass the block through
       if (pendingLogsState === "initializing") {
         debug("pending logs stream is initializing, not recreating");
-        return;
+        return block;
       }
-      if (pendingLogsState === "initialized") {
-        debug("missing logs found in latest block", blockNumber, "recreating pending stream");
+
+      // If the pending logs stream is initialized but there are missing logs, recreate it and pass the block through.
+      // Pass all logs from this block, not just the missing ones, to make sure they appear in the right order.
+      if (pendingLogsState === "initialized" && (missingLogs.length > 0 || missingBlock)) {
+        debug("missing logs found in latest block", block.blockNumber, "recreating pending stream", {
+          missingLogs: missingLogs.length,
+          missingBlock,
+        });
         recreatePendingStream$.next();
-        return;
+        return block;
       }
-      debug("catching up, pending logs stream not initialized yet");
+
+      debug("no missing logs found in latest block", block.blockNumber, "not recreating pending stream");
+      return;
     }),
+    filter(isDefined),
   );
 
   return merge(pendingLogs$, missingLogs$);
