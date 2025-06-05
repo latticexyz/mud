@@ -3,11 +3,14 @@ import { Key, Stash, TableRecord, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
 import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
+import { Log } from "viem";
 
 export type PendingStashUpdate<table extends Table = Table> = {
   table: table;
   key: Key<table>;
   value: undefined | Partial<TableRecord<table>>;
+  // TODO: remove later, just for debugging
+  log?: Log;
 };
 
 export type ApplyUpdatesArgs = {
