@@ -15,9 +15,14 @@ export function useChainBalances({ chains }: UseChainBalancesOptions) {
     queryKey: ["chainBalances", chainIds],
     queryFn: async () => {
       const balances = await Promise.all(
-        chains.map(async (chain) =>
-          getBalance(wagmiConfig, { chainId: chain.id, address: userAccount.address as Address }),
-        ),
+        chains.map(async (chain) => {
+          try {
+            return await getBalance(wagmiConfig, { chainId: chain.id, address: userAccount.address as Address });
+          } catch (error) {
+            console.warn(`Failed to fetch balance for chain ${chain.id}:`, error);
+            return { value: 0n };
+          }
+        }),
       );
 
       return balances.reduce(
