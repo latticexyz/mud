@@ -50,7 +50,10 @@ export function ChainSelect({ value, onChange }: Props) {
   }, [sourceChains, chainsBalances]);
 
   useEffect(() => {
-    if (chainsWithBalance.length > 0 && !selectedChain) {
+    if (
+      chainsWithBalance.length > 0 &&
+      (!selectedChain || !chainsWithBalance.find((c) => c.id === selectedChain?.id))
+    ) {
       const defaultChain = chainsWithBalance[0];
       onChange(defaultChain.id);
       switchChain({ chainId: defaultChain.id });
