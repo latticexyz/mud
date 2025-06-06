@@ -40,7 +40,7 @@ export function ChainSelect({ value, onChange }: Props) {
         return {
           ...sourceChain,
           relayChain,
-        } as ChainWithRelay;
+        } satisfies ChainWithRelay;
       })
       .filter((c) => c.relayChain);
   }, [chains, relayChains]);
