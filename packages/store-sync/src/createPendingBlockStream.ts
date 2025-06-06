@@ -86,7 +86,6 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
       ),
     ),
     tap((block) => {
-      debug("pending block", block);
       pendingLogsState = "initialized";
       restartBlockNumber = block.blockNumber;
       const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
@@ -104,8 +103,6 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
       const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
       delete processedBlockLogs[String(block.blockNumber)];
       restartBlockNumber = block.blockNumber + 1n;
-
-      debug("latest block", processedBlockLogs);
 
       debug(
         "comparing latest block",
