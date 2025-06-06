@@ -14,7 +14,7 @@ export function useChainBalances({ chains }: UseChainBalancesOptions) {
   const chainIds = chains.map((chain) => chain.id);
 
   return useQuery({
-    queryKey: ["chainBalances", chainIds],
+    queryKey: ["chainBalances", chainIds, userAddress],
     queryFn: userAddress
       ? async () => {
           const chainBalances = await Promise.allSettled(
