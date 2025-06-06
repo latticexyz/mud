@@ -1,14 +1,14 @@
-import { isNotNull } from "@latticexyz/common/utils";
-import { useQuery, skipToken } from "@tanstack/react-query";
-import { Chain } from "viem";
 import { useAccount, useConfig as useWagmiConfig } from "wagmi";
 import { getBalance } from "wagmi/actions";
+import { useQuery, skipToken } from "@tanstack/react-query";
+import { isNotNull } from "@latticexyz/common/utils";
+import { ChainWithRelay } from "./ChainSelect";
 
-export type UseChainBalancesOptions = {
-  chains: Chain[];
+type Props = {
+  chains: ChainWithRelay[];
 };
 
-export function useChainBalances({ chains }: UseChainBalancesOptions) {
+export function useChainBalances({ chains }: Props) {
   const { address: userAddress } = useAccount();
   const wagmiConfig = useWagmiConfig();
   const chainIds = chains.map((chain) => chain.id);
