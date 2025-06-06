@@ -10,6 +10,10 @@ export type TableQuery = {
    * Note: requires an indexer with SQL API
    */
   sql: string;
+  /**
+   * Optionally filter to only include records updated in this block or earlier.
+   */
+  toBlock?: bigint;
 };
 
 export type LogFilter = {
