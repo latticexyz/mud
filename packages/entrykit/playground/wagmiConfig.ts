@@ -1,112 +1,9 @@
-import { Chain, fallback, http, webSocket } from "viem";
-import { anvil } from "viem/chains";
+import { Chain, http } from "viem";
+import { anvil, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
-import {
-  redstone,
-  abstract,
-  ancient8,
-  apeChain,
-  arbitrum,
-  arbitrumNova,
-  avalanche,
-  base,
-  berachain,
-  bob,
-  boba,
-  celo,
-  cronos,
-  flowMainnet,
-  gravity,
-  holesky,
-  ink,
-  linea,
-  lisk,
-  mainnet,
-  manta,
-  mantle,
-  metis,
-  mint,
-  optimism,
-  polygon,
-  sanko,
-  scroll,
-  sei,
-  shape,
-  soneium,
-  swellchain,
-  taiko,
-  unichain,
-  worldchain,
-  zircuit,
-  zksync,
-  zora,
-} from "viem/chains";
-
-const relayChains = [
-  abstract,
-  ancient8,
-  apeChain,
-  arbitrum,
-  arbitrumNova,
-  avalanche,
-  base,
-  berachain,
-  bob,
-  boba,
-  celo,
-  cronos,
-  flowMainnet,
-  gravity,
-  holesky,
-  ink,
-  linea,
-  lisk,
-  mainnet,
-  manta,
-  mantle,
-  metis,
-  mint,
-  optimism,
-  polygon,
-  sanko,
-  scroll,
-  sei,
-  shape,
-  soneium,
-  swellchain,
-  taiko,
-  unichain,
-  worldchain,
-  zircuit,
-  zksync,
-  zora,
-] as const;
-
-const redstoneWithPaymaster = {
-  ...redstone,
-  rpcUrls: {
-    ...redstone.rpcUrls,
-    bundler: {
-      http: ["https://rpc.redstonechain.com"],
-      webSocket: ["wss://rpc.redstonechain.com"],
-    },
-    wiresaw: {
-      http: ["https://wiresaw.redstonechain.com"],
-      webSocket: ["wss://wiresaw.redstonechain.com"],
-    },
-  },
-  contracts: {
-    ...redstone.contracts,
-    quarryPaymaster: {
-      address: "0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f",
-    },
-  },
-};
 
 const chains = [
-  redstoneWithPaymaster,
-
   mainnet,
   {
     ...anvil,
@@ -133,43 +30,11 @@ const chains = [
       },
     },
   },
-  ...relayChains,
-
-  // {
-  //   ...redstone,
-  //   rpcUrls: {
-  //     ...redstone.rpcUrls,
-  //     bundler: {
-  //       http: ["https://redstone.tunnel.offchain.dev/rpc"],
-  //     },
-  //   },
-  //   contracts: {
-  //     ...redstone.contracts,
-  //     quarryPaymaster: {
-  //       address: "0x0528104d96672dfdF47B92f809A32e7eA11Ee8d9",
-  //     },
-  //   },
-  // },
 ] as const satisfies Chain[];
 
-const websocketConfig: WebSocketTransportConfig = {
-  keepAlive: { interval: 1000 },
-  reconnect: true,
-  retryCount: 3,
-};
-const httpConfig: HttpTransportConfig = {
-  batch: {
-    batchSize: 100,
-    wait: 1000,
-  },
-};
-
-const defaultTransport = fallback([webSocket(undefined, websocketConfig), http(undefined, httpConfig)]);
 const transports = {
-  [mainnet.id]: defaultTransport,
-  [anvil.id]: defaultTransport,
-  [redstone.id]: defaultTransport,
-  ...Object.fromEntries(relayChains.map((chain) => [chain.id, http()])),
+  [mainnet.id]: http(),
+  [anvil.id]: http(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
@@ -180,7 +45,5 @@ export const wagmiConfig = createWagmiConfig({
   transports,
   pollingInterval: {
     [anvil.id]: 500,
-    [redstone.id]: 500,
-    ...Object.fromEntries(relayChains.map((chain) => [chain.id, 500])),
   },
 });
