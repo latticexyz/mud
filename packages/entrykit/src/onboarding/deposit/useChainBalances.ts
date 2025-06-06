@@ -1,3 +1,4 @@
+import { isNotNull } from "@latticexyz/common/utils";
 import { useQuery, skipToken } from "@tanstack/react-query";
 import { Chain } from "viem";
 import { useAccount, useConfig as useWagmiConfig } from "wagmi";
@@ -16,19 +17,14 @@ export function useChainBalances({ chains }: UseChainBalancesOptions) {
     queryKey: ["chainBalances", chainIds],
     queryFn: userAddress
       ? async () => {
-          const balances = await Promise.allSettled(
-            chains.map((chain) => getBalance(wagmiConfig, { chainId: chain.id, address: userAddress })),
+          const chainBalances = await Promise.allSettled(
+            chains.map(async (chain) => {
+              const balance = await getBalance(wagmiConfig, { chainId: chain.id, address: userAddress });
+              return { chain, balance };
+            }),
           );
 
-          return balances.reduce(
-            (acc, result, index) => {
-              if (result.status === "fulfilled") {
-                acc[chains[index].id] = result.value;
-              }
-              return acc;
-            },
-            {} as Record<number, Awaited<ReturnType<typeof getBalance>>>,
-          );
+          return chainBalances.map((result) => (result.status === "fulfilled" ? result.value : null)).filter(isNotNull);
         }
       : skipToken,
     refetchInterval: 1000 * 60,
