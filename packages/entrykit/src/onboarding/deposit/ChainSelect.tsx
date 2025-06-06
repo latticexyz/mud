@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { Chain } from "viem";
 import { useSwitchChain } from "wagmi";
 import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
@@ -13,6 +14,12 @@ import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useChainBalances } from "./useChainBalances";
 import { Balance } from "../../ui/Balance";
 import { PendingIcon } from "../../icons/PendingIcon";
+
+type ChainWithRelay = Chain & {
+  relayChain?: {
+    icon?: Record<string, string>;
+  };
+};
 
 export type Props = {
   value: number;
@@ -33,7 +40,7 @@ export function ChainSelect({ value, onChange }: Props) {
         return {
           ...sourceChain,
           relayChain,
-        };
+        } as ChainWithRelay;
       })
       .filter((c) => c.relayChain);
   }, [chains, relayChains]);
@@ -43,11 +50,8 @@ export function ChainSelect({ value, onChange }: Props) {
 
   const chainsWithBalance = useMemo(() => {
     if (!chainsBalances) return [];
-    return sourceChains.filter((chain) => {
-      const balance = chainsBalances[chain.id];
-      return balance && balance.value > 0n;
-    });
-  }, [sourceChains, chainsBalances]);
+    return chainsBalances.filter(({ balance }) => balance.value > 0n).map(({ chain }) => chain);
+  }, [chainsBalances]);
 
   useEffect(() => {
     if (
@@ -64,7 +68,6 @@ export function ChainSelect({ value, onChange }: Props) {
     <Select.Root
       value={value.toString()}
       onValueChange={(value) => {
-        // TODO: figure out why onValueChange triggers twice, once with value and once without
         if (value) {
           const chain = chainsWithBalance.find((chain) => chain.id.toString() === value);
           if (!chain) throw new Error(`Unknown chain selected: ${value}`);
@@ -78,7 +81,6 @@ export function ChainSelect({ value, onChange }: Props) {
             <ChainIcon
               id={selectedChain?.id}
               name={selectedChain?.name}
-              // TODO: define our own set of icons for each chain
               url={selectedChain?.relayChain?.icon?.[theme]}
               className="w-8"
             />
@@ -94,7 +96,6 @@ export function ChainSelect({ value, onChange }: Props) {
 
       {frame.contentDocument ? (
         <Select.Portal container={frame.contentDocument.body}>
-          {/* TODO: hardcoded width */}
           <Select.Content
             position="popper"
             className="w-[352px] max-h-[230px] overflow-y-auto mt-1 animate-in fade-in slide-in-from-top-2"
@@ -111,8 +112,8 @@ export function ChainSelect({ value, onChange }: Props) {
                     <PendingIcon className="h-6 w-6 animate-spin text-gray-400" />
                   </div>
                 ) : (
-                  chainsWithBalance.map((chain) => {
-                    const balance = chainsBalances?.[chain.id];
+                  chainsWithBalance.map((chain: ChainWithRelay) => {
+                    const balance = chainsBalances?.find((cb) => cb.chain.id === chain.id)?.balance;
                     return (
                       <Select.Item
                         key={chain.id}
