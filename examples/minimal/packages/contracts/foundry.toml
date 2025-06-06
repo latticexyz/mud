@@ -19,3 +19,4 @@ extra_output_files = [
   "evm.bytecode"
 ]
 fs_permissions = [{ access = "read", path = "./"}]
+script_execution_protection = false
