@@ -112,25 +112,27 @@ export function ChainSelect({ value, onChange }: Props) {
                     <PendingIcon className="h-6 w-6 animate-spin text-gray-400" />
                   </div>
                 ) : (
-                  chainsWithBalance.map((chain: ChainWithRelay) => {
-                    const balance = chainsBalances?.find((cb) => cb.chain.id === chain.id)?.balance;
-                    return (
-                      <Select.Item
-                        key={chain.id}
-                        value={chain.id.toString()}
-                        className={twMerge(
-                          "group flex p-2.5 gap-2.5 items-center cursor-pointer outline-none",
-                          "text-white focus:bg-neutral-700 data-[state=checked]:bg-neutral-900",
-                        )}
-                      >
-                        <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} />
-                        <span className="flex-grow flex-shrink-0">{chain.name}</span>
-                        <span className="flex-shrink-0 font-mono text-sm text-neutral-400">
-                          <Balance wei={balance?.value ?? 0n} />
-                        </span>
-                      </Select.Item>
-                    );
-                  })
+                  [...(chainsWithBalance.length > 0 ? chainsWithBalance : sourceChains)].map(
+                    (chain: ChainWithRelay) => {
+                      const balance = chainsBalances?.find((cb) => cb.chain.id === chain.id)?.balance;
+                      return (
+                        <Select.Item
+                          key={chain.id}
+                          value={chain.id.toString()}
+                          className={twMerge(
+                            "group flex p-2.5 gap-2.5 items-center cursor-pointer outline-none",
+                            "text-white focus:bg-neutral-700 data-[state=checked]:bg-neutral-900",
+                          )}
+                        >
+                          <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} />
+                          <span className="flex-grow flex-shrink-0">{chain.name}</span>
+                          <span className="flex-shrink-0 font-mono text-sm text-neutral-400">
+                            <Balance wei={balance?.value ?? 0n} />
+                          </span>
+                        </Select.Item>
+                      );
+                    },
+                  )
                 )}
               </Select.Group>
             </Select.Viewport>
