@@ -54,7 +54,7 @@ contract ERC721Module is Module {
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     world.transferOwnership(namespaceId, _msgSender());
 
-    // Register the ERC721 in the ERC20Registry
+    // Register the ERC721 in the ERC721Registry
     if (!ResourceIds.getExists(ERC721_REGISTRY_TABLE_ID)) {
       world.registerNamespace(MODULE_NAMESPACE_ID);
       ERC721Registry.register(ERC721_REGISTRY_TABLE_ID);
@@ -80,7 +80,7 @@ library ERC721ModuleRegistrationLib {
     Balances.register(_balancesTableId(namespace));
     ERC721Metadata.register(_metadataTableId(namespace));
 
-    // Register a new ERC20System
+    // Register a new ERC721System
     world.registerSystem(_erc721SystemId(namespace), new ERC721System(), true);
   }
 }
