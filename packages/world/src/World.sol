@@ -71,7 +71,7 @@ contract World is StoreKernel, IWorldKernel {
    * @param initModule The core module to initialize the World with.
    * @dev Only the initial creator can initialize. This can be done only once.
    */
-  function initialize(IModule initModule) public prohibitDirectCallback {
+  function initialize(IModule initModule) public virtual prohibitDirectCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
       revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
@@ -94,7 +94,7 @@ contract World is StoreKernel, IWorldKernel {
    * @param encodedArgs The ABI encoded arguments for module installation.
    * @dev The caller must own the root namespace.
    */
-  function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
+  function installRootModule(IModule module, bytes memory encodedArgs) public virtual prohibitDirectCallback {
     AccessControl._requireOwner(ROOT_NAMESPACE_ID, msg.sender);
     _installRootModule(module, encodedArgs);
   }
@@ -104,7 +104,7 @@ contract World is StoreKernel, IWorldKernel {
    * @param module The module to be installed.
    * @param encodedArgs The ABI encoded arguments for module installation.
    */
-  function _installRootModule(IModule module, bytes memory encodedArgs) internal {
+  function _installRootModule(IModule module, bytes memory encodedArgs) internal virtual {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), type(IModule).interfaceId);
 
@@ -403,7 +403,7 @@ contract World is StoreKernel, IWorldKernel {
   /**
    * @notice Accepts ETH and adds to the root namespace's balance.
    */
-  receive() external payable {
+  receive() external payable virtual {
     uint256 rootBalance = Balances._get(ROOT_NAMESPACE_ID);
     Balances._set(ROOT_NAMESPACE_ID, rootBalance + msg.value);
   }
@@ -411,7 +411,7 @@ contract World is StoreKernel, IWorldKernel {
   /**
    * @dev Fallback function to call registered function selectors.
    */
-  fallback() external payable prohibitDirectCallback {
+  fallback() external payable virtual prohibitDirectCallback {
     (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);
