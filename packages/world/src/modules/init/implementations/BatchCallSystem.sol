@@ -21,7 +21,7 @@ contract BatchCallSystem is System, LimitedCallContext {
    */
   function batchCall(
     SystemCallData[] calldata systemCalls
-  ) public onlyDelegatecall returns (bytes[] memory returnDatas) {
+  ) public payable onlyDelegatecall returns (bytes[] memory returnDatas) {
     IBaseWorld world = IBaseWorld(_world());
     returnDatas = new bytes[](systemCalls.length);
 
@@ -43,7 +43,7 @@ contract BatchCallSystem is System, LimitedCallContext {
    */
   function batchCallFrom(
     SystemCallFromData[] calldata systemCalls
-  ) public onlyDelegatecall returns (bytes[] memory returnDatas) {
+  ) public payable onlyDelegatecall returns (bytes[] memory returnDatas) {
     IBaseWorld world = IBaseWorld(_world());
     returnDatas = new bytes[](systemCalls.length);
 
