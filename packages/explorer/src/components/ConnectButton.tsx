@@ -9,18 +9,19 @@ import { Button } from "./ui/Button";
 
 type ConnectedButtonProps = {
   address: string;
-  balance: string | undefined;
+  displayName: string | undefined;
+  displayBalance: string | undefined;
   openAccountModal: () => void;
 };
 
-function ConnectedButton({ address, balance, openAccountModal }: ConnectedButtonProps) {
-  const { data: ensData } = useENS(address);
+function ConnectedButton({ address, displayName, displayBalance, openAccountModal }: ConnectedButtonProps) {
+  const { data: ensData, isLoading } = useENS(address);
   return (
     <div className="flex-wrap gap-2">
       <Button type="button" size="sm" onClick={openAccountModal} variant="secondary">
         <PlugIcon className="mr-2 inline-block h-4 w-4" />
-        {ensData?.displayName}
-        <span className="ml-2 font-normal opacity-70">{balance ? ` (${balance})` : ""}</span>
+        {isLoading || !ensData?.displayName ? displayName : ensData.displayName}
+        <span className="ml-2 font-normal opacity-70">{displayBalance ? ` (${displayBalance})` : ""}</span>
       </Button>
     </div>
   );
@@ -63,7 +64,8 @@ export function ConnectButton() {
               return (
                 <ConnectedButton
                   address={account.address}
-                  balance={account.displayBalance}
+                  displayName={account.displayName}
+                  displayBalance={account.displayBalance}
                   openAccountModal={openAccountModal}
                 />
               );
