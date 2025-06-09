@@ -201,14 +201,14 @@ export function TransactionsWatcher() {
     async ({ hash, writeId, timestamp }: { hash: Hash; timestamp: bigint; writeId?: string }) => {
       if (!abi) return;
 
-      const transaction = await getTransaction(wagmiConfig, { hash });
+      const transaction = await getTransaction(wagmiConfig, { hash, chainId });
       if (transaction.to && getAddress(transaction.to) === getAddress(entryPoint07Address)) {
         handleUserOperations({ writeId, timestamp, transaction });
       } else if (transaction.to && getAddress(transaction.to) === getAddress(worldAddress)) {
         handleAuthenticTransaction({ hash, writeId, timestamp, transaction });
       }
     },
-    [abi, wagmiConfig, worldAddress, handleUserOperations, handleAuthenticTransaction],
+    [abi, wagmiConfig, chainId, worldAddress, handleUserOperations, handleAuthenticTransaction],
   );
 
   useEffect(() => {

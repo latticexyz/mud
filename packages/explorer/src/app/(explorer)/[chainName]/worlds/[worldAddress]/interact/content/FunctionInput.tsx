@@ -1,9 +1,10 @@
-import { toast } from "sonner";
+import { LoaderIcon } from "lucide-react";
 import { AbiParameter, isAddress } from "viem";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../../components/ui/Form";
 import { Input } from "../../../../../../../components/ui/Input";
+import { useEnsAddress } from "./useEnsAddress";
 
 type Props = {
   input: AbiParameter;
@@ -23,57 +24,72 @@ const getInputPlaceholder = (input: AbiParameter): string => {
 };
 
 export function FunctionInput({ input, index }: Props) {
-  const [isResolving, setIsResolving] = useState(false);
   const form = useFormContext();
+  const currentValue = form.watch(`inputs.${index}`);
+  const currentResolvedAddress = form.watch(`resolvedAddresses.${index}`);
+  const { data: ensAddress, isLoading: isEnsAddressLoading, error: ensAddressError } = useEnsAddress(currentValue);
+
+  useEffect(() => {
+    if (ensAddress !== currentResolvedAddress) {
+      form.setValue(`resolvedAddresses.${index}`, ensAddress);
+    }
+  }, [ensAddress, currentResolvedAddress, form, index]);
 
   const handleChange = useCallback(
     async (value: string) => {
-      // If it's not an address type or already a valid address, just update the value
-      if (input.type !== "address" || isAddress(value)) {
+      if (input.type !== "address") {
         form.setValue(`inputs.${index}`, value);
         return;
       }
 
-      // Try to resolve ENS
-      setIsResolving(true);
-      try {
-        const response = await fetch(`https://api.ensideas.com/ens/resolve/${value}`);
-        const data = await response.json();
-
-        if (data.address) {
-          form.setValue(`inputs.${index}`, data.address);
-        } else {
-          form.setValue(`inputs.${index}`, value);
-          toast.error(`Could not resolve ENS name: ${value}`);
-        }
-      } catch (error) {
+      if (isAddress(value)) {
         form.setValue(`inputs.${index}`, value);
-        toast.error(`Failed to resolve ENS name: ${value}`);
-      } finally {
-        setIsResolving(false);
+        form.setValue(`resolvedAddresses.${index}`, value);
+        return;
       }
+
+      form.setValue(`inputs.${index}`, value);
+      form.setValue(`resolvedAddresses.${index}`, undefined);
     },
     [form, index, input.type],
   );
+
+  const resolvedAddress = form.watch(`resolvedAddresses.${index}`);
 
   return (
     <FormField
       control={form.control}
       name={`inputs.${index}`}
       render={({ field }) => (
-        <FormItem className="flex items-center gap-4 space-y-0">
-          {input.name && <FormLabel className="shrink-0 pt-1 font-mono text-sm opacity-70">{input.name}</FormLabel>}
-          <div className="flex-1">
-            <FormControl>
-              <Input
-                placeholder={getInputPlaceholder(input)}
-                value={field.value}
-                onChange={(evt) => handleChange(evt.target.value)}
-                className="font-mono text-sm"
-                disabled={isResolving}
-              />
-            </FormControl>
-            <FormMessage />
+        <FormItem className="flex flex-col gap-2">
+          <div className="flex items-start gap-4">
+            {input.name && <FormLabel className="shrink-0 pt-2 font-mono text-sm opacity-70">{input.name}</FormLabel>}
+            <div className="flex-1">
+              <FormControl>
+                <Input
+                  placeholder={getInputPlaceholder(input)}
+                  value={field.value}
+                  onChange={(evt) => handleChange(evt.target.value)}
+                  className="font-mono text-sm"
+                />
+              </FormControl>
+              <FormMessage />
+
+              {input.type === "address" && !isAddress(currentValue) && (
+                <div className="flex items-center gap-2 pb-2 pt-1 text-sm text-muted-foreground">
+                  {isEnsAddressLoading && (
+                    <>
+                      <LoaderIcon className="h-3 w-3 animate-spin" />
+                      <span>Resolving ENS name...</span>
+                    </>
+                  )}
+                  {ensAddressError && <span className="text-destructive">Failed to resolve ENS name</span>}
+                  {resolvedAddress && !isEnsAddressLoading && (
+                    <span className="font-mono">Resolved to: {resolvedAddress}</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </FormItem>
       )}

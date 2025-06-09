@@ -52,6 +52,7 @@ type DecodedEvent = {
 const formSchema = z.object({
   inputs: z.array(z.string()),
   value: z.string().optional(),
+  resolvedAddresses: z.record(z.string().optional()).optional(),
 });
 
 const getInputLabel = (input: AbiParameter): string => {
@@ -69,6 +70,7 @@ const getInputLabel = (input: AbiParameter): string => {
 
 export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParamsArgs }: Props) {
   const searchParams = useSearchParams();
+  const { id: chainId } = useChain();
   const publicClient = usePublicClient();
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -78,7 +80,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
   const wagmiConfig = useConfig();
   const account = useAccount();
   const { worldAddress } = useParams();
-  const { id: chainId } = useChain();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -92,6 +93,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
     defaultValues: {
       inputs: useSearchParamsArgs ? JSON.parse(searchParams.get("args") || "[]") : [],
       value: useSearchParamsArgs ? searchParams.get("value") ?? "" : "",
+      resolvedAddresses: {},
     },
   });
 
@@ -129,6 +131,9 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
+      console.log("Form values:", values);
+      console.log("Form errors:", form.formState.errors);
+
       if (!account.isConnected) {
         return openConnectModal?.();
       } else if (!publicClient) {
@@ -139,6 +144,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
       setIsLoading(true);
       let toastId;
 
+      const resolvedInputs = values.inputs.map((input, index) => {
+        const resolvedAddress = form.getValues(`resolvedAddresses.${index}`);
+        return resolvedAddress || input;
+      });
+
       try {
         if (operationType === FunctionType.READ) {
           const { data: result } = await publicClient.call({
@@ -146,7 +156,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
             data: encodeFunctionData({
               abi: [...worldAbi, functionAbi],
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: encodeFunctionArgs(resolvedInputs, functionAbi),
             }),
             to: worldAddress as Address,
           });
@@ -160,9 +170,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
             const encoded = encodeSystemCall({
               abi: [functionAbi],
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: encodeFunctionArgs(resolvedInputs, functionAbi),
               systemId,
             });
+
+            console.log("CHAIN ID:", chainId);
 
             txHash = await writeContract(wagmiConfig, {
               abi: [...worldAbi, functionAbi],
@@ -177,7 +189,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
               abi: worldAbi,
               address: worldAddress as Address,
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: encodeFunctionArgs(resolvedInputs, functionAbi),
               ...(values.value && { value: BigInt(values.value) }),
               chainId,
             });
@@ -214,6 +226,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
       wagmiConfig,
       worldAbi,
       worldAddress,
+      form,
     ],
   );
 
