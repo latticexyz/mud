@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-ENS is now resolved for address input fields in the "Interact" tab, and for the wallet connection button.
+ENS is now resolved for address input fields in the "Interact" tab.
