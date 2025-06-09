@@ -8,7 +8,7 @@ export type ENSData = {
   avatar: string | undefined;
 };
 
-export function useENS(address: Hex | undefined) {
+export function useENS(address: string | undefined) {
   const normalizedAddress = address?.toLowerCase();
   return useQuery<ENSData>({
     queryKey: ["ens", normalizedAddress],

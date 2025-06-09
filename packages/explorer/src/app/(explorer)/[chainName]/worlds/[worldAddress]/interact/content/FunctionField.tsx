@@ -29,7 +29,7 @@ import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 import { getFunctionElementId } from "../../../../../utils/getFunctionElementId";
-import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
+import { encodeFunctionArgs } from "./encodeFunctionArgs";
 
 export enum FunctionType {
   READ,
@@ -157,7 +157,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
             data: encodeFunctionData({
               abi: [...worldAbi, functionAbi],
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: await encodeFunctionArgs(values.inputs, functionAbi),
             }),
             to: worldAddress as Address,
           });
@@ -171,7 +171,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
             const encoded = encodeSystemCall({
               abi: [functionAbi],
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: await encodeFunctionArgs(values.inputs, functionAbi),
               systemId,
             });
 
@@ -188,7 +188,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
               abi: worldAbi,
               address: worldAddress as Address,
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: await encodeFunctionArgs(values.inputs, functionAbi),
               ...(values.value && { value: BigInt(values.value) }),
               chainId,
             });

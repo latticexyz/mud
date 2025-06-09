@@ -1,5 +1,5 @@
 import { AbiFunction, Hex, isAddress } from "viem";
-import { resolveENS } from "./useENS";
+import { resolveENS } from "../../../../../hooks/useENS";
 
 export async function encodeFunctionArgs(args: unknown[], inputs: AbiFunction): Promise<unknown[]> {
   const encodedArgs = await Promise.all(
