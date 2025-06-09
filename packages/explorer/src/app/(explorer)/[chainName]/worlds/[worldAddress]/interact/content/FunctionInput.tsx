@@ -1,4 +1,4 @@
-import { LoaderIcon } from "lucide-react";
+import { CheckIcon, LoaderIcon } from "lucide-react";
 import { AbiParameter, isAddress } from "viem";
 import { useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
@@ -26,14 +26,14 @@ const getInputPlaceholder = (input: AbiParameter): string => {
 export function FunctionInput({ input, index }: Props) {
   const form = useFormContext();
   const currentValue = form.watch(`inputs.${index}`);
-  const currentResolvedAddress = form.watch(`resolvedAddresses.${index}`);
+  const resolvedAddress = form.watch(`resolvedAddresses.${index}`);
   const { data: ensAddress, isLoading: isEnsAddressLoading, error: ensAddressError } = useEnsAddress(currentValue);
 
   useEffect(() => {
-    if (ensAddress !== currentResolvedAddress) {
+    if (ensAddress !== resolvedAddress) {
       form.setValue(`resolvedAddresses.${index}`, ensAddress);
     }
-  }, [ensAddress, currentResolvedAddress, form, index]);
+  }, [ensAddress, resolvedAddress, form, index]);
 
   const handleChange = useCallback(
     async (value: string) => {
@@ -53,8 +53,6 @@ export function FunctionInput({ input, index }: Props) {
     },
     [form, index, input.type],
   );
-
-  const resolvedAddress = form.watch(`resolvedAddresses.${index}`);
 
   return (
     <FormField
@@ -76,16 +74,18 @@ export function FunctionInput({ input, index }: Props) {
               <FormMessage />
 
               {input.type === "address" && !isAddress(currentValue) && (
-                <div className="flex items-center gap-2 pb-2 pt-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   {isEnsAddressLoading && (
                     <>
                       <LoaderIcon className="h-3 w-3 animate-spin" />
                       <span>Resolving ENS name...</span>
                     </>
                   )}
-                  {ensAddressError && <span className="text-destructive">Failed to resolve ENS name</span>}
+                  {ensAddressError && <span className="text-destructive">Failed to resolve ENS</span>}
                   {resolvedAddress && !isEnsAddressLoading && (
-                    <span className="font-mono">Resolved to: {resolvedAddress}</span>
+                    <span className="flex items-center gap-1 font-mono">
+                      {resolvedAddress} <CheckIcon className="h-4 w-4 text-green-500" />
+                    </span>
                   )}
                 </div>
               )}

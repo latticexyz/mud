@@ -21,6 +21,11 @@ export function useEnsAddress(name: string) {
       const address = await getEnsAddress(mainnetClient, {
         name: normalizedName,
       });
+
+      if (!address) {
+        throw new Error("Invalid ENS name");
+      }
+
       return address;
     },
     enabled: isValidEnsName(name),

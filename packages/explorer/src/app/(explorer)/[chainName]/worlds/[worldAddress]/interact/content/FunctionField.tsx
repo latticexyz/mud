@@ -131,9 +131,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
-      console.log("Form values:", values);
-      console.log("Form errors:", form.formState.errors);
-
       if (!account.isConnected) {
         return openConnectModal?.();
       } else if (!publicClient) {
@@ -173,8 +170,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
               args: encodeFunctionArgs(resolvedInputs, functionAbi),
               systemId,
             });
-
-            console.log("CHAIN ID:", chainId);
 
             txHash = await writeContract(wagmiConfig, {
               abi: [...worldAbi, functionAbi],
