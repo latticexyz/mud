@@ -12,10 +12,10 @@ import { useChain } from "../../../hooks/useChain";
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
-  const configuredChain = useChain();
+  const chain = useChain();
   const wagmiConfig = useMemo(() => {
     return createConfig({
-      chains: [configuredChain],
+      chains: [chain],
       connectors: [
         injected(),
         metaMask({
@@ -24,22 +24,19 @@ export function Providers({ children }: { children: ReactNode }) {
           },
         }),
         safe(),
-        ...getDefaultAnvilConnectors(configuredChain.id),
+        ...getDefaultAnvilConnectors(chain.id),
       ],
       transports: {
-        [configuredChain.id]: fallback([
-          ...(configuredChain.rpcUrls.default.webSocket
-            ? [webSocket(configuredChain.rpcUrls.default.webSocket[0])]
-            : []),
-          http(configuredChain.rpcUrls.default.http[0]),
-        ]),
+        [chain.id]: chain.rpcUrls.default.webSocket
+          ? fallback([webSocket(chain.rpcUrls.default.webSocket[0]), http(chain.rpcUrls.default.http[0])])
+          : http(chain.rpcUrls.default.http[0]),
       },
       ssr: true,
       pollingInterval: {
-        [configuredChain.id]: configuredChain.id === 31337 ? 100 : 500,
+        [chain.id]: chain.id === 31337 ? 100 : 500,
       },
     });
-  }, [configuredChain]);
+  }, [chain]);
 
   return (
     <WagmiProvider config={wagmiConfig}>
