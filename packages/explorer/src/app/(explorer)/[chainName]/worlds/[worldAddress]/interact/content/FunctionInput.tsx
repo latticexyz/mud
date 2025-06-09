@@ -36,7 +36,7 @@ export function FunctionInput({ input, index }: Props) {
   }, [ensAddress, resolvedAddress, form, index]);
 
   const handleChange = useCallback(
-    async (value: string) => {
+    (value: string) => {
       if (input.type !== "address") {
         form.setValue(`inputs.${index}`, value);
         return;
