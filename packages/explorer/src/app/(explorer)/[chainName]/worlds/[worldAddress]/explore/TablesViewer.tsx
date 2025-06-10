@@ -189,7 +189,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={header.id} className="px-4">
                           {header.isPlaceholder
                             ? null
                             : flexRender(header.column.columnDef.header, header.getContext())}
@@ -211,7 +211,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <TableCell key={cell.id} className="px-2 py-0">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
                       );
                     })}
                   </TableRow>

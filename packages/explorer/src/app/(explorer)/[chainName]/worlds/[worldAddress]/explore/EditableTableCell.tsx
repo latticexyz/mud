@@ -17,7 +17,6 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
-import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 
 type Props = {
@@ -105,11 +104,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
   }
 
   return (
-    <div
-      className={cn("w-full", {
-        "flex cursor-wait items-center gap-1": isPending,
-      })}
-    >
+    <div className="w-full">
       {!isPending && (
         <form
           onSubmit={(evt) => {
@@ -118,9 +113,14 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
           }}
         >
           <input
-            className="w-full bg-transparent"
+            className="w-full bg-transparent px-2 py-4"
             onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
-            onBlur={(evt) => handleSubmit(evt.target.value)}
+            onBlur={(evt) => {
+              const newValue = evt.target.value;
+              if (newValue !== String(defaultValue)) {
+                handleSubmit(newValue);
+              }
+            }}
             value={String(value)}
             disabled={isPending}
           />
@@ -128,10 +128,10 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
       )}
 
       {isPending && (
-        <>
+        <div className="flex items-center gap-1 px-2">
           {String(value)}
           <LoaderIcon className="h-4 w-4 animate-spin" />
-        </>
+        </div>
       )}
     </div>
   );
