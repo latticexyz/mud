@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Table cell edits are now only saved when when the value has changed.
+Table cell edits are now saved only when the value has changed.
