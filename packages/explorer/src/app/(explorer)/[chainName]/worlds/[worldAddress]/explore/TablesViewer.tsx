@@ -211,7 +211,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <TableCell key={cell.id} className="py-0">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
                       );
                     })}
                   </TableRow>

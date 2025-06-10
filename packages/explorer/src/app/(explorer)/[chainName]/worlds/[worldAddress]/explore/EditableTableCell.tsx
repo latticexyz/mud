@@ -118,7 +118,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
           }}
         >
           <input
-            className="w-full bg-transparent"
+            className="w-full bg-transparent py-4"
             onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
             onBlur={(evt) => {
               const newValue = evt.target.value;
