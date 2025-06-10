@@ -120,7 +120,12 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
           <input
             className="w-full bg-transparent"
             onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
-            onBlur={(evt) => handleSubmit(evt.target.value)}
+            onBlur={(evt) => {
+              const newValue = evt.target.value;
+              if (newValue !== String(defaultValue)) {
+                handleSubmit(newValue);
+              }
+            }}
             value={String(value)}
             disabled={isPending}
           />
