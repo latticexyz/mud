@@ -10,12 +10,7 @@ const mainnetClient = createPublicClient({
 });
 
 function isValidEnsName(name: string): boolean {
-  if (!name.includes(".")) {
-    return false;
-  }
-
-  const parts = name.split(".");
-  return parts.length >= 2 && !!parts[1] && parts[1].length > 0;
+  return /\w\.\w/.test(name);
 }
 
 // This is a workaround implementation because wagmi's useEnsAddress hook
