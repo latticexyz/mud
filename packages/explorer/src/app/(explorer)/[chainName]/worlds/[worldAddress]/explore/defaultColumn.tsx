@@ -14,13 +14,13 @@ export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
       const name = column.id;
       const keySchema = getKeySchema(tableConfig);
       if (!table || Object.keys(keySchema).includes(name)) {
-        return value;
+        return <div className="px-2 py-4">{value?.toString()}</div>;
       }
 
       const keyTuple = getKeyTuple(tableConfig, row.original as never);
       return <EditableTableCell name={name} table={tableConfig} value={value} keyTuple={keyTuple} />;
     } catch (e) {
-      return value;
+      return <div className="px-2 py-4">{value?.toString()}</div>;
     }
   },
 };
