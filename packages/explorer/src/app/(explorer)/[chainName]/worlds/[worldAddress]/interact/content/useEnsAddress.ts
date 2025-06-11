@@ -10,7 +10,7 @@ const mainnetClient = createPublicClient({
 });
 
 function isValidEnsName(name: string): boolean {
-  return !!name && name.includes(".") && name.endsWith(".eth") && !isAddress(name);
+  return name.includes(".");
 }
 
 export function useEnsAddress(name: string) {
