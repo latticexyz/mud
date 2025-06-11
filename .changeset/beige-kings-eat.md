@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-ENS is now resolved for address input fields in the "Interact" tab.
+Address input fields in the "Interact" tab now accept ENS names, which are automatically resolved to their underlying address.
