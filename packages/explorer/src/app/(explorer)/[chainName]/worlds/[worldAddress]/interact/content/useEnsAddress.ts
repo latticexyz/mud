@@ -1,4 +1,4 @@
-import { createPublicClient, http, isAddress } from "viem";
+import { createPublicClient, http } from "viem";
 import { getEnsAddress } from "viem/actions";
 import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
@@ -13,6 +13,8 @@ function isValidEnsName(name: string): boolean {
   return name.includes(".");
 }
 
+// This is a workaround implementation because wagmi's useEnsAddress hook
+// requires configuring mainnet in the wagmi config.
 export function useEnsAddress(name: string) {
   return useQuery({
     queryKey: ["ensAddress", name],
