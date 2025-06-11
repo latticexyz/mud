@@ -19,12 +19,13 @@ export default function ChainLayout({ params: { chainName: chainIdOrName }, chil
     const chainId = Number(chainIdOrName);
     if (isValidChainId(chainId)) {
       const chainName = chainIdToName[chainId];
-      const newPath = pathname.replace(chainIdOrName, chainName);
+      const newPathname = pathname.replace(chainIdOrName, chainName);
 
-      const search = searchParams.toString();
-      const redirectUrl = search ? `${newPath}?${search}` : `${newPath}`;
-
-      return redirect(redirectUrl);
+      if (pathname !== newPathname) {
+        const search = searchParams.toString();
+        const redirectUrl = search ? `${newPathname}?${search}` : `${newPathname}`;
+        return redirect(redirectUrl);
+      }
     }
     return notFound();
   }
