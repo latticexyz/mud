@@ -9,8 +9,10 @@ const mainnetClient = createPublicClient({
   transport: http(),
 });
 
-function isValidEnsName(name: string | undefined): name is string {
-  return !!name && name.includes(".");
+function isValidEnsName(name: string | undefined): boolean {
+  if (!name || !name.includes(".")) return false;
+  const parts = name.split(".");
+  return parts.length >= 2 && !!parts[1] && parts[1].length > 0;
 }
 
 // This is a workaround implementation because wagmi's useEnsAddress hook
@@ -30,6 +32,7 @@ export function useEnsAddress(name: string) {
 
       return address;
     },
+    retry: 1,
     enabled: isValidEnsName(name),
   });
 }
