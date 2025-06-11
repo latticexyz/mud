@@ -2,4 +2,6 @@
 "@latticexyz/explorer": patch
 ---
 
-Paths are now resolved using either the chain ID or the chain name. If a supported chain ID is provided, it will redirect to the corresponding chain name for a valid path.
+Explorer will now automatically resolve and redirect deep links using a chain ID to their corresponding chain name, e.g.
+
+https://explorer.mud.dev/690/worlds/0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f
