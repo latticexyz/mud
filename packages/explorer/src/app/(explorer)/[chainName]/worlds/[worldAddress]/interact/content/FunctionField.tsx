@@ -29,7 +29,8 @@ import { ScrollIntoViewLink } from "../../../../../components/ScrollIntoViewLink
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 import { getFunctionElementId } from "../../../../../utils/getFunctionElementId";
-import { encodeFunctionArgs } from "../../explore/utils/encodeFunctionArgs";
+import { FunctionInput } from "./FunctionInput";
+import { encodeFunctionArgs } from "./encodeFunctionArgs";
 
 export enum FunctionType {
   READ,
@@ -51,6 +52,7 @@ type DecodedEvent = {
 const formSchema = z.object({
   inputs: z.array(z.string()),
   value: z.string().optional(),
+  resolvedAddresses: z.record(z.string().optional()).optional(),
 });
 
 const getInputLabel = (input: AbiParameter): string => {
@@ -66,20 +68,9 @@ const getInputLabel = (input: AbiParameter): string => {
   return input.type;
 };
 
-const getInputPlaceholder = (input: AbiParameter): string => {
-  if (!("components" in input)) {
-    return input.type;
-  }
-
-  const componentsString = input.components.map(getInputLabel).join(", ");
-  if (input.type === "tuple[]") {
-    return `[${componentsString}][]`;
-  }
-  return `[${componentsString}]`;
-};
-
 export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParamsArgs }: Props) {
   const searchParams = useSearchParams();
+  const { id: chainId } = useChain();
   const publicClient = usePublicClient();
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -89,7 +80,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
   const wagmiConfig = useConfig();
   const account = useAccount();
   const { worldAddress } = useParams();
-  const { id: chainId } = useChain();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>();
   const [events, setEvents] = useState<DecodedEvent[]>();
@@ -103,6 +93,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
     defaultValues: {
       inputs: useSearchParamsArgs ? JSON.parse(searchParams.get("args") || "[]") : [],
       value: useSearchParamsArgs ? searchParams.get("value") ?? "" : "",
+      resolvedAddresses: {},
     },
   });
 
@@ -150,6 +141,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
       setIsLoading(true);
       let toastId;
 
+      const resolvedInputs = values.inputs.map((input, index) => {
+        const resolvedAddress = form.getValues(`resolvedAddresses.${index}`);
+        return resolvedAddress || input;
+      });
+
       try {
         if (operationType === FunctionType.READ) {
           const { data: result } = await publicClient.call({
@@ -157,7 +153,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
             data: encodeFunctionData({
               abi: [...worldAbi, functionAbi],
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: encodeFunctionArgs(resolvedInputs, functionAbi),
             }),
             to: worldAddress as Address,
           });
@@ -171,7 +167,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
             const encoded = encodeSystemCall({
               abi: [functionAbi],
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: encodeFunctionArgs(resolvedInputs, functionAbi),
               systemId,
             });
 
@@ -188,7 +184,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
               abi: worldAbi,
               address: worldAddress as Address,
               functionName: functionAbi.name,
-              args: encodeFunctionArgs(values.inputs, functionAbi),
+              args: encodeFunctionArgs(resolvedInputs, functionAbi),
               ...(values.value && { value: BigInt(values.value) }),
               chainId,
             });
@@ -225,6 +221,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
       wagmiConfig,
       worldAbi,
       worldAddress,
+      form,
     ],
   );
 
@@ -259,31 +256,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
           {functionAbi.inputs.length > 0 && (
             <div className="!mt-2 space-y-2">
               {functionAbi.inputs.map((input, index) => (
-                <FormField
-                  key={index}
-                  control={form.control}
-                  name={`inputs.${index}`}
-                  render={({ field }) => (
-                    <FormItem className="flex items-center gap-4 space-y-0">
-                      {input.name && (
-                        <FormLabel className="shrink-0 pt-1 font-mono text-sm opacity-70">{input.name}</FormLabel>
-                      )}
-                      <div className="flex-1">
-                        <FormControl>
-                          <Input
-                            placeholder={getInputPlaceholder(input)}
-                            value={field.value}
-                            onChange={(evt) => {
-                              field.onChange(evt.target.value);
-                            }}
-                            className="font-mono text-sm"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                <FunctionInput key={index} input={input} index={index} />
               ))}
 
               {functionAbi.stateMutability === "payable" && (
