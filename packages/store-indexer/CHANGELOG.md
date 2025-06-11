@@ -1,5 +1,25 @@
 # @latticexyz/store-indexer
 
+## 2.2.22
+
+### Patch Changes
+
+- 582f718: The local SQLite indexer now automatically converts camelCase column names to snake_case to comply with the SQL API.
+- 6bb6a79: Added experimental SQL API endpoint `/q` to the SQLite indexer. This is only intended for local development purposes and should not be used in production.
+- Updated dependencies [3baa3fd]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [405a600]
+- Updated dependencies [ab837ce]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
