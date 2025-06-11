@@ -9,8 +9,8 @@ const mainnetClient = createPublicClient({
   transport: http(),
 });
 
-function isValidEnsName(name: string): boolean {
-  return name.includes(".");
+function isValidEnsName(name: string | undefined): name is string {
+  return !!name && name.includes(".");
 }
 
 // This is a workaround implementation because wagmi's useEnsAddress hook
