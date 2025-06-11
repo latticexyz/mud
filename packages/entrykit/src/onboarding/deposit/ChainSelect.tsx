@@ -49,28 +49,32 @@ export function ChainSelect({ value, onChange }: Props) {
   const selectedChain = sourceChains.find((c) => c.id === value)!;
   const { data: chainsBalances, isLoading } = useShowQueryError(useChainBalances({ chains: sourceChains }));
 
-  const chainsWithBalance = useMemo(() => {
+  const renderedChains = useMemo(() => {
     if (!chainsBalances) return [];
-    return chainsBalances.filter(({ balance }) => balance.value > 0n).map(({ chain }) => chain);
-  }, [chainsBalances]);
+    const chainsWithBalance = chainsBalances
+      .filter(({ balance }) => balance.value > 0n)
+      .map(({ chain, balance }) => ({ chain, balance: balance.value }));
+
+    return chainsWithBalance.length > 0 ? chainsWithBalance : sourceChains.map((chain) => ({ chain, balance: 0n }));
+  }, [chainsBalances, sourceChains]);
 
   useEffect(() => {
     if (
-      chainsWithBalance.length > 0 &&
-      (!selectedChain || !chainsWithBalance.find((c) => c.id === selectedChain?.id))
+      renderedChains.length > 0 &&
+      (!selectedChain || !renderedChains.find((c) => c.chain.id === selectedChain?.id))
     ) {
-      const defaultChain = chainsWithBalance[0];
+      const defaultChain = renderedChains[0].chain;
       onChange(defaultChain.id);
       switchChain({ chainId: defaultChain.id });
     }
-  }, [value, selectedChain, chainsWithBalance, onChange, switchChain]);
+  }, [value, selectedChain, renderedChains, onChange, switchChain]);
 
   return (
     <Select.Root
       value={value.toString()}
       onValueChange={(value) => {
         if (value) {
-          const chain = chainsWithBalance.find((chain) => chain.id.toString() === value);
+          const chain = renderedChains.find((item) => item.chain.id.toString() === value)?.chain;
           if (!chain) throw new Error(`Unknown chain selected: ${value}`);
           onChange(chain.id);
         }
@@ -113,8 +117,8 @@ export function ChainSelect({ value, onChange }: Props) {
                     <PendingIcon className="h-6 w-6 animate-spin text-gray-400" />
                   </div>
                 ) : (
-                  [...(chainsWithBalance.length > 0 ? chainsWithBalance : sourceChains)].map((chain) => {
-                    const balance = chainsBalances?.find((cb) => cb.chain.id === chain.id)?.balance;
+                  renderedChains.map(({ chain, balance }) => {
+                    // TODO: figure out why up/down arrow jump to top/bottom rather than cycling through items
                     return (
                       <Select.Item
                         key={chain.id}
@@ -127,7 +131,7 @@ export function ChainSelect({ value, onChange }: Props) {
                         <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} />
                         <span className="flex-grow flex-shrink-0">{chain.name}</span>
                         <span className="flex-shrink-0 font-mono text-sm text-neutral-400">
-                          <Balance wei={balance?.value ?? 0n} />
+                          <Balance wei={balance} />
                         </span>
                       </Select.Item>
                     );
