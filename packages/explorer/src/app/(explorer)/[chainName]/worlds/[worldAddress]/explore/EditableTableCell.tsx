@@ -24,11 +24,17 @@ type Props = {
   value: unknown;
   table: Table;
   keyTuple: readonly Hex[];
+  blockHeight: number;
 };
 
-export function EditableTableCell({ name, table, keyTuple, value }: Props) {
-  const [intermediateValue, setIntermediateValue] = useState<unknown>(value);
-  const [isEditing, setIsEditing] = useState(false);
+type CellState = {
+  value: unknown;
+  blockHeight: number;
+  isEditing: boolean;
+};
+
+export function EditableTableCell({ name, table, keyTuple, value, blockHeight }: Props) {
+  const [cellState, setCellState] = useState<CellState>({ value, blockHeight, isEditing: false });
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -59,11 +65,13 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
       const toastId = toast.loading("Transaction submitted");
       return { toastId };
     },
-    onSuccess: ({ txHash }, newValue, { toastId }) => {
-      setIntermediateValue(newValue);
+    onSuccess: ({ txHash, receipt }, newValue, { toastId }) => {
+      setCellState((prev) => ({ ...prev, value: newValue, blockHeight: Number(receipt.blockNumber) }));
+
       toast.success(`Transaction successful with hash: ${txHash}`, {
         id: toastId,
       });
+
       queryClient.invalidateQueries({
         queryKey: [
           "balance",
@@ -79,7 +87,7 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
       toast.error(error.message || "Something went wrong. Please try again.", {
         id: context?.toastId,
       });
-      setIntermediateValue(value);
+      setCellState((prev) => ({ ...prev, value }));
     },
   });
 
@@ -91,17 +99,17 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
   };
 
   useEffect(() => {
-    if (!isEditing && !isPending) {
-      setIntermediateValue(value);
+    if (!cellState.isEditing && !isPending && cellState.blockHeight < blockHeight) {
+      setCellState((prev) => ({ ...prev, value }));
     }
-  }, [value, isEditing, isPending]);
+  }, [value, isPending, cellState.isEditing, cellState.blockHeight, blockHeight]);
 
   if (fieldType === "bool") {
     return (
       <div className="flex items-center gap-1">
         <Checkbox
           id={`checkbox-${name}`}
-          checked={!!intermediateValue}
+          checked={!!cellState.value}
           onCheckedChange={handleSubmit}
           disabled={isPending}
         />
@@ -114,28 +122,30 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
     <div className="w-full">
       {isPending ? (
         <div className="flex items-center gap-1 px-2 py-4">
-          {String(intermediateValue)}
+          {String(cellState.value)}
           <LoaderIcon className="h-4 w-4 animate-spin" />
         </div>
       ) : (
         <form
           onSubmit={(evt) => {
             evt.preventDefault();
-            handleSubmit(intermediateValue);
+            handleSubmit(cellState.value);
           }}
         >
           <input
             className="w-full bg-transparent px-2 py-4"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => setIntermediateValue(evt.target.value)}
-            onFocus={() => setIsEditing(true)}
+            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+              setCellState((prev) => ({ ...prev, value: evt.target.value }))
+            }
+            onFocus={() => setCellState((prev) => ({ ...prev, isEditing: true }))}
             onBlur={(evt) => {
-              setIsEditing(false);
+              setCellState((prev) => ({ ...prev, isEditing: false }));
               const newValue = evt.target.value;
               if (newValue !== String(value)) {
                 handleSubmit(newValue);
               }
             }}
-            value={String(intermediateValue)}
+            value={String(cellState.value)}
             disabled={isPending}
           />
         </form>

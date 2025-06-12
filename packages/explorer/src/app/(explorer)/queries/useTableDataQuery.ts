@@ -17,6 +17,7 @@ export type TData = {
   columns: string[];
   rows: TDataRow[];
   queryDuration: number;
+  blockHeight: number;
 };
 
 export function useTableDataQuery({ table, isLiveQuery }: Props) {
@@ -43,15 +44,16 @@ export function useTableDataQuery({ table, isLiveQuery }: Props) {
       });
 
       const data = await response.json();
-      const queryDuration = performance.now() - startTime;
-
       if (!response.ok) {
         throw new Error(data.msg || "Network response was not ok");
       }
 
-      return { ...data, queryDuration };
+      const queryDuration = performance.now() - startTime;
+      const blockHeight = data.block_height;
+
+      return { ...data, queryDuration, blockHeight };
     },
-    select: (data: DozerResponse & { queryDuration: number }): TData | undefined => {
+    select: (data: DozerResponse & { queryDuration: number; blockHeight: number }): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
       const result = data.result[0];
@@ -80,6 +82,7 @@ export function useTableDataQuery({ table, isLiveQuery }: Props) {
         columns,
         rows,
         queryDuration: data.queryDuration,
+        blockHeight: data.blockHeight,
       };
     },
     retry: false,

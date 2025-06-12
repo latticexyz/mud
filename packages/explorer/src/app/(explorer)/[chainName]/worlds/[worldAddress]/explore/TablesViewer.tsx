@@ -50,6 +50,7 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     isReadOnly: boolean;
     tableConfig?: TableType;
+    blockHeight?: number;
   }
 }
 
@@ -142,6 +143,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       pagination,
     },
     meta: {
+      blockHeight: tableData?.blockHeight,
       tableConfig: table,
       isReadOnly,
     },
