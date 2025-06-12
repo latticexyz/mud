@@ -2,13 +2,13 @@ import { useParams } from "next/navigation";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useSQLQueryState } from "../[chainName]/worlds/[worldAddress]/explore/hooks/useSQLQueryState";
 import { useChain } from "../hooks/useChain";
 import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 import { DozerResponse } from "../types";
 
 type Props = {
   table: Table | undefined;
-  query: string | undefined;
   isLiveQuery: boolean;
 };
 
@@ -19,14 +19,14 @@ export type TData = {
   queryDuration: number;
 };
 
-export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
+export function useTableDataQuery({ table, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const [query] = useSQLQueryState();
   const indexer = useIndexerForChainId(chainId);
-  const decodedQuery = decodeURIComponent(query ?? "");
 
   return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
+    queryKey: ["tableData", chainName, worldAddress, query],
     queryFn: async () => {
       const startTime = performance.now();
       const response = await fetch(indexer.url, {
@@ -37,7 +37,7 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         body: stringify([
           {
             address: worldAddress as Hex,
-            query: decodedQuery,
+            query,
           },
         ]),
       });
