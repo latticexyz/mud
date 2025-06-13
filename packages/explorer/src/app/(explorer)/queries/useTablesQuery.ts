@@ -56,6 +56,6 @@ export function useTablesQuery() {
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
     retry: false,
-    refetchInterval: 5000,
+    refetchInterval: 15_000,
   });
 }

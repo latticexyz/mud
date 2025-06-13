@@ -49,6 +49,7 @@ declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     isReadOnly: boolean;
+    blockHeight?: number;
     tableConfig?: TableType;
   }
 }
@@ -67,7 +68,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [pagination, setPagination] = usePaginationState();
-  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
+  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
 
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
@@ -142,6 +143,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       pagination,
     },
     meta: {
+      blockHeight: tableData?.blockHeight,
       tableConfig: table,
       isReadOnly,
     },

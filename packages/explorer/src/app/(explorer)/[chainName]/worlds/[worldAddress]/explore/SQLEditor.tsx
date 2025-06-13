@@ -33,15 +33,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [query, setQuery] = useSQLQueryState();
 
   const validateQuery = useQueryValidator(table);
-  const {
-    data: tableData,
-    refetch,
-    isRefetching: isTableDataRefetching,
-  } = useTableDataQuery({
-    table,
-    query,
-    isLiveQuery,
-  });
+  const { data: tableData, refetch, isRefetching: isTableDataRefetching } = useTableDataQuery({ table, isLiveQuery });
   const isRefetching = isTableDataRefetching && isUserTriggeredRefetch;
   useMonacoSuggestions(table);
 
