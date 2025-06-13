@@ -49,8 +49,8 @@ declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     isReadOnly: boolean;
-    tableConfig?: TableType;
     blockHeight?: number;
+    tableConfig?: TableType;
   }
 }
 

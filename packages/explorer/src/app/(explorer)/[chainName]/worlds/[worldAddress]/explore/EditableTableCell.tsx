@@ -24,16 +24,16 @@ type Props = {
   value: unknown;
   table: Table;
   keyTuple: readonly Hex[];
-  blockHeight: number;
+  blockHeight?: number;
 };
 
 type CellState = {
   value: unknown;
-  blockHeight: number;
   isEditing: boolean;
+  blockHeight: number;
 };
 
-export function EditableTableCell({ name, table, keyTuple, value, blockHeight }: Props) {
+export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 0 }: Props) {
   const [cellState, setCellState] = useState<CellState>({ value, blockHeight, isEditing: false });
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
