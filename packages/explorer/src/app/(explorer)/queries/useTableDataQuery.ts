@@ -26,7 +26,7 @@ export function useTableDataQuery({ table, isLiveQuery }: Props) {
   const [query] = useSQLQueryState();
   const indexer = useIndexerForChainId(chainId);
 
-  return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
+  return useQuery<DozerResponse & { queryDuration: number; blockHeight: number }, Error, TData | undefined>({
     queryKey: ["tableData", chainName, worldAddress, query],
     queryFn: async () => {
       const startTime = performance.now();
