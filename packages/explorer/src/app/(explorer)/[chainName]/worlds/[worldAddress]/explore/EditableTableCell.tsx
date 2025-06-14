@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -27,14 +27,7 @@ type Props = {
   blockHeight?: number;
 };
 
-type CellState = {
-  value: unknown;
-  isEditing: boolean;
-  blockHeight: number;
-};
-
 export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 0 }: Props) {
-  const [cellState, setCellState] = useState<CellState>({ value, blockHeight, isEditing: false });
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -44,12 +37,13 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
   const valueSchema = getValueSchema(table);
   const fieldType = valueSchema?.[name as never]?.type;
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (newValue: unknown) => {
+  const write = useMutation({
+    // TODO: mutationKey
+    mutationFn: async ({ value }: { value: string | boolean }) => {
       if (!fieldType) throw new Error("Field type not found");
 
       const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
-      const encodedFieldValue = encodeField(fieldType, newValue);
+      const encodedFieldValue = encodeField(fieldType, value);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
@@ -58,95 +52,130 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         chainId,
       });
 
-      const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      return { txHash, receipt };
-    },
-    onMutate: () => {
       const toastId = toast.loading("Transaction submitted");
-      return { toastId };
-    },
-    onSuccess: ({ txHash, receipt }, newValue, { toastId }) => {
-      setCellState((prev) => ({ ...prev, value: newValue, blockHeight: Number(receipt.blockNumber) }));
+      try {
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+        // TODO: check receipt.status, throw if reverted
 
-      toast.success(`Transaction successful with hash: ${txHash}`, {
-        id: toastId,
-      });
+        toast.success(`Transaction successful with hash: ${txHash}`, { id: toastId });
 
-      queryClient.invalidateQueries({
-        queryKey: [
-          "balance",
-          {
-            address: account.address,
-            chainId,
-          },
-        ],
-      });
-    },
-    onError: (error, _, context) => {
-      console.error("Error:", error);
-      toast.error(error.message || "Something went wrong. Please try again.", {
-        id: context?.toastId,
-      });
-      setCellState((prev) => ({ ...prev, value }));
+        queryClient.invalidateQueries({
+          queryKey: [
+            "balance",
+            {
+              address: account.address,
+              chainId,
+            },
+          ],
+        });
+
+        return { txHash, receipt };
+      } catch (error) {
+        console.error("Error:", error);
+        toast.error(
+          error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
+          { id: toastId },
+        );
+        throw error;
+      }
     },
   });
 
-  const handleSubmit = (newValue: unknown) => {
-    if (!account.isConnected) {
-      return openConnectModal?.();
-    }
-    mutate(newValue);
-  };
-
+  // When the indexer has picked up the successful write, we can clear the write result.
   useEffect(() => {
-    if (!cellState.isEditing && !isPending && cellState.blockHeight < blockHeight) {
-      setCellState((prev) => ({ ...prev, value }));
+    if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
+      write.reset();
     }
-  }, [value, isPending, cellState.isEditing, cellState.blockHeight, blockHeight]);
+  }, [write, blockHeight]);
+
+  // While we're editing or waiting for a save, pending state is filled in
+  // otherwise it's null
+  //
+  // when we enter editing state, we set pending value and the block height at which we started editing
+  // so before save, we can check if the block height of the backend state has shifted and ask the
+  // user if they really want to apply over the new value that came in
+  const [pendingInputValue, setPendingInputValue] = useState<{
+    value: string;
+    initialValue: unknown;
+  } | null>(null);
+  const inputValue = pendingInputValue
+    ? pendingInputValue.value
+    : write.status !== "idle"
+      ? String(write.variables.value)
+      : String(value);
 
   if (fieldType === "bool") {
     return (
       <div className="flex items-center gap-1">
         <Checkbox
           id={`checkbox-${name}`}
-          checked={!!cellState.value}
-          onCheckedChange={handleSubmit}
-          disabled={isPending}
+          disabled={write.status === "pending"}
+          checked={write.status !== "idle" ? !!write.variables.value : !!value}
+          onCheckedChange={(checked) => {
+            if (!account.isConnected) {
+              return openConnectModal?.();
+            }
+            write.mutate({ value: checked.valueOf() });
+          }}
         />
-        {isPending && <LoaderIcon className="h-4 w-4 animate-spin" />}
+        {write.status === "pending" ? <LoaderIcon className="h-4 w-4 animate-spin" /> : null}
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      {isPending ? (
+      {write.status === "pending" ? (
         <div className="flex items-center gap-1 px-2 py-4">
-          {String(cellState.value)}
+          {inputValue}
           <LoaderIcon className="h-4 w-4 animate-spin" />
         </div>
       ) : (
         <form
-          onSubmit={(evt) => {
-            evt.preventDefault();
-            handleSubmit(cellState.value);
+          onSubmit={(event) => {
+            event.preventDefault();
+
+            // Skip if no pending changes
+            if (!pendingInputValue) return;
+            // Skip if our input hasn't changed from the indexer value
+            if (pendingInputValue.value === String(value)) {
+              setPendingInputValue(null);
+              return;
+            }
+
+            // Indexer value changed while we were editing, so we might
+            // be at risk of overwriting a change from somewhere else.
+            if (pendingInputValue.initialValue !== value) {
+              // TODO: throw or ask user to confirm overwrite
+            }
+
+            if (!account.isConnected) {
+              return openConnectModal?.();
+            }
+
+            write.mutate(pendingInputValue, {
+              onSuccess: () => {
+                setPendingInputValue(null);
+              },
+            });
           }}
         >
           <input
             className="w-full bg-transparent px-2 py-4"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-              setCellState((prev) => ({ ...prev, value: evt.target.value }))
-            }
-            onFocus={() => setCellState((prev) => ({ ...prev, isEditing: true }))}
-            onBlur={(evt) => {
-              setCellState((prev) => ({ ...prev, isEditing: false }));
-              const newValue = evt.target.value;
-              if (newValue !== String(value)) {
-                handleSubmit(newValue);
-              }
+            value={inputValue}
+            onFocus={() => {
+              setPendingInputValue({ value: inputValue, initialValue: value });
             }}
-            value={String(cellState.value)}
-            disabled={isPending}
+            onChange={(event) => {
+              const nextValue = event.currentTarget.value;
+              setPendingInputValue((state) => ({
+                value: nextValue,
+                initialValue: state?.initialValue ?? value,
+              }));
+            }}
+            onBlur={(event) => {
+              event.currentTarget.form?.submit();
+            }}
           />
         </form>
       )}
