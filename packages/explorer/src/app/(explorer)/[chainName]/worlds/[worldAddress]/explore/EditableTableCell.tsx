@@ -1,4 +1,3 @@
-import { LoaderIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
@@ -88,29 +87,17 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
     }
   }, [write, blockHeight]);
 
-  // While we're editing or waiting for a save, pending state is filled in
-  // otherwise it's null
-  //
-  // when we enter editing state, we set pending value and the block height at which we started editing
-  // so before save, we can check if the block height of the backend state has shifted and ask the
-  // user if they really want to apply over the new value that came in
-  const [pendingInputValue, setPendingInputValue] = useState<{
+  const [edit, setEdit] = useState<{
     value: string;
-    initialValue: unknown;
+    initialValue: string;
   } | null>(null);
-  const inputValue = pendingInputValue
-    ? pendingInputValue.value
-    : write.status !== "idle"
-      ? String(write.variables.value)
-      : String(value);
 
   if (fieldType === "bool") {
     return (
       <div className="flex items-center gap-1">
         <Checkbox
           id={`checkbox-${name}`}
-          disabled={write.status === "pending"}
-          checked={write.status !== "idle" ? !!write.variables.value : !!value}
+          checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
           onCheckedChange={(checked) => {
             if (!account.isConnected) {
               return openConnectModal?.();
@@ -118,67 +105,55 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             write.mutate({ value: checked.valueOf() });
           }}
         />
-        {write.status === "pending" ? <LoaderIcon className="h-4 w-4 animate-spin" /> : null}
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      {write.status === "pending" ? (
-        <div className="flex items-center gap-1 px-2 py-4">
-          {inputValue}
-          <LoaderIcon className="h-4 w-4 animate-spin" />
-        </div>
-      ) : (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
 
-            // Skip if no pending changes
-            if (!pendingInputValue) return;
-            // Skip if our input hasn't changed from the indexer value
-            if (pendingInputValue.value === String(value)) {
-              setPendingInputValue(null);
-              return;
-            }
+          if (!edit) return;
+          // Skip if our input hasn't changed from the indexer value
+          if (edit.value === String(value)) {
+            setEdit(null);
+            return;
+          }
 
-            // Indexer value changed while we were editing, so we might
-            // be at risk of overwriting a change from somewhere else.
-            if (pendingInputValue.initialValue !== value) {
-              // TODO: throw or ask user to confirm overwrite
-            }
+          // Indexer value changed while we were editing, so we might
+          // be at risk of overwriting a change from somewhere else.
+          if (edit.initialValue !== String(value)) {
+            // TODO: throw or ask user to confirm overwrite
+          }
 
-            if (!account.isConnected) {
-              return openConnectModal?.();
-            }
+          if (!account.isConnected) {
+            return openConnectModal?.();
+          }
 
-            write.mutate(pendingInputValue, {
-              onSuccess: () => {
-                setPendingInputValue(null);
-              },
-            });
+          write.mutate({ value: edit.value });
+          setEdit(null);
+        }}
+      >
+        <input
+          className="w-full bg-transparent px-2 py-4"
+          value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
+          onFocus={(event) => {
+            setEdit({ value: event.currentTarget.value, initialValue: String(value) });
           }}
-        >
-          <input
-            className="w-full bg-transparent px-2 py-4"
-            value={inputValue}
-            onFocus={() => {
-              setPendingInputValue({ value: inputValue, initialValue: value });
-            }}
-            onChange={(event) => {
-              const nextValue = event.currentTarget.value;
-              setPendingInputValue((state) => ({
-                value: nextValue,
-                initialValue: state?.initialValue ?? value,
-              }));
-            }}
-            onBlur={(event) => {
-              event.currentTarget.form?.submit();
-            }}
-          />
-        </form>
-      )}
+          onChange={(event) => {
+            const nextValue = event.currentTarget.value;
+            setEdit((state) => ({
+              value: nextValue,
+              initialValue: state?.initialValue ?? String(value),
+            }));
+          }}
+          onBlur={(event) => {
+            event.currentTarget.form?.submit();
+          }}
+        />
+      </form>
     </div>
   );
 }
