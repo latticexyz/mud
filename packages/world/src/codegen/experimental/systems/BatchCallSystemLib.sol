@@ -59,7 +59,7 @@ library BatchCallSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert BatchCallSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_batchCall_SystemCallDataArray.batchCall, (systemCalls));
+    bytes memory systemCall = abi.encodeCall(_batchCall_SystemCallData0x5b5d.batchCall, (systemCalls));
 
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -74,7 +74,7 @@ library BatchCallSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert BatchCallSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_batchCallFrom_SystemCallFromDataArray.batchCallFrom, (systemCalls));
+    bytes memory systemCall = abi.encodeCall(_batchCallFrom_SystemCallFromData0x5b5d.batchCallFrom, (systemCalls));
 
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -86,7 +86,7 @@ library BatchCallSystemLib {
     RootCallWrapper memory self,
     SystemCallData[] memory systemCalls
   ) internal returns (bytes[] memory returnDatas) {
-    bytes memory systemCall = abi.encodeCall(_batchCall_SystemCallDataArray.batchCall, (systemCalls));
+    bytes memory systemCall = abi.encodeCall(_batchCall_SystemCallData0x5b5d.batchCall, (systemCalls));
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
     return abi.decode(result, (bytes[]));
@@ -96,7 +96,7 @@ library BatchCallSystemLib {
     RootCallWrapper memory self,
     SystemCallFromData[] memory systemCalls
   ) internal returns (bytes[] memory returnDatas) {
-    bytes memory systemCall = abi.encodeCall(_batchCallFrom_SystemCallFromDataArray.batchCallFrom, (systemCalls));
+    bytes memory systemCall = abi.encodeCall(_batchCallFrom_SystemCallFromData0x5b5d.batchCallFrom, (systemCalls));
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
     return abi.decode(result, (bytes[]));
@@ -140,11 +140,11 @@ library BatchCallSystemLib {
  * Each interface is uniquely named based on the function name and parameters to prevent collisions.
  */
 
-interface _batchCall_SystemCallDataArray {
+interface _batchCall_SystemCallData0x5b5d {
   function batchCall(SystemCallData[] memory systemCalls) external;
 }
 
-interface _batchCallFrom_SystemCallFromDataArray {
+interface _batchCallFrom_SystemCallFromData0x5b5d {
   function batchCallFrom(SystemCallFromData[] memory systemCalls) external;
 }
 
