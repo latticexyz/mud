@@ -64,4 +64,11 @@ contract ASystem is System {
     Value.set(values[3]);
   }
   */
+
+  /*
+  // TODO: support this case
+  function getAddressPayableArray(address payable[] memory array) public pure returns (address payable[] memory) {
+    return array;
+  }
+  */
 }
