@@ -7,7 +7,7 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
-import callWithSignatureModule from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureModule.sol/CallWithSignatureModule.json" assert { type: "json" };
+import callWithSignatureModule from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureModule.sol/CallWithSignatureModule.json" with { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { excludeCallWithSignatureModule } from "./compat/excludeUnstableCallWithSignatureModule";
 import { moduleArtifactPathFromName } from "./compat/moduleArtifactPathFromName";
