@@ -8,6 +8,7 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { keccak256, toHex } from "viem";
 import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
@@ -126,10 +127,10 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     },
     manualPagination: true,
     pageCount: -1,
-    getRowId: (row, idx) =>
-      `${idx}-${Object.entries(row)
-        .map(([key, value]) => `${key}:${value}`)
-        .join("-")}`,
+    getRowId: (row) => {
+      const values = Object.values(row).join("-");
+      return keccak256(toHex(`${query}-${values}`));
+    },
     onSortingChange: setSorting,
     onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
