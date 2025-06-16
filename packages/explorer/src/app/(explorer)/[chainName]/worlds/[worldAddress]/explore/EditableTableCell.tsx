@@ -16,7 +16,6 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
-import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 
 type Props = {
@@ -132,11 +131,10 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
             onCheckedChange={() => formRef.current?.requestSubmit()}
             disabled={!account.isConnected}
-            aria-busy={write.status === "pending"}
           />
         ) : (
           <input
-            className={cn("w-full bg-transparent px-2 py-4")}
+            className="w-full bg-transparent px-2 py-4"
             value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
             onFocus={(event) => {
               setEdit({ value: event.currentTarget.value, initialValue: String(value) });
@@ -157,7 +155,6 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             }}
             onBlur={() => formRef.current?.requestSubmit()}
             disabled={!account.isConnected}
-            aria-busy={write.status === "pending"}
           />
         )}
       </form>
