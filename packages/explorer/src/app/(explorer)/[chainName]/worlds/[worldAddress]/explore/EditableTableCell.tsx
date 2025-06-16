@@ -16,6 +16,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
+import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 
 type Props = {
@@ -52,14 +53,13 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         chainId,
       });
 
-      const toastId = toast.loading("Transaction submitted");
       try {
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
         if (receipt.status !== "success") {
           throw new Error("Transaction reverted");
         }
 
-        toast.success(`Transaction successful with hash: ${txHash}`, { id: toastId });
+        toast.success(`Transaction successful with hash: ${txHash}`);
         queryClient.invalidateQueries({
           queryKey: [
             "balance",
@@ -75,14 +75,13 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         console.error("Error:", error);
         toast.error(
           error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
-          { id: toastId },
         );
         throw error;
       }
     },
   });
 
-  // When the indexer has picked up the successful write, we can clear the write result.
+  // When the indexer has picked up the successful write, we can clear the write result
   useEffect(() => {
     if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
       write.reset();
@@ -128,28 +127,18 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         }}
       >
         {fieldType === "bool" ? (
-          <div className="flex items-center gap-1">
-            <Checkbox
-              id={`checkbox-${name}`}
-              checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
-              onCheckedChange={(_checked) => {
-                if (!account.isConnected) {
-                  return openConnectModal?.();
-                }
-                formRef.current?.requestSubmit();
-              }}
-              disabled={!account.isConnected}
-            />
-          </div>
+          <Checkbox
+            id={`checkbox-${name}`}
+            checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
+            onCheckedChange={() => formRef.current?.requestSubmit()}
+            disabled={!account.isConnected}
+            aria-busy={write.status === "pending"}
+          />
         ) : (
           <input
-            className="w-full bg-transparent px-2 py-4"
+            className={cn("w-full bg-transparent px-2 py-4")}
             value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
             onFocus={(event) => {
-              if (!account.isConnected) {
-                openConnectModal?.();
-                return;
-              }
               setEdit({ value: event.currentTarget.value, initialValue: String(value) });
             }}
             onChange={(event) => {
@@ -159,10 +148,16 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
                 initialValue: state?.initialValue ?? String(value),
               }));
             }}
-            onBlur={() => {
-              formRef.current?.requestSubmit();
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.currentTarget.blur();
+              } else if (event.key === "Escape") {
+                setEdit(null);
+              }
             }}
-            readOnly={!account.isConnected}
+            onBlur={() => formRef.current?.requestSubmit()}
+            disabled={!account.isConnected}
+            aria-busy={write.status === "pending"}
           />
         )}
       </form>
