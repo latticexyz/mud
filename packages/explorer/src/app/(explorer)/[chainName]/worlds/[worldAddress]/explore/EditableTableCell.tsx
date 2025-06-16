@@ -1,3 +1,4 @@
+import { LoaderIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
@@ -127,16 +128,24 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         }}
       >
         {fieldType === "bool" ? (
-          <Checkbox
-            id={`checkbox-${name}`}
-            checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
-            onCheckedChange={() => formRef.current?.requestSubmit()}
-            disabled={!account.isConnected}
-          />
+          <div className="flex items-center gap-1">
+            <Checkbox
+              id={`checkbox-${name}`}
+              checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
+              onCheckedChange={() => formRef.current?.requestSubmit()}
+              disabled={!account.isConnected}
+            />
+            {write.status === "pending" && <LoaderIcon className="h-4 w-4 animate-spin" />}
+          </div>
+        ) : write.status !== "idle" ? (
+          <div className="flex items-center gap-1 px-2">
+            {String(write.variables.value)}
+            <LoaderIcon className="h-4 w-4 animate-spin" />
+          </div>
         ) : (
           <input
-            className="w-full bg-transparent px-2 py-4"
-            value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
+            className="w-fit bg-transparent px-2 py-4"
+            value={edit ? edit.value : String(value)}
             onFocus={(event) => {
               setEdit({ value: event.currentTarget.value, initialValue: String(value) });
             }}
