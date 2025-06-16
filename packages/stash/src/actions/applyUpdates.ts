@@ -12,7 +12,7 @@ export type PendingStashUpdate<table extends Table = Table> = {
 
 export type ApplyUpdatesArgs = {
   stash: Stash;
-  updates: PendingStashUpdate[];
+  updates: readonly PendingStashUpdate[];
 };
 
 type PendingUpdates = {
