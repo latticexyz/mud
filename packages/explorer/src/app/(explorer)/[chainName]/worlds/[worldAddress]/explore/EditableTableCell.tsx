@@ -55,6 +55,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
       try {
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
         if (receipt.status !== "success") {
+          // TODO: handle on-chain revert reason
           throw new Error("Transaction reverted");
         }
 
