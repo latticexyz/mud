@@ -1,10 +1,9 @@
-import { LoaderIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -27,14 +26,8 @@ type Props = {
   blockHeight?: number;
 };
 
-type CellState = {
-  value: unknown;
-  isEditing: boolean;
-  blockHeight: number;
-};
-
 export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 0 }: Props) {
-  const [cellState, setCellState] = useState<CellState>({ value, blockHeight, isEditing: false });
+  const formRef = useRef<HTMLFormElement>(null);
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -44,12 +37,13 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
   const valueSchema = getValueSchema(table);
   const fieldType = valueSchema?.[name as never]?.type;
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (newValue: unknown) => {
+  const write = useMutation({
+    mutationKey: ["setField", worldAddress, table.tableId, keyTuple, name],
+    mutationFn: async ({ value }: { value: string | boolean }) => {
       if (!fieldType) throw new Error("Field type not found");
 
       const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
-      const encodedFieldValue = encodeField(fieldType, newValue);
+      const encodedFieldValue = encodeField(fieldType, value);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
@@ -58,98 +52,113 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         chainId,
       });
 
-      const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-      return { txHash, receipt };
-    },
-    onMutate: () => {
-      const toastId = toast.loading("Transaction submitted");
-      return { toastId };
-    },
-    onSuccess: ({ txHash, receipt }, newValue, { toastId }) => {
-      setCellState((prev) => ({ ...prev, value: newValue, blockHeight: Number(receipt.blockNumber) }));
+      try {
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+        if (receipt.status !== "success") {
+          // TODO: handle on-chain revert reason
+          throw new Error("Transaction reverted");
+        }
 
-      toast.success(`Transaction successful with hash: ${txHash}`, {
-        id: toastId,
-      });
+        toast.success(`Transaction successful with hash: ${txHash}`);
+        queryClient.invalidateQueries({
+          queryKey: [
+            "balance",
+            {
+              address: account.address,
+              chainId,
+            },
+          ],
+        });
 
-      queryClient.invalidateQueries({
-        queryKey: [
-          "balance",
-          {
-            address: account.address,
-            chainId,
-          },
-        ],
-      });
-    },
-    onError: (error, _, context) => {
-      console.error("Error:", error);
-      toast.error(error.message || "Something went wrong. Please try again.", {
-        id: context?.toastId,
-      });
-      setCellState((prev) => ({ ...prev, value }));
+        return { txHash, receipt };
+      } catch (error) {
+        console.error("Error:", error);
+        toast.error(
+          error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
+        );
+        throw error;
+      }
     },
   });
 
-  const handleSubmit = (newValue: unknown) => {
-    if (!account.isConnected) {
-      return openConnectModal?.();
-    }
-    mutate(newValue);
-  };
-
+  // When the indexer has picked up the successful write, we can clear the write result
   useEffect(() => {
-    if (!cellState.isEditing && !isPending && cellState.blockHeight < blockHeight) {
-      setCellState((prev) => ({ ...prev, value }));
+    if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
+      write.reset();
     }
-  }, [value, isPending, cellState.isEditing, cellState.blockHeight, blockHeight]);
+  }, [write, blockHeight]);
 
-  if (fieldType === "bool") {
-    return (
-      <div className="flex items-center gap-1">
-        <Checkbox
-          id={`checkbox-${name}`}
-          checked={!!cellState.value}
-          onCheckedChange={handleSubmit}
-          disabled={isPending}
-        />
-        {isPending && <LoaderIcon className="h-4 w-4 animate-spin" />}
-      </div>
-    );
-  }
+  const [edit, setEdit] = useState<{
+    value: string;
+    initialValue: string;
+  } | null>(null);
 
   return (
     <div className="w-full">
-      {isPending ? (
-        <div className="flex items-center gap-1 px-2 py-4">
-          {String(cellState.value)}
-          <LoaderIcon className="h-4 w-4 animate-spin" />
-        </div>
-      ) : (
-        <form
-          onSubmit={(evt) => {
-            evt.preventDefault();
-            handleSubmit(cellState.value);
-          }}
-        >
+      <form
+        ref={formRef}
+        onSubmit={(event) => {
+          event.preventDefault();
+
+          if (!account.isConnected) {
+            return openConnectModal?.();
+          }
+
+          if (fieldType === "bool") {
+            write.mutate({ value: !value });
+            return;
+          }
+
+          if (!edit) return;
+          // Skip if our input hasn't changed from the indexer value
+          if (edit.value === String(value)) {
+            setEdit(null);
+            return;
+          }
+
+          // Indexer value changed while we were editing, so we might
+          // be at risk of overwriting a change from somewhere else.
+          if (edit.initialValue !== String(value)) {
+            // TODO: throw or ask user to confirm overwrite
+          }
+
+          write.mutate({ value: edit.value });
+          setEdit(null);
+        }}
+      >
+        {fieldType === "bool" ? (
+          <Checkbox
+            id={`checkbox-${name}`}
+            checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
+            onCheckedChange={() => formRef.current?.requestSubmit()}
+            disabled={!account.isConnected}
+          />
+        ) : (
           <input
             className="w-full bg-transparent px-2 py-4"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-              setCellState((prev) => ({ ...prev, value: evt.target.value }))
-            }
-            onFocus={() => setCellState((prev) => ({ ...prev, isEditing: true }))}
-            onBlur={(evt) => {
-              setCellState((prev) => ({ ...prev, isEditing: false }));
-              const newValue = evt.target.value;
-              if (newValue !== String(value)) {
-                handleSubmit(newValue);
+            value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
+            onFocus={(event) => {
+              setEdit({ value: event.currentTarget.value, initialValue: String(value) });
+            }}
+            onChange={(event) => {
+              const nextValue = event.currentTarget.value;
+              setEdit((state) => ({
+                value: nextValue,
+                initialValue: state?.initialValue ?? String(value),
+              }));
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.currentTarget.blur();
+              } else if (event.key === "Escape") {
+                setEdit(null);
               }
             }}
-            value={String(cellState.value)}
-            disabled={isPending}
+            onBlur={() => formRef.current?.requestSubmit()}
+            disabled={!account.isConnected}
           />
-        </form>
-      )}
+        )}
+      </form>
     </div>
   );
 }
