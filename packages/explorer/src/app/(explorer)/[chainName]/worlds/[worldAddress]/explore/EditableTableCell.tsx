@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -27,6 +27,7 @@ type Props = {
 };
 
 export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 0 }: Props) {
+  const formRef = useRef<HTMLFormElement>(null);
   const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -93,29 +94,21 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
     initialValue: string;
   } | null>(null);
 
-  if (fieldType === "bool") {
-    return (
-      <div className="flex items-center gap-1">
-        <Checkbox
-          id={`checkbox-${name}`}
-          checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
-          onCheckedChange={(checked) => {
-            if (!account.isConnected) {
-              return openConnectModal?.();
-            }
-            write.mutate({ value: checked.valueOf() });
-          }}
-          disabled={!account.isConnected}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
       <form
+        ref={formRef}
         onSubmit={(event) => {
           event.preventDefault();
+
+          if (!account.isConnected) {
+            return openConnectModal?.();
+          }
+
+          if (fieldType === "bool") {
+            write.mutate({ value: !value });
+            return;
+          }
 
           if (!edit) return;
           // Skip if our input hasn't changed from the indexer value
@@ -130,36 +123,48 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             // TODO: throw or ask user to confirm overwrite
           }
 
-          if (!account.isConnected) {
-            return openConnectModal?.();
-          }
-
           write.mutate({ value: edit.value });
           setEdit(null);
         }}
       >
-        <input
-          className="w-full bg-transparent px-2 py-4"
-          value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
-          onFocus={(event) => {
-            if (!account.isConnected) {
-              openConnectModal?.();
-              return;
-            }
-            setEdit({ value: event.currentTarget.value, initialValue: String(value) });
-          }}
-          onChange={(event) => {
-            const nextValue = event.currentTarget.value;
-            setEdit((state) => ({
-              value: nextValue,
-              initialValue: state?.initialValue ?? String(value),
-            }));
-          }}
-          onBlur={(event) => {
-            event.currentTarget.form?.submit();
-          }}
-          readOnly={!account.isConnected}
-        />
+        {fieldType === "bool" ? (
+          <div className="flex items-center gap-1">
+            <Checkbox
+              id={`checkbox-${name}`}
+              checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
+              onCheckedChange={(_checked) => {
+                if (!account.isConnected) {
+                  return openConnectModal?.();
+                }
+                formRef.current?.requestSubmit();
+              }}
+              disabled={!account.isConnected}
+            />
+          </div>
+        ) : (
+          <input
+            className="w-full bg-transparent px-2 py-4"
+            value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
+            onFocus={(event) => {
+              if (!account.isConnected) {
+                openConnectModal?.();
+                return;
+              }
+              setEdit({ value: event.currentTarget.value, initialValue: String(value) });
+            }}
+            onChange={(event) => {
+              const nextValue = event.currentTarget.value;
+              setEdit((state) => ({
+                value: nextValue,
+                initialValue: state?.initialValue ?? String(value),
+              }));
+            }}
+            onBlur={() => {
+              formRef.current?.requestSubmit();
+            }}
+            readOnly={!account.isConnected}
+          />
+        )}
       </form>
     </div>
   );
