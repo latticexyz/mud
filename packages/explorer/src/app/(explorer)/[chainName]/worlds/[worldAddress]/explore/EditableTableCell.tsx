@@ -37,7 +37,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
   const fieldType = valueSchema?.[name as never]?.type;
 
   const write = useMutation({
-    // TODO: mutationKey
+    mutationKey: ["setField", worldAddress, table.tableId, keyTuple, name],
     mutationFn: async ({ value }: { value: string | boolean }) => {
       if (!fieldType) throw new Error("Field type not found");
 
@@ -54,10 +54,11 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
       const toastId = toast.loading("Transaction submitted");
       try {
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-        // TODO: check receipt.status, throw if reverted
+        if (receipt.status !== "success") {
+          throw new Error("Transaction reverted");
+        }
 
         toast.success(`Transaction successful with hash: ${txHash}`, { id: toastId });
-
         queryClient.invalidateQueries({
           queryKey: [
             "balance",
@@ -104,6 +105,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             }
             write.mutate({ value: checked.valueOf() });
           }}
+          disabled={!account.isConnected}
         />
       </div>
     );
@@ -140,6 +142,10 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           className="w-full bg-transparent px-2 py-4"
           value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
           onFocus={(event) => {
+            if (!account.isConnected) {
+              openConnectModal?.();
+              return;
+            }
             setEdit({ value: event.currentTarget.value, initialValue: String(value) });
           }}
           onChange={(event) => {
@@ -152,6 +158,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           onBlur={(event) => {
             event.currentTarget.form?.submit();
           }}
+          readOnly={!account.isConnected}
         />
       </form>
     </div>
