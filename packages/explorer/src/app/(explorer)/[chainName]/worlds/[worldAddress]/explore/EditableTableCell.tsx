@@ -43,17 +43,17 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
     mutationFn: async ({ value }: { value: string | boolean }) => {
       if (!fieldType) throw new Error("Field type not found");
 
-      const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
-      const encodedFieldValue = encodeField(fieldType, value);
-      const txHash = await writeContract(wagmiConfig, {
-        abi: IBaseWorldAbi,
-        address: worldAddress as Hex,
-        functionName: "setField",
-        args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
-        chainId,
-      });
-
       try {
+        const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
+        const encodedFieldValue = encodeField(fieldType, value);
+        const txHash = await writeContract(wagmiConfig, {
+          abi: IBaseWorldAbi,
+          address: worldAddress as Hex,
+          functionName: "setField",
+          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
+          chainId,
+        });
+
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
         if (receipt.status !== "success") {
           // TODO: handle on-chain revert reason
@@ -82,10 +82,15 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
     },
   });
 
+  console.log("blockHeight", blockHeight);
+  console.log("write.status", write.status);
+  console.log("write.data", write.data?.receipt.blockNumber);
+  console.log("value", value);
+
   // When the indexer has picked up the successful write, we can clear the write result
   useEffect(() => {
     if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
-      write.reset();
+      // write.reset();
     }
   }, [write, blockHeight]);
 
@@ -123,6 +128,8 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             // TODO: throw or ask user to confirm overwrite
           }
 
+          console.log("edit.value", edit.value);
+
           write.mutate({ value: edit.value });
           setEdit(null);
         }}
@@ -137,7 +144,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             />
             {write.status === "pending" && <LoaderIcon className="h-4 w-4 animate-spin" />}
           </div>
-        ) : write.status !== "idle" ? (
+        ) : write.status === "pending" ? (
           <div className="flex items-center gap-1 px-2">
             {String(write.variables.value)}
             <LoaderIcon className="h-4 w-4 animate-spin" />
@@ -145,7 +152,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         ) : (
           <input
             className="w-fit bg-transparent px-2 py-4"
-            value={edit ? edit.value : String(value)}
+            value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
             onFocus={(event) => {
               setEdit({ value: event.currentTarget.value, initialValue: String(value) });
             }}
