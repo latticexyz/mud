@@ -47,12 +47,12 @@ import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
-import { createPendingBlockStream } from "./createPendingBlockStream";
+import { createPreconfirmedBlockStream } from "./createPreconfirmedBlockStream";
 
 /**
  * High level approach to syncing state with `createStoreSync`
  *
- * If pending logs are not available:
+ * If preconfirmed logs are not available:
  * - Initialize snapshot
  * - Initialize log stream from latest block
  *   - Catch up logs between snapshot and latest block
@@ -60,16 +60,16 @@ import { createPendingBlockStream } from "./createPendingBlockStream";
  *   - On failure, fallback to streaming logs from RPC
  * - Release initial, catchup and ongoing stream to subscribers
  *
- * If pending logs are available:
+ * If preconfirmed logs are available:
  * - Initialize from snapshot
- * - Open a pending log stream
+ * - Open a preconfirmed log stream
  *   - On error recreate the stream
  * - Open a fallback log stream (indexer or RPC)
  * - Catch up logs between snapshot and latest block
- * - Cache processed log indices from pending logs stream
+ * - Cache processed log indices from preconfirmed logs stream
  * - On every new block from the fallback logs stream
- *   - Verify that all logs have already been processed in the pending logs stream
- *   - If missing logs are found, release the missing logs to subscribers and recreate the pending logs stream
+ *   - Verify that all logs have already been processed in the preconfirmed logs stream
+ *   - If missing logs are found, release the missing logs to subscribers and recreate the preconfirmed logs stream
  */
 
 const debug = parentDebug.extend("createStoreSync");
@@ -259,14 +259,14 @@ export async function createStoreSync({
   let lastBlockNumberProcessed: bigint | null = null;
   let caughtUp = false;
 
-  const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
-  const storedPendingLogs$ = pendingLogsWebSocketUrl
+  const preconfirmedLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
+  const storedPreconfirmedLogs$ = preconfirmedLogsWebSocketUrl
     ? startBlock$.pipe(
         switchMap((startBlock) =>
-          createPendingBlockStream({
+          createPreconfirmedBlockStream({
             ...opts,
             fromBlock: startBlock,
-            pendingLogsUrl: pendingLogsWebSocketUrl,
+            preconfirmedLogsUrl: preconfirmedLogsWebSocketUrl,
             chainId,
             filters,
             address,
@@ -279,7 +279,7 @@ export async function createStoreSync({
           return block;
         }),
       )
-    : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
+    : throwError(() => new Error("No preconfirmed logs WebSocket RPC URL provided"));
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
@@ -328,9 +328,9 @@ export async function createStoreSync({
     }),
   );
 
-  const storedBlock$ = storedPendingLogs$.pipe(
+  const storedBlock$ = storedPreconfirmedLogs$.pipe(
     catchError((error) => {
-      debug("failed to stream logs from pending log RPC:", error.message);
+      debug("failed to stream logs from preconfirmed log RPC:", error.message);
       debug("falling back to streaming logs from indexer");
       return storedIndexerLogs$;
     }),

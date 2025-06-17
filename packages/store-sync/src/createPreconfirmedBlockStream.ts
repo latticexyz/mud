@@ -27,9 +27,9 @@ import { bigIntMax, isDefined } from "@latticexyz/common/utils";
 import { getRpcClient, GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 import { debug } from "./debug";
 
-type PendingBlockStreamOptions = GetRpcClientOptions & {
+type PreconfirmedBlockStreamOptions = GetRpcClientOptions & {
   fromBlock: bigint;
-  pendingLogsUrl: string;
+  preconfirmedLogsUrl: string;
   indexerUrl?: string;
   chainId: number;
   address?: Hex;
@@ -38,8 +38,8 @@ type PendingBlockStreamOptions = GetRpcClientOptions & {
   maxBlockRange?: bigint;
 };
 
-export function createPendingBlockStream(opts: PendingBlockStreamOptions): Observable<StorageAdapterBlock> {
-  const recreatePendingStream$ = new Subject<void>();
+export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptions): Observable<StorageAdapterBlock> {
+  const recreatePreconfirmedStream$ = new Subject<void>();
   const recreateLatestStream$ = new Subject<void>();
 
   let restartBlockNumber = opts.fromBlock;
@@ -65,35 +65,35 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
   );
 
   let processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
-  let pendingLogsState: "initializing" | "initialized" | "waiting" = "waiting";
-  const pendingLogs$ = recreatePendingStream$.pipe(
+  let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
+  const preconfirmedLogs$ = recreatePreconfirmedStream$.pipe(
     tap(() => {
-      debug("initializing pending logs stream");
-      pendingLogsState = "initializing";
+      debug("initializing preconfirmed logs stream");
+      preconfirmedLogsState = "initializing";
       processedBlockLogs = {};
     }),
     switchMap(() =>
       watchLogs({
         ...opts,
-        url: opts.pendingLogsUrl,
+        url: opts.preconfirmedLogsUrl,
         fromBlock: restartBlockNumber,
       }).logs$.pipe(
         catchError((e) => {
-          debug("Error in pending logs stream, recreating", e);
-          recreatePendingStream$.next();
+          debug("Error in preconfirmed logs stream, recreating", e);
+          recreatePreconfirmedStream$.next();
           return throwError(() => e);
         }),
       ),
     ),
     tap((block) => {
-      debug("pending block", block.blockNumber, "with", block.logs.length, "logs");
-      pendingLogsState = "initialized";
+      debug("preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
+      preconfirmedLogsState = "initialized";
       restartBlockNumber = block.blockNumber;
       const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
       block.logs.forEach((log) => {
         seenLogs[log.logIndex!] = true;
       });
-      debug("got pending block", block.blockNumber, "with", block.logs.length, "logs");
+      debug("got preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
     }),
   );
 
@@ -116,43 +116,43 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
         ")",
       );
 
-      if (pendingLogsState === "waiting") {
-        // Once the initial catch up block is reached, we can start the pending logs stream
+      if (preconfirmedLogsState === "waiting") {
+        // Once the initial catch up block is reached, we can start the preconfirmed logs stream
         if (
           initialCatchUpBlockNumber != null && // initial catch up block fetched
           block.blockNumber >= initialCatchUpBlockNumber // initial catch up block reached
         ) {
-          debug("initial catch up block number", initialCatchUpBlockNumber, "reached, creating pending stream");
-          recreatePendingStream$.next();
+          debug("initial catch up block number", initialCatchUpBlockNumber, "reached, creating preconfirmed stream");
+          recreatePreconfirmedStream$.next();
         }
-        // While the pending logs stream is waiting, pass the block through
+        // While the preconfirmed logs stream is waiting, pass the block through
         return block;
       }
 
-      // While the pending logs stream is initializing, don't recreate it and pass the block through
-      if (pendingLogsState === "initializing") {
-        debug("pending logs stream is initializing, not recreating");
+      // While the preconfirmed logs stream is initializing, don't recreate it and pass the block through
+      if (preconfirmedLogsState === "initializing") {
+        debug("preconfirmed logs stream is initializing, not recreating");
         return block;
       }
 
-      // If the pending logs stream is initialized but there are missing logs, recreate it and pass the block through.
+      // If the preconfirmed logs stream is initialized but there are missing logs, recreate it and pass the block through.
       // Pass all logs from this block, not just the missing ones, to make sure they appear in the right order.
-      if (pendingLogsState === "initialized" && (missingLogs.length > 0 || missingBlock)) {
-        debug("missing logs found in latest block", block.blockNumber, "recreating pending stream", {
+      if (preconfirmedLogsState === "initialized" && (missingLogs.length > 0 || missingBlock)) {
+        debug("missing logs found in latest block", block.blockNumber, "recreating preconfirmed stream", {
           missingLogs: missingLogs.length,
           missingBlock,
         });
-        recreatePendingStream$.next();
+        recreatePreconfirmedStream$.next();
         return block;
       }
 
-      debug("no missing logs found in latest block", block.blockNumber, "not recreating pending stream");
+      debug("no missing logs found in latest block", block.blockNumber, "not recreating preconfirmed stream");
       return;
     }),
     filter(isDefined),
   );
 
-  return merge(pendingLogs$, missingLogs$);
+  return merge(preconfirmedLogs$, missingLogs$);
 }
 
 // TODO: refactor to reduce duplication with indexer/rpc stream in `createStoreSync.ts`
@@ -165,7 +165,7 @@ function createLatestBlockStream({
   latestBlockNumber$,
   maxBlockRange,
   ...opts
-}: PendingBlockStreamOptions): Observable<StorageAdapterBlock> {
+}: PreconfirmedBlockStreamOptions): Observable<StorageAdapterBlock> {
   const indexerBlocks$ = indexerUrl
     ? of(indexerUrl).pipe(
         mergeMap((indexerUrl) => {
