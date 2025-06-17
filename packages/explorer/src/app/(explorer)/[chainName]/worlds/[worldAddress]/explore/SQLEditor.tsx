@@ -112,20 +112,22 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
               <div ref={containerRef} className="min-h-[21px] w-full">
                 <Editor
                   width="100%"
-                  theme="hc-black"
+                  theme="vs-dark"
                   value={decodeURIComponent(field.value)}
                   options={monacoOptions}
                   language="sql"
                   onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
                   onMount={(editor, monaco) => {
                     editorRef.current = editor;
-                    monaco.editor.defineTheme("custom-hc-black", {
+                    monaco.editor.defineTheme("custom-vs-dark", {
                       base: "hc-black",
                       inherit: true,
                       rules: [{ token: "string.sql", foreground: "#C5947C" }],
-                      colors: {},
+                      colors: {
+                        "editor.background": "#000000",
+                      },
                     });
-                    monaco.editor.setTheme("custom-hc-black");
+                    monaco.editor.setTheme("custom-vs-dark");
 
                     editor.addAction({
                       id: "executeSQL",
