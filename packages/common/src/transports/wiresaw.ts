@@ -70,16 +70,11 @@ export function wiresaw<const wiresawTransport extends Transport>({
           if (req.method === "eth_getUserOperationReceipt") {
             const userOpHash = (req.params as [Hex])[0];
             const knownTransactionHash = transactionHashes[userOpHash];
-            if (knownTransactionHash) {
-              const transactionReceipt = await getTransactionReceipt(knownTransactionHash);
-              if (transactionReceipt) {
-                return getUserOperationReceipt(userOpHash, transactionReceipt);
-              }
+            if (!knownTransactionHash) {
+              throw new Error(`eth_getUserOperationReceipt only supported for own user operations`);
             }
-            if (fallbackBundlerTransport) {
-              const { request: fallbackRequest } = fallbackBundlerTransport(opts);
-              return await fallbackRequest(req);
-            }
+            const transactionReceipt = await getTransactionReceipt(knownTransactionHash);
+            return transactionReceipt && getUserOperationReceipt(userOpHash, transactionReceipt);
           }
 
           if (req.method === "eth_estimateUserOperationGas") {
@@ -104,7 +99,7 @@ export function wiresaw<const wiresawTransport extends Transport>({
 
           return await wiresawRequest(req);
         } catch (e) {
-          console.warn("[wiresaw] request error", e);
+          console.warn("[wiresaw] request failed", e);
           const bundlerMethods = [
             "eth_estimateUserOperationGas",
             "eth_sendUserOperation",
