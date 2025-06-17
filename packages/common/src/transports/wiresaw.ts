@@ -22,7 +22,7 @@ export function wiresaw<const wiresawTransport extends Transport>({
   fallbackDefaultTransport,
 }: WiresawOptions<wiresawTransport>): wiresawTransport {
   return ((opts) => {
-    const { request: originalRequest, ...rest } = wiresawTransport(opts);
+    const { request: wiresawRequest, ...rest } = wiresawTransport(opts);
 
     let chainId: Hex | null = null;
     const transactionHashes: { [userOpHash: Hex]: Hex } = {};
@@ -39,19 +39,19 @@ export function wiresaw<const wiresawTransport extends Transport>({
               const { request: fallbackRequest } = fallbackDefaultTransport(opts);
               return (chainId = await fallbackRequest(req));
             }
-            return (chainId = await originalRequest(req));
+            return (chainId = await wiresawRequest(req));
           }
 
           if (req.method === "eth_estimateGas") {
-            return await originalRequest({ ...req, method: "wiresaw_estimateGas" });
+            return await wiresawRequest({ ...req, method: "wiresaw_estimateGas" });
           }
 
           if (req.method === "eth_call") {
-            return await originalRequest({ ...req, method: "wiresaw_call" });
+            return await wiresawRequest({ ...req, method: "wiresaw_call" });
           }
 
           if (req.method === "eth_getTransactionCount") {
-            return await originalRequest({ ...req, method: "wiresaw_getTransactionCount" });
+            return await wiresawRequest({ ...req, method: "wiresaw_getTransactionCount" });
           }
 
           if (req.method === "eth_getTransactionReceipt") {
@@ -59,7 +59,7 @@ export function wiresaw<const wiresawTransport extends Transport>({
           }
 
           if (req.method === "eth_sendUserOperation") {
-            const { userOpHash, txHash } = (await originalRequest({
+            const { userOpHash, txHash } = (await wiresawRequest({
               ...req,
               method: "wiresaw_sendUserOperation",
             })) as WiresawSendUserOperationResult;
@@ -85,7 +85,7 @@ export function wiresaw<const wiresawTransport extends Transport>({
           if (req.method === "eth_estimateUserOperationGas") {
             try {
               return await estimateUserOperationGas({
-                request: originalRequest,
+                request: wiresawRequest,
                 params: req.params as never,
               });
             } catch (e) {
@@ -108,10 +108,10 @@ export function wiresaw<const wiresawTransport extends Transport>({
               const { request: fallbackRequest } = fallbackDefaultTransport(opts);
               return await fallbackRequest(req);
             }
-            return await originalRequest(req);
+            return await wiresawRequest(req);
           }
 
-          return await originalRequest(req);
+          return await wiresawRequest(req);
         } catch (e) {
           console.warn("[wiresaw] request error", e);
           const bundlerMethods = [
@@ -139,7 +139,7 @@ export function wiresaw<const wiresawTransport extends Transport>({
           if (transactionReceipts[hash]) return transactionReceipts[hash];
 
           // Fetch pending receipt
-          const pendingReceipt = (await originalRequest({
+          const pendingReceipt = (await wiresawRequest({
             ...req,
             method: "wiresaw_getTransactionReceipt",
             params: [hash],
