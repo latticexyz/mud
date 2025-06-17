@@ -156,7 +156,7 @@ export async function createStoreSync({
         message: "Hydrating from snapshot",
       });
 
-      if (!enableHydrationChunking) {
+      if (enableHydrationChunking) {
         // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
         // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
         //
