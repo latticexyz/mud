@@ -69,7 +69,7 @@ import { createPreconfirmedBlockStream } from "./createPreconfirmedBlockStream";
  * - Cache processed log indices from preconfirmed logs stream
  * - On every new block from the fallback logs stream
  *   - Verify that all logs have already been processed in the preconfirmed logs stream
- *   - If missing logs are found, release the missing logs to subscribers and recreate the preconfirmed logs stream
+ *   - If missing logs are found, pass the block with missing logs to subscribers and reconnect the preconfirmed logs stream
  */
 
 const debug = parentDebug.extend("createStoreSync");
