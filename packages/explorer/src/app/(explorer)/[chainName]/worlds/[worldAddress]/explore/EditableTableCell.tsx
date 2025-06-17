@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
-import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { useEffect, useRef, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
@@ -47,6 +47,17 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
       try {
         const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
         const encodedFieldValue = encodeField(fieldType, value);
+
+        // Simulate the transaction first to get better error messages
+        await simulateContract(wagmiConfig, {
+          account: account.address,
+          address: worldAddress as Hex,
+          abi: IBaseWorldAbi,
+          functionName: "setField",
+          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
+          chainId,
+        });
+
         const txHash = await writeContract(wagmiConfig, {
           abi: IBaseWorldAbi,
           address: worldAddress as Hex,
@@ -56,16 +67,14 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         });
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+        console.log("receipt:", receipt);
         if (receipt.status !== "success") {
-          throw new Error("Transaction reverted");
+          throw new Error("Transaction reverted. Please try again.");
         }
 
         toast.success(
           <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
-            Transaction successful with hash:{" "}
-            <span className="underline">
-              {txHash} <ExternalLinkIcon className="inline-block h-4 w-4" />
-            </span>
+            Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-4 w-4" />
           </a>,
         );
         queryClient.invalidateQueries({
@@ -113,7 +122,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           }
 
           if (fieldType === "bool") {
-            write.mutate({ value: !value });
+            write.mutate({ value: write.status === "success" ? !write.variables.value : !value });
             return;
           }
 
@@ -135,12 +144,12 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
         }}
       >
         {fieldType === "bool" ? (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 px-2 py-4">
             <Checkbox
               id={`checkbox-${name}`}
               checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
               onCheckedChange={() => formRef.current?.requestSubmit()}
-              disabled={!account.isConnected}
+              disabled={!account.isConnected || write.status === "pending"}
             />
             {write.status === "pending" && <LoaderIcon className="h-4 w-4 animate-spin" />}
           </div>
