@@ -155,7 +155,7 @@ export function createPendingBlockStream(opts: PendingBlockStreamOptions): Obser
   return merge(pendingLogs$, missingLogs$);
 }
 
-// TODO: reduce duplication with indexer/rpc stream in `createStoreSync.ts`
+// TODO: refactor to reduce duplication with indexer/rpc stream in `createStoreSync.ts`
 function createLatestBlockStream({
   fromBlock,
   indexerUrl,
