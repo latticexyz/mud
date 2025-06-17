@@ -7,21 +7,14 @@ import { wiresaw } from "@latticexyz/common/internal";
 export function getBundlerTransport(chain: Chain) {
   const ethRpcUrl = chain.rpcUrls.default.http[0];
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
-  const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
-  if (wiresawWebSocketUrl) {
-    return wiresaw({
-      wiresawTransport: webSocket(wiresawWebSocketUrl),
-      fallbackBundlerTransport: http(bundlerHttpUrl),
-      fallbackDefaultTransport: http(ethRpcUrl),
-    });
-  }
 
-  const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
-  if (wiresawHttpUrl) {
+  const wiresawTransport = getWiresawTransport(chain);
+
+  if (wiresawTransport) {
     return wiresaw({
-      wiresawTransport: http(wiresawHttpUrl),
-      fallbackBundlerTransport: http(bundlerHttpUrl),
-      fallbackDefaultTransport: http(ethRpcUrl),
+      wiresawTransport,
+      fallbackBundlerTransport: bundlerHttpUrl ? http(bundlerHttpUrl) : undefined,
+      fallbackDefaultTransport: http(),
     });
   }
 
@@ -43,4 +36,19 @@ export function getBundlerTransport(chain: Chain) {
   }
 
   throw new Error(`Chain ${chain.id} config did not include a bundler RPC URL.`);
+}
+
+function getWiresawTransport(chain: Chain) {
+  const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
+  const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
+
+  if (wiresawWebSocketUrl) {
+    return wiresawHttpUrl
+      ? fallback([webSocket(wiresawWebSocketUrl), http(wiresawHttpUrl)])
+      : webSocket(wiresawWebSocketUrl);
+  }
+
+  if (wiresawHttpUrl) {
+    return http(wiresawHttpUrl);
+  }
 }
