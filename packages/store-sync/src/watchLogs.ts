@@ -154,6 +154,6 @@ async function fetchInitialLogs({
 
 function getUncachedUrl(url: string): string {
   const uncachedUrl = new URL(url);
-  uncachedUrl.searchParams.append("timestamp", String(Date.now()));
+  uncachedUrl.searchParams.append(`__${Date.now()}`, `${Date.now()}`);
   return uncachedUrl.toString();
 }
