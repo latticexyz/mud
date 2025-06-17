@@ -110,6 +110,11 @@ export type SyncOptions = GetRpcClientOptions & {
     blockNumber: bigint;
     logs: readonly StorageAdapterLog[];
   };
+  /**
+   * Optional flag to disable chunking during the initial hydration.
+   * Note: if atomicity of updates is important, set this to `true`, as chunking can lead to updates that happened in the same block being split across multiple chunks.
+   */
+  disableChunking?: boolean;
 };
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
