@@ -83,19 +83,10 @@ export function wiresaw<const wiresawTransport extends Transport>({
           }
 
           if (req.method === "eth_estimateUserOperationGas") {
-            try {
-              return await estimateUserOperationGas({
-                request: wiresawRequest,
-                params: req.params as never,
-              });
-            } catch (e) {
-              console.warn("[wiresaw] estimating user operation gas failed, falling back to bundler", e);
-            }
-
-            if (fallbackBundlerTransport) {
-              const { request: fallbackRequest } = fallbackBundlerTransport(opts);
-              return await fallbackRequest(req);
-            }
+            return await estimateUserOperationGas({
+              request: wiresawRequest,
+              params: req.params as never,
+            });
           }
 
           // Fallback to regular RPC for methods that don't require wiresaw
