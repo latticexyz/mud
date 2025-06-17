@@ -18,9 +18,9 @@ import {
   getContractAddress,
   waitForTransactions,
 } from "@latticexyz/common/internal";
-import entryPointArtifact from "@account-abstraction/contracts/artifacts/EntryPoint.json" assert { type: "json" };
-import simpleAccountFactoryArtifact from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json" assert { type: "json" };
-import localPaymasterArtifact from "@latticexyz/paymaster/out/GenerousPaymaster.sol/GenerousPaymaster.json" assert { type: "json" };
+import entryPointArtifact from "@account-abstraction/contracts/artifacts/EntryPoint.json" with { type: "json" };
+import simpleAccountFactoryArtifact from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json" with { type: "json" };
+import localPaymasterArtifact from "@latticexyz/paymaster/out/GenerousPaymaster.sol/GenerousPaymaster.json" with { type: "json" };
 import { getChainId } from "viem/actions";
 import { writeContract } from "@latticexyz/common";
 import { entryPoint07Address } from "viem/account-abstraction";

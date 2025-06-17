@@ -10,7 +10,7 @@ import {
   parseAbi,
   stringToHex,
 } from "viem";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { isDefined } from "@latticexyz/common/utils";
