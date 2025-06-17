@@ -82,15 +82,10 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
     },
   });
 
-  console.log("blockHeight", blockHeight);
-  console.log("write.status", write.status);
-  console.log("write.data", write.data?.receipt.blockNumber);
-  console.log("value", value);
-
   // When the indexer has picked up the successful write, we can clear the write result
   useEffect(() => {
     if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
-      // write.reset();
+      write.reset();
     }
   }, [write, blockHeight]);
 
@@ -127,8 +122,6 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           if (edit.initialValue !== String(value)) {
             // TODO: throw or ask user to confirm overwrite
           }
-
-          console.log("edit.value", edit.value);
 
           write.mutate({ value: edit.value });
           setEdit(null);
