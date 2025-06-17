@@ -53,9 +53,9 @@ const transports = {
   [mainnet.id]: http(),
   [anvil.id]: http(),
   [garnet.id]: wiresaw({
-    wiresaw: webSocket(garnetWithPaymaster.rpcUrls.wiresaw.webSocket[0]),
-    fallbackBundler: http(garnetWithPaymaster.rpcUrls.bundler.http[0]),
-    fallbackEth: http(garnetWithPaymaster.rpcUrls.default.http[0]),
+    wiresawTransport: webSocket(garnetWithPaymaster.rpcUrls.wiresaw.webSocket[0]),
+    fallbackBundlerTransport: http(garnetWithPaymaster.rpcUrls.bundler.http[0]),
+    fallbackDefaultTransport: http(garnetWithPaymaster.rpcUrls.default.http[0]),
   }),
 } as const;
 

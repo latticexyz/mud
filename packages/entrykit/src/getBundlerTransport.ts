@@ -10,18 +10,18 @@ export function getBundlerTransport(chain: Chain) {
   const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
   if (wiresawWebSocketUrl) {
     return wiresaw({
-      wiresaw: webSocket(wiresawWebSocketUrl),
-      fallbackBundler: http(bundlerHttpUrl),
-      fallbackEth: http(ethRpcUrl),
+      wiresawTransport: webSocket(wiresawWebSocketUrl),
+      fallbackBundlerTransport: http(bundlerHttpUrl),
+      fallbackDefaultTransport: http(ethRpcUrl),
     });
   }
 
   const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
   if (wiresawHttpUrl) {
     return wiresaw({
-      wiresaw: http(wiresawHttpUrl),
-      fallbackBundler: http(bundlerHttpUrl),
-      fallbackEth: http(ethRpcUrl),
+      wiresawTransport: http(wiresawHttpUrl),
+      fallbackBundlerTransport: http(bundlerHttpUrl),
+      fallbackDefaultTransport: http(ethRpcUrl),
     });
   }
 
@@ -38,7 +38,7 @@ export function getBundlerTransport(chain: Chain) {
         account: privateKeyToAccount(keccak256(stringToHex("local user op executor"))),
         pollingInterval: 10,
       }).extend(transactionQueue()),
-      fallbackEth: http(ethRpcUrl),
+      fallbackDefaultTransport: http(ethRpcUrl),
     });
   }
 

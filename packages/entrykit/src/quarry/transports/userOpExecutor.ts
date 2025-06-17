@@ -20,10 +20,10 @@ import { setBalance } from "viem/actions";
 
 export function userOpExecutor({
   executor,
-  fallbackEth,
+  fallbackDefaultTransport,
 }: {
   executor: ConnectedClient;
-  fallbackEth: Transport;
+  fallbackDefaultTransport: Transport;
 }): Transport {
   return (opts) => {
     debug("using a local user op executor", executor.account.address);
@@ -71,7 +71,7 @@ export function userOpExecutor({
       }
 
       debug(`userOpExecutor: method "${method}" not overridden, falling back to fallback transport`);
-      const { request: fallbackRequest } = fallbackEth(opts);
+      const { request: fallbackRequest } = fallbackDefaultTransport(opts);
 
       return fallbackRequest({ method, params });
     };

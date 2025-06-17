@@ -8,16 +8,21 @@ type WiresawSendUserOperationResult = {
 };
 
 type WiresawOptions<transport extends Transport> = {
-  wiresaw: transport;
-  fallbackBundler?: Transport;
-  fallbackEth?: Transport;
+  /** wiresaw-compatible transport */
+  wiresawTransport: transport;
+  /** fallback transport for bundler RPC methods */
+  fallbackBundlerTransport?: Transport;
+  /** fallback transport for all other RPC methods */
+  fallbackDefaultTransport?: Transport;
 };
 
-export function wiresaw<const wiresawTransport extends Transport>(
-  transport: WiresawOptions<wiresawTransport>,
-): wiresawTransport {
+export function wiresaw<const wiresawTransport extends Transport>({
+  wiresawTransport,
+  fallbackBundlerTransport,
+  fallbackDefaultTransport,
+}: WiresawOptions<wiresawTransport>): wiresawTransport {
   return ((opts) => {
-    const { request: originalRequest, ...rest } = transport.wiresaw(opts);
+    const { request: originalRequest, ...rest } = wiresawTransport(opts);
 
     let chainId: Hex | null = null;
     const transactionHashes: { [userOpHash: Hex]: Hex } = {};
@@ -30,8 +35,8 @@ export function wiresaw<const wiresawTransport extends Transport>(
         try {
           if (req.method === "eth_chainId") {
             if (chainId != null) return chainId;
-            if (transport.fallbackEth) {
-              const { request: fallbackRequest } = transport.fallbackEth(opts);
+            if (fallbackDefaultTransport) {
+              const { request: fallbackRequest } = fallbackDefaultTransport(opts);
               return (chainId = await fallbackRequest(req));
             }
             return (chainId = await originalRequest(req));
@@ -71,8 +76,8 @@ export function wiresaw<const wiresawTransport extends Transport>(
                 return getUserOperationReceipt(userOpHash, transactionReceipt);
               }
             }
-            if (transport.fallbackBundler) {
-              const { request: fallbackRequest } = transport.fallbackBundler(opts);
+            if (fallbackBundlerTransport) {
+              const { request: fallbackRequest } = fallbackBundlerTransport(opts);
               return await fallbackRequest(req);
             }
           }
@@ -87,8 +92,8 @@ export function wiresaw<const wiresawTransport extends Transport>(
               console.warn("[wiresaw] estimating user operation gas failed, falling back to bundler", e);
             }
 
-            if (transport.fallbackBundler) {
-              const { request: fallbackRequest } = transport.fallbackBundler(opts);
+            if (fallbackBundlerTransport) {
+              const { request: fallbackRequest } = fallbackBundlerTransport(opts);
               return await fallbackRequest(req);
             }
           }
@@ -99,8 +104,8 @@ export function wiresaw<const wiresawTransport extends Transport>(
             req.method === "eth_getBlockByNumber" ||
             req.method === "eth_maxPriorityFeePerGas"
           ) {
-            if (transport.fallbackEth) {
-              const { request: fallbackRequest } = transport.fallbackEth(opts);
+            if (fallbackDefaultTransport) {
+              const { request: fallbackRequest } = fallbackDefaultTransport(opts);
               return await fallbackRequest(req);
             }
             return await originalRequest(req);
@@ -115,14 +120,14 @@ export function wiresaw<const wiresawTransport extends Transport>(
             "eth_getUserOperationReceipt",
           ];
           if (bundlerMethods.includes(req.method)) {
-            if (transport.fallbackBundler) {
-              const { request: fallbackRequest } = transport.fallbackBundler(opts);
+            if (fallbackBundlerTransport) {
+              const { request: fallbackRequest } = fallbackBundlerTransport(opts);
               console.warn("[wiresaw] falling back to bundler rpc", req);
               return fallbackRequest(req);
             }
           }
-          if (transport.fallbackEth) {
-            const { request: fallbackRequest } = transport.fallbackEth(opts);
+          if (fallbackDefaultTransport) {
+            const { request: fallbackRequest } = fallbackDefaultTransport(opts);
             console.warn("[wiresaw] falling back to eth rpc", req);
             return fallbackRequest(req);
           }
@@ -144,8 +149,8 @@ export function wiresaw<const wiresawTransport extends Transport>(
             return pendingReceipt;
           }
 
-          if (transport.fallbackEth) {
-            const { request: fallbackRequest } = transport.fallbackEth(opts);
+          if (fallbackDefaultTransport) {
+            const { request: fallbackRequest } = fallbackDefaultTransport(opts);
             const receipt = (await fallbackRequest({
               ...req,
               method: "eth_getTransactionReceipt",
