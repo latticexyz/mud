@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
-import { simulateContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
+import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { useEffect, useRef, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
@@ -47,20 +47,14 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
       try {
         const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
         const encodedFieldValue = encodeField(fieldType, value);
-        const writeArgs = {
+
+        const txHash = await writeContract(wagmiConfig, {
           abi: IBaseWorldAbi,
           address: worldAddress as Hex,
           functionName: "setField",
           args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
           chainId,
-        } as const;
-
-        await simulateContract(wagmiConfig, {
-          ...writeArgs,
-          account: account.address,
         });
-
-        const txHash = await writeContract(wagmiConfig, writeArgs);
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
         if (receipt.status !== "success") {
           throw new Error("Transaction reverted. Please try again.");
