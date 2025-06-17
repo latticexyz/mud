@@ -117,8 +117,16 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                   options={monacoOptions}
                   language="sql"
                   onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
-                  onMount={(editor) => {
+                  onMount={(editor, monaco) => {
                     editorRef.current = editor;
+                    monaco.editor.defineTheme("custom-hc-black", {
+                      base: "hc-black" as const,
+                      inherit: true,
+                      rules: [{ token: "string.sql", foreground: "#C5947C" }],
+                      colors: {},
+                    });
+                    monaco.editor.setTheme("custom-hc-black");
+
                     editor.addAction({
                       id: "executeSQL",
                       label: "Execute SQL command",
