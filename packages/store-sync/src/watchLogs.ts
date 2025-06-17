@@ -30,56 +30,19 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
   let resumeBlock = fromBlock;
 
-  let pingTimer: ReturnType<typeof setTimeout> | undefined = undefined;
-  // how often to ping to keep socket alive
-  const pingInterval = 3000;
-  // how long to wait for ping response before we attempt to reconnect
-  const pingTimeout = 5000;
-
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
-    debug("logs$ subscribed");
+    debug("wiresaw_watchLogs subscribed, starting from", fromBlock);
 
     let client: SocketRpcClient<WebSocket>;
 
     async function setupClient(): Promise<void> {
-      debug("setupClient called");
-
-      // Buffer the live logs received until the gap from `startBlock` to `currentBlock` is closed
+      // Buffer the live logs received until the gap from `fromBlock` to `currentBlock` is closed
       let caughtUp = false;
       const logBuffer: StoreEventsLog[] = [];
 
-      client = await getWebSocketRpcClient(url, { keepAlive: false });
-      debug("got websocket rpc client");
-
-      async function ping(): Promise<void> {
-        try {
-          debug("pinging socket");
-          await client.requestAsync({ body: { method: "net_version" }, timeout: pingTimeout });
-        } catch (error) {
-          debug("ping failed, closing...", error);
-          client.close();
-        }
-      }
-
-      function schedulePing(): void {
-        debug("scheduling next ping");
-        pingTimer = setTimeout(() => ping().then(schedulePing), pingInterval);
-      }
-
-      schedulePing();
-
-      client.socket.addEventListener("error", (error) => {
-        debug("socket error, closing...", error);
-        client.close();
-      });
-
-      client.socket.addEventListener("close", async () => {
-        debug("socket close, setting up new client...");
-        clearTimeout(pingTimer);
-        setupClient().catch((error) => {
-          debug("error trying to setup new client", error);
-          subscriber.error(error);
-        });
+      client = await getWebSocketRpcClient(getUncachedUrl(url), {
+        keepAlive: true,
+        reconnect: { attempts: 100, delay: 1_000 },
       });
 
       // Start watching pending logs
@@ -94,31 +57,26 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       debug("got watchLogs subscription", subscriptionId);
 
       // Listen for wiresaw_watchLogs subscription
-      // Need to use low level methods since viem's socekt client only handles `eth_subscription` messages.
+      // Need to use low level methods since viem's socket client only handles `eth_subscription` messages.
       // (https://github.com/wevm/viem/blob/f81d497f2afc11b9b81a79057d1f797694b69793/src/utils/rpc/socket.ts#L178)
       client.socket.addEventListener("message", (message) => {
         const response = JSON.parse(message.data);
         if ("error" in response) {
-          debug("JSON-RPC error, returning error to subscriber");
-          subscriber.error(response.error);
+          debug("JSON-RPC error", response.error);
           return;
         }
 
         // Parse the logs from wiresaw_watchLogs
         if ("params" in response && response.params.subscription === subscriptionId) {
-          debug("parsing logs");
           const result: WatchLogsEvent = response.params.result;
           const formattedLogs = result.logs.map((log) => formatLog(log));
           const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
           const blockNumber = BigInt(result.blockNumber);
-          debug("got logs", parsedLogs, "for pending block", blockNumber);
           if (caughtUp) {
-            debug("handing off logs to subscriber");
             subscriber.next({ blockNumber, logs: parsedLogs });
             // Since this the event's block number corresponds to a pending block, we have to refetch this block in case of a restart
             resumeBlock = blockNumber;
           } else {
-            debug("buffering logs");
             logBuffer.push(...parsedLogs);
           }
           return;
@@ -127,11 +85,10 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
       // Catch up to the pending logs
       try {
-        debug("fetching initial logs");
         const initialLogs = await fetchInitialLogs({ client, address, fromBlock: resumeBlock, topics });
-        debug("got initial logs", initialLogs);
+        debug("got", initialLogs.logs.length, "initial logs");
         const logs = [...initialLogs.logs, ...logBuffer].sort(logSort);
-        debug("combining with log buffer", logs);
+        debug("combining with buffer of", logBuffer.length, "logs");
         const blockNumber = logs.at(-1)?.blockNumber ?? initialLogs.blockNumber;
         subscriber.next({ blockNumber, logs });
         // Since this the block number can correspond to a pending block, we have to refetch this block in case of a restart
@@ -149,9 +106,12 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
     });
 
     return () => {
-      debug("logs$ subscription closed");
-      clearTimeout(pingTimer);
-      client?.close();
+      debug("logs$ subscription closed, closing client");
+      try {
+        client?.close();
+      } catch (e) {
+        debug("failed to close client", e);
+      }
     };
   });
 
@@ -175,6 +135,8 @@ async function fetchInitialLogs({
     })
   ).result;
 
+  debug("fetching initial logs from", Number(fromBlock), "to", parseInt(latestBlockNumber));
+
   // Request all logs from `fromBlock` to the latest block number
   const rawInitialLogs: RpcLog[] = await client
     .requestAsync({
@@ -188,4 +150,10 @@ async function fetchInitialLogs({
   // Return all logs from `fromBlock` until the current pending block state as initial result
   const formattedLogs = rawInitialLogs.map((log) => formatLog(log));
   return { blockNumber: BigInt(latestBlockNumber), logs: parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs }) };
+}
+
+function getUncachedUrl(url: string): string {
+  const uncachedUrl = new URL(url);
+  uncachedUrl.searchParams.append(`__${Date.now()}`, "");
+  return uncachedUrl.toString();
 }
