@@ -124,7 +124,10 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           // Indexer value changed while we were editing, so we might
           // be at risk of overwriting a change from somewhere else.
           if (edit.initialValue !== String(value)) {
-            // TODO: throw or ask user to confirm overwrite
+            const confirm = window.confirm("Value changed while editing. Are you sure you want to overwrite it?");
+            if (!confirm) {
+              return;
+            }
           }
 
           write.mutate({ value: edit.value });
