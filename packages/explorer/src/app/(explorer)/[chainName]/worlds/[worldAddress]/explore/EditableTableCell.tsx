@@ -122,7 +122,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
 
           if (!edit) return;
           // Skip if our input hasn't changed from the indexer value
-          if (edit.value === String(value)) {
+          if (edit.value === String(write.status === "success" ? write.variables.value : value)) {
             setEdit(null);
             return;
           }
@@ -156,9 +156,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           <input
             className="w-fit bg-transparent px-2 py-4"
             value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
-            onFocus={(event) => {
-              setEdit({ value: event.currentTarget.value, initialValue: String(value) });
-            }}
+            onFocus={(event) => setEdit({ value: event.currentTarget.value, initialValue: String(value) })}
             onChange={(event) => {
               const nextValue = event.currentTarget.value;
               setEdit((state) => ({
