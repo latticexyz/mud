@@ -86,10 +86,10 @@ const chains = [
 
 const transports = {
   [mainnet.id]: http(),
-  [anvil.id]: http(),
-  [garnet.id]: wiresaw(),
-  [redstone.id]: wiresaw(),
-  [pyrope.id]: http(),
+  [anvilWithPaymaster.id]: http(),
+  [garnetWithPaymaster.id]: wiresaw(),
+  [redstoneWithPaymaster.id]: wiresaw(),
+  [pyropeWithPaymaster.id]: http(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
@@ -99,10 +99,10 @@ export const wagmiConfig = createWagmiConfig({
   chains,
   transports,
   pollingInterval: {
-    [anvil.id]: 500,
-    [garnet.id]: 2000,
-    [redstone.id]: 2000,
     [mainnet.id]: 2000,
-    [pyrope.id]: 2000,
+    [anvilWithPaymaster.id]: 500,
+    [garnetWithPaymaster.id]: 2000,
+    [redstoneWithPaymaster.id]: 2000,
+    [pyropeWithPaymaster.id]: 2000,
   },
 });
