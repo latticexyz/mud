@@ -75,7 +75,7 @@ export async function createStoreSync({
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  disableChunking,
+  enableHydrationChunking = true,
   ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
@@ -159,10 +159,7 @@ export async function createStoreSync({
         message: "Hydrating from snapshot",
       });
 
-      if (disableChunking) {
-        debug("hydrating all logs without chunking");
-        await storageAdapter({ blockNumber, logs });
-      } else {
+      if (!enableHydrationChunking) {
         // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
         // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
         //
@@ -184,6 +181,9 @@ export async function createStoreSync({
           // We wait for idle callback here to give rendering a chance to complete.
           await waitForIdle();
         }
+      } else {
+        debug("hydrating all logs without chunking");
+        await storageAdapter({ blockNumber, logs });
       }
 
       onProgress?.({
