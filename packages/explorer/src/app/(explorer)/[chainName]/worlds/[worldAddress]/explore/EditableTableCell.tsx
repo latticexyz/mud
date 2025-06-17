@@ -126,6 +126,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           if (edit.initialValue !== String(value)) {
             const confirm = window.confirm("Value changed while editing. Are you sure you want to overwrite it?");
             if (!confirm) {
+              setEdit(null);
               return;
             }
           }
