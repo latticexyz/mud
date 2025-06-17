@@ -120,7 +120,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                   onMount={(editor, monaco) => {
                     editorRef.current = editor;
                     monaco.editor.defineTheme("custom-vs-dark", {
-                      base: "hc-black",
+                      base: "vs-dark",
                       inherit: true,
                       rules: [{ token: "string.sql", foreground: "#C5947C" }],
                       colors: {
