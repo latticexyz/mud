@@ -47,34 +47,28 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
       try {
         const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
         const encodedFieldValue = encodeField(fieldType, value);
+        const writeArgs = {
+          abi: IBaseWorldAbi,
+          address: worldAddress as Hex,
+          functionName: "setField",
+          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
+          chainId,
+        } as const;
 
-        // Simulate the transaction first to get better error messages
         await simulateContract(wagmiConfig, {
+          ...writeArgs,
           account: account.address,
-          address: worldAddress as Hex,
-          abi: IBaseWorldAbi,
-          functionName: "setField",
-          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
-          chainId,
         });
 
-        const txHash = await writeContract(wagmiConfig, {
-          abi: IBaseWorldAbi,
-          address: worldAddress as Hex,
-          functionName: "setField",
-          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
-          chainId,
-        });
-
+        const txHash = await writeContract(wagmiConfig, writeArgs);
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-        console.log("receipt:", receipt);
         if (receipt.status !== "success") {
           throw new Error("Transaction reverted. Please try again.");
         }
 
         toast.success(
           <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
-            Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-4 w-4" />
+            Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-3 w-3" />
           </a>,
         );
         queryClient.invalidateQueries({

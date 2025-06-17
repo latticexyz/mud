@@ -196,7 +196,7 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
 
           toastId = toast.success(
             <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
-              Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-4 w-4" />
+              Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-3 w-3" />
             </a>,
           );
         }
