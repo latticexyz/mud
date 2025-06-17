@@ -1,4 +1,4 @@
-import { Chain, http, webSocket } from "viem";
+import { Chain, http } from "viem";
 import { anvil, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
@@ -52,11 +52,7 @@ const chains = [mainnet, garnetWithPaymaster, anvilWithPaymaster] as const satis
 const transports = {
   [mainnet.id]: http(),
   [anvil.id]: http(),
-  [garnet.id]: wiresaw({
-    wiresawTransport: webSocket(garnetWithPaymaster.rpcUrls.wiresaw.webSocket[0]),
-    fallbackBundlerTransport: http(garnetWithPaymaster.rpcUrls.bundler.http[0]),
-    fallbackDefaultTransport: http(garnetWithPaymaster.rpcUrls.default.http[0]),
-  }),
+  [garnet.id]: wiresaw(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({

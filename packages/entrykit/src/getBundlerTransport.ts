@@ -2,7 +2,7 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, createClient, fallback, http, keccak256, stringToHex, webSocket } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { userOpExecutor } from "./quarry/transports/userOpExecutor";
-import { wiresaw } from "@latticexyz/common/internal";
+import { getWiresawTransport, wiresaw } from "@latticexyz/common/internal";
 
 export function getBundlerTransport(chain: Chain) {
   const ethRpcUrl = chain.rpcUrls.default.http[0];
@@ -36,19 +36,4 @@ export function getBundlerTransport(chain: Chain) {
   }
 
   throw new Error(`Chain ${chain.id} config did not include a bundler RPC URL.`);
-}
-
-function getWiresawTransport(chain: Chain) {
-  const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
-  const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
-
-  if (wiresawWebSocketUrl) {
-    return wiresawHttpUrl
-      ? fallback([webSocket(wiresawWebSocketUrl), http(wiresawHttpUrl)])
-      : webSocket(wiresawWebSocketUrl);
-  }
-
-  if (wiresawHttpUrl) {
-    return http(wiresawHttpUrl);
-  }
 }

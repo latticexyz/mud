@@ -1,4 +1,4 @@
-import { EIP1193RequestFn, Hex, RpcTransactionReceipt, Transport } from "viem";
+import { Chain, EIP1193RequestFn, fallback, Hex, http, RpcTransactionReceipt, Transport, webSocket } from "viem";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
 
@@ -16,12 +16,13 @@ type WiresawOptions<transport extends Transport> = {
   fallbackDefaultTransport?: Transport;
 };
 
-export function wiresaw<const wiresawTransport extends Transport>({
-  wiresawTransport,
-  fallbackBundlerTransport,
-  fallbackDefaultTransport,
-}: WiresawOptions<wiresawTransport>): wiresawTransport {
+export function wiresaw<const wiresawTransport extends Transport>(
+  transports?: WiresawOptions<wiresawTransport>,
+): wiresawTransport {
   return ((opts) => {
+    const { wiresawTransport, fallbackBundlerTransport, fallbackDefaultTransport } =
+      transports ?? getDefaultTransports(opts.chain);
+
     const { request: wiresawRequest, ...rest } = wiresawTransport(opts);
 
     let chainId: Hex | null = null;
@@ -151,4 +152,37 @@ export function wiresaw<const wiresawTransport extends Transport>({
       },
     };
   }) as wiresawTransport;
+}
+
+function getWiresawBaseTransport(chain: Chain): Transport | undefined {
+  const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
+  const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
+
+  if (wiresawWebSocketUrl) {
+    return wiresawHttpUrl
+      ? fallback([webSocket(wiresawWebSocketUrl), http(wiresawHttpUrl)])
+      : webSocket(wiresawWebSocketUrl);
+  }
+
+  if (wiresawHttpUrl) {
+    return http(wiresawHttpUrl);
+  }
+}
+
+function getDefaultTransports(chain?: Chain): WiresawOptions<Transport> {
+  if (!chain) {
+    throw new Error("No chain or transports provided");
+  }
+
+  const wiresawTransport = getWiresawBaseTransport(chain);
+  if (!wiresawTransport) {
+    throw new Error("Provided chain does not support wiresaw");
+  }
+
+  const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
+  return {
+    wiresawTransport,
+    fallbackBundlerTransport: bundlerHttpUrl ? http(bundlerHttpUrl) : undefined,
+    fallbackDefaultTransport: http(),
+  };
 }
