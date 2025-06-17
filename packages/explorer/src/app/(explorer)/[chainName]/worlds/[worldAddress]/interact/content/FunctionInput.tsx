@@ -84,6 +84,7 @@ export function FunctionInput({ input, index }: Props) {
                     value={field.value}
                     onChange={(evt) => handleChange(evt.target.value)}
                     className="font-mono text-sm"
+                    type={input.type.startsWith("uint") || input.type.startsWith("int") ? "number" : "text"}
                   />
                 )}
               </FormControl>
