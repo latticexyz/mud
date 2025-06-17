@@ -1,7 +1,16 @@
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { TDataRow } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
+
+function DefaultCell({ value }: { value: unknown }) {
+  return (
+    <div className="px-2 py-4">
+      {typeof value === "boolean" ? <Checkbox className="cursor-not-allowed" checked={value} /> : value?.toString()}
+    </div>
+  );
+}
 
 export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
   cell: ({ getValue, row, column, table }: CellContext<TDataRow, unknown>) => {
@@ -10,12 +19,15 @@ export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
     const isReadOnly = table.options.meta?.isReadOnly;
     const blockHeight = table.options.meta?.blockHeight;
 
-    if (!tableConfig || isReadOnly) return value;
+    if (!tableConfig || isReadOnly) {
+      return <DefaultCell value={value} />;
+    }
+
     try {
       const name = column.id;
       const keySchema = getKeySchema(tableConfig);
       if (!table || Object.keys(keySchema).includes(name)) {
-        return <div className="px-2 py-4">{value?.toString()}</div>;
+        return <DefaultCell value={value} />;
       }
 
       const keyTuple = getKeyTuple(tableConfig, row.original as never);
@@ -29,7 +41,7 @@ export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
         />
       );
     } catch (e) {
-      return <div className="px-2 py-4">{value?.toString()}</div>;
+      return <DefaultCell value={value} />;
     }
   },
 };
