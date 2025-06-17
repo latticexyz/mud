@@ -1,6 +1,7 @@
-import { Chain, EIP1193RequestFn, fallback, Hex, http, RpcTransactionReceipt, Transport, webSocket } from "viem";
+import { Chain, EIP1193RequestFn, Hex, http, RpcTransactionReceipt, Transport } from "viem";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
+import { chainTransport } from "./chainTransport";
 
 type WiresawSendUserOperationResult = {
   txHash: Hex;
@@ -154,27 +155,12 @@ export function wiresaw<const wiresawTransport extends Transport>(
   }) as wiresawTransport;
 }
 
-function getWiresawBaseTransport(chain: Chain): Transport | undefined {
-  const wiresawWebSocketUrl = chain.rpcUrls.wiresaw?.webSocket?.[0];
-  const wiresawHttpUrl = chain.rpcUrls.wiresaw?.http[0];
-
-  if (wiresawWebSocketUrl) {
-    return wiresawHttpUrl
-      ? fallback([webSocket(wiresawWebSocketUrl), http(wiresawHttpUrl)])
-      : webSocket(wiresawWebSocketUrl);
-  }
-
-  if (wiresawHttpUrl) {
-    return http(wiresawHttpUrl);
-  }
-}
-
 function getDefaultTransports(chain?: Chain): WiresawOptions<Transport> {
   if (!chain) {
     throw new Error("No chain or transports provided");
   }
 
-  const wiresawTransport = getWiresawBaseTransport(chain);
+  const wiresawTransport = chainTransport(chain.rpcUrls.wiresaw);
   if (!wiresawTransport) {
     throw new Error("Provided chain does not support wiresaw");
   }

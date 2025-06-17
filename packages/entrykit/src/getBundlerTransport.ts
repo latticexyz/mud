@@ -5,13 +5,12 @@ import { userOpExecutor } from "./quarry/transports/userOpExecutor";
 import { wiresaw } from "@latticexyz/common/internal";
 
 export function getBundlerTransport(chain: Chain) {
-  const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
-
   if ("wiresaw" in chain.rpcUrls) {
     return wiresaw();
   }
 
   // TODO: bundler websocket
+  const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
   if (bundlerHttpUrl) {
     return http(bundlerHttpUrl);
   }
