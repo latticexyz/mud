@@ -2,8 +2,10 @@ import { CheckIcon, LoaderIcon } from "lucide-react";
 import { AbiParameter, isAddress } from "viem";
 import { useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { Checkbox } from "../../../../../../../components/ui/Checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../../components/ui/Form";
 import { Input } from "../../../../../../../components/ui/Input";
+import { Textarea } from "../../../../../../../components/ui/Textarea";
 import { useEnsAddress } from "./useEnsAddress";
 
 type Props = {
@@ -60,16 +62,30 @@ export function FunctionInput({ input, index }: Props) {
       name={`inputs.${index}`}
       render={({ field }) => (
         <FormItem className="flex flex-col gap-2">
-          <div className="flex items-start gap-4">
-            {input.name && <FormLabel className="shrink-0 pt-2 font-mono text-sm opacity-70">{input.name}</FormLabel>}
+          <div className="flex items-center gap-4">
+            {input.name && <FormLabel className="shrink-0 font-mono text-sm opacity-70">{input.name}</FormLabel>}
             <div className="flex-1">
               <FormControl>
-                <Input
-                  placeholder={getInputPlaceholder(input)}
-                  value={field.value}
-                  onChange={(evt) => handleChange(evt.target.value)}
-                  className="font-mono text-sm"
-                />
+                {input.type === "string" ? (
+                  <Textarea
+                    placeholder={getInputPlaceholder(input)}
+                    value={field.value}
+                    onChange={(evt) => handleChange(evt.target.value)}
+                    className="font-mono text-sm"
+                  />
+                ) : input.type === "bool" ? (
+                  <Checkbox
+                    checked={field.value === "true"}
+                    onCheckedChange={(checked) => handleChange(checked ? "true" : "false")}
+                  />
+                ) : (
+                  <Input
+                    placeholder={getInputPlaceholder(input)}
+                    value={field.value}
+                    onChange={(evt) => handleChange(evt.target.value)}
+                    className="font-mono text-sm"
+                  />
+                )}
               </FormControl>
               <FormMessage />
 
