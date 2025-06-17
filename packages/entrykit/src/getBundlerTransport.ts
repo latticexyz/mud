@@ -2,20 +2,13 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, createClient, fallback, http, keccak256, stringToHex, webSocket } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { userOpExecutor } from "./quarry/transports/userOpExecutor";
-import { getWiresawTransport, wiresaw } from "@latticexyz/common/internal";
+import { wiresaw } from "@latticexyz/common/internal";
 
 export function getBundlerTransport(chain: Chain) {
-  const ethRpcUrl = chain.rpcUrls.default.http[0];
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
 
-  const wiresawTransport = getWiresawTransport(chain);
-
-  if (wiresawTransport) {
-    return wiresaw({
-      wiresawTransport,
-      fallbackBundlerTransport: bundlerHttpUrl ? http(bundlerHttpUrl) : undefined,
-      fallbackDefaultTransport: http(),
-    });
+  if ("wiresaw" in chain.rpcUrls) {
+    return wiresaw();
   }
 
   // TODO: bundler websocket
@@ -31,7 +24,7 @@ export function getBundlerTransport(chain: Chain) {
         account: privateKeyToAccount(keccak256(stringToHex("local user op executor"))),
         pollingInterval: 10,
       }).extend(transactionQueue()),
-      fallbackDefaultTransport: http(ethRpcUrl),
+      fallbackDefaultTransport: http(),
     });
   }
 
