@@ -1,4 +1,4 @@
-import { LoaderIcon } from "lucide-react";
+import { ExternalLinkIcon, LoaderIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
@@ -18,6 +18,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { useChain } from "../../../../hooks/useChain";
+import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
 
 type Props = {
   name: string;
@@ -56,11 +57,17 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
         if (receipt.status !== "success") {
-          // TODO: handle on-chain revert reason
           throw new Error("Transaction reverted");
         }
 
-        toast.success(`Transaction successful with hash: ${txHash}`);
+        toast.success(
+          <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
+            Transaction successful with hash:{" "}
+            <span className="underline">
+              {txHash} <ExternalLinkIcon className="inline-block h-4 w-4" />
+            </span>
+          </a>,
+        );
         queryClient.invalidateQueries({
           queryKey: [
             "balance",
