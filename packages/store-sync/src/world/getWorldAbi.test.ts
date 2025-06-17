@@ -1,7 +1,7 @@
 import { createTestClient, http, parseAbi } from "viem";
 import { foundry } from "viem/chains";
 import { describe, expect, it, vi } from "vitest";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
 import { mockError, mockMetadata, mockWorldFn, mockWorldFn2 } from "./test/mocks";
 
 vi.doMock("./getFunctions", () => {
