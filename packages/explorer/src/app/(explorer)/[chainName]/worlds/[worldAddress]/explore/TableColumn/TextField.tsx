@@ -26,13 +26,17 @@ function ReadonlyTextField(props: ReadOnlyProps) {
 }
 
 function EditableTextField(props: EditableProps) {
-  const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
+  const { name, value, tableConfig, keyTuple, disabled } = props;
   const formRef = useRef<HTMLFormElement>(null);
   const [edit, setEdit] = useState<{ value: string; initialValue: string } | null>(null);
-  const write = useSetFieldMutation<"string">({
-    blockHeight,
-    reset: () => setEdit(null),
-  });
+  const write = useSetFieldMutation<"string">();
+
+  // // When the indexer has picked up the successful write, we can clear the write result
+  // useEffect(() => {
+  //   if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
+  //     write.reset();
+  //   }
+  // }, [write, blockHeight]);
 
   const latestValue = write.status === "success" ? write.variables.value : value;
   return (

@@ -26,8 +26,8 @@ function ReadonlyBooleanField(props: ReadOnlyProps) {
 }
 
 function EditableBooleanField(props: EditableProps) {
-  const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
-  const write = useSetFieldMutation<"bool">({ blockHeight });
+  const { name, value, tableConfig, keyTuple, disabled } = props;
+  const write = useSetFieldMutation<"bool">();
 
   return (
     <Checkbox

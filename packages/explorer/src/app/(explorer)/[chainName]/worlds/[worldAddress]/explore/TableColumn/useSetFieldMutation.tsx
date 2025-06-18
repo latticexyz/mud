@@ -5,7 +5,6 @@ import { Hex } from "viem";
 import { useConfig } from "wagmi";
 import { useAccount } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { useEffect } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -15,7 +14,7 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 
@@ -26,19 +25,18 @@ type SetFieldParams<T extends ValueSchema[string]> = {
   value: T extends "bool" ? boolean : string;
 };
 
-type Props = {
-  blockHeight: number;
-  reset?: () => void;
+type Props<T extends ValueSchema[string]> = {
+  onSettled?: UseMutationOptions<unknown, Error, SetFieldParams<T>, unknown>["onSettled"];
 };
 
-export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight, reset }: Props) {
+export function useSetFieldMutation<T extends ValueSchema[string]>({ onSettled }: Props<T> = {}) {
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
 
-  const write = useMutation({
+  return useMutation({
     mutationFn: async ({ tableConfig, keyTuple, fieldName, value }: SetFieldParams<T>) => {
       const valueSchema = getValueSchema(tableConfig);
       const fieldType = valueSchema?.[fieldName as never]?.type;
@@ -74,10 +72,6 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
 
         return { txHash, receipt };
       } catch (error) {
-        if (reset) {
-          reset();
-        }
-
         console.error("Error:", error);
         toast.error(
           error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
@@ -96,20 +90,8 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
             },
           ],
         });
-
-        if (reset) {
-          reset();
-        }
       }
     },
+    onSettled,
   });
-
-  // When the indexer has picked up the successful write, we can clear the write result
-  useEffect(() => {
-    if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
-      write.reset();
-    }
-  }, [write, blockHeight]);
-
-  return write;
 }
