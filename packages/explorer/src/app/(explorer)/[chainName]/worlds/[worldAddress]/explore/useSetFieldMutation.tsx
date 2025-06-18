@@ -2,9 +2,9 @@ import { ExternalLinkIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
-import { useAccount, useConfig } from "wagmi";
+import { useConfig } from "wagmi";
+import { useAccount } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
   ValueSchema,
@@ -14,41 +14,35 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChain } from "../../../../hooks/useChain";
-import { TDataRow } from "../../../../queries/useTableDataQuery";
 import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
-import { BooleanField } from "./BooleanField";
-import { TextField } from "./TextField";
 
-type Props = {
-  name: string;
-  value: TDataRow[string];
+type SetFieldParams<T extends ValueSchema[string]> = {
   table: Table;
   keyTuple: readonly Hex[];
+  fieldName: string;
+  value: T extends "bool" ? boolean : string;
 };
 
-export function EditableTableCell({ name, table, keyTuple, value }: Props) {
-  const { openConnectModal } = useConnectModal();
-  const account = useAccount();
-  const valueSchema = getValueSchema(table);
-  const { worldAddress } = useParams();
-  const fieldType = valueSchema?.[name as never]?.type;
+export function useSetFieldMutation<T extends ValueSchema[string]>() {
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
+  const { worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const account = useAccount();
 
-  const write = useMutation({
-    mutationKey: ["setField", worldAddress, table.tableId, keyTuple, name],
-    mutationFn: async ({ value }: { value: string }) => {
+  return useMutation({
+    mutationFn: async ({ table, keyTuple, fieldName, value }: SetFieldParams<T>) => {
+      const valueSchema = getValueSchema(table);
+      const fieldType = valueSchema?.[fieldName as never]?.type;
       if (!fieldType) throw new Error("Field type not found");
 
       let toastId;
       try {
         toastId = toast.loading("Submitting transaction…");
 
-        const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
+        const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), fieldName);
         const encodedFieldValue = encodeField(fieldType, value);
 
         const txHash = await writeContract(wagmiConfig, {
@@ -83,8 +77,6 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
 
         return { txHash, receipt };
       } catch (error) {
-        setEdit(null);
-
         console.error("Error:", error);
         toast.error(
           error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
@@ -96,33 +88,4 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
       }
     },
   });
-
-  const [edit, setEdit] = useState<{
-    value: string;
-    initialValue: string;
-  } | null>(null);
-
-  if (!account.isConnected) {
-    return (
-      <div className="cursor-pointer px-2 py-4" onClick={() => openConnectModal?.()}>
-        {String(value)}
-      </div>
-    );
-  }
-
-  if (fieldType === "bool") {
-    return (
-      <BooleanField
-        name={name}
-        value={Boolean(value)}
-        table={table}
-        keyTuple={keyTuple}
-        disabled={!account.isConnected}
-      />
-    );
-  }
-
-  return (
-    <TextField name={name} value={String(value)} table={table} keyTuple={keyTuple} disabled={!account.isConnected} />
-  );
 }
