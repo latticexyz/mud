@@ -28,21 +28,20 @@ function ReadonlyBooleanField(props: ReadOnlyProps) {
 
 function EditableBooleanField(props: EditableProps) {
   const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
-  const write = useSetFieldMutation<"bool">();
+  const write = useSetFieldMutation<"bool">({
+    tableConfig,
+    keyTuple,
+    fieldName: name,
+  });
   useTrackPendingValue(write, blockHeight);
 
   return (
     <Checkbox
-      className={cn("ml-2", write.isPending && "cursor-wait")}
+      className={cn("ml-2", write.isPending ? "cursor-wait" : "")}
       checked={write.status === "success" || write.status === "pending" ? write.variables.value : value}
       onCheckedChange={(checked) => {
         if (checked === "indeterminate") return;
-        write.mutate({
-          tableConfig,
-          keyTuple,
-          fieldName: name,
-          value: checked,
-        });
+        write.mutate({ value: checked });
       }}
       disabled={disabled || write.isPending}
     />

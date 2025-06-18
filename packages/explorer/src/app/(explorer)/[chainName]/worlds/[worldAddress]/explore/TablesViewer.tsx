@@ -147,7 +147,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       tableConfig: table,
       valueSchema: table ? getValueSchema(table) : undefined,
       keySchema: table ? getKeySchema(table) : undefined,
-      isReadOnly,
+      readOnly: isReadOnly,
     },
   });
 

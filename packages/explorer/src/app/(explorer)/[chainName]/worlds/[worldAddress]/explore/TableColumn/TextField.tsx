@@ -30,7 +30,11 @@ function EditableTextField(props: EditableProps) {
   const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
   const formRef = useRef<HTMLFormElement>(null);
   const [edit, setEdit] = useState<{ value: string; initialValue: string } | null>(null);
-  const write = useSetFieldMutation<"string">();
+  const write = useSetFieldMutation<"string">({
+    tableConfig,
+    keyTuple,
+    fieldName: name,
+  });
   useTrackPendingValue(write, blockHeight);
 
   const latestValue = write.status === "success" ? write.variables.value : value;
@@ -62,12 +66,14 @@ function EditableTextField(props: EditableProps) {
           }
         }
 
-        write.mutate({
-          tableConfig,
-          keyTuple,
-          fieldName: name,
-          value: edit.value,
-        });
+        write.mutate(
+          { value: edit.value },
+          {
+            onSettled: () => {
+              setEdit(null);
+            },
+          },
+        );
       }}
     >
       <input

@@ -14,22 +14,21 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 
 type SetFieldParams<T extends ValueSchema[string]> = {
-  tableConfig: Table;
-  keyTuple: readonly Hex[];
-  fieldName: string;
   value: T extends "bool" ? boolean : string;
 };
 
-type Props<T extends ValueSchema[string]> = {
-  onSettled?: UseMutationOptions<unknown, Error, SetFieldParams<T>, unknown>["onSettled"];
+type Props = {
+  tableConfig: Table;
+  keyTuple: readonly Hex[];
+  fieldName: string;
 };
 
-export function useSetFieldMutation<T extends ValueSchema[string]>({ onSettled }: Props<T> = {}) {
+export function useSetFieldMutation<T extends ValueSchema[string]>({ tableConfig, keyTuple, fieldName }: Props) {
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
@@ -37,7 +36,8 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ onSettled }
   const account = useAccount();
 
   return useMutation({
-    mutationFn: async ({ tableConfig, keyTuple, fieldName, value }: SetFieldParams<T>) => {
+    mutationKey: ["setField", tableConfig.tableId, keyTuple, fieldName],
+    mutationFn: async ({ value }: SetFieldParams<T>) => {
       const valueSchema = getValueSchema(tableConfig);
       const fieldType = valueSchema?.[fieldName as never]?.type;
       if (!fieldType) throw new Error("Field type not found");
@@ -92,6 +92,5 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ onSettled }
         });
       }
     },
-    onSettled,
   });
 }
