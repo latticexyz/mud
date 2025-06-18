@@ -24,6 +24,21 @@ const getInputPlaceholder = (input: AbiParameter): string => {
   return `[${componentsString}]`;
 };
 
+type TextFieldProps = {
+  fieldType: string;
+  className?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+};
+
+function TextField({ fieldType, ...props }: TextFieldProps) {
+  if (fieldType === "string") {
+    return <Input {...props} />;
+  }
+  return <Textarea {...props} />;
+}
+
 export function FunctionInput({ input, index }: Props) {
   const form = useFormContext();
   const currentValue = form.watch(`inputs.${index}`);
@@ -65,22 +80,15 @@ export function FunctionInput({ input, index }: Props) {
             {input.name && <FormLabel className="shrink-0 font-mono text-sm opacity-70">{input.name}</FormLabel>}
             <div className="flex-1">
               <FormControl>
-                {input.type === "string" ? (
-                  <Textarea
-                    placeholder={getInputPlaceholder(input)}
-                    value={field.value}
-                    onChange={(evt) => handleChange(evt.target.value)}
-                    className="font-mono text-sm"
-                  />
-                ) : (
-                  <Input
-                    placeholder={getInputPlaceholder(input)}
-                    value={field.value}
-                    onChange={(evt) => handleChange(evt.target.value)}
-                    className="font-mono text-sm"
-                    type={input.type.startsWith("uint") || input.type.startsWith("int") ? "number" : "text"}
-                  />
-                )}
+                <TextField
+                  className="font-mono text-sm"
+                  placeholder={getInputPlaceholder(input)}
+                  fieldType={input.type}
+                  value={field.value}
+                  onChange={(evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                    handleChange(evt.target.value)
+                  }
+                />
               </FormControl>
               <FormMessage />
 
