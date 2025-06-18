@@ -1,4 +1,4 @@
-import { ExternalLinkIcon, LoaderIcon } from "lucide-react";
+import { ExternalLinkIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
@@ -16,13 +16,13 @@ import {
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { useChain } from "../../../../hooks/useChain";
+import { TDataRow } from "../../../../queries/useTableDataQuery";
 import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
 
 type Props = {
   name: string;
-  value: unknown;
+  value: TDataRow[string];
   table: Table;
   keyTuple: readonly Hex[];
   blockHeight?: number;
@@ -41,10 +41,13 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
 
   const write = useMutation({
     mutationKey: ["setField", worldAddress, table.tableId, keyTuple, name],
-    mutationFn: async ({ value }: { value: string | boolean }) => {
+    mutationFn: async ({ value }: { value: string }) => {
       if (!fieldType) throw new Error("Field type not found");
 
+      let toastId;
       try {
+        toastId = toast.loading("Submitting transaction…");
+
         const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
         const encodedFieldValue = encodeField(fieldType, value);
 
@@ -64,6 +67,9 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
           <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
             Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-3 w-3" />
           </a>,
+          {
+            id: toastId,
+          },
         );
         queryClient.invalidateQueries({
           queryKey: [
@@ -77,9 +83,14 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
 
         return { txHash, receipt };
       } catch (error) {
+        setEdit(null);
+
         console.error("Error:", error);
         toast.error(
           error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
+          {
+            id: toastId,
+          },
         );
         throw error;
       }
@@ -98,6 +109,7 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
     initialValue: string;
   } | null>(null);
 
+  const latestValue = write.status === "success" ? write.variables.value : value ? String(value) : "";
   return (
     <div className="w-full">
       <form
@@ -109,70 +121,52 @@ export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 
             return openConnectModal?.();
           }
 
-          if (fieldType === "bool") {
-            write.mutate({ value: write.status === "success" ? !write.variables.value : !value });
+          const formData = new FormData(event.currentTarget);
+          const nextValue = formData.get(name);
+          if (typeof nextValue !== "string") {
             return;
           }
 
-          if (!edit) return;
           // Skip if our input hasn't changed from the indexer value
-          if (edit.value === String(write.status === "success" ? write.variables.value : value)) {
-            setEdit(null);
+          if (nextValue === latestValue) {
             return;
           }
 
           // Indexer value changed while we were editing, so we might
           // be at risk of overwriting a change from somewhere else.
-          if (edit.initialValue !== String(value)) {
+          if (edit?.initialValue !== latestValue) {
             const confirm = window.confirm("Value changed while editing. Are you sure you want to overwrite it?");
             if (!confirm) {
-              setEdit(null);
               return;
             }
           }
 
-          write.mutate({ value: edit.value });
-          setEdit(null);
+          write.mutate({ value: nextValue });
         }}
+        aria-label={`Edit ${name} field`}
       >
-        {fieldType === "bool" ? (
-          <div className="flex items-center gap-1 px-2 py-4">
-            <Checkbox
-              id={`checkbox-${name}`}
-              checked={write.status === "pending" || write.status === "success" ? !!write.variables.value : !!value}
-              onCheckedChange={() => formRef.current?.requestSubmit()}
-              disabled={!account.isConnected || write.status === "pending"}
-            />
-            {write.status === "pending" && <LoaderIcon className="h-4 w-4 animate-spin" />}
-          </div>
-        ) : write.status === "pending" ? (
-          <div className="flex items-center gap-1 px-2">
-            {String(write.variables.value)}
-            <LoaderIcon className="h-4 w-4 animate-spin" />
-          </div>
-        ) : (
-          <input
-            className="w-fit bg-transparent px-2 py-4"
-            value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : String(value)}
-            onFocus={(event) => setEdit({ value: event.currentTarget.value, initialValue: String(value) })}
-            onChange={(event) => {
-              const nextValue = event.currentTarget.value;
-              setEdit((state) => ({
-                value: nextValue,
-                initialValue: state?.initialValue ?? String(value),
-              }));
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.currentTarget.blur();
-              } else if (event.key === "Escape") {
-                setEdit(null);
-              }
-            }}
-            onBlur={() => formRef.current?.requestSubmit()}
-            disabled={!account.isConnected}
-          />
-        )}
+        <input
+          className="bg-transparent px-2 py-4"
+          name={name}
+          value={edit ? edit.value : latestValue}
+          onFocus={(event) => setEdit({ value: event.currentTarget.value, initialValue: latestValue })}
+          onChange={(event) => {
+            const nextValue = event.currentTarget.value;
+            setEdit((state) => ({
+              value: nextValue,
+              initialValue: state?.initialValue ?? latestValue,
+            }));
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.currentTarget.blur();
+            } else if (event.key === "Escape") {
+              setEdit(null);
+            }
+          }}
+          onBlur={() => formRef.current?.requestSubmit()}
+          disabled={!account.isConnected}
+        />
       </form>
     </div>
   );

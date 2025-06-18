@@ -12,7 +12,7 @@ type Props = {
   isLiveQuery: boolean;
 };
 
-export type TDataRow = Record<string, unknown>;
+export type TDataRow = Record<string, string | boolean | undefined>;
 export type TData = {
   columns: string[];
   rows: TDataRow[];
