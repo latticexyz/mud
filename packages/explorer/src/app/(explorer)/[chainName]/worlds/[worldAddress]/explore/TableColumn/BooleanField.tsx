@@ -1,26 +1,37 @@
 import { Hex } from "viem";
 import { Table } from "@latticexyz/config";
 import { Checkbox } from "../../../../../../../components/ui/Checkbox";
+import { cn } from "../../../../../../../utils";
 import { useSetFieldMutation } from "./useSetFieldMutation";
 
-type Props = {
+type EditableProps = {
   name: string;
   value: boolean;
   tableConfig: Table;
   keyTuple: readonly Hex[];
   blockHeight: number;
   disabled?: boolean;
+  isReadOnly?: false;
 };
 
-export function ReadonlyBooleanField({ value }: { value: boolean }) {
-  return <Checkbox className="ml-2" checked={value} disabled />;
+type ReadOnlyProps = {
+  value: boolean;
+  isReadOnly: true;
+};
+
+type Props = EditableProps | ReadOnlyProps;
+
+function ReadonlyBooleanField(props: ReadOnlyProps) {
+  return <Checkbox className="ml-2" checked={props.value} disabled />;
 }
 
-export function BooleanField({ name, value, tableConfig, keyTuple, blockHeight, disabled }: Props) {
+function EditableBooleanField(props: EditableProps) {
+  const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
   const write = useSetFieldMutation<"bool">({ blockHeight });
+
   return (
     <Checkbox
-      className="ml-2"
+      className={cn("ml-2", write.isPending && "cursor-wait")}
       checked={write.status === "success" || write.status === "pending" ? write.variables.value : value}
       onCheckedChange={(checked) => {
         if (checked === "indeterminate") return;
@@ -34,4 +45,12 @@ export function BooleanField({ name, value, tableConfig, keyTuple, blockHeight, 
       disabled={disabled || write.isPending}
     />
   );
+}
+
+export function BooleanField(props: Props) {
+  if (props.isReadOnly) {
+    return <ReadonlyBooleanField {...props} />;
+  }
+
+  return <EditableBooleanField {...props} />;
 }

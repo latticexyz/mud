@@ -1,17 +1,8 @@
-import { AbiType } from "@latticexyz/config";
 import { getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { TDataRow } from "../../../../../queries/useTableDataQuery";
-import { ReadonlyBooleanField } from "./BooleanField";
 import { EditableTableColumn } from "./EditableTableColumn";
-import { ReadonlyTextField } from "./TextField";
-
-const TableColumn = ({ type = "string", value }: { type?: AbiType; value: unknown }) => {
-  if (type === "bool") {
-    return <ReadonlyBooleanField value={value as boolean} />;
-  }
-  return <ReadonlyTextField value={value as string} />;
-};
+import { TableColumn } from "./TableColumn";
 
 export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
   cell: ({ table, column, row, getValue }: CellContext<TDataRow, unknown>) => {
