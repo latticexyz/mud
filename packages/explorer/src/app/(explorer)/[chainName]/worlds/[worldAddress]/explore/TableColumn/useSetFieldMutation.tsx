@@ -5,7 +5,7 @@ import { Hex } from "viem";
 import { useConfig } from "wagmi";
 import { useAccount } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { Table } from "@latticexyz/config";
+import { AbiType, Table } from "@latticexyz/config";
 import {
   ValueSchema,
   encodeField,
@@ -28,7 +28,7 @@ type Props = {
   fieldName: string;
 };
 
-export function useSetFieldMutation<T>({ tableConfig, keyTuple, fieldName }: Props) {
+export function useSetFieldMutation<T extends AbiType>({ tableConfig, keyTuple, fieldName }: Props) {
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
@@ -37,7 +37,7 @@ export function useSetFieldMutation<T>({ tableConfig, keyTuple, fieldName }: Pro
 
   return useMutation({
     mutationKey: ["setField", tableConfig.tableId, keyTuple, fieldName],
-    mutationFn: async ({ value }: SetFieldParams<T extends ValueSchema[string] ? T : never>) => {
+    mutationFn: async ({ value }: SetFieldParams<T>) => {
       const valueSchema = getValueSchema(tableConfig);
       const fieldType = valueSchema?.[fieldName as never]?.type;
       if (!fieldType) throw new Error("Field type not found");
