@@ -2,7 +2,6 @@ import { CheckIcon, LoaderIcon } from "lucide-react";
 import { AbiParameter, isAddress } from "viem";
 import { useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { Checkbox } from "../../../../../../../components/ui/Checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../../components/ui/Form";
 import { Input } from "../../../../../../../components/ui/Input";
 import { Textarea } from "../../../../../../../components/ui/Textarea";
@@ -72,11 +71,6 @@ export function FunctionInput({ input, index }: Props) {
                     value={field.value}
                     onChange={(evt) => handleChange(evt.target.value)}
                     className="font-mono text-sm"
-                  />
-                ) : input.type === "bool" ? (
-                  <Checkbox
-                    checked={field.value === "true"}
-                    onCheckedChange={(checked) => handleChange(checked ? "true" : "false")}
                   />
                 ) : (
                   <Input
