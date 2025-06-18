@@ -18,7 +18,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChain } from "../../../../../hooks/useChain";
 import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 
-type SetFieldParams<T extends ValueSchema[string]> = {
+type SetFieldParams<T> = {
   value: T extends "bool" ? boolean : string;
 };
 
@@ -37,7 +37,7 @@ export function useSetFieldMutation<T>({ tableConfig, keyTuple, fieldName }: Pro
 
   return useMutation({
     mutationKey: ["setField", tableConfig.tableId, keyTuple, fieldName],
-    mutationFn: async ({ value }: SetFieldParams<T>) => {
+    mutationFn: async ({ value }: SetFieldParams<T extends ValueSchema[string] ? T : never>) => {
       const valueSchema = getValueSchema(tableConfig);
       const fieldType = valueSchema?.[fieldName as never]?.type;
       if (!fieldType) throw new Error("Field type not found");
