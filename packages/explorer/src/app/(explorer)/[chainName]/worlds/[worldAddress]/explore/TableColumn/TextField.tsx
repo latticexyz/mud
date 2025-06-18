@@ -101,6 +101,5 @@ export function TextField(props: Props) {
   if (props.isReadOnly) {
     return <ReadonlyTextField {...props} />;
   }
-
   return <EditableTextField {...props} />;
 }

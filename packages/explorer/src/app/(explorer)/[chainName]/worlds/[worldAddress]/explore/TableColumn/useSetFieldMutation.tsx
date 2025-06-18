@@ -71,19 +71,6 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
             id: toastId,
           },
         );
-        queryClient.invalidateQueries({
-          queryKey: [
-            "balance",
-            {
-              address: account.address,
-              chainId,
-            },
-          ],
-        });
-
-        if (reset) {
-          reset();
-        }
 
         return { txHash, receipt };
       } catch (error) {
@@ -99,6 +86,20 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
           },
         );
         throw error;
+      } finally {
+        queryClient.invalidateQueries({
+          queryKey: [
+            "balance",
+            {
+              address: account.address,
+              chainId,
+            },
+          ],
+        });
+
+        if (reset) {
+          reset();
+        }
       }
     },
   });

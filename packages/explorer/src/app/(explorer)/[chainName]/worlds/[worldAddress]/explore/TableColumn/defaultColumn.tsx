@@ -7,12 +7,13 @@ import { TableColumn } from "./TableColumn";
 export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
   cell: ({ table, column, row, getValue }: CellContext<TDataRow, unknown>) => {
     const name = column.id;
-    const value = getValue<TDataRow[string]>(); // TODO: can types be tightened?
-    const tableConfig = table.options.meta?.tableConfig;
-    const isReadOnly = table.options.meta?.isReadOnly;
-    const blockHeight = table.options.meta?.blockHeight;
-    const valueSchema = table.options.meta?.valueSchema;
-    const keySchema = table.options.meta?.keySchema;
+    const value = getValue<TDataRow[string]>();
+    const meta = table.options.meta;
+    const tableConfig = meta?.tableConfig;
+    const isReadOnly = meta?.isReadOnly;
+    const blockHeight = meta?.blockHeight;
+    const valueSchema = meta?.valueSchema;
+    const keySchema = meta?.keySchema;
 
     const fieldType = valueSchema?.[name as never]?.type;
     const isKey = keySchema && Object.keys(keySchema).includes(name);

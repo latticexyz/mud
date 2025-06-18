@@ -51,6 +51,5 @@ export function BooleanField(props: Props) {
   if (props.isReadOnly) {
     return <ReadonlyBooleanField {...props} />;
   }
-
   return <EditableBooleanField {...props} />;
 }
