@@ -8,14 +8,16 @@ type Props = {
   value: boolean;
   table: Table;
   keyTuple: readonly Hex[];
+  blockHeight: number;
   disabled?: boolean;
 };
 
-export function BooleanField({ name, value, table, keyTuple, disabled }: Props) {
-  const write = useSetFieldMutation<"bool">();
+export function BooleanField({ name, value, table, keyTuple, blockHeight, disabled }: Props) {
+  const write = useSetFieldMutation<"bool">({ blockHeight });
   return (
     <Checkbox
-      checked={value}
+      className="ml-2"
+      checked={write.status === "success" || write.status === "pending" ? write.variables.value : value}
       onCheckedChange={(checked) => {
         if (checked === "indeterminate") return;
         write.mutate({

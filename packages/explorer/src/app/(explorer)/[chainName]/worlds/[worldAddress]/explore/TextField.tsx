@@ -8,18 +8,19 @@ type Props = {
   value: string;
   table: Table;
   keyTuple: readonly Hex[];
+  blockHeight: number;
   disabled?: boolean;
 };
 
-export function TextField({ name, value, table, keyTuple, disabled }: Props) {
+export function TextField({ name, value, table, keyTuple, blockHeight, disabled }: Props) {
   const formRef = useRef<HTMLFormElement>(null);
-  const write = useSetFieldMutation<"string">();
   const [edit, setEdit] = useState<{
     value: string;
     initialValue: string;
   } | null>(null);
-
+  const write = useSetFieldMutation<"string">({ blockHeight, reset: () => setEdit(null) });
   const latestValue = write.status === "success" ? write.variables.value : value;
+
   return (
     <form
       ref={formRef}
@@ -31,8 +32,6 @@ export function TextField({ name, value, table, keyTuple, disabled }: Props) {
         const formData = new FormData(event.currentTarget);
         const nextValue = formData.get(name);
         if (typeof value !== "string") return;
-
-        console.log(nextValue, latestValue);
 
         // Skip if our input hasn't changed from the indexer value
         if (nextValue === latestValue) {
@@ -56,9 +55,6 @@ export function TextField({ name, value, table, keyTuple, disabled }: Props) {
           fieldName: name,
           value: edit.value,
         });
-
-        // TODO: add back?
-        // setEdit(null);
       }}
       aria-label={`Edit ${name} field`}
     >

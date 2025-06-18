@@ -1,24 +1,9 @@
-import { ExternalLinkIcon } from "lucide-react";
-import { useParams } from "next/navigation";
-import { toast } from "sonner";
 import { Hex } from "viem";
-import { useAccount, useConfig } from "wagmi";
-import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { useState } from "react";
+import { useAccount } from "wagmi";
 import { Table } from "@latticexyz/config";
-import {
-  ValueSchema,
-  encodeField,
-  getFieldIndex,
-  getSchemaTypes,
-  getValueSchema,
-} from "@latticexyz/protocol-parser/internal";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import { getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useChain } from "../../../../hooks/useChain";
 import { TDataRow } from "../../../../queries/useTableDataQuery";
-import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
 import { BooleanField } from "./BooleanField";
 import { TextField } from "./TextField";
 
@@ -27,80 +12,14 @@ type Props = {
   value: TDataRow[string];
   table: Table;
   keyTuple: readonly Hex[];
+  blockHeight?: number;
 };
 
-export function EditableTableCell({ name, table, keyTuple, value }: Props) {
+export function EditableTableCell({ name, table, keyTuple, value, blockHeight = 0 }: Props) {
   const { openConnectModal } = useConnectModal();
   const account = useAccount();
   const valueSchema = getValueSchema(table);
-  const { worldAddress } = useParams();
   const fieldType = valueSchema?.[name as never]?.type;
-  const wagmiConfig = useConfig();
-  const queryClient = useQueryClient();
-  const { id: chainId } = useChain();
-
-  const write = useMutation({
-    mutationKey: ["setField", worldAddress, table.tableId, keyTuple, name],
-    mutationFn: async ({ value }: { value: string }) => {
-      if (!fieldType) throw new Error("Field type not found");
-
-      let toastId;
-      try {
-        toastId = toast.loading("Submitting transaction…");
-
-        const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
-        const encodedFieldValue = encodeField(fieldType, value);
-
-        const txHash = await writeContract(wagmiConfig, {
-          abi: IBaseWorldAbi,
-          address: worldAddress as Hex,
-          functionName: "setField",
-          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
-          chainId,
-        });
-        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
-        if (receipt.status !== "success") {
-          throw new Error("Transaction reverted. Please try again.");
-        }
-
-        toast.success(
-          <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
-            Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-3 w-3" />
-          </a>,
-          {
-            id: toastId,
-          },
-        );
-        queryClient.invalidateQueries({
-          queryKey: [
-            "balance",
-            {
-              address: account.address,
-              chainId,
-            },
-          ],
-        });
-
-        return { txHash, receipt };
-      } catch (error) {
-        setEdit(null);
-
-        console.error("Error:", error);
-        toast.error(
-          error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
-          {
-            id: toastId,
-          },
-        );
-        throw error;
-      }
-    },
-  });
-
-  const [edit, setEdit] = useState<{
-    value: string;
-    initialValue: string;
-  } | null>(null);
 
   if (!account.isConnected) {
     return (
@@ -117,12 +36,20 @@ export function EditableTableCell({ name, table, keyTuple, value }: Props) {
         value={Boolean(value)}
         table={table}
         keyTuple={keyTuple}
+        blockHeight={blockHeight}
         disabled={!account.isConnected}
       />
     );
   }
 
   return (
-    <TextField name={name} value={String(value)} table={table} keyTuple={keyTuple} disabled={!account.isConnected} />
+    <TextField
+      name={name}
+      value={String(value)}
+      table={table}
+      keyTuple={keyTuple}
+      blockHeight={blockHeight}
+      disabled={!account.isConnected}
+    />
   );
 }

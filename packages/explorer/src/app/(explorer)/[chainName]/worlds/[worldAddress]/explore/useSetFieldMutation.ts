@@ -1,46 +1,44 @@
-import { ExternalLinkIcon } from "lucide-react";
-import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
 import { useConfig } from "wagmi";
-import { useAccount } from "wagmi";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
-import { useEffect } from "react";
-import { Table } from "@latticexyz/config";
-import {
-  ValueSchema,
-  encodeField,
-  getFieldIndex,
-  getSchemaTypes,
-  getValueSchema,
-} from "@latticexyz/protocol-parser/internal";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { ExternalLinkIcon } from "lucide-react";
+import { Table } from "@latticexyz/config";
+import { ValueSchema, encodeField, getFieldIndex, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useChain } from "../../../../hooks/useChain";
+import { useAccount } from "wagmi";
 import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
+import { Dispatch, SetStateAction } from "react";
 
-type SetFieldParams<T extends ValueSchema[string]> = {
+type SetFieldParams<T extends ValueSchema[string]["type"]> = {
   table: Table;
   keyTuple: readonly Hex[];
   fieldName: string;
   value: T extends "bool" ? boolean : string;
 };
 
-type Props = {
-  blockHeight: number;
-  reset?: () => void;
+type EditState<T extends ValueSchema[string]["type"]> = {
+  value: T extends "bool" ? boolean : string;
+  initialValue: T extends "bool" ? boolean : string;
+} | null;
+
+type UseSetFieldMutationOptions<T extends ValueSchema[string]["type"]> = {
+  setEdit: Dispatch<SetStateAction<EditState<T>>>;
 };
 
-export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight, reset }: Props) {
+export function useSetFieldMutation<T extends ValueSchema[string]["type"]>({ setEdit }: UseSetFieldMutationOptions<T>) {
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
 
-  const write = useMutation({
+  return useMutation({
     mutationFn: async ({ table, keyTuple, fieldName, value }: SetFieldParams<T>) => {
-      const valueSchema = getValueSchema(table);
+      const valueSchema = table.valueSchema;
       const fieldType = valueSchema?.[fieldName as never]?.type;
       if (!fieldType) throw new Error("Field type not found");
 
@@ -81,16 +79,9 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
           ],
         });
 
-        if (reset) {
-          reset();
-        }
-
+        setEdit(null);
         return { txHash, receipt };
       } catch (error) {
-        if (reset) {
-          reset();
-        }
-
         console.error("Error:", error);
         toast.error(
           error instanceof Error ? error.message : String(error) || "Something went wrong. Please try again.",
@@ -98,17 +89,9 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
             id: toastId,
           },
         );
+        setEdit(null);
         throw error;
       }
     },
   });
-
-  // When the indexer has picked up the successful write, we can clear the write result
-  useEffect(() => {
-    if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
-      write.reset();
-    }
-  }, [write, blockHeight]);
-
-  return write;
 }
