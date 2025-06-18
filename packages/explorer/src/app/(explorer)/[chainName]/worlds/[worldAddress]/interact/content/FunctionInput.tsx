@@ -4,6 +4,7 @@ import { useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../../components/ui/Form";
 import { Input } from "../../../../../../../components/ui/Input";
+import { Textarea } from "../../../../../../../components/ui/Textarea";
 import { useEnsAddress } from "./useEnsAddress";
 
 type Props = {
@@ -22,6 +23,21 @@ const getInputPlaceholder = (input: AbiParameter): string => {
   }
   return `[${componentsString}]`;
 };
+
+type TextFieldProps = {
+  fieldType: string;
+  className?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+};
+
+function TextField({ fieldType, ...props }: TextFieldProps) {
+  if (fieldType === "string") {
+    return <Textarea {...props} />;
+  }
+  return <Input {...props} />;
+}
 
 export function FunctionInput({ input, index }: Props) {
   const form = useFormContext();
@@ -60,15 +76,18 @@ export function FunctionInput({ input, index }: Props) {
       name={`inputs.${index}`}
       render={({ field }) => (
         <FormItem className="flex flex-col gap-2">
-          <div className="flex items-start gap-4">
-            {input.name && <FormLabel className="shrink-0 pt-2 font-mono text-sm opacity-70">{input.name}</FormLabel>}
+          <div className="flex items-center gap-4">
+            {input.name && <FormLabel className="shrink-0 font-mono text-sm opacity-70">{input.name}</FormLabel>}
             <div className="flex-1">
               <FormControl>
-                <Input
-                  placeholder={getInputPlaceholder(input)}
-                  value={field.value}
-                  onChange={(evt) => handleChange(evt.target.value)}
+                <TextField
                   className="font-mono text-sm"
+                  placeholder={getInputPlaceholder(input)}
+                  fieldType={input.type}
+                  value={field.value}
+                  onChange={(evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                    handleChange(evt.target.value)
+                  }
                 />
               </FormControl>
               <FormMessage />
