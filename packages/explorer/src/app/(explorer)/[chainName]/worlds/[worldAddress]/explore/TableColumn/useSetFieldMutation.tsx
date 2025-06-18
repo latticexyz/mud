@@ -28,7 +28,7 @@ type Props = {
   fieldName: string;
 };
 
-export function useSetFieldMutation<T extends ValueSchema[string]>({ tableConfig, keyTuple, fieldName }: Props) {
+export function useSetFieldMutation<T>({ tableConfig, keyTuple, fieldName }: Props) {
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
