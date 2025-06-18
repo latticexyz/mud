@@ -11,7 +11,7 @@ type EditableProps = {
   keyTuple: readonly Hex[];
   blockHeight: number;
   disabled?: boolean;
-  isReadOnly?: false;
+  readOnly?: false;
 };
 
 type ReadOnlyProps = {
