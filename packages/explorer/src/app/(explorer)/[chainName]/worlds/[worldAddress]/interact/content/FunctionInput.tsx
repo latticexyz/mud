@@ -34,9 +34,9 @@ type TextFieldProps = {
 
 function TextField({ fieldType, ...props }: TextFieldProps) {
   if (fieldType === "string") {
-    return <Input {...props} />;
+    return <Textarea {...props} />;
   }
-  return <Textarea {...props} />;
+  return <Input {...props} />;
 }
 
 export function FunctionInput({ input, index }: Props) {
