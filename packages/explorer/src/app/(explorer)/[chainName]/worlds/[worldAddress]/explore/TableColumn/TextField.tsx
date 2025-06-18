@@ -6,21 +6,26 @@ import { useSetFieldMutation } from "./useSetFieldMutation";
 type Props = {
   name: string;
   value: string;
-  table: Table;
+  tableConfig: Table;
   keyTuple: readonly Hex[];
   blockHeight: number;
   disabled?: boolean;
 };
 
-export function TextField({ name, value, table, keyTuple, blockHeight, disabled }: Props) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [edit, setEdit] = useState<{
-    value: string;
-    initialValue: string;
-  } | null>(null);
-  const write = useSetFieldMutation<"string">({ blockHeight, reset: () => setEdit(null) });
-  const latestValue = write.status === "success" ? write.variables.value : value;
+// TODO: move into TextField ?
+export function ReadonlyTextField({ value }: { value: string }) {
+  return <div className="px-2 py-4">{value}</div>;
+}
 
+export function TextField({ name, value, tableConfig, keyTuple, blockHeight, disabled }: Props) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [edit, setEdit] = useState<{ value: string; initialValue: string } | null>(null);
+  const write = useSetFieldMutation<"string">({
+    blockHeight,
+    reset: () => setEdit(null),
+  });
+
+  const latestValue = write.status === "success" ? write.variables.value : value;
   return (
     <form
       ref={formRef}
@@ -50,7 +55,7 @@ export function TextField({ name, value, table, keyTuple, blockHeight, disabled 
         }
 
         write.mutate({
-          table,
+          tableConfig,
           keyTuple,
           fieldName: name,
           value: edit.value,

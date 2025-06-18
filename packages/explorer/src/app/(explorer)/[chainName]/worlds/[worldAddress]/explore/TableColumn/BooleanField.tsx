@@ -1,18 +1,22 @@
 import { Hex } from "viem";
 import { Table } from "@latticexyz/config";
-import { Checkbox } from "../../../../../../components/ui/Checkbox";
+import { Checkbox } from "../../../../../../../components/ui/Checkbox";
 import { useSetFieldMutation } from "./useSetFieldMutation";
 
 type Props = {
   name: string;
   value: boolean;
-  table: Table;
+  tableConfig: Table;
   keyTuple: readonly Hex[];
   blockHeight: number;
   disabled?: boolean;
 };
 
-export function BooleanField({ name, value, table, keyTuple, blockHeight, disabled }: Props) {
+export function ReadonlyBooleanField({ value }: { value: boolean }) {
+  return <Checkbox className="ml-2" checked={value} disabled />;
+}
+
+export function BooleanField({ name, value, tableConfig, keyTuple, blockHeight, disabled }: Props) {
   const write = useSetFieldMutation<"bool">({ blockHeight });
   return (
     <Checkbox
@@ -21,7 +25,7 @@ export function BooleanField({ name, value, table, keyTuple, blockHeight, disabl
       onCheckedChange={(checked) => {
         if (checked === "indeterminate") return;
         write.mutate({
-          table,
+          tableConfig,
           keyTuple,
           fieldName: name,
           value: checked,

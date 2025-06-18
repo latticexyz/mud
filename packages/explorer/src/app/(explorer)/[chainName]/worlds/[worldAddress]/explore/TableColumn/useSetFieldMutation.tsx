@@ -16,11 +16,11 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useChain } from "../../../../hooks/useChain";
-import { blockExplorerTransactionUrl } from "../../../../utils/blockExplorerTransactionUrl";
+import { useChain } from "../../../../../hooks/useChain";
+import { blockExplorerTransactionUrl } from "../../../../../utils/blockExplorerTransactionUrl";
 
 type SetFieldParams<T extends ValueSchema[string]> = {
-  table: Table;
+  tableConfig: Table;
   keyTuple: readonly Hex[];
   fieldName: string;
   value: T extends "bool" ? boolean : string;
@@ -39,8 +39,8 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
   const account = useAccount();
 
   const write = useMutation({
-    mutationFn: async ({ table, keyTuple, fieldName, value }: SetFieldParams<T>) => {
-      const valueSchema = getValueSchema(table);
+    mutationFn: async ({ tableConfig, keyTuple, fieldName, value }: SetFieldParams<T>) => {
+      const valueSchema = getValueSchema(tableConfig);
       const fieldType = valueSchema?.[fieldName as never]?.type;
       if (!fieldType) throw new Error("Field type not found");
 
@@ -55,7 +55,7 @@ export function useSetFieldMutation<T extends ValueSchema[string]>({ blockHeight
           abi: IBaseWorldAbi,
           address: worldAddress as Hex,
           functionName: "setField",
-          args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
+          args: [tableConfig.tableId, keyTuple, fieldIndex, encodedFieldValue],
           chainId,
         });
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
