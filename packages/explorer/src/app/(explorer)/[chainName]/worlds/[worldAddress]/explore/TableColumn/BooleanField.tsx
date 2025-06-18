@@ -3,6 +3,7 @@ import { Table } from "@latticexyz/config";
 import { Checkbox } from "../../../../../../../components/ui/Checkbox";
 import { cn } from "../../../../../../../utils";
 import { useSetFieldMutation } from "./useSetFieldMutation";
+import { useTrackPendingValue } from "./useTrackPendingValue";
 
 type EditableProps = {
   name: string;
@@ -26,8 +27,9 @@ function ReadonlyBooleanField(props: ReadOnlyProps) {
 }
 
 function EditableBooleanField(props: EditableProps) {
-  const { name, value, tableConfig, keyTuple, disabled } = props;
+  const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
   const write = useSetFieldMutation<"bool">();
+  useTrackPendingValue(write, blockHeight);
 
   return (
     <Checkbox
