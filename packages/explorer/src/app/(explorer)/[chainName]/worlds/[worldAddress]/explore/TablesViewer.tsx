@@ -47,7 +47,7 @@ const initialRows: TData["rows"] = [];
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    isReadOnly: boolean;
+    readOnly: boolean;
     blockHeight?: number;
     tableConfig?: TableType;
     valueSchema?: ReturnType<typeof getValueSchema>;

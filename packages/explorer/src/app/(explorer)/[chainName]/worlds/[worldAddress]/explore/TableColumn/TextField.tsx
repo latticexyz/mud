@@ -10,13 +10,13 @@ type EditableProps = {
   tableConfig: Table;
   keyTuple: readonly Hex[];
   blockHeight: number;
-  isReadOnly?: false;
+  readOnly?: false;
   disabled?: boolean;
 };
 
 type ReadOnlyProps = {
   value: string;
-  isReadOnly: true;
+  readOnly: true;
 };
 
 type Props = EditableProps | ReadOnlyProps;
@@ -98,7 +98,7 @@ function EditableTextField(props: EditableProps) {
 }
 
 export function TextField(props: Props) {
-  if (props.isReadOnly) {
+  if (props.readOnly) {
     return <ReadonlyTextField {...props} />;
   }
   return <EditableTextField {...props} />;

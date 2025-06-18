@@ -25,7 +25,7 @@ export function EditableTableColumn({ name, value, fieldType, tableConfig, keyTu
         tableConfig={tableConfig}
         keyTuple={keyTuple}
         blockHeight={blockHeight}
-        isReadOnly={!isConnected}
+        readOnly={!isConnected}
       />
     );
   }
@@ -37,7 +37,7 @@ export function EditableTableColumn({ name, value, fieldType, tableConfig, keyTu
       tableConfig={tableConfig}
       keyTuple={keyTuple}
       blockHeight={blockHeight}
-      isReadOnly={!isConnected}
+      readOnly={!isConnected}
     />
   );
 }

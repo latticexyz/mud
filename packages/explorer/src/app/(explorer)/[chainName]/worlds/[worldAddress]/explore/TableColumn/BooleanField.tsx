@@ -16,7 +16,7 @@ type EditableProps = {
 
 type ReadOnlyProps = {
   value: boolean;
-  isReadOnly: true;
+  readOnly: true;
 };
 
 type Props = EditableProps | ReadOnlyProps;
@@ -48,7 +48,7 @@ function EditableBooleanField(props: EditableProps) {
 }
 
 export function BooleanField(props: Props) {
-  if (props.isReadOnly) {
+  if (props.readOnly) {
     return <ReadonlyBooleanField {...props} />;
   }
   return <EditableBooleanField {...props} />;

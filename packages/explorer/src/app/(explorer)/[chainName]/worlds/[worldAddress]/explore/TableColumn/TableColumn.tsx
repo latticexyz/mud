@@ -9,7 +9,7 @@ type Props = {
 
 export function TableColumn({ type = "string", value }: Props) {
   if (type === "bool") {
-    return <BooleanField value={value as boolean} isReadOnly />;
+    return <BooleanField value={value as boolean} readOnly />;
   }
-  return <TextField value={value as string} isReadOnly />;
+  return <TextField value={value as string} readOnly />;
 }

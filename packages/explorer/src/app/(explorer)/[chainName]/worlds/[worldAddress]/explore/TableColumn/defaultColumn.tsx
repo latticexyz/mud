@@ -10,14 +10,14 @@ export const defaultColumn: Partial<ColumnDef<TDataRow>> = {
     const value = getValue<TDataRow[string]>();
     const meta = table.options.meta;
     const tableConfig = meta?.tableConfig;
-    const isReadOnly = meta?.isReadOnly;
+    const readOnly = meta?.readOnly;
     const blockHeight = meta?.blockHeight;
     const valueSchema = meta?.valueSchema;
     const keySchema = meta?.keySchema;
 
     const fieldType = valueSchema?.[name as never]?.type;
     const isKey = keySchema && Object.keys(keySchema).includes(name);
-    if (!tableConfig || !fieldType || !keySchema || isReadOnly || isKey) {
+    if (!tableConfig || !fieldType || !keySchema || readOnly || isKey) {
       return <TableColumn type={fieldType} value={value} />;
     }
 
