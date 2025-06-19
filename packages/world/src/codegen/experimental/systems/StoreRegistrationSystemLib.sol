@@ -87,7 +87,7 @@ library StoreRegistrationSystemLib {
     if (address(_world()) == address(this)) revert StoreRegistrationSystemLib_CallingFromRootSystem();
 
     bytes memory systemCall = abi.encodeCall(
-      _registerTable_ResourceId_FieldLayout_Schema_Schema_stringArray_stringArray.registerTable,
+      _registerTable_ResourceId_FieldLayout_Schema_Schema_string0x5b5d_string0x5b5d.registerTable,
       (tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames)
     );
     self.from == address(0)
@@ -136,7 +136,7 @@ library StoreRegistrationSystemLib {
     string[] memory fieldNames
   ) internal {
     bytes memory systemCall = abi.encodeCall(
-      _registerTable_ResourceId_FieldLayout_Schema_Schema_stringArray_stringArray.registerTable,
+      _registerTable_ResourceId_FieldLayout_Schema_Schema_string0x5b5d_string0x5b5d.registerTable,
       (tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames)
     );
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -204,7 +204,7 @@ library StoreRegistrationSystemLib {
  * Each interface is uniquely named based on the function name and parameters to prevent collisions.
  */
 
-interface _registerTable_ResourceId_FieldLayout_Schema_Schema_stringArray_stringArray {
+interface _registerTable_ResourceId_FieldLayout_Schema_Schema_string0x5b5d_string0x5b5d {
   function registerTable(
     ResourceId tableId,
     FieldLayout fieldLayout,
