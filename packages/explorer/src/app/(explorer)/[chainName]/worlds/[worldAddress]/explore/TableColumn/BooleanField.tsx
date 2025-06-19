@@ -1,14 +1,14 @@
 import { Hex } from "viem";
+import { useEffect } from "react";
 import { Table } from "@latticexyz/config";
 import { Checkbox } from "../../../../../../../components/ui/Checkbox";
 import { cn } from "../../../../../../../utils";
-import { useSetFieldMutation } from "./useSetFieldMutation";
-import { useTrackPendingValue } from "./useTrackPendingValue";
+import { useSetField } from "./useSetField";
 
 type EditableProps = {
   name: string;
   value: boolean;
-  tableConfig: Table;
+  table: Table;
   keyTuple: readonly Hex[];
   blockHeight: number;
   disabled?: boolean;
@@ -26,14 +26,14 @@ function ReadonlyBooleanField(props: ReadOnlyProps) {
   return <Checkbox className="ml-2" checked={props.value} disabled />;
 }
 
-function EditableBooleanField(props: EditableProps) {
-  const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
-  const write = useSetFieldMutation<"bool">({
-    tableConfig,
-    keyTuple,
-    fieldName: name,
-  });
-  useTrackPendingValue(write, blockHeight);
+function EditableBooleanField({ name, value, table, keyTuple, blockHeight, disabled }: EditableProps) {
+  const write = useSetField<Table, never, boolean>({ table, keyTuple, fieldName: name as never });
+
+  useEffect(() => {
+    if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
+      write.reset();
+    }
+  }, [write, blockHeight]);
 
   return (
     <Checkbox

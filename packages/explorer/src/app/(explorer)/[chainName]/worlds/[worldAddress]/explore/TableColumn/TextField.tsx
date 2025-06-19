@@ -1,14 +1,13 @@
 import { Hex } from "viem";
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table } from "@latticexyz/config";
 import { cn } from "../../../../../../../utils";
-import { useSetFieldMutation } from "./useSetFieldMutation";
-import { useTrackPendingValue } from "./useTrackPendingValue";
+import { useSetField } from "./useSetField";
 
 type EditableProps = {
   name: string;
   value: string;
-  tableConfig: Table;
+  table: Table;
   keyTuple: readonly Hex[];
   blockHeight: number;
   readOnly?: false;
@@ -26,66 +25,53 @@ function ReadonlyTextField(props: ReadOnlyProps) {
   return <div className="px-2 py-4">{props.value}</div>;
 }
 
-function EditableTextField(props: EditableProps) {
-  const { name, value, tableConfig, keyTuple, blockHeight, disabled } = props;
-  const formRef = useRef<HTMLFormElement>(null);
-  const [edit, setEdit] = useState<{ value: string; initialValue: string } | null>(null);
-  const write = useSetFieldMutation<"string">({
-    tableConfig,
-    keyTuple,
-    fieldName: name,
-  });
-  useTrackPendingValue(write, blockHeight);
+function EditableTextField({ name, value, table, keyTuple, blockHeight, disabled }: EditableProps) {
+  const write = useSetField<Table, never, string>({ table, keyTuple, fieldName: name as never });
+  useEffect(() => {
+    if (write.status === "success" && BigInt(blockHeight) >= write.data.receipt.blockNumber) {
+      write.reset();
+    }
+  }, [write, blockHeight]);
 
-  const latestValue = write.status === "success" ? write.variables.value : value;
+  const [edit, setEdit] = useState<{ value: string; initialValue: string } | null>(null);
   return (
     <form
-      ref={formRef}
       onSubmit={(event) => {
         event.preventDefault();
 
         if (!edit) return;
 
-        const formData = new FormData(event.currentTarget);
-        const nextValue = formData.get(name);
-        if (typeof value !== "string") return;
-
         // Skip if our input hasn't changed from the indexer value
-        if (nextValue === latestValue) {
+        if (edit.value === value) {
           setEdit(null);
           return;
         }
 
         // Indexer value changed while we were editing, so we might
         // be at risk of overwriting a change from somewhere else.
-        if (edit.initialValue !== latestValue) {
-          const confirm = window.confirm("Value changed while editing. Are you sure you want to overwrite it?");
-          if (!confirm) {
+        if (edit.initialValue !== value) {
+          if (
+            !window.confirm("The value of this field changed while editing. Are you sure you want to overwrite it?")
+          ) {
             setEdit(null);
             return;
           }
         }
 
-        write.mutate(
-          { value: edit.value },
-          {
-            onSettled: () => {
-              setEdit(null);
-            },
-          },
-        );
+        write.mutate({ value: edit.value });
+        setEdit(null);
       }}
     >
       <input
         className={cn("bg-transparent px-2 py-4", write.isPending && "cursor-wait")}
         name={name}
-        value={edit ? edit.value : latestValue}
-        onFocus={(event) => setEdit({ value: event.currentTarget.value, initialValue: latestValue })}
+        value={edit ? edit.value : write.status !== "idle" ? String(write.variables.value) : value}
+        onFocus={(event) => setEdit({ value: event.currentTarget.value, initialValue: value })}
         onChange={(event) => {
           const nextValue = event.currentTarget.value;
           setEdit((state) => ({
             value: nextValue,
-            initialValue: state?.initialValue ?? latestValue,
+            initialValue: state?.initialValue ?? value,
           }));
         }}
         onKeyDown={(event) => {
@@ -95,7 +81,7 @@ function EditableTextField(props: EditableProps) {
             setEdit(null);
           }
         }}
-        onBlur={() => formRef.current?.requestSubmit()}
+        onBlur={(event) => event.currentTarget.form?.requestSubmit()}
         disabled={disabled || write.isPending}
       />
     </form>

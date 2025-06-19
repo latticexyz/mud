@@ -22,7 +22,7 @@ export function EditableTableColumn({ name, value, fieldType, tableConfig, keyTu
       <BooleanField
         name={name}
         value={Boolean(value)}
-        tableConfig={tableConfig}
+        table={tableConfig}
         keyTuple={keyTuple}
         blockHeight={blockHeight}
         readOnly={!isConnected}
@@ -34,7 +34,7 @@ export function EditableTableColumn({ name, value, fieldType, tableConfig, keyTu
     <TextField
       name={name}
       value={String(value)}
-      tableConfig={tableConfig}
+      table={tableConfig}
       keyTuple={keyTuple}
       blockHeight={blockHeight}
       readOnly={!isConnected}
