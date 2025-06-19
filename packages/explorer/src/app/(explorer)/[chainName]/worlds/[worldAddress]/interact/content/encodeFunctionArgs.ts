@@ -5,6 +5,7 @@ export function encodeFunctionArgs(args: unknown[], inputs: AbiFunction): unknow
     const input = inputs.inputs[i];
     if (!input) return arg;
 
+    if (input.type.includes("[]")) return JSON.parse(arg as string);
     if (input.type === "tuple") return JSON.parse(arg as string);
     if (input.type === "bool") return arg === "true";
 
