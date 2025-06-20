@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 725f1ae: Bumped Viem and Wagmi versions in templates.
+
 ## 2.2.21
 
 ## 2.2.20
