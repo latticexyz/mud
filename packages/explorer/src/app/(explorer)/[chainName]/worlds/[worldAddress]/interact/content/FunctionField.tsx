@@ -160,8 +160,6 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
 
           setResult(stringify(result, null, 2).replace(/^"|"$/g, ""));
         } else {
-          toastId = toast.loading("Transaction submitted");
-
           let txHash;
           if (systemId) {
             const encoded = encodeSystemCall({
@@ -196,9 +194,11 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
           const events = receipt?.logs.map((log) => decodeEventLog({ ...log, abi: worldAbi }));
           setEvents(events);
 
-          toast.success(`Transaction successful with hash: ${txHash}`, {
-            id: toastId,
-          });
+          toastId = toast.success(
+            <a href={blockExplorerTransactionUrl({ hash: txHash, chainId })} target="_blank" rel="noopener noreferrer">
+              Transaction successful: {txHash} <ExternalLinkIcon className="inline-block h-3 w-3" />
+            </a>,
+          );
         }
       } catch (error) {
         console.error(error);
