@@ -89,7 +89,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
         }),
       ),
     ),
-    filter((block) => block != null),
+    filter((block): block is StorageAdapterBlock => block != null),
     tap((block) => {
       debug("preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
       preconfirmedLogsState = "initialized";
