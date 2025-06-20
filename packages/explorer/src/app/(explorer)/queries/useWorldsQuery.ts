@@ -86,7 +86,7 @@ async function getExternalWorlds(chain: MUDChain) {
   return data.items.map((world) => getAddress(world.address.hash));
 }
 
-function useVerifiedWorldsQuery(chain: MUDChain) {
+export function useVerifiedWorldsQuery(chain: MUDChain) {
   return useQuery({
     queryKey: ["verifiedWorlds", chain.id],
     queryFn: async () => {
@@ -102,7 +102,7 @@ function useVerifiedWorldsQuery(chain: MUDChain) {
   });
 }
 
-function useIndexerWorldsQuery(chain: MUDChain, indexer: ReturnType<typeof useIndexerForChainId>) {
+export function useIndexerWorldsQuery(chain: MUDChain, indexer: ReturnType<typeof useIndexerForChainId>) {
   return useQuery({
     queryKey: ["indexerWorlds", chain.id, indexer.type],
     queryFn: async () => {
