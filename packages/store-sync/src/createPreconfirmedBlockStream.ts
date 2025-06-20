@@ -57,7 +57,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     switchMap(() =>
       createLatestBlockStream({ ...opts, fromBlock: restartBlockNumber }).pipe(
         catchError((e) => {
-          debug("Error in latest block stream", e);
+          debug("Error in latest block stream, recreating", e);
           recreateLatestStream$.next();
           return throwError(() => e);
         }),
