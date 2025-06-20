@@ -8,10 +8,9 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { keccak256, toHex } from "viem";
 import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
-import { getKeySchema } from "@latticexyz/protocol-parser/internal";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   OnChangeFn,
@@ -35,8 +34,8 @@ import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { useReadOnly } from "../../../../hooks/useReadOnly";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { ExportButton } from "./ExportButton";
+import { defaultColumn } from "./TableColumn/defaultColumn";
 import { PAGE_SIZE_OPTIONS } from "./consts";
-import { defaultColumn } from "./defaultColumn";
 import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { getLimitOffset } from "./utils/getLimitOffset";
@@ -48,8 +47,11 @@ const initialRows: TData["rows"] = [];
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    isReadOnly: boolean;
+    readOnly: boolean;
+    blockHeight?: number;
     tableConfig?: TableType;
+    valueSchema?: ReturnType<typeof getValueSchema>;
+    keySchema?: ReturnType<typeof getKeySchema>;
   }
 }
 
@@ -67,7 +69,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [pagination, setPagination] = usePaginationState();
-  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
+  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
 
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
@@ -135,15 +137,17 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     getFilteredRowModel: getFilteredRowModel(),
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
-    getRowId: (row) => keccak256(toHex(`${row.id}-${row.dynamicdata}-${row.staticdata}`)),
     state: {
       sorting,
       globalFilter,
       pagination,
     },
     meta: {
+      blockHeight: tableData?.blockHeight,
       tableConfig: table,
-      isReadOnly,
+      valueSchema: table ? getValueSchema(table) : undefined,
+      keySchema: table ? getKeySchema(table) : undefined,
+      readOnly: isReadOnly,
     },
   });
 
