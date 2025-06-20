@@ -4,7 +4,7 @@ import { WagmiProvider, createConfig, fallback, http, webSocket } from "wagmi";
 import { ReactNode, useMemo } from "react";
 import { RainbowKitProvider, connectorsForWallets, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import { injectedWallet, metaMaskWallet, safeWallet } from "@rainbow-me/rainbowkit/wallets";
+import { coinbaseWallet, injectedWallet, metaMaskWallet, safeWallet } from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getDefaultAnvilConnectors } from "../../../../../connectors/anvil";
 import { useChain } from "../../../hooks/useChain";
@@ -19,7 +19,7 @@ export function Providers({ children }: { children: ReactNode }) {
       [
         {
           groupName: "Recommended",
-          wallets: [injectedWallet, metaMaskWallet, safeWallet],
+          wallets: [injectedWallet, metaMaskWallet, coinbaseWallet, safeWallet],
         },
       ],
       { appName: "Worlds Explorer", projectId: process.env.NEXT_PUBLIC_PROJECT_ID! },
