@@ -42,7 +42,6 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
       client = await getWebSocketRpcClient(getUncachedUrl(url), {
         keepAlive: true,
-        reconnect: { attempts: 100, delay: 1_000 },
       });
 
       // Start watching pending logs
@@ -109,8 +108,9 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       debug("logs$ subscription closed, closing client");
       try {
         client?.close();
+        client?.socket?.close();
       } catch (e) {
-        debug("failed to close client", e);
+        debug("failed to close client/socket", e);
       }
     };
   });

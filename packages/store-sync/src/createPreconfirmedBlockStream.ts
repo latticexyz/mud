@@ -14,6 +14,7 @@ import {
   merge,
   filter,
   startWith,
+  delay,
 } from "rxjs";
 import { StorageAdapterBlock, StoreEventsLog, SyncFilter } from "./common";
 import { watchLogs } from "./watchLogs";
@@ -56,7 +57,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     switchMap(() =>
       createLatestBlockStream({ ...opts, fromBlock: restartBlockNumber }).pipe(
         catchError((e) => {
-          debug("Error in latest block stream, recreating", e);
+          debug("Error in latest block stream", e);
           recreateLatestStream$.next();
           return throwError(() => e);
         }),
@@ -66,12 +67,15 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
 
   let processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
   let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
+  let attempt = 0;
   const preconfirmedLogs$ = recreatePreconfirmedStream$.pipe(
     tap(() => {
-      debug("initializing preconfirmed logs stream");
+      debug(`initializing preconfirmed logs stream in ${attempt * 500}ms`);
       preconfirmedLogsState = "initializing";
       processedBlockLogs = {};
     }),
+    delay(attempt * 500),
+    tap(() => attempt++),
     switchMap(() =>
       watchLogs({
         ...opts,
@@ -81,13 +85,15 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
         catchError((e) => {
           debug("Error in preconfirmed logs stream, recreating", e);
           recreatePreconfirmedStream$.next();
-          return throwError(() => e);
+          return of(null);
         }),
       ),
     ),
+    filter((block) => block != null),
     tap((block) => {
       debug("preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
       preconfirmedLogsState = "initialized";
+      attempt = 0;
       restartBlockNumber = block.blockNumber;
       const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
       block.logs.forEach((log) => {
