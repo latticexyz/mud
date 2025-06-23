@@ -70,6 +70,7 @@
     "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "playground": "DEBUG=mud:* tsx playground/index.ts",
     "test": "vitest",
     "test:ci": "vitest --run"
   },
