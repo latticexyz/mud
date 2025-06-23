@@ -63,7 +63,7 @@ describe("streamLogs", async () => {
     });
   });
 
-  it("can stream empty results", async () => {
+  it("returns with empty logs", async () => {
     const response = {
       blockNumber: "19254472",
       logs: [],
@@ -86,7 +86,7 @@ describe("streamLogs", async () => {
     });
   });
 
-  it("handles a bad response object", async () => {
+  it("returns object as-is without emitting logs", async () => {
     const response = {
       invalid: true,
     };
@@ -101,7 +101,6 @@ describe("streamLogs", async () => {
     const onLog = vi.fn<Parameters<typeof streamLogs>[1]>();
     const result = await streamLogs(body, onLog);
 
-    // TODO: throw error
     expect(onLog).toHaveBeenCalledTimes(0);
     expect(result).toEqual({ invalid: true });
   });
