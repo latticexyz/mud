@@ -26,7 +26,9 @@ import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { bigIntMax, isDefined } from "@latticexyz/common/utils";
 import { getRpcClient, GetRpcClientOptions } from "@latticexyz/block-logs-stream";
-import { debug } from "./debug";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("preconfirmedStream");
 
 type PreconfirmedBlockStreamOptions = GetRpcClientOptions & {
   fromBlock: bigint;
