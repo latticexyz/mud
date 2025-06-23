@@ -3,33 +3,31 @@ import { StorageAdapterLog } from "../common";
 
 export async function streamLogs(
   body: ReadableStream<Uint8Array>,
-  onLog: (blockNumber: bigint, log: StorageAdapterLog) => void,
+  onLog: (args: { blockNumber: bigint; log: StorageAdapterLog }) => void,
 ) {
   const parser = clarinet.parser();
 
   let nextKey: string | null = null;
-  let stack: [string | null, any][] = [];
-  let inLogsArray = false;
-  let blockNumber: bigint | null = null;
+  // stack of open objects
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const open: [key: string | null, obj: any][] = [];
 
   parser.onopenobject = function (key) {
-    console.log("onopenobject");
-    stack.push([nextKey, {}]);
+    open.push([nextKey, {}]);
     nextKey = null;
 
+    // this is weird to have in two places, so we'll pass it to onkey
     if (key != null) {
       parser.onkey(key);
     }
   };
 
   parser.onkey = function (key) {
-    console.log("onkey", key);
     nextKey = key;
   };
 
   parser.onvalue = function (value) {
-    console.log("onvalue", value);
-    const [key, obj] = stack[stack.length - 1];
+    const [_key, obj] = open[open.length - 1];
 
     // if we have an open array, push the value to the array
     if (Array.isArray(obj)) {
@@ -42,15 +40,16 @@ export async function streamLogs(
   };
 
   parser.onopenarray = function () {
-    console.log("onopenarray");
-    stack.push([nextKey, []]);
+    open.push([nextKey, []]);
     nextKey = null;
   };
 
   parser.oncloseobject = parser.onclosearray = function () {
-    const [key, obj] = stack.pop()!;
-    const [parentKey, parentObj] = stack.at(-1)!;
-    console.log("oncloseobject", `${parentKey}.${key}`);
+    // pop the last open object so we can close it
+    const [key, obj] = open.pop()!;
+
+    if (!open.length) return;
+    const [_parentKey, parentObj] = open.at(-1)!;
 
     if (Array.isArray(parentObj)) {
       parentObj.push(obj);
@@ -58,34 +57,20 @@ export async function streamLogs(
       parentObj[key] = obj;
     }
 
-    if (parentKey === "logs") {
-      console.log("stack", parentObj, obj, stack);
-      throw new Error("stop");
-      // onLog(blockNumber!, obj);
+    // check if we're closing a logs object and emit if so
+    if (open.length === 2) {
+      const [, top] = open.at(0)!;
+      const [logsKey, logs] = open.at(1)!;
+      if (logsKey === "logs" && logs === parentObj) {
+        onLog({ blockNumber: BigInt(top.blockNumber), log: obj });
+      }
     }
-
-    // if (inLogsArray && stack.length === 2) {
-    //   onLog(blockNumber!, obj);
-    // }
   };
-
-  // parser.onclosearray = function () {
-  //   const arr = stack.pop();
-  //   const parent = stack[stack.length - 1];
-  //   if (Array.isArray(parent)) {
-  //     parent.push(arr);
-  //   } else if (parent && nextKey) {
-  //     parent[nextKey] = arr;
-  //   }
-
-  //   if (inLogsArray && stack.length === 1) {
-  //     inLogsArray = false;
-  //   }
-  // };
 
   const reader = body.getReader();
   const decoder = new TextDecoder();
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
