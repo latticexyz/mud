@@ -3,6 +3,8 @@ import { input } from "./input";
 import { StorageAdapterBlock, StorageAdapterLog } from "../common";
 import { Result } from "@latticexyz/common";
 import { streamLogs } from "./streamLogs";
+import { isLogsApiResponse } from "./isLogsApiResponse";
+import { toStorageAdapterBlock } from "./toStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -33,14 +35,14 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
           throw new Error(`Indexer response (${response.ok}) had no body.`);
         }
 
-        let blockNumber: bigint | null = null;
         const logs: StorageAdapterLog[] = [];
-        await streamLogs(response.body, (log) => {
-          blockNumber = log.blockNumber;
-          logs.push(log.log);
-        });
+        const result = await streamLogs(response.body, (log) => logs.push(log));
 
-        return { ok: { blockNumber: blockNumber!, logs } };
+        if (!isLogsApiResponse(result)) {
+          return { error: result };
+        }
+
+        return { ok: toStorageAdapterBlock({ ...result, logs }) };
       } catch (error) {
         return { error };
       }

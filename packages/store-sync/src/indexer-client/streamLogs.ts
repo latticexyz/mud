@@ -1,16 +1,24 @@
 import clarinet from "clarinet";
 import { StorageAdapterLog } from "../common";
 
+/**
+ * @internal
+ */
 export async function streamLogs(
   body: ReadableStream<Uint8Array>,
-  onLog: (args: { blockNumber: bigint; log: StorageAdapterLog }) => void,
-) {
+  onLog: (log: StorageAdapterLog) => void,
+): Promise<{
+  blockNumber: string;
+  logs: readonly StorageAdapterLog[];
+}> {
   const parser = clarinet.parser();
 
   let nextKey: string | null = null;
   // stack of open objects
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const open: [key: string | null, obj: any][] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let result: any;
 
   parser.onopenobject = function (key) {
     open.push([nextKey, {}]);
@@ -27,16 +35,18 @@ export async function streamLogs(
   };
 
   parser.onvalue = function (value) {
-    const [_key, obj] = open[open.length - 1];
+    const [, parentObj] = open.at(-1)!;
 
     // if we have an open array, push the value to the array
-    if (Array.isArray(obj)) {
-      obj.push(value);
+    if (Array.isArray(parentObj)) {
+      parentObj.push(value);
     }
     // if we have an open object, add the value
-    else if (obj && nextKey) {
-      obj[nextKey] = value;
+    else if (parentObj && nextKey) {
+      parentObj[nextKey] = value;
     }
+
+    nextKey = null;
   };
 
   parser.onopenarray = function () {
@@ -45,25 +55,28 @@ export async function streamLogs(
   };
 
   parser.oncloseobject = parser.onclosearray = function () {
+    const path = open.map(([key], i) => (key == null ? (i === 0 ? "" : "*") : key)).join(".");
+
     // pop the last open object so we can close it
     const [key, obj] = open.pop()!;
 
-    if (!open.length) return;
-    const [_parentKey, parentObj] = open.at(-1)!;
+    if (!open.length) {
+      result = obj;
+      return;
+    }
+
+    const [, parentObj] = open.at(-1)!;
+
+    // emit log and don't accumulate
+    if (path === ".logs.*") {
+      onLog(obj);
+      return;
+    }
 
     if (Array.isArray(parentObj)) {
       parentObj.push(obj);
     } else if (parentObj && key) {
       parentObj[key] = obj;
-    }
-
-    // check if we're closing a logs object and emit if so
-    if (open.length === 2) {
-      const [, top] = open.at(0)!;
-      const [logsKey, logs] = open.at(1)!;
-      if (logsKey === "logs" && logs === parentObj) {
-        onLog({ blockNumber: BigInt(top.blockNumber), log: obj });
-      }
     }
   };
 
@@ -78,4 +91,6 @@ export async function streamLogs(
   }
 
   parser.close();
+
+  return result;
 }
