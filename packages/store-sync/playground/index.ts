@@ -1,5 +1,5 @@
 import { redstone as redstoneBase } from "@latticexyz/common/chains";
-import { createStoreSync } from "../src";
+import { createStoreSync } from "../src/createStoreSync";
 import { createPublicClient, http } from "viem";
 
 const redstone = {
