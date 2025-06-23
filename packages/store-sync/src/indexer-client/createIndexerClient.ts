@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { input } from "./input";
-import { StorageAdapterBlock } from "../common";
+import { StorageAdapterBlock, StorageAdapterLog } from "../common";
 import { Result } from "@latticexyz/common";
 import { isLogsApiResponse } from "./isLogsApiResponse";
 import { toStorageAdapterBlock } from "./toStorageAdapterBlock";
 import oboe from "oboe";
+import { streamLogs } from "./streamLogs";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -32,6 +33,29 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
         console.log(`${urlOrigin}/api/logs?input=${input}`);
 
         const response = await fetch(`${urlOrigin}/api/logs?input=${input}`);
+        if (!response.body) {
+          throw new Error(`Indexer response (${response.ok}) had no body.`);
+        }
+
+        let i = 0;
+        console.log("starting json stream", response.status);
+        let blockNumber: bigint | null = null;
+        let logs: StorageAdapterLog[] = [];
+        await streamLogs(response.body, (bn, log) => {
+          blockNumber = bn;
+          logs.push(log);
+          if (++i % 100000 === 0) {
+            console.log("read logs", i.toLocaleString());
+          }
+          console.log("log", bn, log);
+          throw new Error("stop");
+        });
+        console.log("got logs", logs);
+
+        return { ok: { blockNumber: blockNumber!, logs } };
+
+        console.log("done");
+
         const result = await new Promise((resolve, reject) => {
           console.log("streaming indexer response with oboe");
           let i = 0;
