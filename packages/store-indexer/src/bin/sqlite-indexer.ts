@@ -8,10 +8,7 @@ import Database from "better-sqlite3";
 import Koa from "koa";
 import cors from "@koa/cors";
 import bodyParser from "koa-bodyparser";
-import { createKoaMiddleware } from "trpc-koa-adapter";
-import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
-import { createQueryAdapter } from "../sqlite/createQueryAdapter";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
 import { healthcheck } from "../koa-middleware/healthcheck";
@@ -144,16 +141,6 @@ server.use(
 );
 server.use(helloWorld());
 server.use(apiRoutes({ database, enableUnsafeQueryApi: env.ENABLE_UNSAFE_QUERY_API }));
-
-server.use(
-  createKoaMiddleware({
-    prefix: "/trpc",
-    router: createAppRouter(),
-    createContext: async () => ({
-      queryAdapter: await createQueryAdapter(database),
-    }),
-  }),
-);
 
 server.listen({ host: env.HOST, port: env.PORT });
 console.log(`sqlite indexer frontend listening on http://${env.HOST}:${env.PORT}`);

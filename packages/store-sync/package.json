@@ -18,7 +18,6 @@
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
-    "./trpc-indexer": "./dist/trpc-indexer/index.js",
     "./world": "./dist/exports/world.js",
     "./zustand": "./dist/zustand/index.js"
   },
@@ -47,9 +46,6 @@
       ],
       "sqlite": [
         "./dist/sqlite/index.d.ts"
-      ],
-      "trpc-indexer": [
-        "./dist/trpc-indexer/index.d.ts"
       ],
       "world": [
         "./dist/exports/world.d.ts"
@@ -85,8 +81,6 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-module-metadata": "workspace:*",
-    "@trpc/client": "10.34.0",
-    "@trpc/server": "10.34.0",
     "change-case": "^5.2.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.28.5",

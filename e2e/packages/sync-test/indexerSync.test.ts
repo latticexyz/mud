@@ -54,7 +54,7 @@ describe("Sync from indexer", async () => {
   });
 
   it("should log error if indexer is offline", async () => {
-    await openClientWithRootAccount(page, { indexerUrl: `http://127.0.0.1:9999/trpc` });
+    await openClientWithRootAccount(page, { indexerUrl: `http://127.0.0.1:9999` });
     await waitForInitialSync(page);
 
     const errors = asyncErrorHandler.getErrors();
