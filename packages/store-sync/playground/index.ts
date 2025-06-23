@@ -20,10 +20,10 @@ const result = await createStoreSync({
     validateBlockRange: true,
   },
   address: "0x253eb85B3C953bFE3827CC14a151262482E7189C",
-  initialBlockLogs: {
-    blockNumber: latestBlock - 1000n,
-    logs: [],
-  },
+  // initialBlockLogs: {
+  //   blockNumber: latestBlock - 1000n,
+  //   logs: [],
+  // },
   enableHydrationChunking: false,
   storageAdapter: async (block) => {
     console.log("storageAdapter", { blockNumber: block.blockNumber, logs: block.logs.length });
