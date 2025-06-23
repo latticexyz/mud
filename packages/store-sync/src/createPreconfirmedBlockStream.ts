@@ -43,7 +43,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
   const recreatePreconfirmedStream$ = new Subject<void>();
   const recreateLatestStream$ = new Subject<void>();
 
-  let restartBlockNumber = opts.fromBlock;
+  let processedLatestBlockNumber = opts.fromBlock - 1n;
   let initialCatchUpBlockNumber: bigint | undefined = undefined;
   getRpcClient(opts)
     .request({ method: "eth_blockNumber" })
@@ -55,7 +55,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
   const latestBlock$ = recreateLatestStream$.pipe(
     startWith(undefined),
     switchMap(() =>
-      createLatestBlockStream({ ...opts, fromBlock: restartBlockNumber }).pipe(
+      createLatestBlockStream({ ...opts, fromBlock: processedLatestBlockNumber + 1n }).pipe(
         catchError((e) => {
           debug("Error in latest block stream, recreating", e);
           recreateLatestStream$.next();
@@ -68,7 +68,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
   let processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
   let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
   let attempt = 0;
-  const preconfirmedLogs$ = recreatePreconfirmedStream$.pipe(
+  const preconfirmedBlockLogs$ = recreatePreconfirmedStream$.pipe(
     tap(() => {
       debug(`initializing preconfirmed logs stream in ${attempt * 500}ms`);
       preconfirmedLogsState = "initializing";
@@ -80,7 +80,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       watchLogs({
         ...opts,
         url: opts.preconfirmedLogsUrl,
-        fromBlock: restartBlockNumber,
+        fromBlock: processedLatestBlockNumber + 1n,
       }).logs$.pipe(
         catchError((e) => {
           debug("Error in preconfirmed logs stream, recreating", e);
@@ -90,11 +90,15 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       ),
     ),
     filter((block): block is StorageAdapterBlock => block != null),
+    filter((block) => {
+      const isProcessedBlock = block.blockNumber <= processedLatestBlockNumber;
+      if (isProcessedBlock) debug("skipping already processed block in preconfirmed stream", block.blockNumber);
+      return !isProcessedBlock;
+    }),
     tap((block) => {
       debug("preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
       preconfirmedLogsState = "initialized";
       attempt = 0;
-      restartBlockNumber = block.blockNumber;
       const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
       block.logs.forEach((log) => {
         seenLogs[log.logIndex!] = true;
@@ -103,13 +107,13 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     }),
   );
 
-  const missingLogs$ = latestBlock$.pipe(
+  const latestBlockLogs$ = latestBlock$.pipe(
     map((block) => {
       const missingBlock = processedBlockLogs[String(block.blockNumber)] == null;
       const seenLogs = processedBlockLogs[String(block.blockNumber)] ?? {};
       const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
       delete processedBlockLogs[String(block.blockNumber)];
-      restartBlockNumber = block.blockNumber + 1n;
+      processedLatestBlockNumber = block.blockNumber;
 
       debug(
         "got latest block",
@@ -158,7 +162,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     filter(isDefined),
   );
 
-  return merge(preconfirmedLogs$, missingLogs$);
+  return merge(preconfirmedBlockLogs$, latestBlockLogs$);
 }
 
 // TODO: refactor to reduce duplication with indexer/rpc stream in `createStoreSync.ts`

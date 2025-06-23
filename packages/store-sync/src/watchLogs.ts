@@ -5,6 +5,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { logSort } from "@latticexyz/common";
 import { SocketRpcClient, getWebSocketRpcClient } from "viem/utils";
 import { debug as parentDebug } from "./debug";
+import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 
 const debug = parentDebug.extend("watchLogs");
 
@@ -27,8 +28,6 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
   const topics = [
     storeEventsAbi.flatMap((event) => encodeEventTopics({ abi: [event], eventName: event.name })),
   ] as LogTopic[]; // https://github.com/wevm/viem/blob/63a5ac86eb9a2962f7323b4cc76ef54f9f5ef7ed/src/actions/public/getLogs.ts#L171
-
-  let resumeBlock = fromBlock;
 
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
     debug("wiresaw_watchLogs subscribed, starting from", fromBlock);
@@ -73,8 +72,6 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           const blockNumber = BigInt(result.blockNumber);
           if (caughtUp) {
             subscriber.next({ blockNumber, logs: parsedLogs });
-            // Since this the event's block number corresponds to a pending block, we have to refetch this block in case of a restart
-            resumeBlock = blockNumber;
           } else {
             logBuffer.push(...parsedLogs);
           }
@@ -84,15 +81,16 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
       // Catch up to the pending logs
       try {
-        const initialLogs = await fetchInitialLogs({ client, address, fromBlock: resumeBlock, topics });
+        const initialLogs = await fetchInitialLogs({ client, address, fromBlock, topics });
         debug("got", initialLogs.logs.length, "initial logs");
         const logs = [...initialLogs.logs, ...logBuffer].sort(logSort);
-        debug("combining with buffer of", logBuffer.length, "logs");
-        const blockNumber = logs.at(-1)?.blockNumber ?? initialLogs.blockNumber;
-        subscriber.next({ blockNumber, logs });
-        // Since this the block number can correspond to a pending block, we have to refetch this block in case of a restart
-        resumeBlock = blockNumber;
+        const blocks = groupLogsByBlockNumber(logs);
+        debug("releasing", logs.length, "logs across", blocks.length, "blocks to subscriber");
+        for (const block of blocks) {
+          subscriber.next(block);
+        }
         caughtUp = true;
+        logBuffer.length = 0;
       } catch (error) {
         debug("could not get initial logs", error);
         subscriber.error("Could not fetch initial wiresaw logs");
