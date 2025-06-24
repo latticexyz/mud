@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { Page, expect } from "playwright";
 import { Data } from "./types";
 import config from "../../contracts/mud.config";
 import { encodeEntity } from "@latticexyz/store-sync/recs";

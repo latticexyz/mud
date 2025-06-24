@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { Page, expect } from "playwright";
 
 export async function waitForInitialSync(page: Page) {
   const syncStep = page.locator("#sync-step");

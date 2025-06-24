@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ViteDevServer } from "vite";
-import { Browser, Page } from "@playwright/test";
+import { Browser, Page } from "playwright";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
 import { range } from "@latticexyz/utils";

@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page } from "playwright";
 import { Data } from "./types";
 import { encodeTestData } from "./encodeTestData";
 import { callWorld } from "./callWorld";

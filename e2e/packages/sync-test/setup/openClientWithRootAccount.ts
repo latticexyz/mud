@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page } from "playwright";
 import dotenv from "dotenv";
 import { rpcHttpUrl } from "./constants";
 
