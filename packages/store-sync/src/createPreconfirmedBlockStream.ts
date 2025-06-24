@@ -71,7 +71,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     ),
   );
 
-  let preconfirmedTransactionLogs: { [txHash: string]: Partial<StoreEventsLog>[] } = {};
+  let preconfirmedTransactionLogs: { [txHash: string]: Partial<StoreEventsLog>[] | undefined } = {};
   let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
   let attempt = 0;
   const preconfirmedBlockLogs$ = recreatePreconfirmedStream$.pipe(
@@ -152,7 +152,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
                   numPreconfirmedLogs: preconfirmedLogs?.length,
                   numLatestLogs: latestLogs.length,
                   missingLogs: latestLogs.filter(
-                    (log) => !preconfirmedLogs.find((preconfirmedLog) => log.logIndex === preconfirmedLog.logIndex),
+                    (log) => !preconfirmedLogs?.find((preconfirmedLog) => log.logIndex === preconfirmedLog.logIndex),
                   ),
                 },
                 (_, value) => (typeof value === "bigint" ? value.toString() : value),
