@@ -56,7 +56,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       getRpcClient(opts)
         .request({ method: "eth_blockNumber" })
         .then((blockNumber) => {
-          console.log("initial catch up block number", BigInt(blockNumber));
+          debug("initial catch up block number", BigInt(blockNumber));
           initialCatchUpBlockNumber = BigInt(blockNumber);
         });
     }),
