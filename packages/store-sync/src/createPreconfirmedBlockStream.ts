@@ -71,7 +71,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     ),
   );
 
-  let preconfirmedTransactionLogs: { [txHash: string]: Partial<StoreEventsLog>[] } = {};
+  let preconfirmedTransactionLogs: { [txHash: string]: Partial<StoreEventsLog>[] | undefined } = {};
   let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
   let attempt = 0;
   const preconfirmedBlockLogs$ = recreatePreconfirmedStream$.pipe(
