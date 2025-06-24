@@ -1,4 +1,4 @@
-import { Page } from "playwright";
+import { Page } from "@playwright/test";
 import { callWorld } from "./callWorld";
 
 export async function push(page: Page, num: number) {

@@ -1,4 +1,4 @@
-import { Browser, Page, chromium } from "playwright";
+import { Browser, Page, chromium } from "@playwright/test";
 import chalk from "chalk";
 
 export async function startBrowserAndPage(

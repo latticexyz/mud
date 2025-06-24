@@ -1,4 +1,4 @@
-import { Page } from "playwright";
+import { Page } from "@playwright/test";
 import IWorldAbi from "../../contracts/out/IWorld.sol/IWorld.abi.json";
 import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 
