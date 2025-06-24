@@ -199,11 +199,11 @@ async function request<T>({ ws, method, params, wsId }: RequestAsyncArgs): Promi
 
   const timeout = setTimeout(() => reject(new Error("timeout waiting for response for " + requestId)), 10_000);
 
-  const listener = (message: WebSocket.MessageEvent): void => {
+  ws.addEventListener("message", function onMessage(message) {
     const data = JSON.parse(message.data.toString());
     if (data.id === requestId) {
       debug(`ws${wsId} request response for`, method, requestId);
-      ws.removeEventListener("message", listener);
+      ws.removeEventListener("message", onMessage);
       clearTimeout(timeout);
 
       if ("error" in data) {
@@ -214,8 +214,7 @@ async function request<T>({ ws, method, params, wsId }: RequestAsyncArgs): Promi
 
       resolve(data.result as T);
     }
-  };
-  ws.addEventListener("message", listener);
+  });
   return promise;
 }
 
