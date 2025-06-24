@@ -6,12 +6,12 @@
     "clean": "pnpm recursive run clean",
     "generate-bench-data-bulk": "pnpm run --filter=test-data generate-bench-data-bulk",
     "generate-bench-data-query": "pnpm run --filter=test-data generate-bench-data-query",
-    "playwright-install": "pnpx playwright@1.53.1 install --with-deps chromium",
+    "playwright-install": "pnpx playwright@1.35.1 install --with-deps chromium",
     "test": "pnpm recursive run test",
     "test:ci": "pnpm run test"
   },
   "devDependencies": {
-    "@playwright/test": "1.53.1",
+    "@playwright/test": "1.35.1",
     "shx": "^0.3.4"
   }
 }

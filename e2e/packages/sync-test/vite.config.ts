@@ -1,4 +1,3 @@
-import path from "path";
 import { defineConfig, configDefaults } from "vitest/config";
 
 export default defineConfig({
@@ -9,10 +8,5 @@ export default defineConfig({
     singleThread: true,
     globalSetup: ["./setup/globalSetup.ts"],
     exclude: [...configDefaults.exclude, "compare"],
-  },
-  resolve: {
-    alias: {
-      stream: path.resolve(__dirname, "shims/stream.ts"),
-    },
   },
 });

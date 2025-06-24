@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@playwright/test':
-        specifier: 1.53.1
-        version: 1.53.1
+        specifier: 1.35.1
+        version: 1.35.1
       shx:
         specifier: ^0.3.4
         version: 0.3.4
@@ -77,7 +77,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(happy-dom@12.10.3)(playwright@1.53.1)
+        version: 0.34.6(happy-dom@12.10.3)
 
   packages/contracts:
     devDependencies:
@@ -116,7 +116,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(happy-dom@12.10.3)(playwright@1.53.1)
+        version: 0.34.6(happy-dom@12.10.3)
 
   packages/sync-test:
     devDependencies:
@@ -191,7 +191,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(happy-dom@12.10.3)(playwright@1.53.1)
+        version: 0.34.6(happy-dom@12.10.3)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -540,9 +540,10 @@ packages:
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
 
-  '@playwright/test@1.53.1':
-    resolution: {integrity: sha512-Z4c23LHV0muZ8hfv4jw6HngPJkbbtZxTkxPNIg7cJcTc9C28N/p2q7g3JZS2SiKBBHJ3uM1dgDye66bB7LEk5w==}
-    engines: {node: '>=18'}
+  '@playwright/test@1.35.1':
+    resolution: {integrity: sha512-b5YoFe6J9exsMYg0pQAobNDR85T1nLumUYgUTtKm4d21iX2L7WqKq9dW8NGJ+2vX0etZd+Y7UeuqsxDXm9+5ZA==}
+    engines: {node: '>=16'}
+    deprecated: Please update to the latest version of Playwright to test up-to-date browsers.
     hasBin: true
 
   '@protobufjs/aspromise@1.1.2':
@@ -1071,14 +1072,9 @@ packages:
   pkg-types@1.0.3:
     resolution: {integrity: sha512-nN7pYi0AQqJnoLPC9eHFQ8AcyaixBUOwvqc5TDnIKCMEE6I0y8P7OKA7fPexsXGCGxQDl/cmrLAp26LhcwxZ4A==}
 
-  playwright-core@1.53.1:
-    resolution: {integrity: sha512-Z46Oq7tLAyT0lGoFx4DOuB1IA9D1TPj0QkYxpPVUnGDqHHvDpCftu1J2hM2PiWsNMoZh8+LQaarAWcDfPBc6zg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.53.1:
-    resolution: {integrity: sha512-LJ13YLr/ocweuwxyGf1XNFWIU4M2zUSo149Qbp+A4cpwDjsxRPj7k6H25LBrEHiEwxvRbD8HdwvQmRMSvquhYw==}
-    engines: {node: '>=18'}
+  playwright-core@1.35.1:
+    resolution: {integrity: sha512-pNXb6CQ7OqmGDRspEjlxE49w+4YtR6a3X6mT1hZXeJHWmsEz7SunmvZeiG/+y1yyMZdHnnn73WKYdtV1er0Xyg==}
+    engines: {node: '>=16'}
     hasBin: true
 
   postcss@8.4.23:
@@ -1548,9 +1544,12 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
-  '@playwright/test@1.53.1':
+  '@playwright/test@1.35.1':
     dependencies:
-      playwright: 1.53.1
+      '@types/node': 20.1.3
+      playwright-core: 1.35.1
+    optionalDependencies:
+      fsevents: 2.3.2
 
   '@protobufjs/aspromise@1.1.2': {}
 
@@ -2025,13 +2024,7 @@ snapshots:
       mlly: 1.5.0
       pathe: 1.1.2
 
-  playwright-core@1.53.1: {}
-
-  playwright@1.53.1:
-    dependencies:
-      playwright-core: 1.53.1
-    optionalDependencies:
-      fsevents: 2.3.2
+  playwright-core@1.35.1: {}
 
   postcss@8.4.23:
     dependencies:
@@ -2225,7 +2218,7 @@ snapshots:
       '@types/node': 20.1.3
       fsevents: 2.3.2
 
-  vitest@0.34.6(happy-dom@12.10.3)(playwright@1.53.1):
+  vitest@0.34.6(happy-dom@12.10.3):
     dependencies:
       '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
@@ -2253,7 +2246,6 @@ snapshots:
       why-is-node-running: 2.2.2
     optionalDependencies:
       happy-dom: 12.10.3
-      playwright: 1.53.1
     transitivePeerDependencies:
       - less
       - sass
