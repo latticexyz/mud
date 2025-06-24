@@ -67,8 +67,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     ),
   );
 
-  // let processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
-  let preconfirmedTransactionLogs: { [txHash: string]: number } = {};
+  let preconfirmedTransactionLogs: { [txHash: string]: Partial<StoreEventsLog>[] } = {};
   let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
   let attempt = 0;
   const preconfirmedBlockLogs$ = recreatePreconfirmedStream$.pipe(
@@ -108,7 +107,8 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
           debug("unexpected null transaction hash", log);
           return;
         }
-        preconfirmedTransactionLogs[txHash] = (preconfirmedTransactionLogs[txHash] ?? 0) + 1;
+        preconfirmedTransactionLogs[txHash] ??= [];
+        preconfirmedTransactionLogs[txHash].push(log);
       });
     }),
   );
@@ -119,17 +119,33 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
 
       const mismatchingTransactions: string[] = [];
       if (preconfirmedLogsState === "initialized") {
-        const numLogsByTransaction = block.logs.reduce<Record<string, number>>((acc, log) => {
+        const logsByTransaction = block.logs.reduce<Record<string, Partial<StoreEventsLog>[]>>((acc, log) => {
           const txHash = log.transactionHash;
           if (txHash == null) return acc;
-          acc[txHash] = (acc[txHash] ?? 0) + 1;
+          acc[txHash] ??= [];
+          acc[txHash].push(log);
           return acc;
         }, {});
-        for (const [txHash, numLatestLogs] of Object.entries(numLogsByTransaction)) {
-          const numPreconfirmedLogs = preconfirmedTransactionLogs[txHash];
+        for (const [txHash, latestLogs] of Object.entries(logsByTransaction)) {
+          const preconfirmedLogs = preconfirmedTransactionLogs[txHash];
           delete preconfirmedTransactionLogs[txHash];
-          if (!numPreconfirmedLogs || numLatestLogs !== numPreconfirmedLogs) {
-            debug("found mismatching transaction", { txHash, numPreconfirmedLogs, numLatestLogs });
+
+          if (!preconfirmedLogs || preconfirmedLogs.length !== latestLogs.length) {
+            debug(
+              "found mismatching transaction",
+              JSON.stringify(
+                {
+                  txHash,
+                  numPreconfirmedLogs: preconfirmedLogs?.length,
+                  numLatestLogs: latestLogs.length,
+                  missingLogs: latestLogs.filter(
+                    (log) => !preconfirmedLogs.find((preconfirmedLog) => log.logIndex === preconfirmedLog.logIndex),
+                  ),
+                },
+                (_, value) => (typeof value === "bigint" ? value.toString() : value),
+                2,
+              ),
+            );
             mismatchingTransactions.push(txHash);
           }
         }
