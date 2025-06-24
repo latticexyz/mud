@@ -67,5 +67,10 @@
   "engines": {
     "node": "^20",
     "pnpm": "^9"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "clarinet": "patches/clarinet.patch"
+    }
   }
 }

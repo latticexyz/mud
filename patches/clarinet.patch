@@ -1,0 +1,14 @@
+diff --git a/clarinet.js b/clarinet.js
+index 7e234e4e9a852281f6c3b64f9f75a577ce09eeb7..3bb980ff4477694f06fe80f28cdc74926b2331f0 100644
+--- a/clarinet.js
++++ b/clarinet.js
+@@ -188,8 +188,7 @@
+     , close  : function () { return this.write(null); }
+     };
+ 
+-  try        { Stream = require("stream").Stream; }
+-  catch (ex) { Stream = function () {}; }
++  Stream = function () {};
+ 
+   function createStream (opt) { return new CStream(opt); }
+ 
