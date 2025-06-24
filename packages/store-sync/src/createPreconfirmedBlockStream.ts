@@ -123,8 +123,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
           debug("unexpected null transaction hash", log);
           return;
         }
-        preconfirmedTransactionLogs[txHash] ??= [];
-        preconfirmedTransactionLogs[txHash].push(log);
+        (preconfirmedTransactionLogs[txHash] ??= []).push(log);
       });
     }),
   );
