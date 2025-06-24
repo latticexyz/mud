@@ -24,7 +24,7 @@ import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { storeEventsAbi } from "@latticexyz/store";
-import { bigIntMax, isDefined } from "@latticexyz/common/utils";
+import { bigIntMax, groupBy, isDefined } from "@latticexyz/common/utils";
 import { getRpcClient, GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 import { debug as parentDebug } from "./debug";
 
@@ -135,14 +135,11 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
 
       const mismatchingTransactions: string[] = [];
       if (preconfirmedLogsState === "initialized") {
-        const logsByTransaction = block.logs.reduce<Record<string, Partial<StoreEventsLog>[]>>((acc, log) => {
-          const txHash = log.transactionHash;
-          if (txHash == null) return acc;
-          acc[txHash] ??= [];
-          acc[txHash].push(log);
-          return acc;
-        }, {});
-        for (const [txHash, latestLogs] of Object.entries(logsByTransaction)) {
+        const logsByTransaction = groupBy(
+          block.logs.filter((log) => log.transactionHash) as StoreEventsLog[],
+          (log) => log.transactionHash,
+        );
+        for (const [txHash, latestLogs] of logsByTransaction.entries()) {
           const preconfirmedLogs = preconfirmedTransactionLogs[txHash];
           delete preconfirmedTransactionLogs[txHash];
 
