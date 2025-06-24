@@ -26,12 +26,15 @@ type WatchLogsEvent = {
   logs: RpcLog[];
 };
 
+let websocketCount = 0;
+
 export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLogsResult {
   const topics = [
     storeEventsAbi.flatMap((event) => encodeEventTopics({ abi: [event], eventName: event.name })),
   ] as LogTopic[]; // https://github.com/wevm/viem/blob/63a5ac86eb9a2962f7323b4cc76ef54f9f5ef7ed/src/actions/public/getLogs.ts#L171
 
   let ws: WebSocket | undefined = undefined;
+  const wsId = websocketCount++;
 
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
     debug("wiresaw_watchLogs subscribed, starting from", fromBlock);
@@ -47,19 +50,20 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         ws,
         method: "wiresaw_watchLogs",
         params: [{ address, topics }],
+        wsId,
       });
 
       ws.on("message", (message) => {
         const data = JSON.parse(message.toString());
 
         if ("error" in data) {
-          debugError("json-rpc error", data.error);
+          debugError(`ws${wsId} json-rpc error`, data.error);
           subscriber.error("json-rpc error");
           return;
         }
 
         if ("params" in data && data.params.subscription === subscriptionId) {
-          debug("wiresaw_watchLogs update");
+          debug(`ws${wsId} wiresaw_watchLogs update`);
           const result: WatchLogsEvent = data.params.result;
           const formattedLogs = result.logs.map((log) => formatLog(log));
           const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
@@ -72,41 +76,41 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           return;
         }
 
-        debug("ws message");
+        debug(`ws${wsId} message`);
       });
 
       ws.on("open", () => {
-        debug("ws open");
+        debug(`ws${wsId} open`);
       });
 
       ws.on("close", () => {
-        debug("ws close");
+        debug(`ws${wsId} close`);
         subscriber.error("ws closed");
       });
 
       ws.on("error", (error) => {
-        debugError("ws error", error);
+        debugError(`ws${wsId} error`, error);
         subscriber.error("ws error");
       });
 
       ws.on("ping", () => {
-        debug("ws ping");
+        debug(`ws${wsId} ping`);
       });
 
       ws.on("pong", () => {
-        debug("ws pong");
+        debug(`ws${wsId} pong`);
       });
 
       ws.on("unexpected-response", (message) => {
-        debugError("ws unexpected-response", message);
+        debugError(`ws${wsId} unexpected-response`, message);
       });
 
       ws.on("upgrade", () => {
-        debug("ws upgrade");
+        debug(`ws${wsId} upgrade`);
       });
 
       // Catch up to the pending logs
-      fetchInitialLogs({ ws, address, fromBlock, topics })
+      fetchInitialLogs({ ws, address, fromBlock, topics, wsId })
         .then((initialLogs) => {
           debug("got", initialLogs.logs.length, "initial logs");
           const logs = [...initialLogs.logs, ...logBuffer].sort(logSort);
@@ -130,10 +134,10 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
     });
 
     // Send a ping to keep the connection alive
-    const ping = setInterval(() => ws && request({ ws, method: "net_version" }), 10_000);
+    const ping = setInterval(() => ws && request({ ws, method: "net_version", wsId }), 10_000);
 
     return () => {
-      debug("logs$ subscription closed, closing client");
+      debug(`ws${wsId} logs$ subscription closed, closing client`);
       clearInterval(ping);
       try {
         ws?.close();
@@ -146,11 +150,11 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
   return { logs$ };
 }
 
-async function waitForWebSocketOpen(ws: WebSocket): Promise<void> {
+async function waitForWebSocketOpen(ws: WebSocket, wsId?: number): Promise<void> {
   if (ws.readyState !== WebSocket.OPEN) {
     const [resolve, reject, promise] = deferred<void>();
-    debug("waiting for websocket to open");
-    const timeout = setTimeout(() => reject(new Error("timeout waiting for websocket to open")), 10_000);
+    debug(`ws${wsId} waiting for websocket to open`);
+    const timeout = setTimeout(() => reject(new Error(`ws${wsId} timeout waiting for websocket to open`)), 10_000);
     ws.addEventListener("open", () => {
       clearTimeout(timeout);
       resolve();
@@ -163,17 +167,18 @@ type RequestAsyncArgs = {
   ws: WebSocket;
   method: string;
   params?: unknown[];
+  wsId: number;
 };
 
-async function request<T>({ ws, method, params }: RequestAsyncArgs): Promise<T> {
-  await waitForWebSocketOpen(ws);
+async function request<T>({ ws, method, params, wsId }: RequestAsyncArgs): Promise<T> {
+  await waitForWebSocketOpen(ws, wsId);
   const requestId = uuid();
   const [resolve, reject, promise] = deferred<T>();
 
-  debug("sending request", method, requestId);
+  debug(`ws${wsId} sending request`, method, requestId);
   ws.send(JSON.stringify({ jsonrpc: "2.0", id: requestId, method, params }), (error) => {
     if (error) {
-      debugError("request error", error);
+      debugError(`ws${wsId} request error`, error);
       reject(error);
     }
   });
@@ -183,12 +188,12 @@ async function request<T>({ ws, method, params }: RequestAsyncArgs): Promise<T> 
   const listener = (message: WebSocket.MessageEvent): void => {
     const data = JSON.parse(message.data.toString());
     if (data.id === requestId) {
-      debug("request response for", method, requestId);
+      debug(`ws${wsId} request response for`, method, requestId);
       ws.removeEventListener("message", listener);
       clearTimeout(timeout);
 
       if ("error" in data) {
-        debugError("request json-rpc error", data.error);
+        debugError(`ws${wsId} request json-rpc error`, data.error);
         reject(new Error(data.error.message));
         return;
       }
@@ -200,17 +205,23 @@ async function request<T>({ ws, method, params }: RequestAsyncArgs): Promise<T> 
   return promise;
 }
 
-type FetchInitialLogsArgs = { ws: WebSocket; topics: LogTopic[] } & Omit<WatchLogsInput, "url">;
+type FetchInitialLogsArgs = {
+  ws: WebSocket;
+  topics: LogTopic[];
+  wsId: number;
+} & Omit<WatchLogsInput, "url">;
 
 async function fetchInitialLogs({
   ws,
   address,
   topics,
   fromBlock,
+  wsId,
 }: FetchInitialLogsArgs): Promise<{ blockNumber: bigint; logs: StoreEventsLog[] }> {
   const latestBlockNumber = await request<Hex>({
     ws,
     method: "eth_blockNumber",
+    wsId,
   });
 
   debug("fetching initial logs from", Number(fromBlock), "to", parseInt(latestBlockNumber));
@@ -219,6 +230,7 @@ async function fetchInitialLogs({
     ws,
     method: "eth_getLogs",
     params: [{ address, topics, fromBlock: toHex(fromBlock), toBlock: latestBlockNumber }],
+    wsId,
   });
 
   const formattedLogs = rawInitialLogs.map((log) => formatLog(log));

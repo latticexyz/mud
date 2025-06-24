@@ -98,14 +98,22 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       return !isProcessedBlock;
     }),
     tap((block) => {
-      debug("preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
+      debug(
+        "preconfirmed block",
+        block.blockNumber,
+        "with",
+        block.logs.length,
+        "logs",
+        block.logs.map((log) => {
+          return { logIndex: log.logIndex, txIndex: log.transactionIndex };
+        }),
+      );
       preconfirmedLogsState = "initialized";
       attempt = 0;
       const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
       block.logs.forEach((log) => {
         seenLogs[log.logIndex!] = true;
       });
-      debug("got preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
     }),
   );
 
@@ -151,7 +159,9 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       // Pass all logs from this block, not just the missing ones, to make sure they appear in the right order.
       if (preconfirmedLogsState === "initialized" && (missingLogs.length > 0 || missingBlock)) {
         debug("missing logs found in latest block", block.blockNumber, "recreating preconfirmed stream", {
-          missingLogs: missingLogs.length,
+          missingLogs: missingLogs.map((log) => {
+            return { logIndex: log.logIndex, txIndex: log.transactionIndex };
+          }),
           missingBlock,
         });
         recreatePreconfirmedStream$.next();
