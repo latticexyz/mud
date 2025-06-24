@@ -1,16 +1,17 @@
 import clarinet from "clarinet";
-import { StorageAdapterLog } from "../common";
 
 /**
  * @internal
  */
-export async function streamLogs(
+export const dropValue = Symbol();
+
+/**
+ * @internal
+ */
+export async function parseJson(
   body: ReadableStream<Uint8Array>,
-  onLog: (log: StorageAdapterLog) => void,
-): Promise<{
-  blockNumber: string;
-  logs: readonly StorageAdapterLog[];
-}> {
+  onValue?: (path: string, value: unknown) => unknown,
+): Promise<unknown> {
   const parser = clarinet.parser();
 
   let nextKey: string | null = null;
@@ -35,14 +36,23 @@ export async function streamLogs(
   };
 
   parser.onvalue = function (value) {
+    const keyPath = [...open.map(([key]) => key), nextKey];
+    const path = keyPath.map((key, i) => (key == null ? (i === 0 ? "" : "*") : key)).join(".");
+
     const [, parentObj] = open.at(-1)!;
+
+    if (onValue?.(path, value) === dropValue) {
+      // drop value
+      return;
+    }
 
     // if we have an open array, push the value to the array
     if (Array.isArray(parentObj)) {
       parentObj.push(value);
     }
     // if we have an open object, add the value
-    else if (parentObj && nextKey) {
+    else if (parentObj) {
+      if (!nextKey) throw new Error("no key for value");
       parentObj[nextKey] = value;
     }
 
@@ -55,29 +65,16 @@ export async function streamLogs(
   };
 
   parser.oncloseobject = parser.onclosearray = function () {
-    const path = open.map(([key], i) => (key == null ? (i === 0 ? "" : "*") : key)).join(".");
-
     // pop the last open object so we can close it
-    const [key, obj] = open.pop()!;
+    const [key, value] = open.pop()!;
 
     if (!open.length) {
-      result = obj;
+      result = value;
       return;
     }
 
-    const [, parentObj] = open.at(-1)!;
-
-    // emit log and don't accumulate
-    if (path === ".logs.*") {
-      onLog(obj);
-      return;
-    }
-
-    if (Array.isArray(parentObj)) {
-      parentObj.push(obj);
-    } else if (parentObj && key) {
-      parentObj[key] = obj;
-    }
+    nextKey = key;
+    this.onvalue(value);
   };
 
   const reader = body.getReader();

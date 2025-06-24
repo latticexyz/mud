@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { streamLogs } from "./streamLogs";
+import { parseLogs } from "./parseLogs";
 
-describe("streamLogs", async () => {
+describe("parseLogs", async () => {
   it("streams an indexer response", async () => {
     const response = {
       blockNumber: "19250795",
@@ -49,8 +49,8 @@ describe("streamLogs", async () => {
       },
     });
 
-    const onLog = vi.fn<Parameters<typeof streamLogs>[1]>();
-    const result = await streamLogs(body, onLog);
+    const onLog = vi.fn<Parameters<typeof parseLogs>[1]>();
+    const result = await parseLogs(body, onLog);
 
     expect(onLog).toHaveBeenCalledTimes(3);
     expect(onLog).toHaveBeenNthCalledWith(1, response.logs[0]);
@@ -76,8 +76,8 @@ describe("streamLogs", async () => {
       },
     });
 
-    const onLog = vi.fn<Parameters<typeof streamLogs>[1]>();
-    const result = await streamLogs(body, onLog);
+    const onLog = vi.fn<Parameters<typeof parseLogs>[1]>();
+    const result = await parseLogs(body, onLog);
 
     expect(onLog).toHaveBeenCalledTimes(0);
     expect(result).toEqual({
@@ -98,8 +98,8 @@ describe("streamLogs", async () => {
       },
     });
 
-    const onLog = vi.fn<Parameters<typeof streamLogs>[1]>();
-    const result = await streamLogs(body, onLog);
+    const onLog = vi.fn<Parameters<typeof parseLogs>[1]>();
+    const result = await parseLogs(body, onLog);
 
     expect(onLog).toHaveBeenCalledTimes(0);
     expect(result).toEqual({ invalid: true });

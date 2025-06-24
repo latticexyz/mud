@@ -2,7 +2,7 @@ import { z } from "zod";
 import { input } from "./input";
 import { StorageAdapterBlock, StorageAdapterLog } from "../common";
 import { Result } from "@latticexyz/common";
-import { streamLogs } from "./streamLogs";
+import { parseLogs } from "./parseLogs";
 import { isLogsApiResponse } from "./isLogsApiResponse";
 import { toStorageAdapterBlock } from "./toStorageAdapterBlock";
 
@@ -36,7 +36,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
         }
 
         const logs: StorageAdapterLog[] = [];
-        const result = await streamLogs(response.body, (log) => logs.push(log));
+        const result = await parseLogs(response.body, (log) => logs.push(log));
 
         if (!isLogsApiResponse(result)) {
           return { error: result };
