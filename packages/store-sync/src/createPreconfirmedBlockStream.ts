@@ -152,7 +152,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
                   numPreconfirmedLogs: preconfirmedLogs?.length,
                   numLatestLogs: latestLogs.length,
                   missingLogs: latestLogs.filter(
-                    (log) => !preconfirmedLogs.find((preconfirmedLog) => log.logIndex === preconfirmedLog.logIndex),
+                    (log) => !preconfirmedLogs?.find((preconfirmedLog) => log.logIndex === preconfirmedLog.logIndex),
                   ),
                 },
                 (_, value) => (typeof value === "bigint" ? value.toString() : value),
