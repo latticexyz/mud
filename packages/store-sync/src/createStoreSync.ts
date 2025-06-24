@@ -347,7 +347,7 @@ export async function createStoreSync({
       lastBlockNumberProcessed = blockNumber;
 
       if (!caughtUp && startBlock != null && latestBlockNumber != null) {
-        if (lastBlockNumberProcessed < latestBlockNumber - 4n) {
+        if (lastBlockNumberProcessed < latestBlockNumber) {
           const totalBlocks = latestBlockNumber - startBlock;
           const processedBlocks = lastBlockNumberProcessed - startBlock;
           onProgress?.({
