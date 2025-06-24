@@ -8,7 +8,7 @@ import { toStorageAdapterBlock } from "./toStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
-   * Indexer endpoint URL like `https://indexer.mud.redstone.xyz`.
+   * Indexer endpoint URL like `https://indexer.mud.redstonechain.com`.
    */
   url: string;
 };
