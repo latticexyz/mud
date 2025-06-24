@@ -26,8 +26,6 @@ type WatchLogsEvent = {
   logs: RpcLog[];
 };
 
-// TODO: add a ping to keep the connection alive
-
 export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLogsResult {
   const topics = [
     storeEventsAbi.flatMap((event) => encodeEventTopics({ abi: [event], eventName: event.name })),
