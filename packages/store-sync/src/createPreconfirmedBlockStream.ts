@@ -67,14 +67,15 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     ),
   );
 
-  let processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
+  // let processedBlockLogs: { [blockNumber: string]: { [logIndex: number]: boolean } } = {};
+  let preconfirmedTransactionLogs: { [txHash: string]: number } = {};
   let preconfirmedLogsState: "initializing" | "initialized" | "waiting" = "waiting";
   let attempt = 0;
   const preconfirmedBlockLogs$ = recreatePreconfirmedStream$.pipe(
     tap(() => {
       debug(`initializing preconfirmed logs stream in ${attempt * 500}ms`);
       preconfirmedLogsState = "initializing";
-      processedBlockLogs = {};
+      preconfirmedTransactionLogs = {};
     }),
     delay(attempt * 500),
     tap(() => attempt++),
@@ -98,44 +99,53 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       return !isProcessedBlock;
     }),
     tap((block) => {
-      debug(
-        "preconfirmed block",
-        block.blockNumber,
-        "with",
-        block.logs.length,
-        "logs",
-        block.logs.map((log) => {
-          return { logIndex: log.logIndex, txIndex: log.transactionIndex };
-        }),
-      );
+      debug("preconfirmed block", block.blockNumber, "with", block.logs.length, "logs");
       preconfirmedLogsState = "initialized";
       attempt = 0;
-      const seenLogs = (processedBlockLogs[String(block.blockNumber)] ??= {});
       block.logs.forEach((log) => {
-        seenLogs[log.logIndex!] = true;
+        const txHash = log.transactionHash;
+        if (txHash == null) {
+          debug("unexpected null transaction hash", log);
+          return;
+        }
+        preconfirmedTransactionLogs[txHash] = (preconfirmedTransactionLogs[txHash] ?? 0) + 1;
       });
     }),
   );
 
   const latestBlockLogs$ = latestBlock$.pipe(
     map((block) => {
-      const missingBlock = processedBlockLogs[String(block.blockNumber)] == null;
-      const seenLogs = processedBlockLogs[String(block.blockNumber)] ?? {};
-      const numSeenLogs = Object.keys(seenLogs).length;
-      const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
-      delete processedBlockLogs[String(block.blockNumber)];
       processedLatestBlockNumber = block.blockNumber;
+
+      const mismatchingTransactions: string[] = [];
+      if (preconfirmedLogsState === "initialized") {
+        const numLogsByTransaction = block.logs.reduce<Record<string, number>>((acc, log) => {
+          const txHash = log.transactionHash;
+          if (txHash == null) return acc;
+          acc[txHash] = (acc[txHash] ?? 0) + 1;
+          return acc;
+        }, {});
+        for (const [txHash, numLatestLogs] of Object.entries(numLogsByTransaction)) {
+          const numPreconfirmedLogs = preconfirmedTransactionLogs[txHash];
+          delete preconfirmedTransactionLogs[txHash];
+          if (!numPreconfirmedLogs || numLatestLogs !== numPreconfirmedLogs) {
+            debug("found mismatching transaction", { txHash, numPreconfirmedLogs, numLatestLogs });
+            mismatchingTransactions.push(txHash);
+          }
+        }
+      }
 
       debug(
         "got latest block",
         block.blockNumber,
         "with",
         block.logs.length,
-        "logs (",
-        missingBlock ? "missing block," : "block seen,",
-        `${numSeenLogs} seen logs,`,
-        `${missingLogs.length} new logs`,
-        ")",
+        "logs",
+        preconfirmedLogsState === "initialized"
+          ? `(${
+              mismatchingTransactions.length ? mismatchingTransactions.length + " txs mismatching" : "all preconfirmed"
+            })`
+          : "",
       );
 
       if (preconfirmedLogsState === "waiting") {
@@ -157,20 +167,19 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
         return block;
       }
 
-      // If the preconfirmed logs stream is initialized but there are missing logs, recreate it and pass the block through.
-      // Pass all logs from this block, not just the missing ones, to make sure they appear in the right order.
-      if (preconfirmedLogsState === "initialized" && (missingLogs.length > 0 || missingBlock)) {
-        debug("missing logs found in latest block", block.blockNumber, "recreating preconfirmed stream", {
-          missingLogs: missingLogs.map((log) => {
-            return { logIndex: log.logIndex, txIndex: log.transactionIndex };
-          }),
-          missingBlock,
-        });
+      // If the preconfirmed logs stream is initialized but there are mismatching logs, recreate it and pass the block through.
+      // Pass all logs from this block, not just the mismatching ones, to make sure they appear in the right order.
+      if (preconfirmedLogsState === "initialized" && mismatchingTransactions.length > 0) {
+        debug("mismatching transactions found in latest block", block.blockNumber, "recreating preconfirmed stream");
         recreatePreconfirmedStream$.next();
         return block;
       }
 
-      debug("no missing logs found in latest block", block.blockNumber, "not recreating preconfirmed stream");
+      debug(
+        "no mismatching transactions found in latest block",
+        block.blockNumber,
+        "not recreating preconfirmed stream",
+      );
       return;
     }),
     filter(isDefined),
