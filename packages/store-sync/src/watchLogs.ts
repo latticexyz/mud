@@ -134,7 +134,15 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
     });
 
     // Send a ping to keep the connection alive
-    const ping = setInterval(() => ws && request({ ws, method: "net_version", wsId }), 10_000);
+    const ping = setInterval(
+      () =>
+        ws &&
+        request({ ws, method: "net_version", wsId }).catch(() => {
+          debug("ping failed");
+          subscriber.error("ping failed");
+        }),
+      10_000,
+    );
 
     return () => {
       debug(`ws${wsId} logs$ subscription closed, closing client`);
