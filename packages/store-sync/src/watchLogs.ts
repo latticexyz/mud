@@ -46,6 +46,36 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
       ws = new WebSocket(url);
 
+      ws.on("error", (error) => {
+        debugError(`ws${wsId} error`, error);
+        subscriber.error("ws error");
+      });
+
+      ws.on("close", () => {
+        debug(`ws${wsId} close`);
+        subscriber.error("ws closed");
+      });
+
+      ws.on("open", () => {
+        debug(`ws${wsId} open`);
+      });
+
+      ws.on("ping", () => {
+        debug(`ws${wsId} ping`);
+      });
+
+      ws.on("pong", () => {
+        debug(`ws${wsId} pong`);
+      });
+
+      ws.on("unexpected-response", (message) => {
+        debugError(`ws${wsId} unexpected-response`, message);
+      });
+
+      ws.on("upgrade", () => {
+        debug(`ws${wsId} upgrade`);
+      });
+
       const subscriptionId = await request<Hex>({
         ws,
         method: "wiresaw_watchLogs",
@@ -77,36 +107,6 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         }
 
         debug(`ws${wsId} message`);
-      });
-
-      ws.on("open", () => {
-        debug(`ws${wsId} open`);
-      });
-
-      ws.on("close", () => {
-        debug(`ws${wsId} close`);
-        subscriber.error("ws closed");
-      });
-
-      ws.on("error", (error) => {
-        debugError(`ws${wsId} error`, error);
-        subscriber.error("ws error");
-      });
-
-      ws.on("ping", () => {
-        debug(`ws${wsId} ping`);
-      });
-
-      ws.on("pong", () => {
-        debug(`ws${wsId} pong`);
-      });
-
-      ws.on("unexpected-response", (message) => {
-        debugError(`ws${wsId} unexpected-response`, message);
-      });
-
-      ws.on("upgrade", () => {
-        debug(`ws${wsId} upgrade`);
       });
 
       // Catch up to the pending logs
