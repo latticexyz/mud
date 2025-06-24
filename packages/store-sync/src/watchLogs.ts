@@ -71,6 +71,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           } else {
             logBuffer.push(...parsedLogs);
           }
+          return;
         }
 
         debug("ws message");
@@ -130,8 +131,12 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       subscriber.error("failed to setup wiresaw_watchLogs subscription");
     });
 
+    // Send a ping to keep the connection alive
+    const ping = setInterval(() => ws && request({ ws, method: "net_version" }), 10_000);
+
     return () => {
       debug("logs$ subscription closed, closing client");
+      clearInterval(ping);
       try {
         ws?.close();
       } catch (e) {
@@ -166,16 +171,26 @@ async function request<T>({ ws, method, params }: RequestAsyncArgs): Promise<T> 
   await waitForWebSocketOpen(ws);
   const requestId = uuid();
   const [resolve, reject, promise] = deferred<T>();
+
   debug("sending request", method, requestId);
-  ws.send(JSON.stringify({ jsonrpc: "2.0", id: requestId, method, params }), (error) => error && reject(error));
+  ws.send(JSON.stringify({ jsonrpc: "2.0", id: requestId, method, params }), (error) => {
+    if (error) {
+      debugError("request error", error);
+      reject(error);
+    }
+  });
+
+  const timeout = setTimeout(() => reject(new Error("timeout waiting for response for " + requestId)), 10_000);
+
   const listener = (message: WebSocket.MessageEvent): void => {
     const data = JSON.parse(message.data.toString());
     if (data.id === requestId) {
-      debug("got response for", method, requestId);
+      debug("request response for", method, requestId);
       ws.removeEventListener("message", listener);
+      clearTimeout(timeout);
 
       if ("error" in data) {
-        debugError("json-rpc error in request", data.error);
+        debugError("request json-rpc error", data.error);
         reject(new Error(data.error.message));
         return;
       }
