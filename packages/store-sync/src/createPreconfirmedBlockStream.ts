@@ -14,7 +14,7 @@ import {
   merge,
   filter,
   startWith,
-  delay,
+  timer,
 } from "rxjs";
 import { StorageAdapterBlock, StoreEventsLog, SyncFilter } from "./common";
 import { watchLogs } from "./watchLogs";
@@ -47,15 +47,19 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
 
   let processedLatestBlockNumber = opts.fromBlock - 1n;
   let initialCatchUpBlockNumber: bigint | undefined = undefined;
-  getRpcClient(opts)
-    .request({ method: "eth_blockNumber" })
-    .then((blockNumber) => {
-      console.log("initial catch up block number", BigInt(blockNumber));
-      initialCatchUpBlockNumber = BigInt(blockNumber);
-    });
 
   const latestBlock$ = recreateLatestStream$.pipe(
     startWith(undefined),
+    tap(() => {
+      debug("initializing latest block stream");
+      initialCatchUpBlockNumber = undefined;
+      getRpcClient(opts)
+        .request({ method: "eth_blockNumber" })
+        .then((blockNumber) => {
+          console.log("initial catch up block number", BigInt(blockNumber));
+          initialCatchUpBlockNumber = BigInt(blockNumber);
+        });
+    }),
     switchMap(() =>
       createLatestBlockStream({ ...opts, fromBlock: processedLatestBlockNumber + 1n }).pipe(
         catchError((e) => {
@@ -72,12 +76,15 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
   let attempt = 0;
   const preconfirmedBlockLogs$ = recreatePreconfirmedStream$.pipe(
     tap(() => {
-      debug(`initializing preconfirmed logs stream in ${attempt * 500}ms`);
+      if (attempt !== 0) debug(`waiting ${attempt * 500}ms before initializing preconfirmed logs stream`);
       preconfirmedLogsState = "initializing";
       preconfirmedTransactionLogs = {};
     }),
-    delay(attempt * 500),
-    tap(() => attempt++),
+    switchMap(() => timer(attempt * 500)),
+    tap(() => {
+      debug(`initializing preconfirmed logs stream`);
+      attempt++;
+    }),
     switchMap(() =>
       watchLogs({
         ...opts,
@@ -93,6 +100,15 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     ),
     filter((block): block is StorageAdapterBlock => block != null),
     filter((block) => {
+      if (initialCatchUpBlockNumber == null || block.blockNumber <= initialCatchUpBlockNumber) {
+        debug(
+          "skipping preconfirmed block",
+          block.blockNumber,
+          "before initial catch up block",
+          initialCatchUpBlockNumber,
+        );
+        return false;
+      }
       const isProcessedBlock = block.blockNumber <= processedLatestBlockNumber;
       if (isProcessedBlock) debug("skipping already processed block in preconfirmed stream", block.blockNumber);
       return !isProcessedBlock;

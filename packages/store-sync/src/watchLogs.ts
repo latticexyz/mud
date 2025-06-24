@@ -47,13 +47,15 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       ws = new WebSocket(url);
 
       ws.on("error", (error) => {
-        debugError(`ws${wsId} error`, error);
-        subscriber.error("ws error");
+        const errorMessage = `ws${wsId} error`;
+        debugError(errorMessage, error);
+        subscriber.error(errorMessage);
       });
 
       ws.on("close", () => {
-        debug(`ws${wsId} close`);
-        subscriber.error("ws closed");
+        const errorMessage = `ws${wsId} close`;
+        debug(errorMessage);
+        subscriber.error(errorMessage);
       });
 
       ws.on("open", () => {
@@ -87,8 +89,9 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         const data = JSON.parse(message.toString());
 
         if ("error" in data) {
-          debugError(`ws${wsId} json-rpc error`, data.error);
-          subscriber.error("json-rpc error");
+          const errorMessage = `ws${wsId} json-rpc error`;
+          debugError(errorMessage, data.error);
+          subscriber.error(errorMessage);
           return;
         }
 
@@ -123,14 +126,16 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           logBuffer.length = 0;
         })
         .catch((error) => {
-          debug("error while fetching initial logs", error);
-          subscriber.error("failed to fetch initial logs");
+          const errorMessage = `ws${wsId} failed to fetch initial logs`;
+          debugError(errorMessage, error);
+          subscriber.error(errorMessage);
         });
     }
 
     setup().catch((error) => {
-      debug("error setting up initial client", error);
-      subscriber.error("failed to setup wiresaw_watchLogs subscription");
+      const errorMessage = `ws${wsId} failed to setup wiresaw_watchLogs subscription`;
+      debugError(errorMessage, error);
+      subscriber.error(errorMessage);
     });
 
     // Send a ping to keep the connection alive
@@ -138,8 +143,9 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       () =>
         ws &&
         request({ ws, method: "net_version", wsId }).catch(() => {
-          debug("ping failed");
-          subscriber.error("ping failed");
+          const errorMessage = `ws${wsId} ping failed`;
+          debugError(errorMessage);
+          subscriber.error(errorMessage);
         }),
       10_000,
     );
@@ -150,7 +156,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       try {
         ws?.close();
       } catch (e) {
-        debug("failed to close web socket", e);
+        debug(`ws${wsId} failed to close web socket`, e);
       }
     };
   });
