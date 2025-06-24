@@ -28,7 +28,7 @@ import { bigIntMax, isDefined } from "@latticexyz/common/utils";
 import { getRpcClient, GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 import { debug as parentDebug } from "./debug";
 
-const debug = parentDebug.extend("preconfirmedStream");
+const debug = parentDebug.extend("createPreconfirmedBlockStream");
 
 type PreconfirmedBlockStreamOptions = GetRpcClientOptions & {
   fromBlock: bigint;
