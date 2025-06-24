@@ -121,6 +121,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
     map((block) => {
       const missingBlock = processedBlockLogs[String(block.blockNumber)] == null;
       const seenLogs = processedBlockLogs[String(block.blockNumber)] ?? {};
+      const numSeenLogs = Object.keys(seenLogs).length;
       const missingLogs = block.logs.filter((log) => !seenLogs[log.logIndex!]);
       delete processedBlockLogs[String(block.blockNumber)];
       processedLatestBlockNumber = block.blockNumber;
@@ -132,6 +133,7 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
         block.logs.length,
         "logs (",
         missingBlock ? "missing block," : "block seen,",
+        `${numSeenLogs} seen logs,`,
         `${missingLogs.length} new logs`,
         ")",
       );
