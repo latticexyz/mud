@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  clarinet:
-    hash: b2zpb5g5ra2evgbuv2y7ndqknu
-    path: patches/clarinet.patch
-
 importers:
 
   .:
@@ -1205,7 +1200,7 @@ importers:
         version: 5.2.0
       clarinet:
         specifier: ^0.12.6
-        version: 0.12.6(patch_hash=b2zpb5g5ra2evgbuv2y7ndqknu)
+        version: 0.12.6
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -18544,7 +18539,7 @@ snapshots:
 
   cjs-module-lexer@1.2.2: {}
 
-  clarinet@0.12.6(patch_hash=b2zpb5g5ra2evgbuv2y7ndqknu): {}
+  clarinet@0.12.6: {}
 
   class-variance-authority@0.7.0:
     dependencies:
