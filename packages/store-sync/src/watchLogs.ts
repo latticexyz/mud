@@ -43,6 +43,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       // Buffer the live logs received until the gap from `fromBlock` to `currentBlock` is closed
       let caughtUp = false;
       const logBuffer: StoreEventsLog[] = [];
+      let subscriptionId: Hex | undefined = undefined;
 
       ws = new WebSocket(url);
 
@@ -78,13 +79,6 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         debug(`ws${wsId} upgrade`);
       });
 
-      const subscriptionId = await request<Hex>({
-        ws,
-        method: "wiresaw_watchLogs",
-        params: [{ address, topics }],
-        wsId,
-      });
-
       ws.on("message", (message) => {
         const data = JSON.parse(message.toString());
 
@@ -110,6 +104,13 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         }
 
         debug(`ws${wsId} message`);
+      });
+
+      subscriptionId = await request<Hex>({
+        ws,
+        method: "wiresaw_watchLogs",
+        params: [{ address, topics }],
+        wsId,
       });
 
       // Catch up to the pending logs
