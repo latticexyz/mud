@@ -131,6 +131,16 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
         }
         (preconfirmedTransactionLogs[txHash] ??= []).push(log);
       });
+      debug(
+        "preconfirmed logs state",
+        Object.fromEntries(
+          Object.entries(preconfirmedTransactionLogs).map(([txHash, logs]) => [
+            txHash,
+            { numLogs: logs?.length, blockNumber: logs?.[0]?.blockNumber },
+          ]),
+        ),
+        "transactions",
+      );
     }),
   );
 
