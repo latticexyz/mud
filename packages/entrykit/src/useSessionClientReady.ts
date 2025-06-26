@@ -1,14 +1,18 @@
 // Exported `useSessionClient` variant and only provides the session client once all prerequisites are met.
 
-import { useAccount } from "wagmi";
+import { useConnectorClient } from "wagmi";
 import { useSessionClient } from "./useSessionClient";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { usePrerequisites } from "./onboarding/usePrerequisites";
 import { UseQueryResult } from "@tanstack/react-query";
 import { SessionClient } from "./common";
 
 export function useSessionClientReady(): UseQueryResult<SessionClient | undefined> {
-  const { address: userAddress } = useAccount();
+  const { chainId } = useEntryKitConfig();
+  const userClient = useConnectorClient({ chainId });
+  if (userClient.error) console.error("Error retrieving user client", userClient.error);
 
+  const userAddress = userClient.data?.account.address;
   const prerequisites = usePrerequisites(userAddress);
   const sessionClient = useSessionClient(userAddress);
 
