@@ -28,7 +28,7 @@ export const pyrope = {
       },
     },
     quarryPaymaster: {
-      address: "0xD40C9cFc97b855B2183D7e1c8925edF77C309b85",
+      address: "0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f",
     },
   },
   blockExplorers: {

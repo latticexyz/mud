@@ -10,7 +10,7 @@ export const garnet = {
   contracts: {
     ...garnetConfig.contracts,
     quarryPaymaster: {
-      address: "0x0528104d96672dfdF47B92f809A32e7eA11Ee8d9",
+      address: "0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f",
     },
   },
   iconUrls: ["https://redstone.xyz/chain-icons/garnet.png"],
