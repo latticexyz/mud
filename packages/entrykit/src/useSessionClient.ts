@@ -6,7 +6,6 @@ import {
   UndefinedInitialDataOptions,
   UseQueryResult,
   queryOptions,
-  skipToken,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -27,19 +26,19 @@ export function getSessionClientQueryOptions({
 }): UndefinedInitialDataOptions<SessionClient> {
   return queryOptions<SessionClient>({
     queryKey: ["getSessionClient", client?.uid, userAddress, worldAddress],
-    queryFn: userAddress
-      ? async () => {
-          const { account: sessionAccount, signer: sessionSigner } = await queryClient.fetchQuery(
-            getSessionAccountQueryOptions({ client, userAddress }),
-          );
-          return await getSessionClient({
-            sessionAccount,
-            sessionSigner,
-            userAddress,
-            worldAddress,
-          });
-        }
-      : skipToken,
+    queryFn: async () => {
+      if (!userAddress) throw new Error("User not connected.");
+
+      const { account: sessionAccount, signer: sessionSigner } = await queryClient.fetchQuery(
+        getSessionAccountQueryOptions({ client, userAddress }),
+      );
+      return await getSessionClient({
+        sessionAccount,
+        sessionSigner,
+        userAddress,
+        worldAddress,
+      });
+    },
     staleTime: Infinity,
     // TODO: replace with function to retry only connection errors
     retry: false,
