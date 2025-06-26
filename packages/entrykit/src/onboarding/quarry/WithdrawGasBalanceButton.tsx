@@ -46,6 +46,7 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
 
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ["balance"] }),
+          queryClient.invalidateQueries({ queryKey: ["getFunds"] }),
           queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
         ]);
       } catch (error) {
