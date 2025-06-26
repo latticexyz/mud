@@ -1,5 +1,36 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 6008573: Added a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.
+- 6a26a04: Fixed a bug related to `batchCall` in `sendUserOperationFrom`.
+- f6d87ed: Fix static array arguments in system libraries.
+- fb2745a: Support generating libraries for systems without function registration.
+- 03af917: `mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+  ```solidity
+  import {System} from "@latticexyz/world/src/System.sol";
+
+  contract EntityProgram is System {
+    ...
+  }
+  ```
+
+  If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+- d83a0fd: Adds support for functions with missing argument names in system libraries.
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

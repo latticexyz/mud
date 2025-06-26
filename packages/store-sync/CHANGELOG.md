@@ -1,5 +1,65 @@
 # @latticexyz/store-sync
 
+## 2.2.22
+
+### Patch Changes
+
+- cd146eb: The `fetchRecords` util now supports specifying an upper bound for the block height of SQL queries.
+- 291a54a: The preconfirmed logs stream now waits before reconnecting if a previous connection attempt failed.
+- 3baa3fd: The sync stack now skips store logs with invalid key tuples instead of throwing errors.
+
+  MUD doesn’t validate schemas for onchain writes or deletions, it's the developer's responsibility to use correct encoding.
+  Using the wrong key schema onchain is effectively a no-op, since the data ends up in a storage slot that won’t be read when using the correct schema.
+  The expectation is that the sync stack ignores these no-op logs, but it was previously throwing during decode.
+
+- 91837e3: The preconfirmed logs stream is now using `isomorphic-ws` for more control over error handling and reconnection logic.
+- 490159e: `getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+  Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
+
+- 1e9047e: Fixed a bug that caused the stash storage adapter to crash when deleting a dynamic field and writing to it again in the same block.
+- 7902888: Pending deletions immediately followed by field updates are now handled correctly by the Stash storage adapter.
+- 26d2e3a: `getWorldAbi()` now returns an ABI that is a combination of:
+
+  - base World ABI
+  - system ABIs stored onchain with metadata module during deploy
+  - world functions
+
+- 6508c1d: The sync stack now supports defining the chunking behavior during initial hydration. Chunking remains enabled by default.
+
+  Chunking is useful to avoid blocking the main thread for too long, but it can lead to updates that happened in the same block being split across multiple chunks.
+  If chunking is enabled, clients should account for this by waiting for full hydration before using the update stream.
+  If atomicity of updates is important and blocking the main thread is not an issue, set this to `false`.
+
+- 23b0c9a: The sync stack now handles downtime in the pending logs API and reconnects once it's available again.
+- a3918e0: Fixed a race condition in the preconfirmed logs stream by setting up the message listener before setting up the subscription.
+- 405a600: Added React 19.x to the peer dependency range.
+- db94eb2: Fetching a snapshot from the indexer will now parse JSON as a stream, avoiding issues with large snapshots where the string is too long to parse in one go.
+- 8fad4be: Updated JSON imports to use `with` annotation instead of `assert`.
+- Updated dependencies [6008573]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [6344ced]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [2048adf]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [b8239d8]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-metadata@2.2.22
+  - @latticexyz/stash@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/recs@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

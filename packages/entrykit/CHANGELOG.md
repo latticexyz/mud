@@ -1,5 +1,50 @@
 # @latticexyz/entrykit
 
+## 2.2.22
+
+### Patch Changes
+
+- d616110: Onboarding prerequisites are now re-fetched when the quarry gas balance is updated.
+- b94aca6: Loosened minimum gas balance requirement in onboarding to allow for any gas balance above zero.
+- 725f1ae: Migrated EntryKit's underlying wallet connection handling from RainbowKit to ConnectKit.
+- 6008573: EntryKit's `SessionClient` now automatically routes `sendUserOperation` through `callFrom` like it does with `writeContract` calls.
+- 9f06079: - EntryKit now returns to the login flow modal after a successful top-up.
+  - The default chain is now selected as the source chain if the connected chain is not part of selectable chains.
+  - The "Switch chain" button now uses the primary color, making it appear clickable.
+  - The successful deposit status message has been updated.
+- bc95ea0: Replaced WalletConnect connector with our own internal fork to resolve some chain switching issues (see https://github.com/wevm/wagmi/pull/4691).
+- 050dfd5: Added explicit gas estimation for Pyrope to avoid overpaying.
+- d621dc7: Updated React Query usages to use `skipToken` instead of conditional a `queryFn` to avoid warnings in newer versions of React Query.
+- 5f6c71d: Added support for Quarry paymaster top-up via relay.link deposit form.
+- 8bd459b: The chain selector dropdown for bridged deposits now only displays chains with available funds.
+- daa34f0: Session wallet address can now be copied from EntryKit modal.
+- 8c4b624: You can now withdraw your gas balance from the Quarry paymaster.
+- 2fe5909: `useSessionClient` will now return an error state when no user is connected. This separates the session client's pending state (querying data to determine if prerequisites are met) from invalid state (EntryKit misconfigured, user not connected, or prerequisites not met), allowing apps to provide better loading indicators within connect buttons.
+
+  The built-in `AccountButton` already uses this new behavior to show a pending icon while querying for the session client's prerequisites.
+
+- fbf1be1: Increased required balance/allowance to greater than zero.
+- 8fad4be: Updated JSON imports to use `with` annotation instead of `assert`.
+- 0f5c75b: Added experimental support for fast user operations on Wiresaw-enabled chains.
+- 9dc032a: The login flow now only attempts to register the session account after it has been successfully funded.
+- 725f1ae: Until we can add ERC-6492 support to our `CallWithSignature` module, EntryKit will now throw a readable error when signing a message using ERC-6492 instead of failing the transaction.
+- Updated dependencies [6008573]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/paymaster@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

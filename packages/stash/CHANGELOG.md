@@ -1,5 +1,21 @@
 # @latticexyz/stash
 
+## 2.2.22
+
+### Patch Changes
+
+- 405a600: Added React 19.x to the peer dependency range.
+- b8239d8: Stash now preserves batch updates when subscribing to query results.
+  Previously, while Stash supported batching table updates for atomic onchain changes, subscribing to query results would split these updates by table.
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
