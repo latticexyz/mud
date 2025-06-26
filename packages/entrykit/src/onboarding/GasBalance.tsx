@@ -41,6 +41,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
 
   useEffect(() => {
     if (balance.data != null && prevBalance?.value === 0n && balance.data.value > 0n) {
+      queryClient.invalidateQueries({ queryKey: ["getFunds"] });
       queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
     }
   }, [balance.data, prevBalance, setBalance, sessionAddress, queryClient]);

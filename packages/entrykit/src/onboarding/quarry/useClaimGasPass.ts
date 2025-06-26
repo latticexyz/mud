@@ -26,6 +26,7 @@ export function useClaimGasPass() {
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["getAllowance"] }),
+        queryClient.invalidateQueries({ queryKey: ["getFunds"] }),
         queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
       ]);
     },

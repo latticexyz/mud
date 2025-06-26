@@ -14,3 +14,4 @@ export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmi
 
 // And some additional internal things
 export * from "../validateSigner";
+export * from "../useFunds";
