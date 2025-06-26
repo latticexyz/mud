@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { Config, useClient, useConfig } from "wagmi";
 import { getBalanceQueryOptions } from "wagmi/query";
-import { QueryClient, queryOptions, skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPaymaster } from "../getPaymaster";
 import { getAllowanceQueryOptions } from "./quarry/useAllowance";
 import { getSpenderQueryOptions } from "./quarry/useSpender";
@@ -25,49 +25,47 @@ export function getPrequisitesQueryOptions({
 }) {
   return queryOptions({
     queryKey: ["getPrerequisites", client?.uid, userAddress],
-    queryFn:
-      client && userAddress
-        ? async () => {
-            const paymaster = getPaymaster(client.chain);
+    queryFn: async () => {
+      if (!client) throw new Error("Viem client not ready.");
+      if (!userAddress) throw new Error("User not connected.");
 
-            const {
-              account: { address: sessionAddress },
-            } = await queryClient.fetchQuery(getSessionAccountQueryOptions({ client, userAddress }));
-            const [sessionBalance, allowance, spender, quarryBalance, hasDelegation] = await Promise.all([
-              !paymaster
-                ? queryClient.fetchQuery(
-                    getBalanceQueryOptions(config, { chainId: client.chain.id, address: sessionAddress }),
-                  )
-                : null,
-              paymaster?.type === "quarry"
-                ? queryClient.fetchQuery(getAllowanceQueryOptions({ client, userAddress }))
-                : null,
-              paymaster?.type === "quarry"
-                ? queryClient.fetchQuery(getSpenderQueryOptions({ client, userAddress, sessionAddress }))
-                : null,
-              paymaster?.type === "quarry"
-                ? queryClient.fetchQuery(getQuarryBalanceQueryOptions({ client, userAddress }))
-                : null,
-              queryClient.fetchQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress })),
-            ]);
-            // TODO: figure out better approach than null for allowance/spender when no quarry paymaster
-            const hasAllowance = allowance == null || allowance > 0n;
-            const isSpender = spender == null ? true : spender;
-            const hasGasBalance = sessionBalance == null || sessionBalance.value > 0n;
-            const hasQuarryGasBalance = quarryBalance == null || quarryBalance > 0n;
+      const paymaster = getPaymaster(client.chain);
 
-            return {
-              sessionAddress,
-              hasAllowance,
-              isSpender,
-              hasGasBalance,
-              hasQuarryGasBalance,
-              hasDelegation,
-              // we intentionally don't enforce an allowance/gas balance here
-              complete: isSpender && hasDelegation,
-            };
-          }
-        : skipToken,
+      const {
+        account: { address: sessionAddress },
+      } = await queryClient.fetchQuery(getSessionAccountQueryOptions({ client, userAddress }));
+      const [sessionBalance, allowance, spender, quarryBalance, hasDelegation] = await Promise.all([
+        !paymaster
+          ? queryClient.fetchQuery(
+              getBalanceQueryOptions(config, { chainId: client.chain.id, address: sessionAddress }),
+            )
+          : null,
+        paymaster?.type === "quarry" ? queryClient.fetchQuery(getAllowanceQueryOptions({ client, userAddress })) : null,
+        paymaster?.type === "quarry"
+          ? queryClient.fetchQuery(getSpenderQueryOptions({ client, userAddress, sessionAddress }))
+          : null,
+        paymaster?.type === "quarry"
+          ? queryClient.fetchQuery(getQuarryBalanceQueryOptions({ client, userAddress }))
+          : null,
+        queryClient.fetchQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress })),
+      ]);
+      // TODO: figure out better approach than null for allowance/spender when no quarry paymaster
+      const hasAllowance = allowance == null || allowance > 0n;
+      const isSpender = spender == null ? true : spender;
+      const hasGasBalance = sessionBalance == null || sessionBalance.value > 0n;
+      const hasQuarryGasBalance = quarryBalance == null || quarryBalance > 0n;
+
+      return {
+        sessionAddress,
+        hasAllowance,
+        isSpender,
+        hasGasBalance,
+        hasQuarryGasBalance,
+        hasDelegation,
+        // we intentionally don't enforce an allowance/gas balance here
+        complete: isSpender && hasDelegation,
+      };
+    },
     retry: false,
   });
 }
