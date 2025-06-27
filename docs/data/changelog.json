@@ -1,5 +1,1029 @@
 [
   {
+    "version": "2.2.22",
+    "date": "2025-06-26T17:30:23.341Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRemoved Rhodolite chain support.",
+          "type": 0,
+          "commitHash": "bd9e19b10418c4a0b8b3791e713d798b8df64a38",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): remove rhodolite support (#3704)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe `fetchRecords` util now supports specifying an upper bound for the block height of SQL queries.",
+          "type": 0,
+          "commitHash": "cd146eb4419e8477a8f43acd2e6dbc2f9f6b2b20",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(store-sync): add support for upper bound in fetchRecords (#3744)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAddress input fields in the \"Interact\" tab now accept ENS names, which are automatically resolved to their underlying address.",
+          "type": 0,
+          "commitHash": "7f1b769020c12f25d756b5c3c749c26303a22534",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): resolve ENS (#3731)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nEditable table cells no longer lose focus during editing when the query is set to \"live\".",
+          "type": 0,
+          "commitHash": "fdb727e847024560315c10ebf32c1f924755ffe9",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): editable cells keep focus (#3664)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe preconfirmed logs stream now waits before reconnecting if a previous connection attempt failed.",
+          "type": 0,
+          "commitHash": "291a54a26791869f0c15c67f4e5adc4890f5e893",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): backoff on failed connection, close websockets (#3752)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.",
+          "type": 0,
+          "commitHash": "60085734145ea8db0b43084034bec9f8ea474dc4",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(world,entrykit): add `sendUserOperationFrom` (#3675)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe Worlds Explorer explorer now supports decoding function data.",
+          "type": 0,
+          "commitHash": "091ece6264dd4cdbdc21ea3d22347a6f1043a6a3",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(explorer): decode function calls (#3710)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nArray function arguments are now correctly encoded on the \"Interact\" page.",
+          "type": 0,
+          "commitHash": "0fc224f81dabb2b29ae3056e7b71aa9b489b3626",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): array args encoding (#3748)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nOnboarding prerequisites are now re-fetched when the quarry gas balance is updated.",
+          "type": 0,
+          "commitHash": "d6161103025288c00f13b5adb523af5634b537a8",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(entrykit): refetch prerequisites after balance top-up (#3694)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe sync stack now skips store logs with invalid key tuples instead of throwing errors.\n\nMUD doesn’t validate schemas for onchain writes or deletions, it's the developer's responsibility to use correct encoding.\nUsing the wrong key schema onchain is effectively a no-op, since the data ends up in a storage slot that won’t be read when using the correct schema.\nThe expectation is that the sync stack ignores these no-op logs, but it was previously throwing during decode.",
+          "type": 0,
+          "commitHash": "3baa3fd86f5917471729ba6551f12c17cdca53e3",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): ignore store logs with invalid keys (#3720)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTable values updated remotely are now also reflected in the table viewer.",
+          "type": 0,
+          "commitHash": "a5fdfa8a665caabc57fedd4bf34a8199c6c1ad10",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): display remotely updated table values (#3737)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWorld ABI endpoint is now includes the base world ABI.",
+          "type": 0,
+          "commitHash": "7fd242ecf040c1c9955cdd2c971d0ed5570fa14b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): append base world ABI to API endpoint (#3653)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nLoosened minimum gas balance requirement in onboarding to allow for any gas balance above zero.",
+          "type": 0,
+          "commitHash": "b94aca694dd82b32bf78de9e6408f61b32e5b8e2",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): loosen min gas balance (#3689)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.",
+          "type": 0,
+          "commitHash": "f0c0b982573f9953e1c726c0bef91671efaaa545",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): fetch from sqlite indexer in production (#3679)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInteract and Decode forms now support URL parameters.",
+          "type": 0,
+          "commitHash": "d2c77c206d94a00082a25939b786df04d8249fcb",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): url params for interact and decode forms (#3713)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe preconfirmed logs stream is now using `isomorphic-ws` for more control over error handling and reconnection logic.",
+          "type": 0,
+          "commitHash": "91837e36ade680787d224691c848540fea793a5a",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "refactor(store-sync): migrate to isomorphic-ws (#3762)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved surfacing of errors during code generation.",
+          "type": 0,
+          "commitHash": "88ddd0c3a68c52469abbc59c2f9db3bbee2eafb6",
+          "authorName": "dk1a",
+          "authorEmail": "dk1a@protonmail.com",
+          "title": "fix(common): improve codegen error visibility (#3662)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInteract page is now organized into collapsible namespace and system sections.",
+          "type": 0,
+          "commitHash": "ea62e9b2384e58dac465f984c78f35117f36600d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): collapsible sections for functions (#3727)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRestore wallet connection options in the wallet connect modal.",
+          "type": 0,
+          "commitHash": "f06e8f25dd013c43d943e71a401fa4aeefd399fa",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): wallets connect options (#3732)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\n- Boolean values can now be submitted on the Interact page.\n- Fixed redirects when only a single local world is deployed.\n- Chain logos are now displayed correctly when running the Explorer locally.\n- Fixed scrolling behavior in the table dropdown when viewing non-selected tables.\n- Verified world dropdown now appears immediately after pasting a world address, without waiting for all worlds to resolve.",
+          "type": 0,
+          "commitHash": "5f0b4d10731aa3b4c1f5bb872d4571e4dd3b4aa3",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): various fixes (#3712)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdding/deleting resource tags no longer checks if resource exists, only if you're the resource namespace owner.",
+          "type": 0,
+          "commitHash": "6344ced32a0e0903de81a689ac45b97703db136e",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world-module-metadata): remove resource existence check (#3650)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.\n\nAlso added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.",
+          "type": 0,
+          "commitHash": "490159e880e2ac0e1ce8f5785873a25b99fb7668",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(store-sync): system/world ABI from metadata (#3642)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nMigrated EntryKit's underlying wallet connection handling from RainbowKit to ConnectKit.",
+          "type": 0,
+          "commitHash": "725f1aed27b397ad153bec254b2530eb20d2d743",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): move to connectkit (#3721)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe local SQLite indexer now automatically converts camelCase column names to snake_case to comply with the SQL API.",
+          "type": 0,
+          "commitHash": "582f7187cf3cb1e0013aa5d192560235114d71e0",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(store-indexer): format sql queries (#3687)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed a bug that caused the stash storage adapter to crash when deleting a dynamic field and writing to it again in the same block.",
+          "type": 0,
+          "commitHash": "1e9047e3056120ed1ab34976aec3df15df13b0e3",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): handle pending deleted dynamic value in stash storage adapter (#3714)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nPending deletions immediately followed by field updates are now handled correctly by the Stash storage adapter.",
+          "type": 0,
+          "commitHash": "7902888215e548882b314342e21caed5088b869c",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): handle pending deletion in stash storage adapter (#3672)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded read-only mode with no wallet connection that only shows non-editable sections of the Explorer.",
+          "type": 0,
+          "commitHash": "7c2fe37ce180c3d55160202867bd3835683f532b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): read-only mode (#3701)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRemoved the Explorer’s SQLite indexer API endpoint in favor of the equivalent `/q` endpoint from `@latticexyz/store-indexer`.",
+          "type": 0,
+          "commitHash": "fc10a277e139c26aea88326f188b45b18367d4a5",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): remove indexer endpoint (#3678)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed a bug related to `batchCall` in `sendUserOperationFrom`.",
+          "type": 0,
+          "commitHash": "6a26a049c793442fcefed7a3268d2de7849cd2ae",
+          "authorName": "Dhvani Patel",
+          "authorEmail": "dhvani.patel@uwaterloo.ca",
+          "title": "fix(world): `batchCall` in `sendUserOperationFrom` (#3693)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\n- Added the `/system-abis` endpoint to retrieve ABIs by system IDs.\n- The search form for decoding selectors now uses all system ABIs for complete results.\n- The `ABI` page has been renamed to `Decode`.",
+          "type": 0,
+          "commitHash": "13071c45dd7d28c1860e703d12b07624c271f508",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): use systems abis in decode form (#3646)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTable row data now correctly re-renders when updated outside the Explorer.",
+          "type": 0,
+          "commitHash": "f7aa4c5722bf24103f4cd4ab01b5d9c55f9b2995",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): re-render externally updated table (#3692)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nEntryKit's `SessionClient` now automatically routes `sendUserOperation` through `callFrom` like it does with `writeContract` calls.",
+          "type": 0,
+          "commitHash": "60085734145ea8db0b43084034bec9f8ea474dc4",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(world,entrykit): add `sendUserOperationFrom` (#3675)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\n- EntryKit now returns to the login flow modal after a successful top-up.\n- The default chain is now selected as the source chain if the connected chain is not part of selectable chains.\n- The \"Switch chain\" button now uses the primary color, making it appear clickable.\n- The successful deposit status message has been updated.",
+          "type": 0,
+          "commitHash": "9f06079cb52cb39888097ea3a293ec71bd46ebbc",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(entrykit): various improvements (#3699)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFix static array arguments in system libraries.",
+          "type": 0,
+          "commitHash": "f6d87edb8513fd0f255ac4389a2e613a508ffab4",
+          "authorName": "dk1a",
+          "authorEmail": "dk1a@protonmail.com",
+          "title": "fix(world): fix static array arguments in system libraries (#3661)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nChain switching between supported networks is now accessible on the homepage and the world page.",
+          "type": 0,
+          "commitHash": "34ec2ec478d6e3d46d82c74a6e09387d83b7776d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): add chain switch (#3705)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nCoinbase wallet is now supported.",
+          "type": 0,
+          "commitHash": "120dc0daf0203ab15874f57f91343b9f31b42ea4",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): coinbase wallet support (#3749)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nReplaced WalletConnect connector with our own internal fork to resolve some chain switching issues (see https://github.com/wevm/wagmi/pull/4691).",
+          "type": 0,
+          "commitHash": "bc95ea094386f235971f1c5b98a34f41c161999d",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): fork walletconnect connector (#3725)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded explicit gas estimation for Pyrope to avoid overpaying.",
+          "type": 0,
+          "commitHash": "050dfd5c0f540bc4145db05ca6798926fdecff4c",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(entrykit): add pyrope fee estimation (#3640)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated React Query usages to use `skipToken` instead of conditional a `queryFn` to avoid warnings in newer versions of React Query.",
+          "type": 0,
+          "commitHash": "d621dc7c427a59eb74f4d379862646355a149338",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "refactor(entrykit): use skipToken instead of enabled (#3686)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExplorer will now automatically resolve and redirect deep links using a chain ID to their corresponding chain name, e.g.\n\nhttps://explorer.mud.dev/690/worlds/0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f",
+          "type": 0,
+          "commitHash": "5fa416eb3cdce964723463b48b91c49aabdf9f0b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): resolve paths using chain ID or name (#3735)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded support for Quarry paymaster top-up via relay.link deposit form.",
+          "type": 0,
+          "commitHash": "5f6c71d4a2949cf6ccc576cb3932460e44efa430",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(entrykit): quarry paymaster relay.link top-up (#3688)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe chain selector dropdown for bridged deposits now only displays chains with available funds.",
+          "type": 0,
+          "commitHash": "8bd459b91322f8b9955f6407b95988a7755d27e4",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(entrykit): show only deposit chains with balance (#3730)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getWorldAbi()` now returns an ABI that is a combination of:\n\n- base World ABI\n- system ABIs stored onchain with metadata module during deploy\n- world functions",
+          "type": 0,
+          "commitHash": "26d2e3acd8fc0a0852f530e8e1574a68d2baa3d2",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): fetch deprecated world ABI (#3654)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSession wallet address can now be copied from EntryKit modal.",
+          "type": 0,
+          "commitHash": "daa34f06d070200c1aaf0bba78ba9f2dd8662a76",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(entrykit): enable copying session wallet address (#3698)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSupport generating libraries for systems without function registration.",
+          "type": 0,
+          "commitHash": "fb2745a7b2d4735a67adffa69e70ec7d1085f4da",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "fix(world): support generating libraries for systems without function registration (#3670)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`systemIds` parameter is now optional for the system ABIs API endpoint.",
+          "type": 0,
+          "commitHash": "a3645c819959efe97ff2e50f6f5b88ebe77fa980",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): optional systemIds param for system ABIs endpoint (#3651)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nEnvironment variables are now loaded from the `.env` file alongside those specified via CLI flags.",
+          "type": 0,
+          "commitHash": "9c89cc327787bf68c2ddb825365ac773a4388576",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): read env vars (#3709)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nYou can now withdraw your gas balance from the Quarry paymaster.",
+          "type": 0,
+          "commitHash": "8c4b624756007fd02b1c3c3494e34128a5f1c044",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(entrykit): gas balance withdraw (#3724)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`useSessionClient` will now return an error state when no user is connected. This separates the session client's pending state (querying data to determine if prerequisites are met) from invalid state (EntryKit misconfigured, user not connected, or prerequisites not met), allowing apps to provide better loading indicators within connect buttons.\n\nThe built-in `AccountButton` already uses this new behavior to show a pending icon while querying for the session client's prerequisites.",
+          "type": 0,
+          "commitHash": "2fe59091a36e3ace2e5ec143138e801fadcdc707",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): separate loading state from invalid state (#3767)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe sync stack now supports defining the chunking behavior during initial hydration. Chunking remains enabled by default.\n\nChunking is useful to avoid blocking the main thread for too long, but it can lead to updates that happened in the same block being split across multiple chunks.\nIf chunking is enabled, clients should account for this by waiting for full hydration before using the update stream.\nIf atomicity of updates is important and blocking the main thread is not an issue, set this to `false`.",
+          "type": 0,
+          "commitHash": "6508c1df5ea605f58112f192114a2f837f362ecc",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(store-sync): add flag to define chunking behavior during initial hydration (#3745)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe Interact tab now supports system functions. The functions can be searched by namespace, system name, or function name.",
+          "type": 0,
+          "commitHash": "66b053c8bc9cfa25c1b60d00dd208a5b2cd9d9f7",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): interact system calls (#3718)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe sync stack now handles downtime in the pending logs API and reconnects once it's available again.",
+          "type": 0,
+          "commitHash": "23b0c9a68bb6c6a98011d43ddccf62994adb66ba",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(store-sync): make pending logs sync more resilient (#3743)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nIncreased required balance/allowance to greater than zero.",
+          "type": 0,
+          "commitHash": "fbf1be12730c08acd460aa36124a0565f4e73401",
+          "authorName": "Dhvani Patel",
+          "authorEmail": "dhvani.patel@uwaterloo.ca",
+          "title": "fix(entrykit): make required gas balance non-zero (#3691)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed a race condition in the preconfirmed logs stream by setting up the message listener before setting up the subscription.",
+          "type": 0,
+          "commitHash": "a3918e051d892b946148bb88b25de1f64bdd302e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): setup message listener before setting up subscription (#3765)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.\n\n```solidity\nimport { metadataSystem } from \"@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol\";\n\nmetadataSystem.setResourceTag(namespaceId, bytes32(\"label\"), \"hello\");\n```",
+          "type": 0,
+          "commitHash": "2048adf7aa386ef1fe1e9863dd87cebdef439f1b",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world-module-metadata): add metadata system lib (#3645)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.\n\n```solidity\nimport {System} from \"@latticexyz/world/src/System.sol\";\n\ncontract EntityProgram is System {\n  ...\n}\n```\n\nIf you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).",
+          "type": 0,
+          "commitHash": "03af917786370b8251542adb3d53099aa85e754f",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "feat(world): find systems based on inheritance (#3649)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded React 19.x to the peer dependency range.",
+          "type": 0,
+          "commitHash": "405a600d8d3aaf06cd06b64287a8acff9e2e0e35",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "chore: increase react peer dep range (#3728)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFetching a snapshot from the indexer will now parse JSON as a stream, avoiding issues with large snapshots where the string is too long to parse in one go.",
+          "type": 0,
+          "commitHash": "db94eb24a728db6eae9842199de07c6b85983abb",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-sync): stream json from indexer snapshot (#3761)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated JSON imports to use `with` annotation instead of `assert`.",
+          "type": 0,
+          "commitHash": "8fad4be6941d39fe86b3f0100a04642670ff266a",
+          "authorName": "Will Cory",
+          "authorEmail": "willcory10@gmail.com",
+          "title": "fix: assert -> with (#3739)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            }
+          ],
+          "description": "\nStash now preserves batch updates when subscribing to query results.\nPreviously, while Stash supported batching table updates for atomic onchain changes, subscribing to query results would split these updates by table.",
+          "type": 0,
+          "commitHash": "b8239d8a667d5119569395f4b182f8ea3dc9b97e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(stash): maintain update atomicity in `subscribeQuery` (#3663)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nString fields in the \"Interact\" tab now support multiline values.",
+          "type": 0,
+          "commitHash": "7367a813d9b394415ba70678c4295cc90562c304",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): textarea string fields (#3746)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental support for fast user operations on Wiresaw-enabled chains.",
+          "type": 0,
+          "commitHash": "0f5c75bd8fc963e3697ff1720ec3608d119d4b5e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(entrykit): add wiresaw transport (#3703)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nCLI will no longer deploy abstract systems and contracts without bytecode.",
+          "type": 0,
+          "commitHash": "ab837ceb49fa77cc29487bb9df0c487975b37afe",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(cli): don't deploy abstract contracts (#3669)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdds support for functions with missing argument names in system libraries.",
+          "type": 0,
+          "commitHash": "d83a0fd5283b7bea7e9a5372ea3c45ab9aea350f",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "fix(world): support functions with missing argument names in system libraries (#3671)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe login flow now only attempts to register the session account after it has been successfully funded.",
+          "type": 0,
+          "commitHash": "9dc032a7075a33fca3936f049aae8de923e9a723",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(entrykit): sign session wallet after top-up (#3697)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTable cell edits are now saved only when the value has changed.",
+          "type": 0,
+          "commitHash": "3ffa12704d00fca354851d8e2ed12f0dc1fc639f",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): update only changed table values (#3733)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nVerified worlds are now shown in the world selection form.",
+          "type": 0,
+          "commitHash": "d8eef923b761a5efe83ddf9f5b0a1460b5ca4db9",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): verified worlds (#3707)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded [Quarry paymaster](https://github.com/latticexyz/quarry-paymaster) address for Garnet and Pyrope chain configs. And removed defunct Rhodolite chain config.",
+          "type": 0,
+          "commitHash": "689708688d9215c3441ffeac029236023d05c25f",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(common): add paymaster for testnet chains, remove rhodolite (#3770)"
+        },
+        {
+          "packages": [
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBumped Viem and Wagmi versions in templates.",
+          "type": 0,
+          "commitHash": "725f1aed27b397ad153bec254b2530eb20d2d743",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): move to connectkit (#3721)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUntil we can add ERC-6492 support to our `CallWithSignature` module, EntryKit will now throw a readable error when signing a message using ERC-6492 instead of failing the transaction.",
+          "type": 0,
+          "commitHash": "725f1aed27b397ad153bec254b2530eb20d2d743",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): move to connectkit (#3721)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental SQL API endpoint `/q` to the SQLite indexer. This is only intended for local development purposes and should not be used in production.",
+          "type": 0,
+          "commitHash": "6bb6a79dff407a5adf951343d9c37315816bac4b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(store-indexer): add experimental/local SQL API endpoint (#3676)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.21",
     "date": "2025-03-21T23:41:59.847Z",
     "changes": {

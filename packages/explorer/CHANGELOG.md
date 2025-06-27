@@ -1,5 +1,78 @@
 # @latticexyz/explorer
 
+## 2.2.22
+
+### Patch Changes
+
+- bd9e19b: Removed Rhodolite chain support.
+- 7f1b769: Address input fields in the "Interact" tab now accept ENS names, which are automatically resolved to their underlying address.
+- fdb727e: Editable table cells no longer lose focus during editing when the query is set to "live".
+- 091ece6: The Worlds Explorer explorer now supports decoding function data.
+- 0fc224f: Array function arguments are now correctly encoded on the "Interact" page.
+- a5fdfa8: Table values updated remotely are now also reflected in the table viewer.
+- 7fd242e: World ABI endpoint is now includes the base world ABI.
+- f0c0b98: Fixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.
+- d2c77c2: Interact and Decode forms now support URL parameters.
+- ea62e9b: Interact page is now organized into collapsible namespace and system sections.
+- f06e8f2: Restore wallet connection options in the wallet connect modal.
+- 5f0b4d1: - Boolean values can now be submitted on the Interact page.
+  - Fixed redirects when only a single local world is deployed.
+  - Chain logos are now displayed correctly when running the Explorer locally.
+  - Fixed scrolling behavior in the table dropdown when viewing non-selected tables.
+  - Verified world dropdown now appears immediately after pasting a world address, without waiting for all worlds to resolve.
+- 7c2fe37: Added read-only mode with no wallet connection that only shows non-editable sections of the Explorer.
+- fc10a27: Removed the Explorer’s SQLite indexer API endpoint in favor of the equivalent `/q` endpoint from `@latticexyz/store-indexer`.
+- 13071c4: - Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+  - The search form for decoding selectors now uses all system ABIs for complete results.
+  - The `ABI` page has been renamed to `Decode`.
+- f7aa4c5: Table row data now correctly re-renders when updated outside the Explorer.
+- 34ec2ec: Chain switching between supported networks is now accessible on the homepage and the world page.
+- 120dc0d: Coinbase wallet is now supported.
+- 5fa416e: Explorer will now automatically resolve and redirect deep links using a chain ID to their corresponding chain name, e.g.
+
+  https://explorer.mud.dev/690/worlds/0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f
+
+- a3645c8: `systemIds` parameter is now optional for the system ABIs API endpoint.
+- 9c89cc3: Environment variables are now loaded from the `.env` file alongside those specified via CLI flags.
+- 66b053c: The Interact tab now supports system functions. The functions can be searched by namespace, system name, or function name.
+- 7367a81: String fields in the "Interact" tab now support multiline values.
+- 3ffa127: Table cell edits are now saved only when the value has changed.
+- d8eef92: Verified worlds are now shown in the world selection form.
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [6008573]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [582f718]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+- Updated dependencies [6bb6a79]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/store-indexer@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @latticexyz/block-logs-stream
 
+## 2.2.22
+
+### Patch Changes
+
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes
