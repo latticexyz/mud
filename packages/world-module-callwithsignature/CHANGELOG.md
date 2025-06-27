@@ -1,5 +1,13 @@
 # @latticexyz/world-module-callwithsignature
 
+## 2.2.23
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.23
+- @latticexyz/store@2.2.23
+- @latticexyz/world@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

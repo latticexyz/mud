@@ -1,5 +1,14 @@
 # @latticexyz/world-module-erc20
 
+## 2.2.23
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.23
+- @latticexyz/store@2.2.23
+- @latticexyz/world@2.2.23
+- @latticexyz/world-consumer@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
