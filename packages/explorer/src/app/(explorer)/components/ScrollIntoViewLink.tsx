@@ -7,17 +7,20 @@ type Props = {
   elementId: string;
   children: React.ReactNode;
   className?: string;
+  copyOnClick?: boolean;
 } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
-export function ScrollIntoViewLink({ elementId, children, ...rest }: Props) {
+export function ScrollIntoViewLink({ elementId, children, copyOnClick = false, ...rest }: Props) {
   const [hash, setHash] = useHashState();
 
   const handleClick = () => {
     setHash(elementId);
 
-    const url = new URL(window.location.href);
-    url.hash = elementId;
-    navigator.clipboard.writeText(url.toString());
+    if (copyOnClick) {
+      const url = new URL(window.location.href);
+      url.hash = elementId;
+      navigator.clipboard.writeText(url.toString());
+    }
   };
 
   useEffect(() => {
