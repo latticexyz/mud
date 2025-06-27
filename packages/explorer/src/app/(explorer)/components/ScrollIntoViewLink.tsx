@@ -14,10 +14,6 @@ export function ScrollIntoViewLink({ elementId, children, ...rest }: Props) {
 
   const handleClick = () => {
     setHash(elementId);
-
-    const url = new URL(window.location.href);
-    url.hash = elementId;
-    navigator.clipboard.writeText(url.toString());
   };
 
   useEffect(() => {
