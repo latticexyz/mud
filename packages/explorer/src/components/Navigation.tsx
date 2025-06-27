@@ -1,16 +1,21 @@
 "use client";
 
-import { LoaderIcon } from "lucide-react";
+import { BadgeCheckIcon, LoaderIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
+import { Address } from "viem";
+import { useChain } from "../app/(explorer)/hooks/useChain";
 import { useReadOnly } from "../app/(explorer)/hooks/useReadOnly";
 import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
 import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
+import { useVerifiedWorldsQuery } from "../app/(explorer)/queries/useWorldsQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { cn } from "../utils";
 import { ChainSwitch } from "./ChainSwitch";
 import { ConnectButton } from "./ConnectButton";
+import { CopyButton } from "./CopyButton";
+import { TruncatedHex } from "./ui/TruncatedHex";
 
 function NavigationLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,6 +37,28 @@ function NavigationLink({ href, children }: { href: string; children: React.Reac
   );
 }
 
+function WorldTitle() {
+  const chain = useChain();
+  const { worldAddress } = useParams<{ worldAddress: Address }>();
+  const { data: verifiedWorlds } = useVerifiedWorldsQuery(chain);
+  const verifiedWorld = verifiedWorlds?.get(worldAddress);
+
+  return (
+    <div className="flex items-center gap-x-2 text-sm">
+      <span className="mx-2 opacity-30">|</span>
+      {verifiedWorld && (
+        <span className="flex items-center gap-x-2 text-sm font-semibold">
+          {verifiedWorld} <BadgeCheckIcon className="h-4 w-4 text-green-500" />
+        </span>
+      )}
+      <span className="text-white/70">
+        <TruncatedHex hex={worldAddress} />
+      </span>
+      <CopyButton value={worldAddress} />
+    </div>
+  );
+}
+
 export function Navigation() {
   const isReadOnly = useReadOnly();
   const { data, isFetched } = useWorldAbiQuery();
@@ -44,6 +71,7 @@ export function Navigation() {
           {!isReadOnly && <NavigationLink href="interact">Interact</NavigationLink>}
           <NavigationLink href="observe">Observe</NavigationLink>
           <NavigationLink href="decode">Decode</NavigationLink>
+          <WorldTitle />
         </div>
 
         {isFetched && !data?.isWorldDeployed && (
