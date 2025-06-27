@@ -1,25 +1,11 @@
-import {
-  Client,
-  Abi,
-  Address,
-  AbiItem,
-  AbiFunction,
-  getAddress,
-  toFunctionSelector,
-  hexToString,
-  parseAbi,
-  stringToHex,
-} from "viem";
+import { Client, Abi, Address, getAddress, toFunctionSelector, hexToString, parseAbi, stringToHex } from "viem";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { isDefined } from "@latticexyz/common/utils";
 import { getFunctions } from "./getFunctions";
 import { getRecords } from "../getRecords";
-
-function isAbiFunction(abiItem: AbiItem): abiItem is AbiFunction {
-  return abiItem.type === "function";
-}
+import { isAbiFunction } from "./common";
 
 export async function getWorldAbi({
   client,

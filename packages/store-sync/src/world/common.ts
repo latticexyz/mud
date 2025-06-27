@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { AbiFunction, AbiItem, Hex } from "viem";
 
 export type WorldFunction = {
   readonly signature: string;
@@ -7,3 +7,7 @@ export type WorldFunction = {
   readonly systemFunctionSignature: string;
   readonly systemFunctionSelector: Hex;
 };
+
+export function isAbiFunction(abiItem: AbiItem): abiItem is AbiFunction {
+  return abiItem.type === "function";
+}
