@@ -8,6 +8,10 @@ export function encodeFunctionArgs(args: unknown[], inputs: AbiFunction): unknow
     if (input.type.includes("[]")) return JSON.parse(arg as string);
     if (input.type === "tuple") return JSON.parse(arg as string);
     if (input.type === "bool") return arg === "true";
+    if (input.type.startsWith("uint") || input.type.startsWith("int")) {
+      if (typeof arg === "string" && arg.endsWith("n")) return arg.slice(0, -1);
+      return arg;
+    }
 
     return arg;
   });
