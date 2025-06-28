@@ -19,8 +19,8 @@ import {
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { useTransactionsQuery } from "../../../../queries/useTransactionsQuery";
-import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
@@ -116,7 +116,7 @@ export const columns = [
 export function TransactionsTable() {
   const { ref, inView } = useInView();
   const { id: chainId } = useChain();
-  const indexer = indexerForChainId(chainId);
+  const indexer = useIndexerForChainId(chainId);
   const transactions = useMergedTransactions();
   const { data: indexedTransactions, fetchNextPage } = useTransactionsQuery();
   const loadedInitialTransactions = Array.isArray(indexedTransactions) && indexedTransactions.length > 0;

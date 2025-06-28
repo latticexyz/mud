@@ -3,7 +3,7 @@ import { Hex } from "viem";
 
 export const dynamic = "force-dynamic";
 
-const postgresConnectionUrl = process.env.DATABASE_URL;
+const postgresConnectionUrl = process.env.SHOVEL_DATABASE_URL;
 
 export async function GET(req: Request) {
   const client = new Client({ connectionString: postgresConnectionUrl });

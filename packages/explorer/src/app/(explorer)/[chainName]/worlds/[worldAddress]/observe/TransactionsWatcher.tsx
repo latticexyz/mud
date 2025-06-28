@@ -16,9 +16,9 @@ import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { useTransactionsQuery } from "../../../../queries/useTransactionsQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
-import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { store as worldStore } from "../store";
 import { userOperationEventAbi } from "./abis/userOperationEventAbi";
 import { PartialTransaction } from "./useMergedTransactions";
@@ -27,7 +27,7 @@ import { getDecodedUserOperationCalls } from "./utils/getDecodedUserOperationCal
 export function TransactionsWatcher() {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams<{ worldAddress: Address }>();
-  const indexer = indexerForChainId(chainId);
+  const indexer = useIndexerForChainId(chainId);
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;

@@ -2,12 +2,12 @@ import { useParams } from "next/navigation";
 import { Hex } from "viem";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
-import { indexerForChainId } from "../utils/indexerForChainId";
+import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 
 export function useTransactionsQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
-  const indexer = indexerForChainId(chainId);
+  const indexer = useIndexerForChainId(chainId);
 
   return useInfiniteQuery({
     queryKey: ["transactions", worldAddress, chainName],
