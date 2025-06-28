@@ -18,8 +18,14 @@ import { setBalance } from "viem/actions";
 
 // TODO: move to common package?
 
-export function userOpExecutor({ executor }: { executor: ConnectedClient }): Transport {
-  return () => {
+export function userOpExecutor({
+  executor,
+  fallbackDefaultTransport,
+}: {
+  executor: ConnectedClient;
+  fallbackDefaultTransport: Transport;
+}): Transport {
+  return (opts) => {
     debug("using a local user op executor", executor.account.address);
 
     if (executor.chain.id === 31337) {
@@ -64,7 +70,10 @@ export function userOpExecutor({ executor }: { executor: ConnectedClient }): Tra
         return await estimateUserOperationGas(params);
       }
 
-      throw new Error("Method not implemented.");
+      debug(`userOpExecutor: method "${method}" not overridden, falling back to fallback transport`);
+      const { request: fallbackRequest } = fallbackDefaultTransport(opts);
+
+      return fallbackRequest({ method, params });
     };
 
     return createTransport({

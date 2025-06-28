@@ -8,6 +8,7 @@
     "clean": "forge clean && shx rm -rf src/**/codegen",
     "deploy:garnet": "mud deploy --profile=garnet",
     "deploy:local": "mud deploy",
+    "deploy:pyrope": "mud deploy --profile=pyrope",
     "deploy:redstone": "mud deploy --profile=redstone",
     "dev": "mud dev-contracts",
     "lint": "pnpm run prettier && pnpm run solhint",

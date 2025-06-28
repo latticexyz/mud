@@ -1,4 +1,4 @@
-import { execa, Options } from "execa";
+import { execa } from "execa";
 
 export interface ForgeConfig {
   // project
@@ -68,65 +68,11 @@ export async function getOutDirectory(profile?: string): Promise<string> {
  * @returns The rpc url
  */
 export async function getRpcUrl(profile?: string): Promise<string> {
-  return (await getForgeConfig(profile)).eth_rpc_url || "http://127.0.0.1:8545";
-}
-
-/**
- * Execute a forge command
- * @param args The arguments to pass to forge
- * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }
- */
-export async function forge(
-  args: string[],
-  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string },
-): Promise<void> {
-  const execOptions: Options<string> = {
-    env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },
-    stdout: "inherit",
-    stderr: "pipe",
-    cwd: options?.cwd,
-  };
-
-  await (options?.silent ? execa("forge", args, execOptions) : execLog("forge", args, execOptions));
-}
-
-/**
- * Execute a cast command
- * @param args The arguments to pass to cast
- * @returns Stdout of the command
- */
-export async function cast(args: string[], options?: { profile?: string }): Promise<string> {
-  return execLog("cast", args, {
-    env: { FOUNDRY_PROFILE: options?.profile },
-  });
-}
-
-/**
- * Start an anvil chain
- * @param args The arguments to pass to anvil
- * @returns Stdout of the command
- */
-export async function anvil(args: string[]): Promise<string> {
-  return execLog("anvil", args);
-}
-
-/**
- * Executes the given command, returns the stdout, and logs the command to the console.
- * Throws an error if the command fails.
- * @param command The command to execute
- * @param args The arguments to pass to the command
- * @returns The stdout of the command
- */
-async function execLog(command: string, args: string[], options?: Options<string>): Promise<string> {
-  const commandString = `${command} ${args.join(" ")}`;
-  try {
-    console.log(`running "${commandString}"`);
-    const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe", ...options });
-    return stdout;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    let errorMessage = error?.stderr || error?.message || "";
-    errorMessage += `\nError running "${commandString}"`;
-    throw new Error(errorMessage);
-  }
+  return (
+    process.env.FOUNDRY_ETH_RPC_URL ||
+    process.env.RPC_HTTP_URL ||
+    process.env.RPC_URL ||
+    (await getForgeConfig(profile)).eth_rpc_url ||
+    "http://127.0.0.1:8545"
+  );
 }

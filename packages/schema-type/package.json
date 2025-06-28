@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.2.16",
+  "version": "2.2.22",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "clean:js": "shx rm -rf dist/typescript",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
-    "test": "vitest typecheck --run && vitest --run && forge test",
+    "test": "vitest --run && forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
@@ -49,8 +49,7 @@
     "@latticexyz/gas-report": "workspace:*",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "viem": "2.21.19",
-    "vitest": "0.34.6"
+    "viem": "2.30.6"
   },
   "peerDependencies": {
     "viem": "2.x"

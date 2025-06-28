@@ -1,5 +1,47 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.22
+- @latticexyz/utils@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.21
+- @latticexyz/utils@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.20
+- @latticexyz/utils@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/utils@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.18
+- @latticexyz/utils@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.17
+- @latticexyz/utils@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

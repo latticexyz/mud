@@ -13,5 +13,5 @@ export { useSessionClientReady as useSessionClient } from "../useSessionClientRe
 export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmiConfig";
 
 // And some additional internal things
-export * from "../getConnectors";
-export * from "../getWallets";
+export * from "../validateSigner";
+export * from "../useFunds";

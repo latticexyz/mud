@@ -2,7 +2,7 @@
   "compilerOptions": {
     "paths": {
       "@latticexyz/abi-ts/internal": ["./packages/abi-ts/src/exports/internal.ts"],
-      "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
+      "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/exports/index.ts"],
       "@latticexyz/cli": ["./packages/cli/src/index.ts"],
       "@latticexyz/common": ["./packages/common/src/index.ts"],
       "@latticexyz/common/actions": ["./packages/common/src/actions/index.ts"],
@@ -45,6 +45,13 @@
       "@latticexyz/world/node": ["./packages/world/ts/node/index.ts"],
       "@latticexyz/world/out/*": ["./packages/world/out/*"],
       "@latticexyz/world/*": ["./packages/world/ts/exports/*.ts"],
+      "@latticexyz/world-module-callwithsignature/internal": [
+        "./packages/world-module-callwithsignature/ts/exports/internal.ts"
+      ],
+      "@latticexyz/world-module-callwithsignature/mud.config": [
+        "./packages/world-module-callwithsignature/mud.config.ts"
+      ],
+      "@latticexyz/world-module-callwithsignature/out/*": ["./packages/world-module-callwithsignature/out/*"],
       "@latticexyz/world-module-metadata/mud.config": ["./packages/world-module-metadata/mud.config.ts"],
       "@latticexyz/world-module-metadata/out/*": ["./packages/world-module-metadata/out/*"],
       "@latticexyz/world-modules/internal/mud.config": ["./packages/world-modules/mud.config.ts"],

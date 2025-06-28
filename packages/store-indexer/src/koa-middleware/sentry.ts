@@ -12,7 +12,11 @@ export function errorHandler(): Koa.Middleware {
     } catch (err) {
       Sentry.withScope((scope) => {
         scope.addEventProcessor((event) => {
-          return Sentry.addRequestDataToEvent(event, ctx.request);
+          return Sentry.addRequestDataToEvent(event, {
+            ...ctx.request,
+            body: ctx.request.body as string | Record<string, unknown> | undefined,
+            query: ctx.request.query as Record<string, unknown> | undefined,
+          });
         });
         Sentry.captureException(err);
       });
@@ -27,10 +31,10 @@ export function requestHandler(): Koa.Middleware {
       const hub = Sentry.getCurrentHub();
       hub.configureScope((scope) =>
         scope.addEventProcessor((event) =>
-          Sentry.addRequestDataToEvent(event, ctx.request, {
-            include: {
-              user: false,
-            },
+          Sentry.addRequestDataToEvent(event, {
+            ...ctx.request,
+            body: ctx.request.body as string | Record<string, unknown> | undefined,
+            query: ctx.request.query as Record<string, unknown> | undefined,
           }),
         ),
       );

@@ -1,5 +1,6 @@
 import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import packageJson from "../package.json";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex, stringToHex } from "viem";
@@ -65,11 +66,13 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const salt = opts.salt != null ? (isHex(opts.salt) ? opts.salt : stringToHex(opts.salt)) : undefined;
 
-  const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
+  const profile = opts.profile;
 
   const configPath = await resolveConfigPath(opts.configPath);
   const config = (await loadConfig(configPath)) as WorldConfig;
   const rootDir = path.dirname(configPath);
+
+  console.log(chalk.green(`\nUsing ${packageJson.name}@${packageJson.version}`));
 
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
@@ -194,8 +197,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   if (opts.saveDeployment) {
     const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
-    writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
-    writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
+    writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2) + "\n");
+    writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2) + "\n");
 
     const localChains = [1337, 31337];
     const deploys = existsSync(config.deploy.worldsFile)
@@ -207,7 +210,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
-    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
+    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2) + "\n");
 
     console.log(
       chalk.bgGreen(

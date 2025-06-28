@@ -7,13 +7,14 @@ import { SyncAdapter, SyncOptions, SyncResult } from "../common";
 /** @internal */
 export const SyncContext = createContext<UseQueryResult<SyncResult> | null>(null);
 
-export type Props = Omit<SyncOptions, "publicClient"> & {
+export type Props = Omit<SyncOptions, "publicClient" | "internal_clientOptions"> & {
   chainId: number;
   adapter: SyncAdapter;
   children: ReactNode;
+  internal_validateBlockRange?: boolean;
 };
 
-export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Props) {
+export function SyncProvider({ chainId, adapter, children, internal_validateBlockRange, ...syncOptions }: Props) {
   const existingValue = useContext(SyncContext);
   if (existingValue != null) {
     throw new Error("A `SyncProvider` cannot be nested inside another.");
@@ -28,7 +29,19 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
       if (!client) {
         throw new Error(`Unable to retrieve Viem client for chain ${chainId}.`);
       }
-      return await adapter({ publicClient: client, ...syncOptions });
+
+      if (internal_validateBlockRange) {
+        return await adapter({
+          ...syncOptions,
+          internal_clientOptions: {
+            chain: client.chain,
+            pollingInterval: client.pollingInterval,
+            validateBlockRange: internal_validateBlockRange,
+          },
+        });
+      }
+
+      return await adapter({ ...syncOptions, publicClient: client });
     },
     staleTime: Infinity,
     refetchOnMount: false,

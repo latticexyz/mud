@@ -1,50 +1,59 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { UseQueryResult, queryOptions, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  UndefinedInitialDataOptions,
+  UseQueryResult,
+  queryOptions,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getSessionClient } from "./getSessionClient";
 import { SessionClient } from "./common";
-import { SmartAccount } from "viem/account-abstraction";
-import { useSessionAccount } from "./useSessionAccount";
+import { getSessionAccountQueryOptions } from "./useSessionAccount";
 
 export function getSessionClientQueryOptions({
-  sessionAccount,
+  queryClient,
   client,
   userAddress,
   worldAddress,
 }: {
-  sessionAccount: SmartAccount | undefined;
+  queryClient: QueryClient;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
   worldAddress: Address;
-}) {
-  const queryKey = ["getSessionClient", client?.uid, userAddress, sessionAccount?.address, worldAddress];
-  return queryOptions(
-    client && userAddress && sessionAccount
-      ? {
-          queryKey,
-          queryFn: () =>
-            getSessionClient({
-              sessionAccount,
-              client,
-              userAddress,
-              worldAddress,
-            }),
-          staleTime: Infinity,
-        }
-      : { queryKey, enabled: false },
-  );
+}): UndefinedInitialDataOptions<SessionClient> {
+  return queryOptions<SessionClient>({
+    queryKey: ["getSessionClient", client?.uid, userAddress, worldAddress],
+    queryFn: async () => {
+      if (!userAddress) throw new Error("User not connected.");
+
+      const { account: sessionAccount, signer: sessionSigner } = await queryClient.fetchQuery(
+        getSessionAccountQueryOptions({ client, userAddress }),
+      );
+      return await getSessionClient({
+        sessionAccount,
+        sessionSigner,
+        userAddress,
+        worldAddress,
+      });
+    },
+    staleTime: Infinity,
+    // TODO: replace with function to retry only connection errors
+    retry: false,
+  });
 }
 
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
+  const queryClient = useQueryClient();
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-  const { data: sessionAccount } = useSessionAccount(userAddress);
   return useQuery(
     getSessionClientQueryOptions({
-      sessionAccount,
-      userAddress,
+      queryClient,
       client,
+      userAddress,
       worldAddress,
     }),
   );

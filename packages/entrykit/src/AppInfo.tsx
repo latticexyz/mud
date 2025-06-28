@@ -14,7 +14,7 @@ export function AppInfo() {
             <img src={appIcon} className="w-full h-full object-cover" />
           ) : (
             // TODO: swap with favicon
-            <Logo className="w-full h-full text-orange-500 dark:bg-neutral-800" />
+            <Logo className="w-full h-full text-orange-500 bg-neutral-800" />
           )
         ) : null}
       </div>

@@ -1,30 +1,50 @@
-import { Hex } from "viem";
+import { useEffect, useState } from "react";
+import { Hex, parseEther } from "viem";
+import { useQueryClient } from "@tanstack/react-query";
 import { PendingIcon } from "../icons/PendingIcon";
 import { Button } from "../ui/Button";
 import { Balance } from "../ui/Balance";
-import { useBalance } from "wagmi";
+import { useBalance, useWatchBlockNumber } from "wagmi";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import relayChains from "../data/relayChains.json";
 import { useSetBalance } from "./useSetBalance";
-import { minGasBalance } from "./common";
+import { RelayChains, StepContentProps } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
+import { useShowMutationError } from "../errors/useShowMutationError";
+import { useShowQueryError } from "../errors/useShowQueryError";
+import { usePrevious } from "../errors/usePrevious";
+import { CopyIcon } from "../icons/CopyIcon";
+import { CheckIcon } from "../icons/CheckIcon";
 
-export type Props = {
-  isExpanded: boolean;
-  isActive: boolean;
+export type Props = StepContentProps & {
   sessionAddress: Hex;
 };
 
 export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
+  const queryClient = useQueryClient();
   const { chain } = useEntryKitConfig();
+  const [copied, setCopied] = useState(false);
 
-  // TODO: refetch on block rather than interval?
-  const balance = useBalance({ chainId: chain.id, address: sessionAddress, query: { refetchInterval: 2000 } });
-  const setBalance = useSetBalance();
+  const balance = useShowQueryError(useBalance({ chainId: chain.id, address: sessionAddress }));
+  const prevBalance = usePrevious(balance.data);
+  useWatchBlockNumber({ onBlockNumber: () => balance.refetch() });
 
-  // TODO: show error if balance/setBalance fails?
+  const setBalance = useShowMutationError(useSetBalance());
+  const relayChain = (relayChains as RelayChains)[chain.id];
 
-  const relayChainName = (relayChains as Partial<Record<number, string>>)[chain.id];
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sessionAddress);
+
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  useEffect(() => {
+    if (balance.data != null && prevBalance?.value === 0n && balance.data.value > 0n) {
+      queryClient.invalidateQueries({ queryKey: ["getFunds"] });
+      queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
+    }
+  }, [balance.data, prevBalance, setBalance, sessionAddress, queryClient]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,18 +65,16 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
             onClick={() =>
               setBalance.mutate({
                 address: sessionAddress,
-                value: minGasBalance + (balance.data?.value ?? 0n),
+                value: parseEther("0.01") + (balance.data?.value ?? 0n),
               })
             }
           >
             Top up
           </Button>
-        ) : relayChainName != null ? (
+        ) : relayChain != null ? (
           // TODO: convert this to a <ButtonLink>
           <a
-            href={`https://relay.link/bridge/${relayChainName}?${new URLSearchParams({
-              toAddress: sessionAddress,
-            })}`}
+            href={`${relayChain.bridgeUrl}?${new URLSearchParams({ toAddress: sessionAddress, amount: "0.01" })}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -74,16 +92,18 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
       {isExpanded ? (
         <>
           <p className="text-sm">Your session&apos;s gas balance is used to pay for onchain computation.</p>
-          {relayChainName == null ? (
-            // TODO: consider replacing this with a "Top up" button that leads to a docs page
-            <p className="text-sm">
-              Send funds to{" "}
-              <span className="font-mono text-white">
-                <TruncatedHex hex={sessionAddress} />
-              </span>{" "}
-              on {chain.name} to top up your session balance.
-            </p>
-          ) : null}
+          <p className="text-sm">
+            Send funds to{" "}
+            <span
+              className="inline-flex items-center gap-1 font-mono text-white cursor-pointer hover:text-white/80 transition-colors"
+              onClick={handleCopy}
+              title="Click to copy"
+            >
+              <TruncatedHex hex={sessionAddress} />{" "}
+              {copied ? <CheckIcon className="w-3.5 h-3.5" /> : <CopyIcon className="w-3.5 h-3.5" />}
+            </span>{" "}
+            on {chain.name} to top up your session balance.
+          </p>
         </>
       ) : null}
     </div>

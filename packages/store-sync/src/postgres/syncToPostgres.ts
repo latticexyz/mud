@@ -26,15 +26,13 @@ export type SyncToPostgresResult = SyncResult & {
  */
 export async function syncToPostgres({
   database,
-  publicClient,
   startSync = true,
-  ...syncOptions
+  ...opts
 }: SyncToPostgresOptions): Promise<SyncToPostgresResult> {
-  const { storageAdapter } = await createStorageAdapter({ database, publicClient });
+  const { storageAdapter } = await createStorageAdapter({ ...opts, database });
   const storeSync = await createStoreSync({
+    ...opts,
     storageAdapter,
-    publicClient,
-    ...syncOptions,
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;

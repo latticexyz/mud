@@ -6,6 +6,7 @@ import { Value } from "./codegen/tables/Value.sol";
 import { PositionValue } from "./codegen/tables/PositionValue.sol";
 import { AddressValue } from "./codegen/tables/AddressValue.sol";
 import { ASystemThing, Position } from "./ASystemTypes.sol";
+import { THREE } from "./ASystemConstants.sol";
 
 contract ASystem is System {
   function setValue(ASystemThing memory value) external {
@@ -43,4 +44,24 @@ contract ASystem is System {
     AddressValue.set(addr);
     return addr;
   }
+
+  function setValuesStaticArray(uint256[1] memory values) external {
+    Value.set(values[0]);
+  }
+
+  function setValuesStaticArray(uint256[2] memory values) external {
+    Value.set(values[1]);
+  }
+
+  function setValuesStaticArray(uint256[THREE] memory values) external {
+    Value.set(values[2]);
+  }
+
+  /*
+  // TODO: support this case
+  // (see flattenTypeName in contractToInterface.ts)
+  function setValuesStaticArray(uint256[1 - 0 * 2 + THREE] memory values) external {
+    Value.set(values[3]);
+  }
+  */
 }

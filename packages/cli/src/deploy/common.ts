@@ -1,5 +1,5 @@
 import { Abi, Account, Address, Chain, Client, Hex, Transport } from "viem";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { LibraryMap } from "./getLibraryMap";
@@ -109,7 +109,7 @@ export type DeployedSystem = Omit<
 
 export type Module = DeterministicContract & {
   readonly name: string;
-  readonly installAsRoot: boolean;
+  readonly installStrategy: "root" | "delegation" | "default";
   readonly installData: Hex; // TODO: figure out better naming for this
   /**
    * @internal

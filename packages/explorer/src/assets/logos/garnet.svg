@@ -1,0 +1,51 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+<rect width="60" height="60" fill="#A91F2F"/>
+<path d="M20 15V20H25V15H20Z" fill="white" fill-opacity="0.5"/>
+<path d="M15 15V20H20V15H15Z" fill="white" fill-opacity="0.5"/>
+<path d="M20 20V25H25V20H20Z" fill="white"/>
+<path d="M25 20V25H30V20H25Z" fill="white"/>
+<path d="M30 20V25H35V20H30Z" fill="white"/>
+<path d="M35 20V25H40V20H35Z" fill="white"/>
+<path d="M20 25V30H25V25H20Z" fill="white"/>
+<path d="M35 25V30H40V25H35Z" fill="white"/>
+<path d="M20 30V35H25V30H20Z" fill="white"/>
+<path d="M35 30V35H40V30H35Z" fill="white"/>
+<path d="M20 35V40H25V35H20Z" fill="white"/>
+<path d="M35 35V40H40V35H35Z" fill="white"/>
+<path d="M30 35V40H35V35H30Z" fill="white"/>
+<path d="M25 35V40H30V35H25Z" fill="white"/>
+<path d="M15 20V25H20V20H15Z" fill="white" fill-opacity="0.5"/>
+<path d="M30 15V20H35V15H30Z" fill="white" fill-opacity="0.5"/>
+<path d="M35 15V20H40V15H35Z" fill="white" fill-opacity="0.5"/>
+<path d="M40 15V20H45V15H40Z" fill="white" fill-opacity="0.5"/>
+<path d="M25 15V20H30V15H25Z" fill="white" fill-opacity="0.5"/>
+<path d="M20 50V45H25V50H20Z" fill="white" fill-opacity="0.25"/>
+<path d="M20 15V10H25V15H20Z" fill="white" fill-opacity="0.25"/>
+<path d="M30 50V45H35V50H30Z" fill="white" fill-opacity="0.25"/>
+<path d="M30 15V10H35V15H30Z" fill="white" fill-opacity="0.25"/>
+<path d="M30 45V40H35V45H30Z" fill="white" fill-opacity="0.5"/>
+<path d="M35 45V40H40V45H35Z" fill="white" fill-opacity="0.5"/>
+<path d="M25 50V45H30V50H25Z" fill="white" fill-opacity="0.25"/>
+<path d="M25 15V10H30V15H25Z" fill="white" fill-opacity="0.25"/>
+<path d="M35 50V45H40V50H35Z" fill="white" fill-opacity="0.25"/>
+<path d="M35 15V10H40V15H35Z" fill="white" fill-opacity="0.25"/>
+<path d="M25 45V40H30V45H25Z" fill="white" fill-opacity="0.5"/>
+<path d="M20 45V40H25V45H20Z" fill="white" fill-opacity="0.5"/>
+<path d="M10 25L15 25L15 30L10 30L10 25Z" fill="white" fill-opacity="0.25"/>
+<path d="M10 20L15 20L15 25L10 25L10 20Z" fill="white" fill-opacity="0.25"/>
+<path d="M15 30L20 30L20 35L15 35L15 30Z" fill="white" fill-opacity="0.5"/>
+<path d="M15 35L20 35L20 40L15 40L15 35Z" fill="white" fill-opacity="0.5"/>
+<path d="M15 40L20 40L20 45L15 45L15 40Z" fill="white" fill-opacity="0.5"/>
+<path d="M10 30L15 30L15 35L10 35L10 30Z" fill="white" fill-opacity="0.25"/>
+<path d="M10 35L15 35L15 40L10 40L10 35Z" fill="white" fill-opacity="0.25"/>
+<path d="M15 25L20 25L20 30L15 30L15 25Z" fill="white" fill-opacity="0.5"/>
+<path d="M50 20L45 20L45 25L50 25L50 20Z" fill="white" fill-opacity="0.25"/>
+<path d="M50 30L45 30L45 35L50 35L50 30Z" fill="white" fill-opacity="0.25"/>
+<path d="M45 20L40 20L40 25L45 25L45 20Z" fill="white" fill-opacity="0.5"/>
+<path d="M45 30L40 30L40 35L45 35L45 30Z" fill="white" fill-opacity="0.5"/>
+<path d="M45 35L40 35L40 40L45 40L45 35Z" fill="white" fill-opacity="0.5"/>
+<path d="M45 40L40 40L40 45L45 45L45 40Z" fill="white" fill-opacity="0.5"/>
+<path d="M50 25L45 25L45 30L50 30L50 25Z" fill="white" fill-opacity="0.25"/>
+<path d="M50 35L45 35L45 40L50 40L50 35Z" fill="white" fill-opacity="0.25"/>
+<path d="M45 25L40 25L40 30L45 30L45 25Z" fill="white" fill-opacity="0.5"/>
+</svg>

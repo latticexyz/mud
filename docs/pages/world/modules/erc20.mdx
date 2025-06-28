@@ -12,11 +12,13 @@ This module is unaudited and may change in the future.
 The [`erc20` module](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/) lets you create [ERC-20](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) tokens as part of a MUD `World`.
 The advantage of doing this, rather than creating a separate [ERC-20 contract](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20) and merely controlling it from MUD, is that all the information is in MUD tables and is immediately available in the client.
 
-The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20WithWorld.sol) with the following features:
+The token contract can be seen as a hybrid system contract which contains functions directly callable from outside the world (ERC20 functions like `transfer`, `balanceOf`, etc), and restricted functions that must be called as a system function through the World (`mint`, `pause`, etc).
+
+The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20PausableBurnable.sol) with the following features:
 
 - ERC20Burnable: Allows users to burn their tokens (or the ones approved to them) using the `burn` and `burnFrom` function.
-- ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses with access to the token's namespace.
-- Minting: Addresses with namespace access can call the `mint` function to mint tokens to any address.
+- ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses and systems with access to the token's namespace. Must be done through a World call.
+- Minting: Addresses and Systems with namespace access can call the `mint` function to mint tokens to any address. This must be done through a World call.
 
 ## Installation
 
@@ -58,15 +60,17 @@ For example, run this script.
 
 <CollapseCode>
 
-```solidity filename="ManageERC20.s.sol" copy showLineNumbers {16,34-38,43,48-56}
+```solidity filename="ManageERC20.s.sol" copy showLineNumbers {18,36-41,46,51-60}
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
 import { ERC20Registry } from "@latticexyz/world-module-erc20/src/codegen/index.sol";
-import { ERC20WithWorld as ERC20 } from "@latticexyz/world-module-erc20/src/examples/ERC20WithWorld.sol";
+import { ERC20PausableBurnable as ERC20 } from "@latticexyz/world-module-erc20/src/examples/ERC20PausableBurnable.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
@@ -94,8 +98,9 @@ contract ManageERC20 is Script {
 
     // Get the ERC-20 token address
     ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));
-    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20Registry");
     address tokenAddress = ERC20Registry.getTokenAddress(erc20RegistryResource, namespaceResource);
+    ResourceId tokenSystem = SystemRegistry.get(tokenAddress);
     console.log("Token address", tokenAddress);
 
     address alice = address(0x600D);
@@ -107,8 +112,9 @@ contract ManageERC20 is Script {
     reportBalances(erc20, myAddress);
 
     // Mint some tokens
+    // We must call the token system (instead of calling mint directly)
     console.log("Minting for myself");
-    erc20.mint(myAddress, 1000);
+    IWorldCall(worldAddress).call(tokenSystem, abi.encodeCall(ERC20.mint, (myAddress, 1000)));
     reportBalances(erc20, myAddress);
 
     // Transfer tokens
@@ -136,14 +142,15 @@ contract ManageERC20 is Script {
 ```solidity
     // Get the ERC-20 token address
     ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));
-    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20Registry");
     address tokenAddress = ERC20Registry.getTokenAddress(erc20RegistryResource, namespaceResource);
+    ResourceId tokenSystem = SystemRegistry.get(tokenAddress);
     console.log("Token address", tokenAddress);
 ```
 
-This is the process to get the address of our token contract.
+This is the process to get the address of our token contract and the system id of the token.
 First, we get the [`resourceId` values](/world/resource-ids) for the `erc20-module__ERC20Registry` table and the namespace we are interested in (each namespace can only have one ERC-20 token).
-Then we use that table to get the token address.
+Then we use that table to get the token address. Finally, we obtain the token system id from the `SystemRegistry` table.
 
 ```solidity
     // Use the token
@@ -153,13 +160,15 @@ Then we use that table to get the token address.
 Cast the token address to an `ERC20` contract so we can call its methods.
 
 ```solidity
+    // Mint some tokens
+    // We must call the token system (instead of calling mint directly)
     console.log("Minting for myself");
-    erc20.mint(myAddress, 1000);
+    IWorldCall(worldAddress).call(tokenSystem, abi.encodeCall(ERC20.mint, (myAddress, 1000)));
     reportBalances(erc20, myAddress);
 ```
 
 Mint tokens for your address.
-Note that only the owner of the name space is authorized to mint tokens.
+Note that the mint function must be called through the world as a system function, as it is restricted to entities with access to the token's namespace.
 
 ```solidity
     console.log("Transfering to Alice");

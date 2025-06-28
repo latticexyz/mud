@@ -29,7 +29,6 @@ export function createSyncAdapter<const config extends StoreConfig>({
       tables: {},
       shouldSkipUpdateStream: (): boolean => {
         const value = getComponentValue(components.SyncProgress, singletonEntity);
-        console.log("should skip update?", value);
         return value?.step !== SyncStep.LIVE;
       },
     });
@@ -41,7 +40,6 @@ export function createSyncAdapter<const config extends StoreConfig>({
         // already live, no need for more progress updates
         if (getComponentValue(components.SyncProgress, singletonEntity)?.step === SyncStep.LIVE) return;
 
-        console.log("setting component", { step, percentage });
         setComponent(components.SyncProgress, singletonEntity, {
           step,
           percentage,

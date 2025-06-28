@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/stash",
-  "version": "2.2.16",
+  "version": "2.2.22",
   "description": "High performance client store and query engine for MUD",
   "repository": {
     "type": "git",
@@ -55,16 +55,16 @@
     "fast-deep-equal": "^3.1.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "viem": "2.21.19"
+    "viem": "2.30.6"
   },
   "peerDependencies": {
-    "react": "18.x",
+    "react": "18.x || 19.x",
     "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"
   },
   "optionalPeerDependencies": {
-    "react": "18.x"
+    "react": "18.x || 19.x"
   }
 }

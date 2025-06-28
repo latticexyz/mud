@@ -6,10 +6,6 @@ export const frontendEnvSchema = z.object({
   PORT: z.coerce.number().positive().default(3001),
 });
 
-function isHexOrUndefined(input: unknown): input is Hex | undefined {
-  return input === undefined || isHex(input);
-}
-
 export const indexerEnvSchema = z.intersection(
   z.object({
     FOLLOW_BLOCK_TAG: z.enum(["latest", "safe", "finalized"]).default("safe"),
@@ -21,6 +17,10 @@ export const indexerEnvSchema = z.intersection(
       .optional()
       .transform((input) => (input === "" ? undefined : input))
       .refine(isHexOrUndefined),
+    INTERNAL__VALIDATE_BLOCK_RANGE: z
+      .string()
+      .optional()
+      .transform((input) => input === "true" || input === "1"),
   }),
   z.union([
     z.object({
@@ -45,4 +45,8 @@ export function parseEnv<TSchema extends ZodTypeAny>(envSchema: TSchema): z.infe
     }
     throw error;
   }
+}
+
+function isHexOrUndefined(input: unknown): input is Hex | undefined {
+  return input === undefined || isHex(input);
 }

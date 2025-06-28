@@ -1,5 +1,166 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 6008573: Added a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.
+- 6a26a04: Fixed a bug related to `batchCall` in `sendUserOperationFrom`.
+- f6d87ed: Fix static array arguments in system libraries.
+- fb2745a: Support generating libraries for systems without function registration.
+- 03af917: `mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+  ```solidity
+  import {System} from "@latticexyz/world/src/System.sol";
+
+  contract EntityProgram is System {
+    ...
+  }
+  ```
+
+  If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+- d83a0fd: Adds support for functions with missing argument names in system libraries.
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- 8cdc57b: System libraries are no longer generated with `payable` keyword.
+- Updated dependencies [1d354b8]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- 3187081: Added `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.
+- 06e48e0: Added experimental system libraries for World systems for better ergonomics when interacting with core systems.
+
+  Note that these libraries are marked experimental as we may make breaking changes to their interfaces.
+
+  ```solidity
+  import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol";
+
+  // equivalent to `IBaseWorld(_world()).registerNamespace("hello")` but directly routed through `world.call` for better gas.
+  worldRegistrationSystem.registerNamespace("hello");
+
+  // and makes delegation use cases easier
+  worldRegistrationSystem.callFrom(_msgSender()).registerNamespace("hello");
+  ```
+
+- 3915759: The base `Module` contract now includes default implementations of `install` and `installRoot` that immediately revert, avoiding the need to implement these manually in each module.
+
+  If you've written a module, you may need to update your install methods with `override` when using this new base contract.
+
+  ```diff
+  -function install(bytes memory) public {
+  +function install(bytes memory) public override {
+  ```
+
+  ```diff
+  -function installRoot(bytes memory) public {
+  +function installRoot(bytes memory) public override {
+  ```
+
+- 3187081: Updated `encodeSystemCalls` and `encodeSystemCallsFrom` to include the `abi` in each call so that different systems/ABIs can be called in batch. Types have been improved to properly hint/narrow the expected arguments for each call.
+
+  ```diff
+  -encodeSystemCalls(abi, [{
+  +encodeSystemCalls([{
+  +  abi,
+     systemId: '0x...',
+     functionName: '...',
+     args: [...],
+   }]);
+  ```
+
+  ```diff
+  -encodeSystemCallsFrom(from, abi, [{
+  +encodeSystemCallsFrom(from, [{
+  +  abi,
+     systemId: '0x...',
+     functionName: '...',
+     args: [...],
+   }]);
+  ```
+
+- Updated dependencies [06e48e0]
+  - @latticexyz/store@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.19
+- @latticexyz/common@2.2.19
+- @latticexyz/config@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/store@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- 5d6fb1b: Updates `WithWorld` to be a `System`, so that functions in child contracts that use the `onlyWorld` or `onlyNamespace` modifiers must be called through the world in order to safely support calls from systems.
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- 94d82cf: Fixed an issue in system resolving helper used by CLI was not correctly comparing `namespaceLabel`s.
+- 7c3df69: Using `encodeSystemCall` (and others) with a world ABI and namespace-prefixed function name will now attempt to strip the prefix when encoding it as a system call.
+
+  It's recommended to use a system ABI with these functions rather than a world ABI.
+
+  ```ts
+  import systemAbi from "contracts/out/ISomeSystem.sol/ISomeSystem.sol.abi.json";
+  encodeSystemCall({ abi: systemAbi, ... });
+  ```
+
+- 56e65f6: Updated `callFrom` action to automatically translate `batchCall` to `batchCallFrom`.
+  Also fixed `encodeSystemCallFrom` and `encodeSystemCallsFrom` to return the right format for use with `batchCall` and `batchCallFrom` respectively.
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [40aaf97]
+- Updated dependencies [dead80e]
+- Updated dependencies [7385948]
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

@@ -7,6 +7,7 @@ import {
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
+import { stringToHex } from "viem";
 
 export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const {
@@ -16,11 +17,19 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     systemName,
     namespace,
     resourceId,
-    functions,
+    functions: functionsInput,
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
   } = options;
+
+  const functions = functionsInput.map((func) => ({
+    ...func,
+    // Format parameters (add auxiliary argument names, replace calldata location)
+    parameters: formatParams(func.parameters),
+    // Remove `payable` from stateMutability for library functions
+    stateMutability: func.stateMutability.replace("payable", ""),
+  }));
 
   // Add required imports, if they are already included they will get removed in renderImports
   const imports = [
@@ -152,11 +161,11 @@ function renderErrors(errors: ContractInterfaceError[]) {
 function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, userTypeName: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const allParameters = [`${userTypeName} self`, ...parameters];
+  const args = [`${userTypeName} self`, ...parameters];
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(allParameters)}
+      ${renderArguments(args)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
@@ -177,11 +186,11 @@ function renderCallWrapperFunction(
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const functionArguments = [`CallWrapper memory self`, ...parameters];
+  const args = [`CallWrapper memory self`, ...parameters];
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(functionArguments)}
+      ${renderArguments(args)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
@@ -230,11 +239,11 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
     return "";
   }
 
-  const functionArguments = ["RootCallWrapper memory self", ...parameters];
+  const args = ["RootCallWrapper memory self", ...parameters];
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(functionArguments)}
+      ${renderArguments(args)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
@@ -265,10 +274,12 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
 function renderFunctionInterface(contractFunction: ContractInterfaceFunction) {
   const { name, parameters } = contractFunction;
 
+  const args = parameters.map((arg) => arg.replace(/ calldata /, " memory "));
+
   return `
     interface ${functionInterfaceName(contractFunction)} {
       function ${name}(
-        ${renderArguments(parameters)}
+        ${renderArguments(args)}
       ) external;
     }
   `;
@@ -279,6 +290,8 @@ function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
   const paramTypes = parameters
     .map((param) => param.split(" ")[0])
     .map((type) => type.replace("[]", "Array"))
+    // Static arrays may contain multiple disallowed symbols, for name uniqueness toHex is easier than escaping
+    .map((type) => type.replace(/\[.+\]/, (match) => stringToHex(match)))
     .join("_");
   return `_${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
 }
@@ -303,4 +316,17 @@ function renderReturnParameters(returnParameters: string[]) {
   if (returnParameters.length == 0) return "";
 
   return `returns (${renderArguments(returnParameters)})`;
+}
+
+function formatParams(params: string[]) {
+  // Use auxiliary argument names for arguments without names
+  let auxCount = 0;
+
+  return params
+    .map((arg) => arg.replace(/ calldata /, " memory "))
+    .map((arg) => {
+      const items = arg.split(" ");
+      const needsAux = items.length === 1 || (items.length === 2 && items[1] === "memory");
+      return needsAux ? `${arg} __aux${auxCount++}` : arg;
+    });
 }

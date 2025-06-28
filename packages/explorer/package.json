@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.2.16",
+  "version": "2.2.22",
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
   "exports": {
@@ -47,6 +47,7 @@
     "@latticexyz/world": "workspace:*",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-collapsible": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
     "@radix-ui/react-label": "^2.1.0",
@@ -56,38 +57,38 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@radix-ui/themes": "^3.0.5",
-    "@rainbow-me/rainbowkit": "^2.1.5",
+    "@rainbow-me/rainbowkit": "^2.2.6",
     "@tanstack/react-query": "^5.51.3",
     "@tanstack/react-table": "^8.19.3",
-    "better-sqlite3": "^8.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
     "lucide-react": "^0.408.0",
     "monaco-editor": "^0.52.0",
     "next": "14.2.5",
     "node-sql-parser": "^5.3.3",
     "nuqs": "^1.19.2",
-    "pg": "^8.13.1",
+    "pg": "^8.16.0",
     "query-string": "^9.1.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
     "react-intersection-observer": "^9.15.1",
+    "react18-json-view": "^0.2.9",
     "sonner": "^1.5.0",
     "sql-autocomplete": "^1.1.1",
     "tailwind-merge": "^1.12.0",
-    "wagmi": "2.12.11",
+    "wagmi": "2.15.5",
     "yargs": "^17.7.1",
     "zod": "3.23.8",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/better-sqlite3": "^7.6.4",
     "@types/debug": "^4.1.7",
-    "@types/pg": "^8.11.10",
+    "@types/pg": "^8.15.2",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "@types/yargs": "^17.0.10",
@@ -98,14 +99,14 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "2.21.19"
+    "viem": "2.30.6"
   },
   "peerDependencies": {
     "viem": "2.x"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.15.4",
   "engines": {
-    "node": "18.x || 20.x",
-    "pnpm": "^9.6.0"
+    "node": "20.x",
+    "pnpm": "^9"
   }
 }

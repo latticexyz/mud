@@ -1,5 +1,55 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [1d354b8]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- @latticexyz/common@2.2.20
+- @latticexyz/schema-type@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/common@2.2.19
+- @latticexyz/schema-type@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- Updated dependencies [10ce339]
+  - @latticexyz/common@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [589fd3a]
+- Updated dependencies [7385948]
+  - @latticexyz/common@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

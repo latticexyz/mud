@@ -2,33 +2,34 @@ import { useParams } from "next/navigation";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
+import { useSQLQueryState } from "../[chainName]/worlds/[worldAddress]/explore/hooks/useSQLQueryState";
 import { useChain } from "../hooks/useChain";
+import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 import { DozerResponse } from "../types";
-import { indexerForChainId } from "../utils/indexerForChainId";
 
 type Props = {
   table: Table | undefined;
-  query: string | undefined;
   isLiveQuery: boolean;
 };
 
-export type TDataRow = Record<string, unknown>;
+export type TDataRow = Record<string, string | boolean | undefined>;
 export type TData = {
   columns: string[];
   rows: TDataRow[];
   queryDuration: number;
+  blockHeight: number;
 };
 
-export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
+export function useTableDataQuery({ table, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const decodedQuery = decodeURIComponent(query ?? "");
+  const [query] = useSQLQueryState();
+  const indexer = useIndexerForChainId(chainId);
 
-  return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
+  return useQuery<DozerResponse & { queryDuration: number; blockHeight: number }, Error, TData | undefined>({
+    queryKey: ["tableData", chainName, worldAddress, query],
     queryFn: async () => {
       const startTime = performance.now();
-      const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
@@ -37,24 +38,24 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         body: stringify([
           {
             address: worldAddress as Hex,
-            query: decodedQuery,
+            query,
           },
         ]),
       });
 
       const data = await response.json();
-      const queryDuration = performance.now() - startTime;
-
       if (!response.ok) {
         throw new Error(data.msg || "Network response was not ok");
       }
 
-      return { ...data, queryDuration };
+      const queryDuration = performance.now() - startTime;
+      const blockHeight = data.block_height;
+
+      return { ...data, queryDuration, blockHeight };
     },
-    select: (data: DozerResponse & { queryDuration: number }): TData | undefined => {
+    select: (data: DozerResponse & { queryDuration: number; blockHeight: number }): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
-      const indexer = indexerForChainId(chainId);
       const result = data.result[0];
       // if columns are undefined, the result is empty
       if (!result[0]) return undefined;
@@ -81,6 +82,7 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         columns,
         rows,
         queryDuration: data.queryDuration,
+        blockHeight: data.blockHeight,
       };
     },
     retry: false,

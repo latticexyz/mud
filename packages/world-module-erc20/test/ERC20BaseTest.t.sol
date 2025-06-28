@@ -6,29 +6,53 @@ import { console } from "forge-std/console.sol";
 
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { WithStore } from "@latticexyz/store-consumer/src/experimental/WithStore.sol";
-import { WithWorld } from "@latticexyz/store-consumer/src/experimental/WithWorld.sol";
+import { ERC20Metadata } from "../src/codegen/tables/ERC20Metadata.sol";
+import { TotalSupply } from "../src/codegen/tables/TotalSupply.sol";
+import { Balances } from "../src/codegen/tables/Balances.sol";
+import { Allowances } from "../src/codegen/tables/Allowances.sol";
+import { Paused } from "../src/codegen/tables/Paused.sol";
 
-import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
 import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 
-library TestConstants {
-  bytes14 constant ERC20_NAMESPACE = "mockerc20ns";
-}
+bytes14 constant namespace = "mockerc20ns";
+
+ResourceId constant totalSupplyId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("TotalSupply")))
+);
+ResourceId constant balancesId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Balances")))
+);
+ResourceId constant allowancesId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Allowances")))
+);
+ResourceId constant metadataId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Metadata")))
+);
+ResourceId constant pausedId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, namespace, bytes16("Paused"))));
 
 // Mock to include mint and burn functions
-abstract contract MockERC20Base is MUDERC20 {
-  constructor() MUDERC20("Token", "TKN") {}
+contract MockERC20Base is MUDERC20 {
+  constructor(IBaseWorld world) WorldConsumer(world) MUDERC20(totalSupplyId, balancesId, allowancesId, metadataId) {}
+
+  function initialize() public virtual {
+    _MUDERC20_init("Token", "TKN");
+  }
 
   function __mint(address to, uint256 amount) public {
     _mint(to, amount);
@@ -39,30 +63,47 @@ abstract contract MockERC20Base is MUDERC20 {
   }
 }
 
-contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {}
-
-contract MockERC20WithWorld is WithWorld, MockERC20Base {
-  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
-}
-
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {
   MockERC20Base token;
 
-  function createToken() internal virtual returns (MockERC20Base);
+  function createToken(IBaseWorld world) internal virtual returns (MockERC20Base);
+
+  // Used for validating the addresses in fuzz tests
+  function validAddress(address addr) internal view returns (bool) {
+    return addr != address(0) && addr != StoreSwitch.getStoreAddress();
+  }
 
   // TODO: startGasReport should be marked virtual so we can override
   function startGasReportWithPrefix(string memory name) internal {
     startGasReport(reportNameWithPrefix(name));
   }
 
-  function reportNameWithPrefix(string memory name) private view returns (string memory) {
-    string memory prefix = token.getStore() == address(token) ? "internal_" : "world_";
+  function reportNameWithPrefix(string memory name) private pure returns (string memory) {
+    string memory prefix = "world_";
     return string.concat(prefix, name);
   }
 
   function setUp() public {
-    token = createToken();
-    StoreSwitch.setStoreAddress(token.getStore());
+    IBaseWorld world = createWorld();
+
+    StoreSwitch.setStoreAddress(address(world));
+
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
+    world.registerNamespace(namespaceId);
+
+    // Register each table
+    TotalSupply.register(totalSupplyId);
+    Balances.register(balancesId);
+    Allowances.register(allowancesId);
+    ERC20Metadata.register(metadataId);
+    Paused.register(pausedId);
+
+    token = createToken(world);
+
+    world.grantAccess(namespaceId, address(token));
+
+    token.initialize();
   }
 
   function testSetUp() public {
@@ -208,7 +249,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testMint(address to, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0), to, amount);
@@ -219,7 +260,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testBurn(address from, uint256 mintAmount, uint256 burnAmount) public {
-    vm.assume(from != address(0));
+    vm.assume(validAddress(from));
     vm.assume(burnAmount <= mintAmount);
 
     token.__mint(from, mintAmount);
@@ -232,7 +273,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testApprove(address to, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
 
     assertTrue(token.approve(to, amount));
 
@@ -240,7 +281,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransfer(address to, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     token.__mint(address(this), amount);
 
     vm.expectEmit(true, true, true, true);
@@ -257,9 +298,9 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferFrom(address spender, address from, address to, uint256 approval, uint256 amount) public {
-    vm.assume(from != address(0));
-    vm.assume(to != address(0));
-    vm.assume(spender != address(0));
+    vm.assume(validAddress(from));
+    vm.assume(validAddress(to));
+    vm.assume(validAddress(spender));
     vm.assume(amount <= approval);
 
     token.__mint(from, amount);
@@ -289,7 +330,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testBurnInsufficientBalanceReverts(address to, uint256 mintAmount, uint256 burnAmount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(mintAmount < type(uint256).max);
     vm.assume(burnAmount > mintAmount);
 
@@ -299,7 +340,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferInsufficientBalanceReverts(address to, uint256 mintAmount, uint256 sendAmount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(mintAmount < type(uint256).max);
     vm.assume(sendAmount > mintAmount);
 
@@ -309,7 +350,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferFromInsufficientAllowanceReverts(address to, uint256 approval, uint256 amount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(approval < type(uint256).max);
     vm.assume(amount > approval);
 
@@ -325,7 +366,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   }
 
   function testTransferFromInsufficientBalanceReverts(address to, uint256 mintAmount, uint256 sendAmount) public {
-    vm.assume(to != address(0));
+    vm.assume(validAddress(to));
     vm.assume(mintAmount < type(uint256).max);
     vm.assume(sendAmount > mintAmount);
 
@@ -339,26 +380,15 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
     vm.expectRevert(abi.encodeWithSelector(ERC20InsufficientBalance.selector, from, mintAmount, sendAmount));
     token.transferFrom(from, to, sendAmount);
   }
-}
 
-abstract contract ERC20WithInternalStoreBehaviorTest is ERC20BehaviorTest {}
-
-// Concrete tests for basic internal store ERC20 behavior
-contract ERC20WithInternalStoreTest is ERC20WithInternalStoreBehaviorTest {
-  function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20WithInternalStore();
-  }
-}
-
-abstract contract ERC20WithWorldBehaviorTest is ERC20BehaviorTest {
   function testNamespaceAccess() public {
-    assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE), address(token)));
+    assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(namespace), address(token)));
   }
 }
 
 // Concrete tests for basic namespace ERC20 behavior
-contract ERC20WithWorldTest is ERC20WithWorldBehaviorTest {
-  function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20WithWorld();
+contract ERC20Test is ERC20BehaviorTest {
+  function createToken(IBaseWorld world) internal virtual override returns (MockERC20Base) {
+    return new MockERC20Base(world);
   }
 }

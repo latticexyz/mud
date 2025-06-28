@@ -3,9 +3,9 @@ import { debug } from "./debug";
 import { hexToResource, writeContract } from "@latticexyz/common";
 import { identity, isDefined } from "@latticexyz/common/utils";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
-import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" assert { type: "json" };
+import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" with { type: "json" };
 import { ensureModules } from "./ensureModules";
-import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
+import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" with { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { LibraryMap } from "./getLibraryMap";
@@ -74,8 +74,6 @@ export async function ensureResourceTags<const value>({
   });
   if (pendingTags.length === 0) return [];
 
-  // TODO: check if metadata namespace exists, if we own it, and if so transfer ownership to the module before reinstalling
-  //       (https://github.com/latticexyz/mud/issues/3035)
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
@@ -85,7 +83,7 @@ export async function ensureResourceTags<const value>({
       {
         optional: true,
         name: "MetadataModule",
-        installAsRoot: false,
+        installStrategy: "delegation",
         installData: "0x",
         prepareDeploy: createPrepareDeploy(metadataModuleArtifact.bytecode, metadataModuleArtifact.placeholders),
         deployedBytecodeSize: metadataModuleArtifact.deployedBytecodeSize,

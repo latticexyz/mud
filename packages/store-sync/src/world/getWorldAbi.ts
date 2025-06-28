@@ -1,12 +1,11 @@
-import { Client, Abi, AbiItem, AbiFunction, Address, getAddress, toFunctionSelector } from "viem";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import { Client, Abi, Address, getAddress, toFunctionSelector, hexToString, parseAbi, stringToHex } from "viem";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
+import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
-import { getFunctions } from "./getFunctions";
 import { isDefined } from "@latticexyz/common/utils";
-
-function isAbiFunction(abiItem: AbiItem): abiItem is AbiFunction {
-  return abiItem.type === "function";
-}
+import { getFunctions } from "./getFunctions";
+import { getRecords } from "../getRecords";
+import { isAbiFunction } from "./common";
 
 export async function getWorldAbi({
   client,
@@ -23,14 +22,31 @@ export async function getWorldAbi({
   readonly indexerUrl?: string;
   readonly chainId?: number;
 }): Promise<Abi> {
-  const worldFunctions = await getFunctions({
-    client,
-    worldAddress: getAddress(worldAddress),
-    fromBlock,
-    toBlock,
-    indexerUrl,
-    chainId,
-  });
+  const [worldFunctions, { records }] = await Promise.all([
+    getFunctions({
+      client,
+      worldAddress: getAddress(worldAddress),
+      fromBlock,
+      toBlock,
+      indexerUrl,
+      chainId,
+    }),
+    getRecords({
+      table: metadataConfig.tables.metadata__ResourceTag,
+      worldAddress,
+      chainId,
+      indexerUrl,
+      client,
+      fromBlock,
+      toBlock,
+    }),
+  ]);
+
+  const metadataAbi = records
+    .filter(({ tag }) => tag === stringToHex("worldAbi", { size: 32 }))
+    .flatMap(({ value }) => (value === "0x" ? [] : parseAbi(hexToString(value).split("\n"))));
+
+  const metadataFunctionSelectors = metadataAbi.filter(isAbiFunction).map(toFunctionSelector);
   const baseFunctionSelectors = (IBaseWorldAbi as Abi).filter(isAbiFunction).map(toFunctionSelector);
   const worldFunctionsAbi = worldFunctions
     .map((func) => {
@@ -41,8 +57,11 @@ export async function getWorldAbi({
       }
     })
     .filter(isDefined)
-    .filter((abiItem) => !baseFunctionSelectors.includes(toFunctionSelector(abiItem)));
-  const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
+    .filter(
+      (abiItem) =>
+        !baseFunctionSelectors.includes(toFunctionSelector(abiItem)) &&
+        !metadataFunctionSelectors.includes(toFunctionSelector(abiItem)),
+    );
 
-  return abi as never;
+  return [...(IBaseWorldAbi as Abi), ...metadataAbi, ...worldFunctionsAbi];
 }

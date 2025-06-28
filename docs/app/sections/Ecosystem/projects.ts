@@ -15,7 +15,7 @@ export const projects = [
     name: "CafeCosmos",
     icon: "/ecosystem/icons/cafe-cosmos.png",
     bgImage: "/ecosystem/bg/cafe-cosmos.jpeg",
-    url: "https://x.com/CafeCosmosHQ",
+    url: "https://x.com/CafeCosmosFDN",
   },
   {
     name: "This Cursed Machine",

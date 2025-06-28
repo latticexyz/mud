@@ -1,4 +1,4 @@
-import { Client, Hex, concatHex, getAddress } from "viem";
+import { Hex, concatHex, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -12,6 +12,8 @@ import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/c
 import { setupTables } from "../postgres/setupTables";
 import { getTables } from "./getTables";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
+import { GetRpcClientOptions } from "@latticexyz/block-logs-stream";
+import { removeNullCharacters } from "./removeNullCharacters";
 
 // Currently assumes one DB per chain ID
 
@@ -23,12 +25,11 @@ export type PostgresStorageAdapter = {
 
 export async function createStorageAdapter({
   database,
-  publicClient,
-}: {
+  ...opts
+}: GetRpcClientOptions & {
   database: PgDatabase<QueryResultHKT>;
-  publicClient: Client;
 }): Promise<PostgresStorageAdapter> {
-  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient });
+  const bytesStorageAdapter = await createBytesStorageAdapter({ ...opts, database });
   const cleanUp: (() => Promise<void>)[] = [];
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
@@ -63,6 +64,15 @@ export async function createStorageAdapter({
 
         const sqlTable = buildTable(table);
         const keyBytes = concatHex(log.args.keyTuple as Hex[]);
+        const keyTupleLength = log.args.keyTuple.length;
+        const keySchemaLength = Object.keys(table.keySchema).length;
+        if (keySchemaLength !== keyTupleLength) {
+          debug(
+            `key tuple length ${keyTupleLength} does not match key schema length ${keySchemaLength}, skipping log`,
+            { table, log },
+          );
+          continue;
+        }
         const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (
@@ -111,13 +121,13 @@ export async function createStorageAdapter({
               __keyBytes: keyBytes,
               __lastUpdatedBlockNumber: blockNumber,
               ...key,
-              ...value,
+              ...removeNullCharacters(table.valueSchema, value),
             })
             .onConflictDoUpdate({
               target: sqlTable.__keyBytes,
               set: {
                 __lastUpdatedBlockNumber: blockNumber,
-                ...value,
+                ...removeNullCharacters(table.valueSchema, value),
               },
             })
             .execute();

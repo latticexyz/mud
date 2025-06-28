@@ -1,3 +1,3 @@
-import { redstone, garnet, rhodolite } from "@latticexyz/common/chains";
+import { redstone, garnet, pyrope } from "@latticexyz/common/chains";
 
-export const defaultChains = [redstone, garnet, rhodolite];
+export const defaultChains = [redstone, garnet, pyrope];

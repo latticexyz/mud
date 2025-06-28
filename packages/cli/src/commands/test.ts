@@ -1,7 +1,9 @@
 import type { CommandModule, InferredOptionTypes, Options } from "yargs";
-import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
+import { getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { deployOptions, runDeploy } from "../runDeploy";
+import { execa } from "execa";
+import { printCommand } from "../utils/printCommand";
 
 const testOptions = {
   ...deployOptions,
@@ -28,8 +30,12 @@ const commandModule: CommandModule<typeof testOptions, TestOptions> = {
   async handler(opts) {
     // Start an internal anvil process if no world address is provided
     if (!opts.worldAddress) {
-      const anvilArgs = ["--block-base-fee-per-gas", "0", "--port", String(opts.port)];
-      anvil(anvilArgs);
+      printCommand(
+        execa("anvil", ["--quiet", ["--port", String(opts.port)], ["--block-base-fee-per-gas", "0"]].flat(), {
+          stdio: "inherit",
+          env: { FOUNDRY_PROFILE: opts.profile ?? process.env.FOUNDRY_PROFILE },
+        }),
+      );
     }
 
     const forkRpc = opts.worldAddress ? await getRpcUrl(opts.profile) : `http://127.0.0.1:${opts.port}`;
@@ -48,12 +54,15 @@ const commandModule: CommandModule<typeof testOptions, TestOptions> = {
 
     const userOptions = opts.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
     try {
-      await forge(["test", "--fork-url", forkRpc, ...userOptions], {
-        profile: opts.profile,
-        env: {
-          WORLD_ADDRESS: worldAddress,
-        },
-      });
+      await printCommand(
+        execa("forge", ["test", ["--fork-url", forkRpc], ...userOptions].flat(), {
+          stdio: "inherit",
+          env: {
+            FOUNDRY_PROFILE: opts.profile ?? process.env.FOUNDRY_PROFILE,
+            WORLD_ADDRESS: worldAddress,
+          },
+        }),
+      );
       process.exit(0);
     } catch (e) {
       console.error(e);

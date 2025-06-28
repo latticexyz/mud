@@ -2,7 +2,7 @@ import { CheckIcon, ChevronsUpDownIcon, Link2Icon, Link2OffIcon } from "lucide-r
 import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Hex } from "viem";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Table } from "@latticexyz/config";
 import { Button } from "../../../../../../components/ui/Button";
 import {
@@ -16,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { constructTableName } from "../../../../utils/constructTableName";
 
 function TableSelectorItem({ table, selected, asOption }: { table: Table; selected: boolean; asOption?: boolean }) {
@@ -33,8 +34,10 @@ function TableSelectorItem({ table, selected, asOption }: { table: Table; select
 export function TableSelector({ tables }: { tables?: Table[] }) {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const indexer = useIndexerForChainId(chainId);
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
+  const hasScrolledTo = useRef(false);
   const [searchValue, setSearchValue] = useState("");
   const selectedTableConfig = tables?.find(({ tableId }) => tableId === selectedTableId);
 
@@ -45,14 +48,18 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
   }, [selectedTableId, setTableId, tables]);
 
   useLayoutEffect(() => {
-    if (open && selectedTableId && selectedTableConfig) {
+    if (open && selectedTableId && selectedTableConfig && !hasScrolledTo.current) {
       setTimeout(() => {
-        const selectedTableId = constructTableName(selectedTableConfig, worldAddress as Hex, chainId);
+        const selectedTableId = constructTableName(selectedTableConfig, worldAddress as Hex, indexer.type);
         const selectedElement = document.querySelector(`[data-value="${selectedTableId}"]`);
         selectedElement?.scrollIntoView({ behavior: "instant", block: "center" });
+        hasScrolledTo.current = true;
       }, 0);
     }
-  }, [chainId, open, selectedTableConfig, selectedTableId, worldAddress]);
+    if (!open) {
+      hasScrolledTo.current = false;
+    }
+  }, [chainId, indexer.type, open, selectedTableConfig, selectedTableId, worldAddress]);
 
   return (
     <div className="w-full">
@@ -93,7 +100,7 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
                   return (
                     <CommandItem
                       key={table.tableId}
-                      value={constructTableName(table, worldAddress as Hex, chainId)}
+                      value={constructTableName(table, worldAddress as Hex, indexer.type)}
                       onSelect={() => {
                         setTableId(table.tableId);
                         setOpen(false);

@@ -1,21 +1,27 @@
+import { useEffect } from "react";
+import { Hex } from "viem";
 import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
 import { ConnectedClient } from "../common";
-import { useEffect } from "react";
 import { useSessionClient } from "../useSessionClient";
+import { useShowQueryError } from "../errors/useShowQueryError";
+import { useShowMutationError } from "../errors/useShowMutationError";
+import { StepContentProps } from "./common";
+import { usePrerequisites } from "./usePrerequisites";
 
-export type Props = {
-  isActive: boolean;
-  isExpanded: boolean;
+export type Props = StepContentProps & {
   userClient: ConnectedClient;
   registerSpender: boolean;
   registerDelegation: boolean;
+  sessionAddress?: Hex;
 };
 
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
-  const sessionClient = useSessionClient(userClient.account.address);
-  const setup = useSetupSession({ userClient });
+  const sessionClient = useShowQueryError(useSessionClient(userClient.account.address));
+  const setup = useShowMutationError(useSetupSession({ userClient }));
   const hasSession = !registerDelegation && !registerDelegation;
+  const { data: prerequisites } = usePrerequisites(userClient.account.address);
+  const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
 
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
@@ -23,7 +29,13 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
     // individual mutations, even though the keys match. And the one we want the status of
     // seems to stay pending. This is sorta resolved by triggering this after a timeout.
     const timer = setTimeout(() => {
-      if (isActive && setup.status === "idle" && sessionClient.data && !hasSession) {
+      if (
+        isActive &&
+        setup.status === "idle" &&
+        sessionClient.data &&
+        !hasSession &&
+        (hasAllowance || hasGasBalance || hasQuarryGasBalance)
+      ) {
         setup.mutate({
           sessionClient: sessionClient.data,
           registerSpender,
@@ -32,7 +44,17 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
       }
     });
     return () => clearTimeout(timer);
-  }, [hasSession, isActive, registerDelegation, registerSpender, sessionClient, setup]);
+  }, [
+    hasSession,
+    isActive,
+    registerDelegation,
+    registerSpender,
+    sessionClient,
+    setup,
+    hasAllowance,
+    hasGasBalance,
+    hasQuarryGasBalance,
+  ]);
 
   return (
     <div className="flex flex-col gap-4">

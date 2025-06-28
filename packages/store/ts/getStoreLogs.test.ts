@@ -2,20 +2,19 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
 import config from "../mud.config";
-import { snapshotAnvilState, testClient } from "../../../test-setup/common";
-import { deployMockGame } from "../../../test-setup/mockGame";
+import { deployMockGame } from "mock-game-contracts";
 import { summarizeLogs } from "./test/summarizeLogs";
+import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("getStoreLogs", async () => {
-  beforeAll(async () => {
-    const resetAnvilState = await snapshotAnvilState();
-    await deployMockGame();
-    return resetAnvilState;
-  });
   beforeEach(snapshotAnvilState);
 
+  beforeAll(async () => {
+    await deployMockGame();
+  });
+
   it("fetches only store logs", async () => {
-    const logs = await getStoreLogs(testClient, { fromBlock: "earliest", toBlock: "latest" });
+    const logs = await getStoreLogs(createTestClient(), { fromBlock: "earliest", toBlock: "latest" });
     expect(summarizeLogs(logs)).toMatchInlineSnapshot(`
       [
         "Store_SpliceStaticData  world__InitModuleAddres  ()",
@@ -158,8 +157,8 @@ describe("getStoreLogs", async () => {
         "Store_SpliceStaticData  store__ResourceIds  (0x746200000000000000000000000000005465727261696e000000000000000000)",
         "Store_SpliceStaticData  store__ResourceIds  (0x737900000000000000000000000000004d6f766553797374656d000000000000)",
         "Store_SetRecord  world__Systems  (0x737900000000000000000000000000004d6f766553797374656d000000000000)",
-        "Store_SpliceStaticData  world__SystemRegistry  (0x00000000000000000000000008f2b45d8787be8a81869d9968f25323861352b0)",
-        "Store_SpliceStaticData  world__ResourceAccess  (0x6e73000000000000000000000000000000000000000000000000000000000000,0x00000000000000000000000008f2b45d8787be8a81869d9968f25323861352b0)",
+        "Store_SpliceStaticData  world__SystemRegistry  (0x00000000000000000000000040d21680e49a1f969a53760ff488a9d1ad01ca89)",
+        "Store_SpliceStaticData  world__ResourceAccess  (0x6e73000000000000000000000000000000000000000000000000000000000000,0x00000000000000000000000040d21680e49a1f969a53760ff488a9d1ad01ca89)",
         "Store_SetRecord  world__FunctionSelector  (0xb591186e00000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0xb591186e00000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0xb591186e00000000000000000000000000000000000000000000000000000000)",
@@ -173,15 +172,16 @@ describe("getStoreLogs", async () => {
         "Store_SetRecord  world__FunctionSignatur  (0x1fae630800000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0x1fae630800000000000000000000000000000000000000000000000000000000)",
         "Store_SpliceStaticData  world__InstalledModules  (0x00000000000000000000000051bd8d2de7017c23ee5bdc885e70dfdd0862b837,0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470)",
+        "Store_SpliceStaticData  world__UserDelegationCo  (0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266,0x0000000000000000000000003604b87ecb7dfcc5ff9ee26763a5704e57377fe3)",
         "Store_SpliceStaticData  store__ResourceIds  (0x6e736d6574616461746100000000000000000000000000000000000000000000)",
         "Store_SpliceStaticData  world__NamespaceOwner  (0x6e736d6574616461746100000000000000000000000000000000000000000000)",
-        "Store_SpliceStaticData  world__ResourceAccess  (0x6e736d6574616461746100000000000000000000000000000000000000000000,0x0000000000000000000000000f8d2ae4af9b5c4677766030338a8720e30073cc)",
+        "Store_SpliceStaticData  world__ResourceAccess  (0x6e736d6574616461746100000000000000000000000000000000000000000000,0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266)",
         "Store_SetRecord  store__Tables  (0x74626d657461646174610000000000005265736f757263655461670000000000)",
         "Store_SpliceStaticData  store__ResourceIds  (0x74626d657461646174610000000000005265736f757263655461670000000000)",
         "Store_SpliceStaticData  store__ResourceIds  (0x73796d657461646174610000000000004d6574616461746153797374656d0000)",
         "Store_SetRecord  world__Systems  (0x73796d657461646174610000000000004d6574616461746153797374656d0000)",
-        "Store_SpliceStaticData  world__SystemRegistry  (0x00000000000000000000000053e501d8e4c977ff5b27446ec6a60e57c7ef1050)",
-        "Store_SpliceStaticData  world__ResourceAccess  (0x6e736d6574616461746100000000000000000000000000000000000000000000,0x00000000000000000000000053e501d8e4c977ff5b27446ec6a60e57c7ef1050)",
+        "Store_SpliceStaticData  world__SystemRegistry  (0x000000000000000000000000bdb70930001e32533d1adfa3b008962112f5ff95)",
+        "Store_SpliceStaticData  world__ResourceAccess  (0x6e736d6574616461746100000000000000000000000000000000000000000000,0x000000000000000000000000bdb70930001e32533d1adfa3b008962112f5ff95)",
         "Store_SetRecord  world__FunctionSelector  (0xff66f05f00000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0xc6972e9300000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0xff66f05f00000000000000000000000000000000000000000000000000000000)",
@@ -191,10 +191,8 @@ describe("getStoreLogs", async () => {
         "Store_SetRecord  world__FunctionSelector  (0x5ce7ca1a00000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0xf128760200000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0x5ce7ca1a00000000000000000000000000000000000000000000000000000000)",
-        "Store_SpliceStaticData  world__NamespaceOwner  (0x6e736d6574616461746100000000000000000000000000000000000000000000)",
-        "Store_DeleteRecord  world__ResourceAccess  (0x6e736d6574616461746100000000000000000000000000000000000000000000,0x0000000000000000000000000f8d2ae4af9b5c4677766030338a8720e30073cc)",
-        "Store_SpliceStaticData  world__ResourceAccess  (0x6e736d6574616461746100000000000000000000000000000000000000000000,0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266)",
-        "Store_SpliceStaticData  world__InstalledModules  (0x0000000000000000000000000f8d2ae4af9b5c4677766030338a8720e30073cc,0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470)",
+        "Store_SpliceStaticData  world__InstalledModules  (0x0000000000000000000000003604b87ecb7dfcc5ff9ee26763a5704e57377fe3,0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470)",
+        "Store_DeleteRecord  world__UserDelegationCo  (0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266,0x0000000000000000000000003604b87ecb7dfcc5ff9ee26763a5704e57377fe3)",
         "Store_SpliceDynamicData  metadata__ResourceTag  (0x737900000000000000000000000000004d6f766553797374656d000000000000,0x6162690000000000000000000000000000000000000000000000000000000000)",
         "Store_SpliceDynamicData  metadata__ResourceTag  (0x737900000000000000000000000000004d6f766553797374656d000000000000,0x776f726c64416269000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  Position  (0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e)",
@@ -210,7 +208,7 @@ describe("getStoreLogs", async () => {
   });
 
   it("fetches only store logs for a specific table", async () => {
-    const logs = await getStoreLogs(testClient, {
+    const logs = await getStoreLogs(createTestClient(), {
       fromBlock: "earliest",
       toBlock: "latest",
       tableId: config.tables.store__ResourceIds.tableId,
@@ -256,7 +254,7 @@ describe("getStoreLogs", async () => {
   });
 
   it("fetches only store logs for specific tables", async () => {
-    const logs = await getStoreLogs(testClient, {
+    const logs = await getStoreLogs(createTestClient(), {
       fromBlock: "earliest",
       toBlock: "latest",
       tableId: [config.tables.store__ResourceIds.tableId, config.tables.store__Tables.tableId],

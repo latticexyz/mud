@@ -50,6 +50,8 @@ async function run() {
         if (/package\.json$/.test(sourceFile)) {
           const source = await fs.readFile(sourceFile, "utf-8");
           await fs.writeFile(destFile, source.replaceAll(/{{mud-version}}/g, args.mudVersion), "utf-8");
+        } else if (/\.gitignore_$/.test(sourceFile)) {
+          await fs.copyFile(sourceFile, destFile.replace(/_$/, ""));
         } else {
           await fs.copyFile(sourceFile, destFile);
         }

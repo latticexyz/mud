@@ -4,7 +4,7 @@ procs:
     shell: anvil --dump-state playground/anvil-state.json
 
   deploy-prereqs:
-    shell: ./bin/deploy-local-prereqs.js
+    shell: pnpm run deploy
     env:
       DEBUG: "mud:*"
       # Anvil default account (0x70997970C51812dc3A010C7d01b50e0d17dc79C8)
@@ -18,7 +18,7 @@ procs:
 
   deploy-game:
     cwd: ../../test/mock-game-contracts
-    shell: pnpm deploy:local --salt 0x
+    shell: pnpm run deploy:local --salt 0x
     env:
       DEBUG: "mud:*"
       # Anvil default account (0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc)

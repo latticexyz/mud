@@ -12,8 +12,8 @@ export function useClaimGasPass() {
 
   const mutationKey = ["claimGasPass", chain.id];
   return useMutation({
+    retry: 0,
     mutationKey,
-    onError: (error) => console.error(error),
     mutationFn: async (userAddress: Address) => {
       if (chain.id === 31337) {
         if (!client) throw new Error("No client?");
@@ -26,9 +26,9 @@ export function useClaimGasPass() {
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["getAllowance"] }),
+        queryClient.invalidateQueries({ queryKey: ["getFunds"] }),
         queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
       ]);
     },
-    retry: 0,
   });
 }

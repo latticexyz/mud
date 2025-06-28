@@ -17,9 +17,10 @@ export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 
 export const MODULE_DEFAULTS = {
   root: false,
+  useDelegation: false,
   args: [],
   artifactPath: undefined,
-} as const satisfies Pick<ModuleInput, "root" | "args" | "artifactPath">;
+} as const satisfies Pick<ModuleInput, "root" | "useDelegation" | "args" | "artifactPath">;
 
 export type MODULE_DEFAULTS = typeof MODULE_DEFAULTS;
 

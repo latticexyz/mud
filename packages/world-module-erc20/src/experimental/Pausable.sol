@@ -3,11 +3,10 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
 
 import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
-import { PausableTableNames } from "./Constants.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -18,8 +17,8 @@ import { PausableTableNames } from "./Constants.sol";
  * the functions of your contract. Note that they will not be pausable by
  * simply including this module, only once the modifiers are put in place.
  */
-abstract contract Pausable is Context, StoreConsumer {
-  ResourceId internal immutable pausedId;
+abstract contract Pausable is WorldConsumer {
+  ResourceId private immutable _pausedId;
 
   /**
    * @dev Emitted when the pause is triggered by `account`.
@@ -40,15 +39,6 @@ abstract contract Pausable is Context, StoreConsumer {
    * @dev The operation failed because the contract is not paused.
    */
   error ExpectedPause();
-
-  /**
-   * @dev Initializes the contract in unpaused state.
-   */
-  constructor() {
-    pausedId = _encodeTableId(PausableTableNames.PAUSED);
-    PausedTable.register(pausedId);
-    PausedTable.set(pausedId, false);
-  }
 
   /**
    * @dev Modifier to make a function callable only when the contract is not paused.
@@ -74,11 +64,22 @@ abstract contract Pausable is Context, StoreConsumer {
     _;
   }
 
+  constructor(ResourceId pausedId) {
+    _pausedId = pausedId;
+  }
+
+  /**
+   * @dev Initializes the contract in unpaused state.
+   */
+  function _Pausable_init() internal {
+    PausedTable.set(_pausedId, false);
+  }
+
   /**
    * @dev Returns true if the contract is paused, and false otherwise.
    */
   function paused() public view virtual returns (bool) {
-    return PausedTable.get(pausedId);
+    return PausedTable.get(_pausedId);
   }
 
   /**
@@ -107,7 +108,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * - The contract must not be paused.
    */
   function _pause() internal virtual whenNotPaused {
-    PausedTable.set(pausedId, true);
+    PausedTable.set(_pausedId, true);
     emit Paused(_msgSender());
   }
 
@@ -119,7 +120,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * - The contract must be paused.
    */
   function _unpause() internal virtual whenPaused {
-    PausedTable.set(pausedId, false);
+    PausedTable.set(_pausedId, false);
     emit Unpaused(_msgSender());
   }
 }

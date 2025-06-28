@@ -1,5 +1,105 @@
 # @latticexyz/store-indexer
 
+## 2.2.22
+
+### Patch Changes
+
+- 582f718: The local SQLite indexer now automatically converts camelCase column names to snake_case to comply with the SQL API.
+- 6bb6a79: Added experimental SQL API endpoint `/q` to the SQLite indexer. This is only intended for local development purposes and should not be used in production.
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- 8b83c6b: Bumped Koa dependency for vulnerability fix.
+- Updated dependencies [1d354b8]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- Updated dependencies [06e48e0]
+  - @latticexyz/store@2.2.20
+  - @latticexyz/store-sync@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.19
+- @latticexyz/common@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/store@2.2.19
+- @latticexyz/store-sync@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- 16710f1: `pnpm start:postgres-decoded` now starts both the indexer backend and frontend.
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+- Updated dependencies [df5d393]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/store-sync@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- 40aaf97: Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+  To enable this, use `INTERNAL__VALIDATE_BLOCK_RANGE=true` environment variable when starting up any of the indexers. This requires `RPC_HTTP_URL` to also be set.
+
+  Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [40aaf97]
+- Updated dependencies [227db4d]
+- Updated dependencies [dead80e]
+- Updated dependencies [7385948]
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/store@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

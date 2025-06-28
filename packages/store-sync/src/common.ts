@@ -1,4 +1,4 @@
-import { Address, Block, Client, Hex, Log, TransactionReceipt } from "viem";
+import { Address, Block, Hex, Log, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
@@ -13,6 +13,7 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
 import { configToTables } from "./configToTables";
+import { GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 
 export const mudTables = {
   ...configToTables(storeConfig),
@@ -65,13 +66,7 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions = {
-  /**
-   * [viem `Client`][0] used for fetching logs from the RPC.
-   *
-   * [0]: https://viem.sh/docs/clients/custom
-   */
-  publicClient: Client;
+export type SyncOptions = GetRpcClientOptions & {
   /**
    * MUD Store/World contract address
    */
@@ -97,7 +92,7 @@ export type SyncOptions = {
    */
   maxBlockRange?: bigint;
   /**
-   * Optional MUD tRPC indexer URL to fetch initial state from.
+   * Optional MUD indexer URL to fetch initial state from.
    */
   indexerUrl?: string | false;
   /**
@@ -115,6 +110,13 @@ export type SyncOptions = {
     blockNumber: bigint;
     logs: readonly StorageAdapterLog[];
   };
+  /**
+   * Optional flag to define the chunking behavior during the initial hydration. Defaults to `true`.
+   * Chunking is useful to avoid blocking the main thread for too long, but it can lead to updates that happened in the same block being split across multiple chunks.
+   * If chunking is enabled, clients should account for this by waiting for full hydration before using the update stream.
+   * If atomicity of updates is important and blocking the main thread is not an issue, set this to `false`.
+   */
+  enableHydrationChunking?: boolean;
 };
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;

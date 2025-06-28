@@ -23,9 +23,9 @@
 </p>
 
 MUD is a framework for ambitious Ethereum applications.
-It compresses the complexity of building EVM apps with a tightly integrated software stack that handles data storage, upgrades, delegations, etc.
 
-You can see MUD's features, both those available and those still in development, on [the development status page](https://status.mud.dev/).
+It offers a composable foundation to EVM developers that handles data storage, upgrades, delegations, data-sync with frontends, etc.
+You can learn more about MUD in the [MUD documentation](https://mud.dev/introduction)
 
 ## Quickstart
 
@@ -35,7 +35,7 @@ pnpm create mud@latest
 
 Then follow the directions onscreen.
 
-For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quickstart).
+For more information on how to get started, have a look at the [MUD quickstart](https://mud.dev/quickstart).
 
 ## Contribute
 

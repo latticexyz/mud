@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { config } from "dotenv";
 import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
@@ -12,6 +13,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const packageRoot = path.join(__dirname, "..", "..");
 
+config({ path: path.join(packageRoot, ".env") });
+config({ path: path.join(packageRoot, ".env.local") });
+
 const argv = yargs(process.argv.slice(2))
   .options({
     port: {
@@ -19,6 +23,12 @@ const argv = yargs(process.argv.slice(2))
       description: "Port number for the server",
       type: "number",
       default: process.env.PORT || 13690,
+    },
+    indexerPort: {
+      alias: "pi",
+      description: "Port number for the indexer",
+      type: "number",
+      default: process.env.INDEXER_PORT || 3001,
     },
     hostname: {
       alias: "H",
@@ -50,7 +60,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, hostname, chainId, indexerDatabase, dev } = argv;
+const { port, indexerPort, hostname, chainId, indexerDatabase, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let explorerProcess: ChildProcess;
@@ -60,7 +70,7 @@ async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
-    INDEXER_DATABASE: indexerDatabasePath,
+    INDEXER_PORT: indexerPort.toString(),
   };
 
   if (dev) {
@@ -102,8 +112,10 @@ async function startStoreIndexer() {
       DEBUG: "mud:*",
       RPC_HTTP_URL: "http://127.0.0.1:8545",
       FOLLOW_BLOCK_TAG: "latest",
+      ENABLE_UNSAFE_QUERY_API: "true",
       SQLITE_FILENAME: indexerDatabase,
       ...process.env,
+      PORT: indexerPort.toString(),
     },
   });
 }

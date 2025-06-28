@@ -6,21 +6,15 @@ import {
   type Account,
   type Hex,
   type WalletActions,
+  type Client,
+  type WriteContractParameters,
   type EncodeFunctionDataParameters,
-  Client,
-  PublicActions,
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
-import { readContract, writeContract as viem_writeContract } from "viem/actions";
+import { writeContract as viem_writeContract } from "viem/actions";
 import { readHex } from "@latticexyz/common";
-import {
-  getKeySchema,
-  getValueSchema,
-  getSchemaTypes,
-  decodeValueArgs,
-  encodeKey,
-} from "@latticexyz/protocol-parser/internal";
-import worldConfig from "../../mud.config";
+import { worldCallAbi } from "../worldCallAbi";
+import { SystemFunction, worldFunctionToSystemFunction } from "../worldFunctionToSystemFunction";
 
 type CallFromParameters = {
   worldAddress: Hex;
@@ -28,8 +22,6 @@ type CallFromParameters = {
   worldFunctionToSystemFunction?: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
   publicClient?: Client;
 };
-
-type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 
 // By extending viem clients with this function after delegation, the delegation is automatically applied to World contract writes.
 // This means that these writes are made on behalf of the delegator.
@@ -46,7 +38,6 @@ export function callFrom(
   client: Client<Transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract"> {
   return (client) => ({
-    // Applies to: `client.writeContract`, `getContract(client, ...).write`
     async writeContract(writeArgs) {
       const _writeContract = getAction(client, viem_writeContract, "writeContract");
 
@@ -55,9 +46,26 @@ export function callFrom(
         writeArgs.address !== params.worldAddress ||
         writeArgs.functionName === "call" ||
         writeArgs.functionName === "callFrom" ||
+        writeArgs.functionName === "batchCallFrom" ||
         writeArgs.functionName === "callWithSignature"
       ) {
         return _writeContract(writeArgs);
+      }
+
+      // Wrap system calls from `batchCall` with delegator for a `batchCallFrom`
+      // TODO: remove this specific workaround once https://github.com/latticexyz/mud/pull/3506 lands
+      if (writeArgs.functionName === "batchCall") {
+        const batchCallArgs = writeArgs as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
+        const [systemCalls] = batchCallArgs.args;
+        if (!systemCalls.length) {
+          throw new Error("`batchCall` should have at least one system call.");
+        }
+
+        return _writeContract({
+          ...batchCallArgs,
+          functionName: "batchCallFrom",
+          args: [systemCalls.map((systemCall) => ({ from: params.delegatorAddress, ...systemCall }))],
+        });
       }
 
       // Encode the World's calldata (which includes the World's function selector).
@@ -81,104 +89,12 @@ export function callFrom(
       // Use `readHex` instead of `slice` to prevent out-of-bounds errors with calldata that has no args.
       const systemCalldata = concat([systemFunctionSelector, readHex(worldCalldata, 4)]);
 
-      // Construct args for `callFrom`.
-      const callFromArgs: typeof writeArgs = {
-        ...writeArgs,
+      // Call `writeContract` with the new args.
+      return _writeContract({
+        ...(writeArgs as unknown as WriteContractParameters<worldCallAbi, "callFrom">),
         functionName: "callFrom",
         args: [params.delegatorAddress, systemId, systemCalldata],
-      };
-
-      // Call `writeContract` with the new args.
-      return _writeContract(callFromArgs);
+      });
     },
   });
-}
-
-const systemFunctionCache = new Map<Hex, SystemFunction>();
-
-async function worldFunctionToSystemFunction(params: {
-  worldAddress: Hex;
-  delegatorAddress: Hex;
-  worldFunctionSelector: Hex;
-  worldFunctionToSystemFunction?: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
-  publicClient: Client;
-}): Promise<SystemFunction> {
-  const cacheKey = concat([params.worldAddress, params.worldFunctionSelector]);
-
-  // Use cache if the function has been called previously.
-  const cached = systemFunctionCache.get(cacheKey);
-  if (cached) return cached;
-
-  // If a mapping function is provided, use it. Otherwise, call the World contract.
-  const systemFunction = params.worldFunctionToSystemFunction
-    ? await params.worldFunctionToSystemFunction(params.worldFunctionSelector)
-    : await retrieveSystemFunctionFromContract(params.publicClient, params.worldAddress, params.worldFunctionSelector);
-
-  systemFunctionCache.set(cacheKey, systemFunction);
-
-  return systemFunction;
-}
-
-async function retrieveSystemFunctionFromContract(
-  publicClient: Client,
-  worldAddress: Hex,
-  worldFunctionSelector: Hex,
-): Promise<SystemFunction> {
-  const table = worldConfig.tables.world__FunctionSelectors;
-
-  const keySchema = getSchemaTypes(getKeySchema(table));
-  const valueSchema = getSchemaTypes(getValueSchema(table));
-
-  const _readContract = getAction(publicClient, readContract, "readContract") as PublicActions["readContract"];
-
-  const [staticData, encodedLengths, dynamicData] = await _readContract({
-    address: worldAddress,
-    abi: [
-      {
-        type: "function",
-        name: "getRecord",
-        inputs: [
-          {
-            name: "tableId",
-            type: "bytes32",
-            internalType: "ResourceId",
-          },
-          {
-            name: "keyTuple",
-            type: "bytes32[]",
-            internalType: "bytes32[]",
-          },
-        ],
-        outputs: [
-          {
-            name: "staticData",
-            type: "bytes",
-            internalType: "bytes",
-          },
-          {
-            name: "encodedLengths",
-            type: "bytes32",
-            internalType: "EncodedLengths",
-          },
-          {
-            name: "dynamicData",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
-        stateMutability: "view",
-      },
-    ],
-    functionName: "getRecord",
-    args: [table.tableId, encodeKey(keySchema, { worldFunctionSelector })],
-  });
-
-  const decoded = decodeValueArgs(valueSchema, { staticData, encodedLengths, dynamicData });
-
-  const systemFunction: SystemFunction = {
-    systemId: decoded.systemId,
-    systemFunctionSelector: decoded.systemFunctionSelector,
-  };
-
-  return systemFunction;
 }

@@ -1,5 +1,21 @@
 # vite-plugin-mud
 
+## 2.2.22
+
+## 2.2.21
+
+## 2.2.20
+
+## 2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- 7106953: Fixed an issue with providing world deploy's start block to Vite app's env.
+
+## 2.2.17
+
 ## 2.2.16
 
 ## 2.2.15

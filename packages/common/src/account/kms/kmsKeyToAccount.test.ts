@@ -1,13 +1,15 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { parseGwei, http, verifyMessage, verifyTypedData, createClient, parseEther } from "viem";
 import { foundry } from "viem/chains";
-import { anvilRpcUrl, testClient } from "../../../test/common";
+import { getAnvilRpcUrl, createTestClient, snapshotAnvilState } from "with-anvil";
 import { waitForTransaction } from "../../test/waitForTransaction";
-import { getTransactionReceipt, sendTransaction } from "viem/actions";
+import { getTransactionReceipt, sendTransaction, setBalance } from "viem/actions";
 
-describe("kmsKeyToAccount", () => {
+describe.skipIf(!process.env.AWS_ENDPOINT_URL)("kmsKeyToAccount", () => {
+  beforeEach(snapshotAnvilState);
+
   let account: KmsAccount;
   let keyId: string;
 
@@ -32,7 +34,6 @@ describe("kmsKeyToAccount", () => {
     }
 
     keyId = createResponse.KeyMetadata.KeyId;
-
     account = await kmsKeyToAccount({ keyId, client });
   });
 
@@ -108,11 +109,11 @@ describe("kmsKeyToAccount", () => {
 
   it("can execute transactions", async () => {
     // Fund the KMS account
-    testClient.setBalance({ address: account.address, value: parseEther("1") });
+    setBalance(createTestClient(), { address: account.address, value: parseEther("1") });
 
     const kmsClient = createClient({
       chain: foundry,
-      transport: http(anvilRpcUrl),
+      transport: http(getAnvilRpcUrl()),
       account,
     });
 

@@ -1,3 +1,800 @@
+## Version 2.2.22
+
+Release date: Thu Jun 26 2025
+
+### Patch changes
+
+**[chore(explorer): remove rhodolite support (#3704)](https://github.com/latticexyz/mud/commit/bd9e19b10418c4a0b8b3791e713d798b8df64a38)** (@latticexyz/explorer)
+
+Removed Rhodolite chain support.
+
+**[feat(store-sync): add support for upper bound in fetchRecords (#3744)](https://github.com/latticexyz/mud/commit/cd146eb4419e8477a8f43acd2e6dbc2f9f6b2b20)** (@latticexyz/store-sync)
+
+The `fetchRecords` util now supports specifying an upper bound for the block height of SQL queries.
+
+**[feat(explorer): resolve ENS (#3731)](https://github.com/latticexyz/mud/commit/7f1b769020c12f25d756b5c3c749c26303a22534)** (@latticexyz/explorer)
+
+Address input fields in the "Interact" tab now accept ENS names, which are automatically resolved to their underlying address.
+
+**[fix(explorer): editable cells keep focus (#3664)](https://github.com/latticexyz/mud/commit/fdb727e847024560315c10ebf32c1f924755ffe9)** (@latticexyz/explorer)
+
+Editable table cells no longer lose focus during editing when the query is set to "live".
+
+**[fix(store-sync): backoff on failed connection, close websockets (#3752)](https://github.com/latticexyz/mud/commit/291a54a26791869f0c15c67f4e5adc4890f5e893)** (@latticexyz/store-sync)
+
+The preconfirmed logs stream now waits before reconnecting if a previous connection attempt failed.
+
+**[feat(world,entrykit): add `sendUserOperationFrom` (#3675)](https://github.com/latticexyz/mud/commit/60085734145ea8db0b43084034bec9f8ea474dc4)** (@latticexyz/world)
+
+Added a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.
+
+**[feat(explorer): decode function calls (#3710)](https://github.com/latticexyz/mud/commit/091ece6264dd4cdbdc21ea3d22347a6f1043a6a3)** (@latticexyz/explorer)
+
+The Worlds Explorer explorer now supports decoding function data.
+
+**[fix(explorer): array args encoding (#3748)](https://github.com/latticexyz/mud/commit/0fc224f81dabb2b29ae3056e7b71aa9b489b3626)** (@latticexyz/explorer)
+
+Array function arguments are now correctly encoded on the "Interact" page.
+
+**[fix(entrykit): refetch prerequisites after balance top-up (#3694)](https://github.com/latticexyz/mud/commit/d6161103025288c00f13b5adb523af5634b537a8)** (@latticexyz/entrykit)
+
+Onboarding prerequisites are now re-fetched when the quarry gas balance is updated.
+
+**[fix(store-sync): ignore store logs with invalid keys (#3720)](https://github.com/latticexyz/mud/commit/3baa3fd86f5917471729ba6551f12c17cdca53e3)** (@latticexyz/store-sync)
+
+The sync stack now skips store logs with invalid key tuples instead of throwing errors.
+
+MUD doesn’t validate schemas for onchain writes or deletions, it's the developer's responsibility to use correct encoding.
+Using the wrong key schema onchain is effectively a no-op, since the data ends up in a storage slot that won’t be read when using the correct schema.
+The expectation is that the sync stack ignores these no-op logs, but it was previously throwing during decode.
+
+**[fix(explorer): display remotely updated table values (#3737)](https://github.com/latticexyz/mud/commit/a5fdfa8a665caabc57fedd4bf34a8199c6c1ad10)** (@latticexyz/explorer)
+
+Table values updated remotely are now also reflected in the table viewer.
+
+**[chore(explorer): append base world ABI to API endpoint (#3653)](https://github.com/latticexyz/mud/commit/7fd242ecf040c1c9955cdd2c971d0ed5570fa14b)** (@latticexyz/explorer)
+
+World ABI endpoint is now includes the base world ABI.
+
+**[feat(entrykit): loosen min gas balance (#3689)](https://github.com/latticexyz/mud/commit/b94aca694dd82b32bf78de9e6408f61b32e5b8e2)** (@latticexyz/entrykit)
+
+Loosened minimum gas balance requirement in onboarding to allow for any gas balance above zero.
+
+**[fix(explorer): fetch from sqlite indexer in production (#3679)](https://github.com/latticexyz/mud/commit/f0c0b982573f9953e1c726c0bef91671efaaa545)** (@latticexyz/explorer)
+
+Fixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.
+
+**[feat(explorer): url params for interact and decode forms (#3713)](https://github.com/latticexyz/mud/commit/d2c77c206d94a00082a25939b786df04d8249fcb)** (@latticexyz/explorer)
+
+Interact and Decode forms now support URL parameters.
+
+**[refactor(store-sync): migrate to isomorphic-ws (#3762)](https://github.com/latticexyz/mud/commit/91837e36ade680787d224691c848540fea793a5a)** (@latticexyz/store-sync)
+
+The preconfirmed logs stream is now using `isomorphic-ws` for more control over error handling and reconnection logic.
+
+**[fix(common): improve codegen error visibility (#3662)](https://github.com/latticexyz/mud/commit/88ddd0c3a68c52469abbc59c2f9db3bbee2eafb6)** (@latticexyz/common)
+
+Improved surfacing of errors during code generation.
+
+**[feat(explorer): collapsible sections for functions (#3727)](https://github.com/latticexyz/mud/commit/ea62e9b2384e58dac465f984c78f35117f36600d)** (@latticexyz/explorer)
+
+Interact page is now organized into collapsible namespace and system sections.
+
+**[fix(explorer): wallets connect options (#3732)](https://github.com/latticexyz/mud/commit/f06e8f25dd013c43d943e71a401fa4aeefd399fa)** (@latticexyz/explorer)
+
+Restore wallet connection options in the wallet connect modal.
+
+**[fix(explorer): various fixes (#3712)](https://github.com/latticexyz/mud/commit/5f0b4d10731aa3b4c1f5bb872d4571e4dd3b4aa3)** (@latticexyz/explorer)
+
+- Boolean values can now be submitted on the Interact page.
+- Fixed redirects when only a single local world is deployed.
+- Chain logos are now displayed correctly when running the Explorer locally.
+- Fixed scrolling behavior in the table dropdown when viewing non-selected tables.
+- Verified world dropdown now appears immediately after pasting a world address, without waiting for all worlds to resolve.
+
+**[feat(world-module-metadata): remove resource existence check (#3650)](https://github.com/latticexyz/mud/commit/6344ced32a0e0903de81a689ac45b97703db136e)** (@latticexyz/world-module-metadata)
+
+Adding/deleting resource tags no longer checks if resource exists, only if you're the resource namespace owner.
+
+**[feat(store-sync): system/world ABI from metadata (#3642)](https://github.com/latticexyz/mud/commit/490159e880e2ac0e1ce8f5785873a25b99fb7668)** (@latticexyz/store-sync)
+
+`getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
+
+**[feat(entrykit): move to connectkit (#3721)](https://github.com/latticexyz/mud/commit/725f1aed27b397ad153bec254b2530eb20d2d743)** (@latticexyz/entrykit)
+
+Migrated EntryKit's underlying wallet connection handling from RainbowKit to ConnectKit.
+
+**[feat(store-indexer): format sql queries (#3687)](https://github.com/latticexyz/mud/commit/582f7187cf3cb1e0013aa5d192560235114d71e0)** (@latticexyz/store-indexer)
+
+The local SQLite indexer now automatically converts camelCase column names to snake_case to comply with the SQL API.
+
+**[fix(store-sync): handle pending deleted dynamic value in stash storage adapter (#3714)](https://github.com/latticexyz/mud/commit/1e9047e3056120ed1ab34976aec3df15df13b0e3)** (@latticexyz/store-sync)
+
+Fixed a bug that caused the stash storage adapter to crash when deleting a dynamic field and writing to it again in the same block.
+
+**[fix(store-sync): handle pending deletion in stash storage adapter (#3672)](https://github.com/latticexyz/mud/commit/7902888215e548882b314342e21caed5088b869c)** (@latticexyz/store-sync)
+
+Pending deletions immediately followed by field updates are now handled correctly by the Stash storage adapter.
+
+**[feat(explorer): read-only mode (#3701)](https://github.com/latticexyz/mud/commit/7c2fe37ce180c3d55160202867bd3835683f532b)** (@latticexyz/explorer)
+
+Added read-only mode with no wallet connection that only shows non-editable sections of the Explorer.
+
+**[chore(explorer): remove indexer endpoint (#3678)](https://github.com/latticexyz/mud/commit/fc10a277e139c26aea88326f188b45b18367d4a5)** (@latticexyz/explorer)
+
+Removed the Explorer’s SQLite indexer API endpoint in favor of the equivalent `/q` endpoint from `@latticexyz/store-indexer`.
+
+**[fix(world): `batchCall` in `sendUserOperationFrom` (#3693)](https://github.com/latticexyz/mud/commit/6a26a049c793442fcefed7a3268d2de7849cd2ae)** (@latticexyz/world)
+
+Fixed a bug related to `batchCall` in `sendUserOperationFrom`.
+
+**[feat(explorer): use systems abis in decode form (#3646)](https://github.com/latticexyz/mud/commit/13071c45dd7d28c1860e703d12b07624c271f508)** (@latticexyz/explorer)
+
+- Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+- The search form for decoding selectors now uses all system ABIs for complete results.
+- The `ABI` page has been renamed to `Decode`.
+
+**[fix(explorer): re-render externally updated table (#3692)](https://github.com/latticexyz/mud/commit/f7aa4c5722bf24103f4cd4ab01b5d9c55f9b2995)** (@latticexyz/explorer)
+
+Table row data now correctly re-renders when updated outside the Explorer.
+
+**[feat(world,entrykit): add `sendUserOperationFrom` (#3675)](https://github.com/latticexyz/mud/commit/60085734145ea8db0b43084034bec9f8ea474dc4)** (@latticexyz/entrykit)
+
+EntryKit's `SessionClient` now automatically routes `sendUserOperation` through `callFrom` like it does with `writeContract` calls.
+
+**[chore(entrykit): various improvements (#3699)](https://github.com/latticexyz/mud/commit/9f06079cb52cb39888097ea3a293ec71bd46ebbc)** (@latticexyz/entrykit)
+
+- EntryKit now returns to the login flow modal after a successful top-up.
+- The default chain is now selected as the source chain if the connected chain is not part of selectable chains.
+- The "Switch chain" button now uses the primary color, making it appear clickable.
+- The successful deposit status message has been updated.
+
+**[fix(world): fix static array arguments in system libraries (#3661)](https://github.com/latticexyz/mud/commit/f6d87edb8513fd0f255ac4389a2e613a508ffab4)** (@latticexyz/world)
+
+Fix static array arguments in system libraries.
+
+**[feat(explorer): add chain switch (#3705)](https://github.com/latticexyz/mud/commit/34ec2ec478d6e3d46d82c74a6e09387d83b7776d)** (@latticexyz/explorer)
+
+Chain switching between supported networks is now accessible on the homepage and the world page.
+
+**[chore(explorer): coinbase wallet support (#3749)](https://github.com/latticexyz/mud/commit/120dc0daf0203ab15874f57f91343b9f31b42ea4)** (@latticexyz/explorer)
+
+Coinbase wallet is now supported.
+
+**[feat(entrykit): fork walletconnect connector (#3725)](https://github.com/latticexyz/mud/commit/bc95ea094386f235971f1c5b98a34f41c161999d)** (@latticexyz/entrykit)
+
+Replaced WalletConnect connector with our own internal fork to resolve some chain switching issues (see https://github.com/wevm/wagmi/pull/4691).
+
+**[feat(entrykit): add pyrope fee estimation (#3640)](https://github.com/latticexyz/mud/commit/050dfd5c0f540bc4145db05ca6798926fdecff4c)** (@latticexyz/entrykit)
+
+Added explicit gas estimation for Pyrope to avoid overpaying.
+
+**[refactor(entrykit): use skipToken instead of enabled (#3686)](https://github.com/latticexyz/mud/commit/d621dc7c427a59eb74f4d379862646355a149338)** (@latticexyz/entrykit)
+
+Updated React Query usages to use `skipToken` instead of conditional a `queryFn` to avoid warnings in newer versions of React Query.
+
+**[feat(explorer): resolve paths using chain ID or name (#3735)](https://github.com/latticexyz/mud/commit/5fa416eb3cdce964723463b48b91c49aabdf9f0b)** (@latticexyz/explorer)
+
+Explorer will now automatically resolve and redirect deep links using a chain ID to their corresponding chain name, e.g.
+
+https://explorer.mud.dev/690/worlds/0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f
+
+**[feat(entrykit): quarry paymaster relay.link top-up (#3688)](https://github.com/latticexyz/mud/commit/5f6c71d4a2949cf6ccc576cb3932460e44efa430)** (@latticexyz/entrykit)
+
+Added support for Quarry paymaster top-up via relay.link deposit form.
+
+**[feat(entrykit): show only deposit chains with balance (#3730)](https://github.com/latticexyz/mud/commit/8bd459b91322f8b9955f6407b95988a7755d27e4)** (@latticexyz/entrykit)
+
+The chain selector dropdown for bridged deposits now only displays chains with available funds.
+
+**[feat(explorer): fetch deprecated world ABI (#3654)](https://github.com/latticexyz/mud/commit/26d2e3acd8fc0a0852f530e8e1574a68d2baa3d2)** (@latticexyz/store-sync)
+
+`getWorldAbi()` now returns an ABI that is a combination of:
+
+- base World ABI
+- system ABIs stored onchain with metadata module during deploy
+- world functions
+
+**[feat(entrykit): enable copying session wallet address (#3698)](https://github.com/latticexyz/mud/commit/daa34f06d070200c1aaf0bba78ba9f2dd8662a76)** (@latticexyz/entrykit)
+
+Session wallet address can now be copied from EntryKit modal.
+
+**[fix(world): support generating libraries for systems without function registration (#3670)](https://github.com/latticexyz/mud/commit/fb2745a7b2d4735a67adffa69e70ec7d1085f4da)** (@latticexyz/world)
+
+Support generating libraries for systems without function registration.
+
+**[chore(explorer): optional systemIds param for system ABIs endpoint (#3651)](https://github.com/latticexyz/mud/commit/a3645c819959efe97ff2e50f6f5b88ebe77fa980)** (@latticexyz/explorer)
+
+`systemIds` parameter is now optional for the system ABIs API endpoint.
+
+**[fix(explorer): read env vars (#3709)](https://github.com/latticexyz/mud/commit/9c89cc327787bf68c2ddb825365ac773a4388576)** (@latticexyz/explorer)
+
+Environment variables are now loaded from the `.env` file alongside those specified via CLI flags.
+
+**[feat(entrykit): gas balance withdraw (#3724)](https://github.com/latticexyz/mud/commit/8c4b624756007fd02b1c3c3494e34128a5f1c044)** (@latticexyz/entrykit)
+
+You can now withdraw your gas balance from the Quarry paymaster.
+
+**[feat(entrykit): separate loading state from invalid state (#3767)](https://github.com/latticexyz/mud/commit/2fe59091a36e3ace2e5ec143138e801fadcdc707)** (@latticexyz/entrykit)
+
+`useSessionClient` will now return an error state when no user is connected. This separates the session client's pending state (querying data to determine if prerequisites are met) from invalid state (EntryKit misconfigured, user not connected, or prerequisites not met), allowing apps to provide better loading indicators within connect buttons.
+
+The built-in `AccountButton` already uses this new behavior to show a pending icon while querying for the session client's prerequisites.
+
+**[feat(store-sync): add flag to define chunking behavior during initial hydration (#3745)](https://github.com/latticexyz/mud/commit/6508c1df5ea605f58112f192114a2f837f362ecc)** (@latticexyz/store-sync)
+
+The sync stack now supports defining the chunking behavior during initial hydration. Chunking remains enabled by default.
+
+Chunking is useful to avoid blocking the main thread for too long, but it can lead to updates that happened in the same block being split across multiple chunks.
+If chunking is enabled, clients should account for this by waiting for full hydration before using the update stream.
+If atomicity of updates is important and blocking the main thread is not an issue, set this to `false`.
+
+**[feat(explorer): interact system calls (#3718)](https://github.com/latticexyz/mud/commit/66b053c8bc9cfa25c1b60d00dd208a5b2cd9d9f7)** (@latticexyz/explorer)
+
+The Interact tab now supports system functions. The functions can be searched by namespace, system name, or function name.
+
+**[feat(store-sync): make pending logs sync more resilient (#3743)](https://github.com/latticexyz/mud/commit/23b0c9a68bb6c6a98011d43ddccf62994adb66ba)** (@latticexyz/store-sync)
+
+The sync stack now handles downtime in the pending logs API and reconnects once it's available again.
+
+**[fix(entrykit): make required gas balance non-zero (#3691)](https://github.com/latticexyz/mud/commit/fbf1be12730c08acd460aa36124a0565f4e73401)** (@latticexyz/entrykit)
+
+Increased required balance/allowance to greater than zero.
+
+**[fix(store-sync): setup message listener before setting up subscription (#3765)](https://github.com/latticexyz/mud/commit/a3918e051d892b946148bb88b25de1f64bdd302e)** (@latticexyz/store-sync)
+
+Fixed a race condition in the preconfirmed logs stream by setting up the message listener before setting up the subscription.
+
+**[feat(world-module-metadata): add metadata system lib (#3645)](https://github.com/latticexyz/mud/commit/2048adf7aa386ef1fe1e9863dd87cebdef439f1b)** (@latticexyz/world-module-metadata)
+
+Added experimental system library for metadata system. Note that this is marked experimental as we may make breaking changes to the interface.
+
+```solidity
+import { metadataSystem } from "@latticexyz/world-metadata-module/src/codegen/experimental/systems/MetadataSystemLib.sol";
+
+metadataSystem.setResourceTag(namespaceId, bytes32("label"), "hello");
+```
+
+**[feat(world): find systems based on inheritance (#3649)](https://github.com/latticexyz/mud/commit/03af917786370b8251542adb3d53099aa85e754f)** (@latticexyz/world, @latticexyz/cli)
+
+`mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+```solidity
+import {System} from "@latticexyz/world/src/System.sol";
+
+contract EntityProgram is System {
+  ...
+}
+```
+
+If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+**[chore: increase react peer dep range (#3728)](https://github.com/latticexyz/mud/commit/405a600d8d3aaf06cd06b64287a8acff9e2e0e35)** (@latticexyz/stash, @latticexyz/store-sync)
+
+Added React 19.x to the peer dependency range.
+
+**[feat(store-sync): stream json from indexer snapshot (#3761)](https://github.com/latticexyz/mud/commit/db94eb24a728db6eae9842199de07c6b85983abb)** (@latticexyz/store-sync)
+
+Fetching a snapshot from the indexer will now parse JSON as a stream, avoiding issues with large snapshots where the string is too long to parse in one go.
+
+**[fix: assert -> with (#3739)](https://github.com/latticexyz/mud/commit/8fad4be6941d39fe86b3f0100a04642670ff266a)** (@latticexyz/cli, @latticexyz/entrykit, @latticexyz/store-sync)
+
+Updated JSON imports to use `with` annotation instead of `assert`.
+
+**[fix(stash): maintain update atomicity in `subscribeQuery` (#3663)](https://github.com/latticexyz/mud/commit/b8239d8a667d5119569395f4b182f8ea3dc9b97e)** (@latticexyz/stash)
+
+Stash now preserves batch updates when subscribing to query results.
+Previously, while Stash supported batching table updates for atomic onchain changes, subscribing to query results would split these updates by table.
+
+**[feat(explorer): textarea string fields (#3746)](https://github.com/latticexyz/mud/commit/7367a813d9b394415ba70678c4295cc90562c304)** (@latticexyz/explorer)
+
+String fields in the "Interact" tab now support multiline values.
+
+**[feat(entrykit): add wiresaw transport (#3703)](https://github.com/latticexyz/mud/commit/0f5c75bd8fc963e3697ff1720ec3608d119d4b5e)** (@latticexyz/entrykit)
+
+Added experimental support for fast user operations on Wiresaw-enabled chains.
+
+**[fix(cli): don't deploy abstract contracts (#3669)](https://github.com/latticexyz/mud/commit/ab837ceb49fa77cc29487bb9df0c487975b37afe)** (@latticexyz/cli, @latticexyz/common)
+
+CLI will no longer deploy abstract systems and contracts without bytecode.
+
+**[fix(world): support functions with missing argument names in system libraries (#3671)](https://github.com/latticexyz/mud/commit/d83a0fd5283b7bea7e9a5372ea3c45ab9aea350f)** (@latticexyz/world)
+
+Adds support for functions with missing argument names in system libraries.
+
+**[fix(entrykit): sign session wallet after top-up (#3697)](https://github.com/latticexyz/mud/commit/9dc032a7075a33fca3936f049aae8de923e9a723)** (@latticexyz/entrykit)
+
+The login flow now only attempts to register the session account after it has been successfully funded.
+
+**[fix(explorer): update only changed table values (#3733)](https://github.com/latticexyz/mud/commit/3ffa12704d00fca354851d8e2ed12f0dc1fc639f)** (@latticexyz/explorer)
+
+Table cell edits are now saved only when the value has changed.
+
+**[feat(explorer): verified worlds (#3707)](https://github.com/latticexyz/mud/commit/d8eef923b761a5efe83ddf9f5b0a1460b5ca4db9)** (@latticexyz/explorer)
+
+Verified worlds are now shown in the world selection form.
+
+**[feat(common): add paymaster for testnet chains, remove rhodolite (#3770)](https://github.com/latticexyz/mud/commit/689708688d9215c3441ffeac029236023d05c25f)** (@latticexyz/common)
+
+Added [Quarry paymaster](https://github.com/latticexyz/quarry-paymaster) address for Garnet and Pyrope chain configs. And removed defunct Rhodolite chain config.
+
+**[feat(entrykit): move to connectkit (#3721)](https://github.com/latticexyz/mud/commit/725f1aed27b397ad153bec254b2530eb20d2d743)** (create-mud)
+
+Bumped Viem and Wagmi versions in templates.
+
+**[feat(entrykit): move to connectkit (#3721)](https://github.com/latticexyz/mud/commit/725f1aed27b397ad153bec254b2530eb20d2d743)** (@latticexyz/entrykit)
+
+Until we can add ERC-6492 support to our `CallWithSignature` module, EntryKit will now throw a readable error when signing a message using ERC-6492 instead of failing the transaction.
+
+**[feat(store-indexer): add experimental/local SQL API endpoint (#3676)](https://github.com/latticexyz/mud/commit/6bb6a79dff407a5adf951343d9c37315816bac4b)** (@latticexyz/store-indexer)
+
+Added experimental SQL API endpoint `/q` to the SQLite indexer. This is only intended for local development purposes and should not be used in production.
+
+---
+
+## Version 2.2.21
+
+Release date: Fri Mar 21 2025
+
+### Patch changes
+
+**[feat(explorer): add pyrope testnet support (#3619)](https://github.com/latticexyz/mud/commit/1d354b89f3aeb28e9dc085bdde27647a7ba6d8ae)** (@latticexyz/common, @latticexyz/explorer)
+
+Added Pyrope testnet chain.
+
+**[fix(cli): remove payable modifier from library functions (#3629)](https://github.com/latticexyz/mud/commit/8cdc57b90fe3d3f21abe4a3362c8a7ac9ba2e9d4)** (@latticexyz/world)
+
+System libraries are no longer generated with `payable` keyword.
+
+**[fix: remove wiresaw from pyrope chain definition (#3634)](https://github.com/latticexyz/mud/commit/b18c0ef0edeab2378b08d9f4a328a5d0d817f6bf)** (@latticexyz/common)
+
+Removed the `wiresaw` RPC URL from the Pyrope chain config, since Wiresaw is not deployed to Pyrope yet.
+
+**[feat(entrykit): expose world address on session client (#3607)](https://github.com/latticexyz/mud/commit/f1e008f2d2a7ba2369a07f9807a7ee0cd1b3b20c)** (@latticexyz/entrykit)
+
+The session client's world address (used for delegations and `callFrom`) is now available via `sesssionClient.worldAddress`.
+
+The local signer is also available via `sesssionClient.internal_signer`. This is marked as internal for now as we may change how this is exposed.
+
+Using the signer allows for [Sign-in with Ethereum](https://eips.ethereum.org/EIPS/eip-4361) and similar flows that avoid prompting the wallet for a signature, but can be validated via the associated delegation from user account to session account in the world.
+
+**[chore(explorer): hide deleted records on local explorer (#3631)](https://github.com/latticexyz/mud/commit/af2865b3164b348b03dd4354e1737d3a37160689)** (@latticexyz/explorer)
+
+Deleted records no longer appear in the table data viewer when using the SQLite indexer.
+
+**[chore(entrykit): update error message in userOpExecutor (#3609)](https://github.com/latticexyz/mud/commit/f4db683f90214b03bb8d68635a3825cc9bf58263)** (@latticexyz/entrykit)
+
+Updated error message for unsupported methods in `userOpExecutor`.
+
+**[feat(entrykit): add react 19 and missing peer dep (#3605)](https://github.com/latticexyz/mud/commit/5a67f40bed3b05afd388f96a7b1bfee8b52c29ef)** (@latticexyz/entrykit)
+
+Added React 19 to peer dependency range.
+
+**[fix(entrykit): improve escape handling (#3623)](https://github.com/latticexyz/mud/commit/98fc29ddfa9b5db0492165acd2c49a9862569878)** (@latticexyz/entrykit)
+
+Improved escape key handling when account modal is open. And fixed development warnings about missing dialog title/description.
+
+**[feat(explorer): tables viewer pagination (#3426)](https://github.com/latticexyz/mud/commit/581228bd857077023efdb496a9a44fa62ff89936)** (@latticexyz/explorer)
+
+The Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.
+
+**[refactor(world-consumer): remove namespace (#3597)](https://github.com/latticexyz/mud/commit/041031d271b62a7f41f7c6dc0098c1c0ae222bd5)** (@latticexyz/world-consumer, @latticexyz/world-module-erc20)
+
+`WorldConsumer` now doesn't store a single namespace. Instead, child contracts can keep track of namespaces and use the `onlyNamespace(namespace)` and `onlyNamespaceOwner(namespace)` modifiers for access control.
+
+ERC20 module was adapted to use this new version of `WorldConsumer`.
+
+**[chore(store-indexer): bump koa (#3599)](https://github.com/latticexyz/mud/commit/8b83c6b7481219898ab0f8e9c1afd88591646396)** (@latticexyz/store-indexer)
+
+Bumped Koa dependency for vulnerability fix.
+
+**[feat(explorer): abi explorer (#3635)](https://github.com/latticexyz/mud/commit/aeb210f4c7f3e44c63655541e7aab8e83c52d6d6)** (@latticexyz/explorer)
+
+Added an ABI page for exploring world ABI. The ABI Explorer also includes a form for searching custom errors or functions based on their selectors.
+
+**[feat(entrykit): update relay chains (#3620)](https://github.com/latticexyz/mud/commit/55dae5f5bb7b814e6f488432deb15a9a15b49b06)** (@latticexyz/entrykit)
+
+Updated chains supported by Relay.link.
+
+**[feat(entrykit): validate signature (#3632)](https://github.com/latticexyz/mud/commit/454387765857a956f3872887619d25f0352abf1c)** (@latticexyz/entrykit)
+
+Exported an internal method to validate signatures for login flows that use session signer on behalf of user accounts.
+
+**[fix(explorer): enable table data refetch for local explorer (#3627)](https://github.com/latticexyz/mud/commit/303714d89811a01be2802c32f4f6876fa81e5df9)** (@latticexyz/explorer)
+
+Table data refetching is now enabled for locally run Explorer instances.
+
+---
+
+## Version 2.2.20
+
+Release date: Tue Feb 11 2025
+
+### Patch changes
+
+**[feat(explorer): wrap table names in double quotes by default (#3588)](https://github.com/latticexyz/mud/commit/306707570ec5fd27877d674502aa381d7fd89662)** (@latticexyz/explorer)
+
+Table names in SQL queries are now automatically enclosed in double quotes by default, allowing support for special characters.
+
+**[feat(world-consumer): convert store-consumer package into world-consumer (#3584)](https://github.com/latticexyz/mud/commit/b774ab28b3de6cefcbfce5e1bb6fcb68b9374abf)** (@latticexyz/world-module-erc20)
+
+Migrated from `store-consumer` to `world-consumer`.
+
+**[refactor(world): add default-reverting methods to Module (#3581)](https://github.com/latticexyz/mud/commit/391575967cd09bd527d819222232a54a7d722fc2)** (@latticexyz/world-module-callwithsignature, @latticexyz/world-module-erc20, @latticexyz/world-module-metadata, @latticexyz/world-modules)
+
+Removed unsupported install methods as these now automatically revert in the base `Module` contract.
+
+**[feat: install module with delegation (#3586)](https://github.com/latticexyz/mud/commit/31870811b975d44f4b5d14ae69fd623914237584)** (@latticexyz/cli, @latticexyz/world)
+
+Added `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.
+
+**[feat(world): generate system libs (#3587)](https://github.com/latticexyz/mud/commit/06e48e0239a5c7994ce73b4d2752860743fec4b0)** (@latticexyz/world)
+
+Added experimental system libraries for World systems for better ergonomics when interacting with core systems.
+
+Note that these libraries are marked experimental as we may make breaking changes to their interfaces.
+
+```solidity
+import { worldRegistrationSystem } from "@latticexyz/world/src/codegen/experimental/systems/WorldRegistrationSystemLib.sol";
+
+// equivalent to `IBaseWorld(_world()).registerNamespace("hello")` but directly routed through `world.call` for better gas.
+worldRegistrationSystem.registerNamespace("hello");
+
+// and makes delegation use cases easier
+worldRegistrationSystem.callFrom(_msgSender()).registerNamespace("hello");
+```
+
+**[refactor(world): add default-reverting methods to Module (#3581)](https://github.com/latticexyz/mud/commit/391575967cd09bd527d819222232a54a7d722fc2)** (@latticexyz/world)
+
+The base `Module` contract now includes default implementations of `install` and `installRoot` that immediately revert, avoiding the need to implement these manually in each module.
+
+If you've written a module, you may need to update your install methods with `override` when using this new base contract.
+
+```diff
+-function install(bytes memory) public {
++function install(bytes memory) public override {
+```
+
+```diff
+-function installRoot(bytes memory) public {
++function installRoot(bytes memory) public override {
+```
+
+**[fix(cli): use execa directly instead of custom foundry wrappers (#3582)](https://github.com/latticexyz/mud/commit/b7901812d4035faa3ec9bb75f31ffe7af398bdf2)** (@latticexyz/cli)
+
+Fixed forge/anvil/cast output for all CLI commands.
+
+**[feat: install module with delegation (#3586)](https://github.com/latticexyz/mud/commit/31870811b975d44f4b5d14ae69fd623914237584)** (@latticexyz/cli, @latticexyz/world-module-metadata)
+
+Metadata module has been updated to install via delegation, making it easier for later module upgrades and to demonstrate modules installed via delegation.
+
+**[feat(world): generate system libs (#3587)](https://github.com/latticexyz/mud/commit/06e48e0239a5c7994ce73b4d2752860743fec4b0)** (@latticexyz/store)
+
+Updated `IStoreRegistration` interface to allow calling `registerTable` with `keyNames` and `fieldNames` from `memory` rather than `calldata` so this can be called with names returned by table libraries.
+
+**[feat: install module with delegation (#3586)](https://github.com/latticexyz/mud/commit/31870811b975d44f4b5d14ae69fd623914237584)** (@latticexyz/world)
+
+Updated `encodeSystemCalls` and `encodeSystemCallsFrom` to include the `abi` in each call so that different systems/ABIs can be called in batch. Types have been improved to properly hint/narrow the expected arguments for each call.
+
+```diff
+-encodeSystemCalls(abi, [{
++encodeSystemCalls([{
++  abi,
+   systemId: '0x...',
+   functionName: '...',
+   args: [...],
+ }]);
+```
+
+```diff
+-encodeSystemCallsFrom(from, abi, [{
++encodeSystemCallsFrom(from, [{
++  abi,
+   systemId: '0x...',
+   functionName: '...',
+   args: [...],
+ }]);
+```
+
+**[feat(world-consumer): convert store-consumer package into world-consumer (#3584)](https://github.com/latticexyz/mud/commit/b774ab28b3de6cefcbfce5e1bb6fcb68b9374abf)** (@latticexyz/world-consumer)
+
+Renamed `store-consumer` package to `world-consumer`. The `world-consumer` package now only includes a single `WorldConsumer` contract that is bound to a `World`.
+
+---
+
+## Version 2.2.19
+
+Release date: Thu Feb 06 2025
+
+### Patch changes
+
+**[fix(entrykit): improve fee handling (#3577)](https://github.com/latticexyz/mud/commit/900ac35deebfa260bafb1697d15e95eef855cd69)** (@latticexyz/entrykit)
+
+Improved fee handling for known chains.
+
+---
+
+## Version 2.2.18
+
+Release date: Wed Feb 05 2025
+
+### Patch changes
+
+**[fix(explorer): enable editing internal namespace tables (#3553)](https://github.com/latticexyz/mud/commit/6bd1695fe986f90478cfb8fe7fcc00a7a7df3e04)** (@latticexyz/explorer)
+
+Tables under internal namespace are now editable.
+
+**[chore(explorer): handle tuples in interact form (#3464)](https://github.com/latticexyz/mud/commit/c44207f620a38653497b78db0b71f5de7bc1a940)** (@latticexyz/explorer)
+
+In the Interact tab, functions with tuple arguments can now be submitted. Additionally, function input fields display the tuple name when available and indicate tuple argument types.
+
+**[feat: bump to node 20 (#3456)](https://github.com/latticexyz/mud/commit/491a5acc8ab6d5e1a65a9845160860199b5173fc)** (create-mud)
+
+Updated templates to Node v20.
+
+**[fix(vite-plugin-mud): start block as number (#3555)](https://github.com/latticexyz/mud/commit/7106953abc5baa13ac87123cc58796f788dab05a)** (create-mud, vite-plugin-mud)
+
+Fixed an issue with providing world deploy's start block to Vite app's env.
+
+**[fix(explorer): use table name helper from sqlite package (#3542)](https://github.com/latticexyz/mud/commit/4565714f5e9421cc7b2de56fe51db4434c55f5d1)** (@latticexyz/explorer)
+
+Fixed an issue with how MUD table names were translated SQLite table names when querying.
+
+**[chore(store-indexer): start frontend with decoded backend (#3572)](https://github.com/latticexyz/mud/commit/16710f177b60880b7fa1b2d0be350297a16e2c8c)** (@latticexyz/store-indexer)
+
+`pnpm start:postgres-decoded` now starts both the indexer backend and frontend.
+
+**[fix(entrykit): require bundler (#3570)](https://github.com/latticexyz/mud/commit/10ce339665bbc3cc175b109a51d216ec1b1bb739)** (@latticexyz/entrykit)
+
+Using EntryKit without a configured bundler will now throw an error.
+
+Redstone, Garnet, Rhodolite, and Anvil chains come preconfigured. For other chains, you can a bundler RPC URL to your chain config via
+
+```ts
+import type { Chain } from "viem";
+
+const chain = {
+  ...
+  rpcUrls: {
+    ...
+    bundler: {
+      http: ["https://..."],
+    },
+  },
+} as const satisfies Chain;
+```
+
+**[refactor(store-consumer): adapt WithWorld to be a System (#3546)](https://github.com/latticexyz/mud/commit/5d6fb1b51da1545b911c55e0cd79bc16ed2cd8f5)** (@latticexyz/store-consumer, @latticexyz/store, @latticexyz/world-module-erc20, @latticexyz/world)
+
+Updates `WithWorld` to be a `System`, so that functions in child contracts that use the `onlyWorld` or `onlyNamespace` modifiers must be called through the world in order to safely support calls from systems.
+
+**[refactor(world-module-erc20): change erc20 module table names to pascal case (#3544)](https://github.com/latticexyz/mud/commit/88949aaf197da3a62782ffd0c29b7dd677425fac)** (@latticexyz/world-module-erc20)
+
+Updated table names to pascal case for consistency.
+
+**[feat(explorer): loading indicator for refetched query (#3552)](https://github.com/latticexyz/mud/commit/860224870f7eb070cccbb33b505ee42ba6e7092c)** (@latticexyz/explorer)
+
+Display a loading indicator on the query execution button while refetching a non-live query.
+
+**[refactor(entrykit): improve error handling (#3574)](https://github.com/latticexyz/mud/commit/88af9325733387259f29dfdafd2fdbc23f2ab499)** (@latticexyz/entrykit)
+
+Improved error handling.
+
+**[fix(entrykit): session client uses smart account (#3547)](https://github.com/latticexyz/mud/commit/e1db80ad5648a9c77b757cda3930aa134e0f1c97)** (@latticexyz/entrykit)
+
+Clarified `SessionClient` type as using a `SmartAccount` under the hood so that it can be used with smart account-related Viem actions.
+
+**[fix(entrykit): require bundler (#3570)](https://github.com/latticexyz/mud/commit/10ce339665bbc3cc175b109a51d216ec1b1bb739)** (@latticexyz/common)
+
+Added bundler RPC URL to Garnet chain config.
+
+**[fix(store-sync): skip invalid utf-8 characters in strings before inserting into postgres (#3562)](https://github.com/latticexyz/mud/commit/df5d3937706cb9465b0539af8f4725be3d84f858)** (@latticexyz/store-sync)
+
+Since Postgres doesn't support `\x00` bytes in strings, the decoded postgres indexer now removes `\x00` bytes from decoded strings.
+
+---
+
+## Version 2.2.17
+
+Release date: Thu Jan 30 2025
+
+### Patch changes
+
+**[fix(world): namespaceLabel should be compared to namespaceLabel not namespace (#3515)](https://github.com/latticexyz/mud/commit/94d82cfafbdbee448884643681b0b8db53eedfda)** (@latticexyz/world)
+
+Fixed an issue in system resolving helper used by CLI was not correctly comparing `namespaceLabel`s.
+
+**[feat(create-mud): new react template with stash/entrykit (#3478)](https://github.com/latticexyz/mud/commit/d5f4e1e44bbc260ff21dacdfab0e0f8389e9f304)** (@latticexyz/entrykit)
+
+Bumped react-error-boundary dependency.
+
+**[feat(store-indexer): add flag to validate block ranges (#3531)](https://github.com/latticexyz/mud/commit/40aaf970a122151852d3d3f02383f44bffed85b9)** (@latticexyz/store-indexer)
+
+Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+To enable this, use `INTERNAL__VALIDATE_BLOCK_RANGE=true` environment variable when starting up any of the indexers. This requires `RPC_HTTP_URL` to also be set.
+
+Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+**[feat(explorer): save searched namespace (#3470)](https://github.com/latticexyz/mud/commit/dab0d08d3c8f18adcab7bcd4a6a7eafc941ac4e6)** (@latticexyz/explorer)
+
+The context for the searched namespace and selected table is now preserved when reopening the table search and selection menu.
+
+**[fix(store-sync): handle user ops in waitForTransaction (#3518)](https://github.com/latticexyz/mud/commit/5a9e238e660bfa670cef673b2e34bbde7f860720)** (@latticexyz/store-sync)
+
+Updated `waitForTransaction` to handle receipt status for user operations.
+
+**[fix(cli): support verifying systems with linked libraries (#3514)](https://github.com/latticexyz/mud/commit/452d3e53db2768f2e296ea7560c9bdd6560cd797)** (@latticexyz/cli)
+
+The `verify` command should now be able to correctly verify systems using public libraries.
+
+**[feat(create-mud): new react template with stash/entrykit (#3478)](https://github.com/latticexyz/mud/commit/d5f4e1e44bbc260ff21dacdfab0e0f8389e9f304)** (create-mud)
+
+Updated React template with Stash client state library, EntryKit for wallet support, and a cleaned up app structure.
+
+**[feat(store-indexer): add flag to validate block ranges (#3531)](https://github.com/latticexyz/mud/commit/40aaf970a122151852d3d3f02383f44bffed85b9)** (@latticexyz/block-logs-stream, @latticexyz/store-sync)
+
+Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+To enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling any sync method (e.g. `syncToStash`). For `<SyncProvider>`, only a `internal_validateBlockRange` prop is needed.
+
+```diff
+-syncToStash({ publicClient, ... });
++syncToStash({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
+```
+
+```diff
+-<SyncProvider adapter={createSyncAdapter(...)}>
++<SyncProvider adapter={createSyncAdapter(...)} internal_validateBlockRange>
+```
+
+Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+**[docs: changeset for #3538 (#3539)](https://github.com/latticexyz/mud/commit/589fd3ae0e2dde80d259e64ac0d4f7f17a43afdc)** (@latticexyz/common)
+
+Improved approach for checking for nonce errors.
+
+**[feat(create-mud): new react-ecs template (#3485)](https://github.com/latticexyz/mud/commit/09846f2926132e17477b4d0d1e64b795fbd4485f)** (create-mud)
+
+Updated React ECS template with EntryKit for wallet support and a cleaned up app structure.
+
+**[feat(create-mud): rip out create-create-app (#3479)](https://github.com/latticexyz/mud/commit/e45e3751c0ea10c7b1f0088d674121419b0d0acb)** (create-mud)
+
+Replaced internal usage of `create-create-app` with a simpler recursive copy operation.
+
+**[feat(world): strip world prefix from function names when encoding system calls (#3527)](https://github.com/latticexyz/mud/commit/7c3df691b30f031202ab184345cbb76bb113c2cd)** (@latticexyz/world)
+
+Using `encodeSystemCall` (and others) with a world ABI and namespace-prefixed function name will now attempt to strip the prefix when encoding it as a system call.
+
+It's recommended to use a system ABI with these functions rather than a world ABI.
+
+```ts
+import systemAbi from "contracts/out/ISomeSystem.sol/ISomeSystem.sol.abi.json";
+encodeSystemCall({ abi: systemAbi, ... });
+```
+
+**[feat(entrykit): deploy prereqs to any chain (#3529)](https://github.com/latticexyz/mud/commit/73859484bb53c1a4066de028a3ad7d3a4284e4da)** (@latticexyz/entrykit)
+
+Renamed `deploy-local-prereqs` bin to `entrykit-deploy`, which now accepts an RPC URL so that you can deploy the EntryKit prerequisites to your chain of choice.
+
+```
+RPC_URL=http://rpc.garnetchain.com pnpm entrykit-deploy
+```
+
+This bin supports specifying the RPC URL via `RPC_URL`, `RPC_HTTP_URL`, `FOUNDRY_ETH_RPC_URL` environment variables or `FOUNDRY_PROFILE` if using `eth_rpc_url` in `foundry.toml`.
+
+**[feat(store-indexer): add flag to validate block ranges (#3531)](https://github.com/latticexyz/mud/commit/40aaf970a122151852d3d3f02383f44bffed85b9)** (@latticexyz/block-logs-stream)
+
+Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+To enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling `fetchLogs` or `fetchBlockLogs`.
+
+```diff
+-fetchLogs({ publicClient, ... });
++fetchLogs({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
+```
+
+Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+**[feat(store-sync): recs sync adapter (#3486)](https://github.com/latticexyz/mud/commit/227db4d37db5dd26607f77e805d91701ba2e38db)** (@latticexyz/store-sync)
+
+Added an RECS sync adapter to be used with `SyncProvider` in React apps.
+
+```tsx
+import { WagmiProvider } from "wagmi";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { SyncProvider } from "@latticexyz/store-sync/react";
+import { createSyncAdapter } from "@latticexyz/store-sync/recs";
+import { createWorld } from "@latticexyz/recs";
+import config from "./mud.config";
+
+const world = createWorld();
+const { syncAdapter, components } = createSyncAdapter({ world, config });
+
+export function App() {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>
+          {children}
+        </SyncProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+**[fix(explorer): create a separate flag and port for the indexer created by the explorer (#3511)](https://github.com/latticexyz/mud/commit/3d5b7b75c5c68f4c7499ecd2fcf6e3b2b40c6ad5)** (@latticexyz/explorer)
+
+Add a separate flag and port for the indexer created by the Explorer.
+
+**[feat(entrykit): deploy prereqs to any chain (#3529)](https://github.com/latticexyz/mud/commit/73859484bb53c1a4066de028a3ad7d3a4284e4da)** (@latticexyz/cli)
+
+Added an empty line to the end of `.json` output files for consistency.
+Removed some unnecessary defaults to allow them to pass through via environment variables.
+
+**[feat(explorer): enable re-executing query (#3471)](https://github.com/latticexyz/mud/commit/32649080323d2a27cdf4a189917a70b958d062da)** (@latticexyz/explorer)
+
+Previously, queries could only be executed if they had changed, as data fetching was tied to query updates. Now, it’s possible to trigger a new table data fetch explicitly, regardless of whether the query has changed.
+
+**[fix(protocol-parser): add padding for encodedLengths (#3507)](https://github.com/latticexyz/mud/commit/dead80e682bfa1bd23f4d3b9bac338aee38c281e)** (@latticexyz/protocol-parser)
+
+Added padding to make sure the `encodedLengths` field of a Store log is always 32 bytes.
+
+**[feat(world): support batchCall in callFrom action (#2796)](https://github.com/latticexyz/mud/commit/56e65f64186741cf38a7dc0bf62e2d22bbe8fed2)** (@latticexyz/world)
+
+Updated `callFrom` action to automatically translate `batchCall` to `batchCallFrom`.
+Also fixed `encodeSystemCallFrom` and `encodeSystemCallsFrom` to return the right format for use with `batchCall` and `batchCallFrom` respectively.
+
+**[fix(cli): use system label when verifying (#3503)](https://github.com/latticexyz/mud/commit/5aa8a3ad00aa591f9c3a60526b045257dc8a0bb5)** (@latticexyz/cli)
+
+Fixed an issue with `mud verify` where system contract artifacts were being resolved incorrectly.
+
+**[feat: move CallWithSignature module to its own package (#3491)](https://github.com/latticexyz/mud/commit/ffefc8f000769d5ca625dd19290007a853a21788)** (@latticexyz/cli, @latticexyz/entrykit, @latticexyz/world-module-callwithsignature, @latticexyz/world-modules)
+
+`CallWithSignature` module has been moved out of `@latticexyz/world-modules` and into its own package at `@latticexyz/world-module-callwithsignature`. This module is now installed by default during deploy as its needed by EntryKit.
+
+If you previously had this module installed in your MUD config, you can now remove it.
+
+```diff
+ export default defineConfig({
+   tables: {
+     ...
+   },
+-  modules: [
+-    {
+-      artifactPath:
+-        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+-      root: true,
+-    },
+-  ],
+ });
+```
+
+**[fix(explorer): return empty array for empty results (sqlite indexer) (#3469)](https://github.com/latticexyz/mud/commit/0812178a8a873aa728358040d1d494385f78566f)** (@latticexyz/explorer)
+
+The Explorer now returns an empty array for empty results, instead of throwing an error, when using the local indexer.
+
+**[fix(explorer): show loader only on initial table data load (#3517)](https://github.com/latticexyz/mud/commit/0ea31c36119277e7f6cad3c71ef2b012856ead41)** (@latticexyz/explorer)
+
+The loader in the Explore table now appears only during the initial data load. Additionally, a loading spinner has been added to the query submit button for non-live queries to indicate when a query is being refetched.
+
+**[feat(entrykit): deploy prereqs to any chain (#3529)](https://github.com/latticexyz/mud/commit/73859484bb53c1a4066de028a3ad7d3a4284e4da)** (@latticexyz/common)
+
+Updated Rhodolite chain config with new contract addresses.
+
+**[fix(cli): checksum deployed world addresses (#3465)](https://github.com/latticexyz/mud/commit/090c9224b80ab949997e0463f9ec0df953c731b5)** (@latticexyz/cli)
+
+The world address stored in `worlds.json` and `deploys/latest.json` is now checksummed.
+
+**[chore(cli): print mud version in deploy (#3476)](https://github.com/latticexyz/mud/commit/f52b1476f04ce0be68691e3b021a81e0fb9cce99)** (@latticexyz/cli)
+
+Deploy now prints the current MUD CLI version for easier debugging.
+
+---
+
 ## Version 2.2.16
 
 Release date: Fri Jan 17 2025

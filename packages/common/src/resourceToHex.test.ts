@@ -45,7 +45,7 @@ describe("resourceToHex", () => {
         name: "name",
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Namespaces must fit into `bytes14`, but \\"AVeryLongNamespace\\" is too long."',
+      `[Error: Namespaces must fit into \`bytes14\`, but "AVeryLongNamespace" is too long.]`,
     );
   });
 

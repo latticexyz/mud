@@ -52,11 +52,4 @@ export default defineWorld({
       key: ["x", "y"],
     },
   },
-  modules: [
-    {
-      artifactPath:
-        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
-      root: true,
-    },
-  ],
 });

@@ -6,7 +6,11 @@ import { parseAbi } from "viem";
 export const paymasterAbi = parseAbi([
   "error SpenderSystem_AlreadyRegistered(address spender, address user)",
   "error SpenderSystem_HasOwnBalance(address spender)",
+  "error BalanceSystem_BalanceTooHigh(address user, uint256 balance, uint256 max)",
+  "error BalanceSystem_InsufficientBalance(address user, uint256 amount, uint256 balance)",
   "function registerSpender(address spender)",
+  "function depositTo(address to) payable",
+  "function withdrawTo(address to, uint256 amount)",
 ]);
 
 export const paymasterConfig = defineStore({
@@ -18,6 +22,13 @@ export const paymasterConfig = defineStore({
           schema: {
             user: "address",
             allowance: "uint256",
+          },
+          key: ["user"],
+        },
+        Balance: {
+          schema: {
+            user: "address",
+            balance: "uint256",
           },
           key: ["user"],
         },

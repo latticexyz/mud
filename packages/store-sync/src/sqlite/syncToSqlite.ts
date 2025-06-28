@@ -26,14 +26,12 @@ export type SyncToSqliteResult = SyncResult & {
  */
 export async function syncToSqlite({
   database,
-  publicClient,
   startSync = true,
-  ...syncOptions
+  ...opts
 }: SyncToSqliteOptions): Promise<SyncToSqliteResult> {
   const storeSync = await createStoreSync({
-    storageAdapter: await sqliteStorage({ database, publicClient }),
-    publicClient,
-    ...syncOptions,
+    ...opts,
+    storageAdapter: await sqliteStorage({ ...opts, database }),
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;

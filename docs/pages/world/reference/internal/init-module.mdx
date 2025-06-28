@@ -60,16 +60,6 @@ _Registers core tables, systems, and function selectors in the World._
 function installRoot(bytes memory) public override;
 ```
 
-#### install
-
-Non-root installation of the module.
-
-_Installation is only supported at root level, so this function will always revert._
-
-```solidity
-function install(bytes memory) public pure;
-```
-
 #### \_registerTables
 
 Register World's tables.

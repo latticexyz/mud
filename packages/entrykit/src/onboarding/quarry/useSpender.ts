@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, skipToken, useQuery } from "@tanstack/react-query";
 import { getSpender } from "./getSpender";
 
 export function getSpenderQueryOptions({
@@ -13,15 +13,11 @@ export function getSpenderQueryOptions({
   userAddress: Address | undefined;
   sessionAddress: Address | undefined;
 }) {
-  const queryKey = ["getSpender", client?.chain.id, userAddress, sessionAddress];
-  return queryOptions(
-    client && userAddress && sessionAddress
-      ? {
-          queryKey,
-          queryFn: () => getSpender({ client, userAddress, sessionAddress }),
-        }
-      : { queryKey, enabled: false },
-  );
+  return queryOptions({
+    queryKey: ["getSpender", client?.uid, userAddress, sessionAddress],
+    queryFn:
+      client && userAddress && sessionAddress ? () => getSpender({ client, userAddress, sessionAddress }) : skipToken,
+  });
 }
 
 export function useSpender(userAddress: Address | undefined, sessionAddress: Address | undefined) {
