@@ -1,11 +1,12 @@
 "use client";
 
 import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "../../../../../../components/ui/Badge";
+import { Input } from "../../../../../../components/ui/Input";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import {
   Table,
@@ -121,6 +122,13 @@ export function TransactionsTable() {
   const { data: indexedTransactions, fetchNextPage } = useTransactionsQuery();
   const loadedInitialTransactions = Array.isArray(indexedTransactions) && indexedTransactions.length > 0;
   const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [filters, setFilters] = useState({
+    blockNumber: "",
+    from: "",
+    calls: "",
+    hash: "",
+    timestamp: "",
+  });
 
   useEffect(() => {
     if (inView) {
@@ -128,8 +136,33 @@ export function TransactionsTable() {
     }
   }, [fetchNextPage, inView]);
 
+  // Filter transactions based on filter values
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((transaction) => {
+      if (filters.blockNumber && !transaction.blockNumber?.toString().includes(filters.blockNumber)) {
+        return false;
+      }
+      if (filters.from && !transaction.from?.toLowerCase().includes(filters.from.toLowerCase())) {
+        return false;
+      }
+      if (
+        filters.calls &&
+        !transaction.calls?.some((call) => call.functionName?.toLowerCase().includes(filters.calls.toLowerCase()))
+      ) {
+        return false;
+      }
+      if (filters.hash && !transaction.hash?.toLowerCase().includes(filters.hash.toLowerCase())) {
+        return false;
+      }
+      if (filters.timestamp && !transaction.timestamp?.toString().includes(filters.timestamp)) {
+        return false;
+      }
+      return true;
+    });
+  }, [transactions, filters]);
+
   const table = useReactTable({
-    data: transactions,
+    data: filteredTransactions,
     columns,
     state: {
       expanded,
@@ -141,59 +174,110 @@ export function TransactionsTable() {
   });
 
   return (
-    <Table>
-      <TableHeader className="sticky top-0 z-10 bg-[var(--color-background)]">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              return (
-                <TableHead key={header.id} className="text-xs uppercase">
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              );
-            })}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => <TransactionTableRow key={row.id} row={row} />)
-        ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length}>
-              <p className="flex items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground">
-                <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" /> Waiting for
-                transactions…
-              </p>
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
+    <div className="space-y-4">
+      {/* Filter Row */}
+      <div className="grid grid-cols-5 gap-4 rounded-md border bg-muted/20 p-4">
+        <div className="space-y-2">
+          <label className="text-xs font-medium uppercase text-muted-foreground">Block</label>
+          <Input
+            placeholder="Filter block..."
+            value={filters.blockNumber}
+            onChange={(e) => setFilters((prev) => ({ ...prev, blockNumber: e.target.value }))}
+            className="h-8 text-xs"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-medium uppercase text-muted-foreground">From</label>
+          <Input
+            placeholder="Filter address..."
+            value={filters.from}
+            onChange={(e) => setFilters((prev) => ({ ...prev, from: e.target.value }))}
+            className="h-8 text-xs"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-medium uppercase text-muted-foreground">Functions</label>
+          <Input
+            placeholder="Filter functions..."
+            value={filters.calls}
+            onChange={(e) => setFilters((prev) => ({ ...prev, calls: e.target.value }))}
+            className="h-8 text-xs"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-medium uppercase text-muted-foreground">Tx Hash</label>
+          <Input
+            placeholder="Filter hash..."
+            value={filters.hash}
+            onChange={(e) => setFilters((prev) => ({ ...prev, hash: e.target.value }))}
+            className="h-8 text-xs"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-medium uppercase text-muted-foreground">Time</label>
+          <Input
+            placeholder="Filter time..."
+            value={filters.timestamp}
+            onChange={(e) => setFilters((prev) => ({ ...prev, timestamp: e.target.value }))}
+            className="h-8 text-xs"
+          />
+        </div>
+      </div>
 
-      {indexer.type === "hosted" && (
-        <TableFooter
-          className={cn("border-t-transparent bg-transparent hover:bg-transparent", {
-            "border-t-muted": loadedInitialTransactions,
-          })}
-        >
-          <TableRow>
-            <TableCell colSpan={columns.length}>
-              <div
-                ref={ref}
-                className={cn(
-                  "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
-                  {
-                    flex: loadedInitialTransactions,
-                  },
-                )}
-              >
-                <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" />
-                Loading more transactions...
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      )}
-    </Table>
+      <Table>
+        <TableHeader className="sticky top-0 z-10 bg-[var(--color-background)]">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id} className="text-xs uppercase">
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => <TransactionTableRow key={row.id} row={row} />)
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length}>
+                <p className="flex items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground">
+                  <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" /> Waiting
+                  for transactions…
+                </p>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+
+        {indexer.type === "hosted" && (
+          <TableFooter
+            className={cn("border-t-transparent bg-transparent hover:bg-transparent", {
+              "border-t-muted": loadedInitialTransactions,
+            })}
+          >
+            <TableRow>
+              <TableCell colSpan={columns.length}>
+                <div
+                  ref={ref}
+                  className={cn(
+                    "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
+                    {
+                      flex: loadedInitialTransactions,
+                    },
+                  )}
+                >
+                  <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" />
+                  Loading more transactions...
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        )}
+      </Table>
+    </div>
   );
 }
