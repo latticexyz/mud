@@ -1,6 +1,7 @@
 "use client";
 
 import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
 import React, { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
@@ -122,13 +123,12 @@ export function TransactionsTable() {
   const { data: indexedTransactions, fetchNextPage } = useTransactionsQuery();
   const loadedInitialTransactions = Array.isArray(indexedTransactions) && indexedTransactions.length > 0;
   const [expanded, setExpanded] = useState<ExpandedState>({});
-  const [filters, setFilters] = useState({
-    blockNumber: "",
-    from: "",
-    calls: "",
-    hash: "",
-    timestamp: "",
-  });
+
+  const [blockNumberFilter, setBlockNumberFilter] = useQueryState("blockNumber", parseAsString.withDefault(""));
+  const [fromFilter, setFromFilter] = useQueryState("from", parseAsString.withDefault(""));
+  const [callsFilter, setCallsFilter] = useQueryState("calls", parseAsString.withDefault(""));
+  const [hashFilter, setHashFilter] = useQueryState("hash", parseAsString.withDefault(""));
+  const [timestampFilter, setTimestampFilter] = useQueryState("timestamp", parseAsString.withDefault(""));
 
   useEffect(() => {
     if (inView) {
@@ -139,27 +139,27 @@ export function TransactionsTable() {
   // Filter transactions based on filter values
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
-      if (filters.blockNumber && !transaction.blockNumber?.toString().includes(filters.blockNumber)) {
+      if (blockNumberFilter && !transaction.blockNumber?.toString().includes(blockNumberFilter)) {
         return false;
       }
-      if (filters.from && !transaction.from?.toLowerCase().includes(filters.from.toLowerCase())) {
+      if (fromFilter && !transaction.from?.toLowerCase().includes(fromFilter.toLowerCase())) {
         return false;
       }
       if (
-        filters.calls &&
-        !transaction.calls?.some((call) => call.functionName?.toLowerCase().includes(filters.calls.toLowerCase()))
+        callsFilter &&
+        !transaction.calls?.some((call) => call.functionName?.toLowerCase().includes(callsFilter.toLowerCase()))
       ) {
         return false;
       }
-      if (filters.hash && !transaction.hash?.toLowerCase().includes(filters.hash.toLowerCase())) {
+      if (hashFilter && !transaction.hash?.toLowerCase().includes(hashFilter.toLowerCase())) {
         return false;
       }
-      if (filters.timestamp && !transaction.timestamp?.toString().includes(filters.timestamp)) {
+      if (timestampFilter && !transaction.timestamp?.toString().includes(timestampFilter)) {
         return false;
       }
       return true;
     });
-  }, [transactions, filters]);
+  }, [transactions, blockNumberFilter, fromFilter, callsFilter, hashFilter, timestampFilter]);
 
   const table = useReactTable({
     data: filteredTransactions,
@@ -181,8 +181,8 @@ export function TransactionsTable() {
           <label className="text-xs font-medium uppercase text-muted-foreground">Block</label>
           <Input
             placeholder="Filter block..."
-            value={filters.blockNumber}
-            onChange={(e) => setFilters((prev) => ({ ...prev, blockNumber: e.target.value }))}
+            value={blockNumberFilter}
+            onChange={(e) => setBlockNumberFilter(e.target.value)}
             className="h-8 text-xs"
           />
         </div>
@@ -190,8 +190,8 @@ export function TransactionsTable() {
           <label className="text-xs font-medium uppercase text-muted-foreground">From</label>
           <Input
             placeholder="Filter address..."
-            value={filters.from}
-            onChange={(e) => setFilters((prev) => ({ ...prev, from: e.target.value }))}
+            value={fromFilter}
+            onChange={(e) => setFromFilter(e.target.value)}
             className="h-8 text-xs"
           />
         </div>
@@ -199,8 +199,8 @@ export function TransactionsTable() {
           <label className="text-xs font-medium uppercase text-muted-foreground">Functions</label>
           <Input
             placeholder="Filter functions..."
-            value={filters.calls}
-            onChange={(e) => setFilters((prev) => ({ ...prev, calls: e.target.value }))}
+            value={callsFilter}
+            onChange={(e) => setCallsFilter(e.target.value)}
             className="h-8 text-xs"
           />
         </div>
@@ -208,8 +208,8 @@ export function TransactionsTable() {
           <label className="text-xs font-medium uppercase text-muted-foreground">Tx Hash</label>
           <Input
             placeholder="Filter hash..."
-            value={filters.hash}
-            onChange={(e) => setFilters((prev) => ({ ...prev, hash: e.target.value }))}
+            value={hashFilter}
+            onChange={(e) => setHashFilter(e.target.value)}
             className="h-8 text-xs"
           />
         </div>
@@ -217,8 +217,8 @@ export function TransactionsTable() {
           <label className="text-xs font-medium uppercase text-muted-foreground">Time</label>
           <Input
             placeholder="Filter time..."
-            value={filters.timestamp}
-            onChange={(e) => setFilters((prev) => ({ ...prev, timestamp: e.target.value }))}
+            value={timestampFilter}
+            onChange={(e) => setTimestampFilter(e.target.value)}
             className="h-8 text-xs"
           />
         </div>
