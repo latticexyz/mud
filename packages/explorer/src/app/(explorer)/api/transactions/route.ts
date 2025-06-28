@@ -1,5 +1,6 @@
 import { Client } from "pg";
 import { Hex } from "viem";
+import { entryPoint07Address } from "viem/account-abstraction";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +29,17 @@ export async function GET(req: Request) {
           '0x' || encode(tx_input, 'hex') as tx_input,
           tx_value, block_time
         FROM transactions
-        WHERE tx_to = decode($1, 'hex') ${lastBlockNumber ? "AND block_num < $3" : ""}
+        WHERE tx_to IN (decode($1, 'hex'), decode($2, 'hex'))
+        ${lastBlockNumber ? "AND block_num < $4" : ""}
         ORDER BY block_num DESC
-        LIMIT $2
+        LIMIT $3
       `,
-      [worldAddress.replace("0x", ""), pageSize, ...(lastBlockNumber ? [lastBlockNumber] : [])],
+      [
+        worldAddress.replace("0x", ""),
+        entryPoint07Address.replace("0x", ""),
+        pageSize,
+        ...(lastBlockNumber ? [lastBlockNumber] : []),
+      ],
     );
 
     return Response.json({ transactions: transactions.rows });
