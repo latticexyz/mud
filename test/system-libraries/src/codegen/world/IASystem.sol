@@ -33,4 +33,6 @@ interface IASystem {
   function a__setValuesStaticArray(uint256[2] memory values) external;
 
   function a__setValuesStaticArray(uint256[THREE] memory values) external;
+
+  function a__set2dArray(uint256[][] memory array2d) external returns (uint256[][] memory);
 }
