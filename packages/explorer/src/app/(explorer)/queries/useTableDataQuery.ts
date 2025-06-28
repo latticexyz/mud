@@ -1,4 +1,5 @@
 import { useParams } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
@@ -24,6 +25,7 @@ export function useTableDataQuery({ table, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
   const [query] = useSQLQueryState();
+  const [blockHeightParm] = useQueryState("blockHeight");
   const indexer = useIndexerForChainId(chainId);
 
   return useQuery<DozerResponse & { queryDuration: number; blockHeight: number }, Error, TData | undefined>({
@@ -39,6 +41,7 @@ export function useTableDataQuery({ table, isLiveQuery }: Props) {
           {
             address: worldAddress as Hex,
             query,
+            ...(blockHeightParm ? { block_height: parseInt(blockHeightParm), block_height_direction: "<=" } : {}),
           },
         ]),
       });
