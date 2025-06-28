@@ -112,10 +112,10 @@ contract MetadataModuleTest is Test, GasReporter {
   }
 
   function testTagUnownedResource(address caller) public {
-    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
-
     vm.assume(caller != address(0));
     vm.assume(caller != address(this));
+
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
 
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = NamespaceOwner._tableId;
