@@ -15,3 +15,5 @@ export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmi
 // And some additional internal things
 export * from "../validateSigner";
 export * from "../useFunds";
+export { EntryKitConfigProvider as internal_EntryKitConfigProvider } from "../EntryKitConfigProvider";
+export { AccountModal as internal_AccountModal } from "../AccountModal";

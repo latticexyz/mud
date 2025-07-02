@@ -3,8 +3,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { UserWrite } from "./UserWrite";
 import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
-import { useAccountModal } from "../src/useAccountModal";
-import { AccountButton } from "../src/AccountButton";
+import { AccountButton, useAccountModal } from "@latticexyz/entrykit/internal";
 
 export function App() {
   const { openAccountModal } = useAccountModal();

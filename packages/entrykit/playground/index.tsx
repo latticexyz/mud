@@ -2,9 +2,11 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AccountModal } from "../src/AccountModal";
-import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
-import { defineConfig } from "../src/config/defineConfig";
+import {
+  internal_AccountModal as AccountModal,
+  internal_EntryKitConfigProvider as EntryKitConfigProvider,
+  defineConfig,
+} from "@latticexyz/entrykit/internal";
 import { wagmiConfig } from "./wagmiConfig";
 import { chainId, worldAddress } from "./common";
 import { App } from "./App";

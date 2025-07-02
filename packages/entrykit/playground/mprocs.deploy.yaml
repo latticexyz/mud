@@ -1,9 +1,10 @@
 scrollback: 10000
 procs:
   anvil:
-    shell: anvil --dump-state playground/anvil-state.json
+    shell: anvil --dump-state anvil-state.json
 
   deploy-prereqs:
+    cwd: ..
     shell: pnpm run deploy
     env:
       DEBUG: "mud:*"
@@ -11,13 +12,13 @@ procs:
       PRIVATE_KEY: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
 
   # deploy-quarry-paymaster:
-  #   cwd: ../../../quarry-paymaster/packages/contracts
+  #   cwd: ../../../../quarry-paymaster/packages/contracts
   #   shell: pnpm mud deploy --salt 0x && pnpm fund:paymaster:local && pnpm fund:issuer:local
   #   env:
   #     DEBUG: "mud:*"
 
   deploy-game:
-    cwd: ../../test/mock-game-contracts
+    cwd: ../../../test/mock-game-contracts
     shell: pnpm run deploy:local --salt 0x
     env:
       DEBUG: "mud:*"
@@ -25,5 +26,5 @@ procs:
       PRIVATE_KEY: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba"
 
   # deploy-bundler:
-  #   cwd: ../../../alto
+  #   cwd: ../../../../alto
   #   shell: pnpm ts-node scripts/localDeployer/index.ts

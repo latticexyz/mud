@@ -1,20 +1,20 @@
 scrollback: 10000
 procs:
   client:
-    shell: pnpm vite dev playground
+    shell: pnpm vite
   anvil:
-    shell: anvil --block-time 2 --load-state playground/anvil-state.json
+    shell: anvil --block-time 2 --load-state anvil-state.json
 
   # mud:
-  #   cwd: ../..
+  #   cwd: ../../..
   #   shell: pnpm run dev --filter=!@latticexyz/entrykit
 
   # quarry-issuer:
-  #   cwd: ../../../quarry-paymaster/packages/issuer
+  #   cwd: ../../../../quarry-paymaster/packages/issuer
   #   shell: pnpm start
 
   # bundler:
-  #   cwd: ../../../alto
+  #   cwd: ../../../../alto
   #   shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
 
   tunnel:
