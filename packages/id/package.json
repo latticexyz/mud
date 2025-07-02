@@ -30,12 +30,18 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "viem": "2.30.6",
+    "wagmi": "2.15.5"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "mprocs": "^0.7.1",
+    "mprocs": "^0.7.3",
     "vite": "^5.4.1"
+  },
+  "peerDependencies": {
+    "viem": "2.x",
+    "wagmi": "2.x"
   },
   "publishConfig": {
     "access": "public"
