@@ -1,6 +1,6 @@
 import { Chain, http } from "viem";
 import { anvil, redstone, mainnet } from "viem/chains";
-import { createWagmiConfig } from "@latticexyz/entrykit/internal";
+import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
 import { wiresaw } from "@latticexyz/common/internal";

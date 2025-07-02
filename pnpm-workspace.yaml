@@ -1,6 +1,5 @@
 packages:
   - packages/*
-  - packages/entrykit/playground
   - test/with-anvil
   - test/mock-game-contracts
   - test/puppet-modules

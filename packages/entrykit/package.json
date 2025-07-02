@@ -37,6 +37,8 @@
     "data:relay-chains": "tsx src/scripts/get-relay-chains.ts",
     "deploy": "tsx src/bin/deploy.ts",
     "dev": "tsup --watch",
+    "playground": "mprocs",
+    "playground:deploy": "mprocs --config mprocs.deploy.yaml",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },

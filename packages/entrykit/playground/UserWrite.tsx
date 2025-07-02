@@ -1,5 +1,5 @@
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { useEntryKitConfig } from "@latticexyz/entrykit/internal";
+import { useEntryKitConfig } from "../src/EntryKitConfigProvider";
 
 export function UserWrite() {
   const { chainId, worldAddress } = useEntryKitConfig();

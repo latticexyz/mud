@@ -1,4 +1,5 @@
-import { useEntryKitConfig, useSessionClient } from "@latticexyz/entrykit/internal";
+import { useEntryKitConfig } from "../src/EntryKitConfigProvider";
+import { useSessionClientReady } from "../src/useSessionClientReady";
 import { getContract, Hex, TransactionReceipt } from "viem";
 import { mockGameAbi } from "./mockGame";
 import { useMemo, useState } from "react";
@@ -9,7 +10,7 @@ import { useClient } from "wagmi";
 export function SessionWrite() {
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-  const { data: sessionClient } = useSessionClient();
+  const { data: sessionClient } = useSessionClientReady();
   const [hash, setHash] = useState<Hex | null>(null);
   const [receipt, setReceipt] = useState<TransactionReceipt | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
