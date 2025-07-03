@@ -1,3 +1,31 @@
+## Version 2.2.23
+
+Release date: Thu Jul 03 2025
+
+### Patch changes
+
+**[feat(explorer): show explored world title (#3751)](https://github.com/latticexyz/mud/commit/9c9d8eab9fea5aeaf8f3ed8b2f13bd35add462b9)** (@latticexyz/explorer)
+
+Address and name of verified worlds are now shown in the navigation tab.
+
+**[feat(store-sync): include registered system functions in ABI (#3776)](https://github.com/latticexyz/mud/commit/a7ce36bd855c91c1a0e7a515c6ed7422ef59973d)** (@latticexyz/store-sync)
+
+`getSystemAbis` will now include the ABIs of registered functions.
+
+**[feat(explorer): abi search and filter (#3773)](https://github.com/latticexyz/mud/commit/e1c2958b99c9fe4c7189ab24938e0978ff85a75f)** (@latticexyz/explorer)
+
+ABI in the "Decode" page can now be searched and filtered.
+
+**[fix(world): support expectRevert and unusual nameless arguments in system libraries (#3680)](https://github.com/latticexyz/mud/commit/a8c404b4b10462f5f390a82f9e40ceb80bc5eb23)** (@latticexyz/store, @latticexyz/world-module-metadata, @latticexyz/world)
+
+Support expectRevert and unusual nameless arguments in system libraries.
+
+**[fix(explorer): encode big integer arguments (#3777)](https://github.com/latticexyz/mud/commit/c9a7e15b89f6e4486abcb46c3a75c213741816a4)** (@latticexyz/explorer)
+
+Big integer values are now encoded correctly when calling functions from "Interact" page.
+
+---
+
 ## Version 2.2.22
 
 Release date: Thu Jun 26 2025

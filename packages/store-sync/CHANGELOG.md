@@ -1,5 +1,22 @@
 # @latticexyz/store-sync
 
+## 2.2.23
+
+### Patch Changes
+
+- a7ce36b: `getSystemAbis` will now include the ABIs of registered functions.
+- Updated dependencies [a8c404b]
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world-module-metadata@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/stash@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/recs@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
