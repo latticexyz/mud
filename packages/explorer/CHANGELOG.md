@@ -1,5 +1,24 @@
 # @latticexyz/explorer
 
+## 2.2.23
+
+### Patch Changes
+
+- 9c9d8ea: Address and name of verified worlds are now shown in the navigation tab.
+- e1c2958: ABI in the "Decode" page can now be searched and filtered.
+- c9a7e15: Big integer values are now encoded correctly when calling functions from "Interact" page.
+- Updated dependencies [a7ce36b]
+- Updated dependencies [a8c404b]
+  - @latticexyz/store-sync@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store-indexer@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

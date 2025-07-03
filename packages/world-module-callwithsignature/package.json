@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world-module-callwithsignature",
-  "version": "2.2.22",
+  "version": "2.2.23",
   "description": "CallWithSignature world module",
   "repository": {
     "type": "git",
