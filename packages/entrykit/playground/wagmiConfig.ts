@@ -6,8 +6,6 @@ import { garnet, pyrope } from "@latticexyz/common/chains";
 import { wiresaw } from "@latticexyz/common/internal";
 import { getDefaultConnectors } from "../src/getDefaultConnectors";
 import { mudId } from "@latticexyz/id/internal";
-import { porto } from "porto/wagmi";
-import { Porto } from "porto";
 
 const appConfig = {
   walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
@@ -109,8 +107,6 @@ const pollingInterval = {
   [redstoneWithPaymaster.id]: 2000,
   [pyropeWithPaymaster.id]: 2000,
 } as const;
-
-const porto = Porto.create();
 
 const connectors = [mudId({ chainId }), ...getDefaultConnectors(appConfig)];
 

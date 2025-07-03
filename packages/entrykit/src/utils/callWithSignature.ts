@@ -19,7 +19,6 @@ export async function callWithSignature<chain extends Chain = Chain>({
 
   // TODO: add support for ERC-6492 inside CallWithSignature module
   const { address, signature } = parseErc6492Signature(rawSignature);
-  console.log("callWithSignature", opts, { address, signature });
   if (address != null) {
     throw new Error(
       "ERC-6492 signatures, like from Coinbase Smart Wallet, are not yet supported. Try using a different wallet?",
