@@ -1,7 +1,7 @@
-import { Hex, encodeFunctionData } from "viem";
+import { Hex, encodeFunctionData, parseEventLogs } from "viem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAction } from "viem/utils";
-import { sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
+import { sendUserOperation, waitForUserOperationReceipt, entryPoint07Abi } from "viem/account-abstraction";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../quarry/common";
@@ -36,7 +36,7 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
       const paymaster = getPaymaster(client.chain);
       const sessionAddress = sessionClient.account.address;
 
-      console.log("setting up session");
+      console.log("setting up session", userClient.account.type);
 
       if (userClient.account.type === "smart") {
         // Set up session for smart account wallet
@@ -127,7 +127,11 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
         console.log("waiting for", txs.length, "receipts");
         for (const hash of txs) {
           const receipt = await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-          console.log("got tx receipt", receipt);
+          console.log(
+            "got tx receipt",
+            receipt,
+            parseEventLogs({ abi: [...IBaseWorldAbi, ...paymasterAbi, ...entryPoint07Abi], logs: receipt.logs }),
+          );
           if (receipt.status === "reverted") {
             console.error("tx reverted?", receipt);
           }
