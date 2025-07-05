@@ -17,5 +17,8 @@ procs:
   #   cwd: ../../../alto
   #   shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
 
+  id:
+    cwd: ../id
+    shell: pnpm vite
   tunnel:
     shell: cloudflared tunnel run
