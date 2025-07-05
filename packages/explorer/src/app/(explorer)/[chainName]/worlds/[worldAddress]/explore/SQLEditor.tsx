@@ -1,7 +1,10 @@
 "use client";
 
-import { CommandIcon, CornerDownLeft, LoaderIcon, PauseIcon, PlayIcon } from "lucide-react";
+import { ClockIcon, CommandIcon, CornerDownLeft, LoaderIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
+import { useQueryState } from "nuqs";
+import { useConfig } from "wagmi";
+import { getBlock } from "wagmi/actions";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
@@ -9,7 +12,9 @@ import Editor from "@monaco-editor/react";
 import { Tooltip } from "../../../../../../components/Tooltip";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
+import { Input } from "../../../../../../components/ui/Input";
 import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { PAGE_SIZE_OPTIONS, monacoOptions } from "./consts";
 import { usePaginationState } from "./hooks/usePaginationState";
@@ -31,6 +36,12 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
   const [pagination, setPagination] = usePaginationState();
   const [query, setQuery] = useSQLQueryState();
+  const [blockHeight, setBlockHeight] = useQueryState("blockHeight");
+  const [blockTimestamp, setBlockTimestamp] = useState<number | null>(null);
+  const [isLoadingBlock, setIsLoadingBlock] = useState(false);
+
+  const wagmiConfig = useConfig();
+  const { id: chainId } = useChain();
 
   const validateQuery = useQueryValidator(table);
   const { data: tableData, refetch, isRefetching: isTableDataRefetching } = useTableDataQuery({ table, isLiveQuery });
@@ -75,6 +86,32 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   useEffect(() => {
     form.reset({ query });
   }, [query, form]);
+
+  // Fetch block timestamp when blockHeight changes
+  useEffect(() => {
+    const fetchBlockTimestamp = async () => {
+      if (!blockHeight || !wagmiConfig || !chainId) {
+        setBlockTimestamp(null);
+        return;
+      }
+
+      setIsLoadingBlock(true);
+      try {
+        const block = await getBlock(wagmiConfig, {
+          chainId,
+          blockNumber: BigInt(blockHeight),
+        });
+        setBlockTimestamp(Number(block.timestamp));
+      } catch (error) {
+        console.error("Failed to fetch block timestamp:", error);
+        setBlockTimestamp(null);
+      } finally {
+        setIsLoadingBlock(false);
+      }
+    };
+
+    fetchBlockTimestamp();
+  }, [blockHeight, wagmiConfig, chainId]);
 
   const updateHeight = () => {
     if (editorRef.current) {
@@ -181,6 +218,29 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
               </Tooltip>
             </>
           ) : null}
+
+          <Input
+            type="number"
+            step="1000"
+            className="w-[120px]"
+            value={blockHeight ?? ""}
+            onChange={(e) => setBlockHeight(e.target.value)}
+          />
+
+          {blockHeight && (
+            <div className="flex items-center gap-2 text-xs text-white/60">
+              <ClockIcon className="h-3 w-3" />
+              {isLoadingBlock ? (
+                <span>Loading...</span>
+              ) : blockTimestamp ? (
+                <Tooltip text={new Date(blockTimestamp * 1000).toISOString()}>
+                  <span>{new Date(blockTimestamp * 1000).toLocaleString()}</span>
+                </Tooltip>
+              ) : (
+                <span>Invalid block</span>
+              )}
+            </div>
+          )}
 
           <Button className="group relative flex gap-2 pl-4 pr-3" type="submit" disabled={isRefetching}>
             Run
