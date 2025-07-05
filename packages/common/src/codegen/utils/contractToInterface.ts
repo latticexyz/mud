@@ -101,13 +101,8 @@ export function contractToInterface(
 function parseParameter({ name, typeName, storageLocation }: VariableDeclaration): string {
   let typedNameWithLocation = "";
 
-  const { name: flattenedTypeName, stateMutability } = flattenTypeName(typeName);
   // type name (e.g. uint256)
-  typedNameWithLocation += flattenedTypeName;
-  // optional mutability (e.g. address payable)
-  if (stateMutability !== null) {
-    typedNameWithLocation += ` ${stateMutability}`;
-  }
+  typedNameWithLocation += flattenTypeName(typeName);
   // location, when relevant (e.g. string memory)
   if (storageLocation !== null) {
     typedNameWithLocation += ` ${storageLocation}`;
@@ -120,23 +115,20 @@ function parseParameter({ name, typeName, storageLocation }: VariableDeclaration
   return typedNameWithLocation;
 }
 
-function flattenTypeName(typeName: TypeName | null): { name: string; stateMutability: string | null } {
+function flattenTypeName(typeName: TypeName | null): string {
   if (typeName === null) {
-    return {
-      name: "",
-      stateMutability: null,
-    };
+    return "";
   }
   if (typeName.type === "ElementaryTypeName") {
-    return {
-      name: typeName.name,
-      stateMutability: typeName.stateMutability,
-    };
+    if (typeName.stateMutability !== null) {
+      // for elementary types mutability can only be `payable`, and should be part of the elementary type name
+      // meaning that `address payable[]` is correct, not `address[] payable`
+      return `${typeName.name} ${typeName.stateMutability}`;
+    } else {
+      return typeName.name;
+    }
   } else if (typeName.type === "UserDefinedTypeName") {
-    return {
-      name: typeName.namePath,
-      stateMutability: null,
-    };
+    return typeName.namePath;
   } else if (typeName.type === "ArrayTypeName") {
     let length = "";
     if (typeName.length?.type === "NumberLiteral") {
@@ -145,11 +137,8 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
       length = typeName.length.name;
     }
 
-    const { name, stateMutability } = flattenTypeName(typeName.baseTypeName);
-    return {
-      name: `${name}[${length}]`,
-      stateMutability,
-    };
+    const name = flattenTypeName(typeName.baseTypeName);
+    return `${name}[${length}]`;
   } else {
     // TODO function types are unsupported but could be useful
     throw new MUDError(`Invalid typeName.type ${typeName.type}`);
