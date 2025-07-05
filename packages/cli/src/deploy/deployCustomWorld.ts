@@ -113,7 +113,12 @@ export async function deployCustomWorld({
     functionName: "transferOwnership",
     args: [resourceToHex({ type: "namespace", namespace: "", name: "" }), client.account.address],
   });
-  await waitForTransactions({ client, hashes: [transferOwnershipTx], debugLabel: "world ownership transfer" });
 
-  return { ...deploy, stateBlock: deploy.deployBlock };
+  debug("waiting for world ownership transfer");
+  const finalStateReceipt = await waitForTransactionReceipt(client, { hash: transferOwnershipTx });
+  if (finalStateReceipt.status === "reverted") {
+    throw new Error(`Transaction reverted: ${transferOwnershipTx}`);
+  }
+
+  return { ...deploy, stateBlock: finalStateReceipt.blockNumber };
 }
