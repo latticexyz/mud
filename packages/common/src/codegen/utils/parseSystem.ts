@@ -1,41 +1,32 @@
-import { parse, visit } from "@solidity-parser/parser";
-
-import { findContractNode } from "./findContractNode";
+import { parse } from "@solidity-parser/parser";
+import { findContractNodeSlang } from "./findContractNode";
 import { findSymbolImport } from "./findSymbolImport";
+import { Parser } from "@nomicfoundation/slang/parser";
+import { LanguageFacts } from "@nomicfoundation/slang/utils";
+import { Query } from "@nomicfoundation/slang/cst";
 
 const baseSystemName = "System";
 const baseSystemPath = "@latticexyz/world/src/System.sol";
 
-export function parseSystem(
-  source: string,
-  contractName: string,
-): undefined | { contractType: "contract" | "abstract" } {
-  const ast = parse(source);
-  const contractNode = findContractNode(ast, contractName);
-  if (!contractNode) return;
+export function parseSystem(source: string, contractName: string): boolean {
+  const parser = Parser.create(LanguageFacts.latestVersion());
+  const root = parser.parseFileContents(source).createTreeCursor();
 
-  const contractType = contractNode.kind;
-  // skip libraries and interfaces
-  // we allow abstract systems here so that we can create system libraries from them but without deploying them
-  if (contractType !== "contract" && contractType !== "abstract") return;
+  const contract = findContractNodeSlang(root, contractName);
+  if (!contract) return false;
 
-  const isSystem = ((): boolean => {
-    // if using the System suffix, assume its a system
-    if (contractName.endsWith("System") && contractName !== baseSystemName) return true;
+  // if using the System suffix, assume its a system
+  if (contractName.endsWith("System") && contractName !== baseSystemName) return true;
 
-    // otherwise check if we're inheriting from the base system
-    let extendsBaseSystem = false;
-    visit(contractNode, {
-      InheritanceSpecifier(node) {
-        if (node.baseName.namePath === baseSystemName) {
-          extendsBaseSystem = true;
-        }
-      },
-    });
-    return extendsBaseSystem && findSymbolImport(ast, baseSystemName)?.path === baseSystemPath;
-  })();
-
-  if (isSystem) {
-    return { contractType };
+  for (const _ of contract.query([
+    Query.create(`
+      [InheritanceType
+        type_name: ["${baseSystemName}"]
+      ]
+    `),
+  ])) {
+    return findSymbolImport(parse(source), baseSystemName)?.path === baseSystemPath;
   }
+
+  return false;
 }
