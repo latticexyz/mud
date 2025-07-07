@@ -5,9 +5,9 @@ import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
-import { connectCredentialHost } from "@latticexyz/id/internal";
+import { syncRp } from "@latticexyz/id/internal";
 
-const credentialHost = connectCredentialHost();
+syncRp();
 
 export function App() {
   const { openAccountModal } = useAccountModal();
@@ -45,7 +45,7 @@ export function App() {
         <button
           type="button"
           onClick={() => {
-            credentialHost.create();
+            // rp.create();
           }}
         >
           create
@@ -53,7 +53,7 @@ export function App() {
         <button
           type="button"
           onClick={() => {
-            credentialHost.sign("0x");
+            // rp.sign("0x");
           }}
         >
           sign

@@ -1,11 +1,6 @@
 import { initialMessageShape, version } from "./common";
 
-// Ideally we'd have one `onRequest` handler, but unfortunately I couldn't figure out how
-// to get strong types, where narrowing on the RPC method would also narrow the params and
-// enforce the method's specific return type.
-//
-// Instead, we have a map of `handlers`, where each RPC method is implemented as its own
-// handler function.
+// TODO: rather than `onPort`, abstract over it with `onMessage` so we can allow the underlying port to change?
 
 export function connectMessagePort({
   target,

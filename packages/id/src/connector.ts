@@ -1,7 +1,7 @@
 import { EIP1193RequestFn, EIP1474Methods, Account, http } from "viem";
 import { createConnector, CreateConnectorFn } from "wagmi";
 import { debug } from "./debug";
-import { connectMessagePort } from "./sync/connectMessagePort";
+import { connectMessagePort } from "./messagePort/connectMessagePort";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains

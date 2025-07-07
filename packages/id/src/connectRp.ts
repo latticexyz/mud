@@ -1,11 +1,11 @@
 import { Hex } from "ox";
-import { connectMessagePort } from "./sync/connectMessagePort";
+import { connectMessagePort } from "./messagePort/connectMessagePort";
+import { rpUrl } from "./rp/common";
 
-export function connectCredentialHost({ rpId = "id.smartpass.dev" }: { rpId?: string } = {}) {
-  const origin = `https://${rpId}`;
+export function connectRp() {
   const iframe = document.createElement("iframe");
-  iframe.src = origin;
-  iframe.allow = `publickey-credentials-get ${origin}; publickey-credentials-create ${origin}; clipboard-write`;
+  iframe.src = rpUrl.toString();
+  iframe.allow = `publickey-credentials-get ${rpUrl.origin}; publickey-credentials-create ${rpUrl.origin}; clipboard-write`;
   iframe.sandbox.add(
     "allow-forms",
     "allow-scripts",

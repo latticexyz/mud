@@ -1,2 +1,3 @@
 export * from "../connector";
-export * from "../connectCredentialHost";
+export * from "../connectRp";
+export * from "../syncRp";

@@ -1,10 +1,13 @@
 import { WebAuthnP256, Hex } from "ox";
-import { createMessagePort } from "../sync/createMessagePort";
+import { requestMessagePort } from "../messagePort/requestMessagePort";
+import { rp } from "./common";
+import { syncPort } from "../sync/syncPort";
+import { sharedState } from "../sync/sharedState";
 
 const opener = window.opener ?? window.parent;
 
 if (opener == null || opener === window) {
-  console.log("host loaded");
+  console.log("rp loaded");
   (() => {
     const button = document.createElement("button");
     button.type = "button";
@@ -24,38 +27,29 @@ if (opener == null || opener === window) {
     document.body.appendChild(button);
   })();
 } else {
-  console.log("host loaded via", opener);
-  await initialize();
+  console.log("rp loaded via", opener);
+  await connectClient();
 }
 
-async function initialize() {
-  const { port, initialMessage } = await createMessagePort({ target: opener });
-  console.log("got port", port, initialMessage);
-  port.postMessage("hello from host");
+async function connectClient() {
+  const { port, initialMessage } = await requestMessagePort({ target: opener });
+  syncPort("client", port);
 
-  port.addEventListener("message", async function onMessage(event) {
-    console.log("got message from client", event);
-
-    if (event.data === "create") {
-      await create();
-    } else if (event.data === "sign") {
-      await sign("0x");
-    }
-  });
+  setTimeout(() => {
+    console.log("updating accounts from rp for funsies");
+    sharedState.setState({ accounts: ["0x"] });
+  }, 1000);
 }
 
 async function create() {
   const credentialId = await (async () => {
-    const id = localStorage.getItem("credential-id");
-    console.log("credential from localStorage", id);
-    if (id) return id;
+    // const id = localStorage.getItem("credential-id");
+    // console.log("credential from localStorage", id);
+    // if (id) return id;
 
     console.log("creating credential");
     const credential = await WebAuthnP256.createCredential({
-      rp: {
-        id: "id.smartpass.dev",
-        name: "MUD ID",
-      },
+      rp,
       user: {
         name: "Example",
       },
@@ -72,6 +66,7 @@ async function sign(message: Hex.Hex) {
 
   console.log("signing with credential", id);
   const signature = await WebAuthnP256.sign({
+    rpId: rp.id,
     credentialId: id ?? undefined,
     challenge: message,
   });

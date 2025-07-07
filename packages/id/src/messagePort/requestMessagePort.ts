@@ -15,7 +15,7 @@ export type CreateMessagePortResult = {
   readonly initialMessage: typeof initialMessageShape.infer;
 };
 
-export async function createMessagePort({
+export async function requestMessagePort({
   target,
   targetOrigin = "*",
   context,
