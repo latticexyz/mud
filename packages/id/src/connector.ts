@@ -1,9 +1,12 @@
 import { EIP1193RequestFn, EIP1474Methods, Account, http } from "viem";
 import { createConnector, CreateConnectorFn } from "wagmi";
+import { debug } from "./debug";
+import { connectMessagePort } from "./sync/connectMessagePort";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
   chainId: number;
+  rpId?: string;
 };
 
 export type PasskeyProvider = {
@@ -17,8 +20,10 @@ export type PasskeyConnector = ReturnType<CreatePasskeyConnector>;
 
 mudId.type = "passkey" as const;
 
-export function mudId({ chainId }: PasskeyConnectorOptions): CreatePasskeyConnector {
+export function mudId({ chainId, rpId = "id.smartpass.dev" }: PasskeyConnectorOptions): CreatePasskeyConnector {
   return createConnector((config) => {
+    debug("connector created");
+
     // TODO: figure out how to use with config's `client` option?
     if (!config.transports) {
       throw new Error(`Wagmi must be configured with transports to use the passkey connector.`);
@@ -47,6 +52,7 @@ export function mudId({ chainId }: PasskeyConnectorOptions): CreatePasskeyConnec
       // supportsSimulation: true,
 
       async connect() {
+        console.log("connect called");
         connected = true;
         return {
           accounts: accounts.map((a) => a.address),

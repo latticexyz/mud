@@ -5,6 +5,9 @@ import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
+import { connectCredentialHost } from "@latticexyz/id/internal";
+
+const credentialHost = connectCredentialHost();
 
 export function App() {
   const { openAccountModal } = useAccountModal();
@@ -36,6 +39,25 @@ export function App() {
       </div>
       <div>
         <SessionWrite />
+      </div>
+      <div>
+        credential{" "}
+        <button
+          type="button"
+          onClick={() => {
+            credentialHost.create();
+          }}
+        >
+          create
+        </button>{" "}
+        <button
+          type="button"
+          onClick={() => {
+            credentialHost.sign("0x");
+          }}
+        >
+          sign
+        </button>
       </div>
     </div>
   );

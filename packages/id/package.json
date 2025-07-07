@@ -30,9 +30,12 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "arktype": "2.0.0-beta.6",
     "debug": "^4.3.4",
+    "ox": "^0.8.3",
     "viem": "2.30.6",
-    "wagmi": "2.15.5"
+    "wagmi": "2.15.5",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
