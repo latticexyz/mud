@@ -1,11 +1,14 @@
 import { Hex } from "ox";
 import { connectMessagePort } from "./messagePort/connectMessagePort";
 import { rpUrl } from "./rp/common";
+import { appendFrameId } from "./frameId";
 
 export function connectRp() {
+  const { id, url } = appendFrameId(rpUrl);
+
   const iframe = document.createElement("iframe");
-  iframe.src = rpUrl.toString();
-  iframe.allow = `publickey-credentials-get ${rpUrl.origin}; publickey-credentials-create ${rpUrl.origin}; clipboard-write`;
+  iframe.src = url.toString();
+  iframe.allow = `publickey-credentials-get ${url.origin}; publickey-credentials-create ${url.origin}; clipboard-write`;
   iframe.sandbox.add(
     "allow-forms",
     "allow-scripts",
@@ -18,6 +21,7 @@ export function connectRp() {
 
   let hostPort: MessagePort | undefined;
   connectMessagePort({
+    id,
     target: iframe.contentWindow!,
     onPort: (port) => (hostPort = port),
   });

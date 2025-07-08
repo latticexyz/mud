@@ -1,12 +1,14 @@
-import { initialMessageShape, version } from "./common";
+import { initialMessage, initialMessageShape } from "./common";
 
 // TODO: rather than `onPort`, abstract over it with `onMessage` so we can allow the underlying port to change?
 
 export function connectMessagePort({
+  id,
   target,
   context,
   onPort,
 }: {
+  id: string;
   target: Window;
   context?: unknown;
   onPort: (port: MessagePort) => void;
@@ -16,6 +18,7 @@ export function connectMessagePort({
   function onWindowMessage(event: MessageEvent) {
     if (event.source !== target) return;
     if (!initialMessageShape.allows(event.data)) return;
+    if (event.data.id !== id) return;
 
     const [port] = event.ports;
     if (!port) {
@@ -28,12 +31,7 @@ export function connectMessagePort({
     connectedPort = port;
 
     port.start();
-    port.postMessage(
-      initialMessageShape.from({
-        mudId: version,
-        context,
-      }),
-    );
+    port.postMessage(initialMessageShape.from({ ...initialMessage, id, context }));
 
     onPort(port);
   }

@@ -1,6 +1,6 @@
 export const rp = {
   id: "smartpass.dev",
-  name: "MUD ID",
-};
+  name: "ID",
+} as const;
 
-export const rpUrl = new URL("https://id.smartpass.dev");
+export const rpUrl = "https://id.smartpass.dev";

@@ -5,11 +5,26 @@ import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
-import { syncRp } from "@latticexyz/id/internal";
-
-syncRp();
+import { sharedState, syncRp } from "@latticexyz/id/internal";
+import { useStore } from "zustand";
 
 export function App() {
+  useEffect(syncRp, []);
+  useEffect(() => {
+    const id = setTimeout(() => {
+      console.log("setting accounts from client");
+      sharedState.setState({
+        accounts: ["0xclient"],
+        lastUpdate: {
+          by: "client",
+          at: new Date(),
+        },
+      });
+    }, 5000);
+  }, []);
+
+  const accounts = useStore(sharedState, (state) => state.accounts);
+
   const { openAccountModal } = useAccountModal();
 
   const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:entryKitPlayground:openModalOnMount", false);
@@ -59,6 +74,7 @@ export function App() {
           sign
         </button>
       </div>
+      <div>accounts: {accounts.join(", ")}</div>
     </div>
   );
 }

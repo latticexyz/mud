@@ -3,11 +3,13 @@ import { requestMessagePort } from "../messagePort/requestMessagePort";
 import { rp } from "./common";
 import { syncPort } from "../sync/syncPort";
 import { sharedState } from "../sync/sharedState";
+import { debug } from "./debug";
+import { getFrameId } from "../frameId";
 
 const opener = window.opener ?? window.parent;
 
 if (opener == null || opener === window) {
-  console.log("rp loaded");
+  debug("rp loaded");
   (() => {
     const button = document.createElement("button");
     button.type = "button";
@@ -27,27 +29,42 @@ if (opener == null || opener === window) {
     document.body.appendChild(button);
   })();
 } else {
-  console.log("rp loaded via", opener);
-  await connectClient();
+  const id = getFrameId(window.location.href);
+  if (!id) throw new Error("Missing ID");
+
+  debug("rp loaded", id, "via", opener);
+  await connectClient({ id });
 }
 
-async function connectClient() {
-  const { port, initialMessage } = await requestMessagePort({ target: opener });
+async function connectClient({ id }: { id: string }) {
+  sharedState.subscribe((state, prevState) => {
+    if (state.accounts !== prevState.accounts) {
+      debug("accounts updated by", state.lastUpdate?.by, state.accounts);
+    }
+  });
+
+  const { port, initialMessage } = await requestMessagePort({ id, target: opener });
   syncPort("client", port);
 
   setTimeout(() => {
-    console.log("updating accounts from rp for funsies");
-    sharedState.setState({ accounts: ["0x"] });
-  }, 1000);
+    debug("updating accounts from rp for funsies");
+    sharedState.setState({
+      accounts: ["0xrp"],
+      lastUpdate: {
+        by: "rp",
+        at: new Date(),
+      },
+    });
+  }, 10000);
 }
 
 async function create() {
   const credentialId = await (async () => {
     // const id = localStorage.getItem("credential-id");
-    // console.log("credential from localStorage", id);
+    // debug("credential from localStorage", id);
     // if (id) return id;
 
-    console.log("creating credential");
+    debug("creating credential");
     const credential = await WebAuthnP256.createCredential({
       rp,
       user: {
@@ -58,17 +75,17 @@ async function create() {
     return credential.id;
   })();
 
-  console.log("got credential ID", credentialId);
+  debug("got credential ID", credentialId);
 }
 
 async function sign(message: Hex.Hex) {
   const id = localStorage.getItem("credential-id");
 
-  console.log("signing with credential", id);
+  debug("signing with credential", id);
   const signature = await WebAuthnP256.sign({
     rpId: rp.id,
     credentialId: id ?? undefined,
     challenge: message,
   });
-  console.log("got signature", signature);
+  debug("got signature", signature);
 }

@@ -1,5 +1,6 @@
 import { sharedState } from "./sharedState";
 import { syncMessageShape } from "./common";
+import { debug } from "./debug";
 
 export function syncPort(from: "rp" | "client", port: MessagePort) {
   function onMessage(event: MessageEvent) {
@@ -9,7 +10,7 @@ export function syncPort(from: "rp" | "client", port: MessagePort) {
     // TODO: log that we got and are discarding outdated state?
     if (lastUpdate && lastUpdate.at > event.data.at) return;
 
-    console.log("got state from", from, event.data.state);
+    debug("got state from", from, event.data.state);
     sharedState.setState({
       ...event.data.state,
       lastUpdate: {
@@ -24,7 +25,7 @@ export function syncPort(from: "rp" | "client", port: MessagePort) {
   const unsub = sharedState.subscribe((state) => {
     if (state.lastUpdate?.by === from) return;
 
-    console.log("sending state to", from, state);
+    debug("sending state to", from, state);
     port.postMessage(
       syncMessageShape.from({
         type: "sync",

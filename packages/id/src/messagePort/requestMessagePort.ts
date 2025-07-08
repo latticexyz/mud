@@ -1,10 +1,11 @@
 import { debug } from "../debug";
 import { defer } from "../defer";
 import { createTimeout } from "../createTimeout";
-import { initialMessageShape, version } from "./common";
+import { initialMessage, initialMessageShape } from "./common";
 import { MessagePortUnexpectedInitialMessageError } from "./errors";
 
 export type CreateMessagePortOptions = {
+  id: string;
   target: Window;
   targetOrigin?: string;
   context?: unknown;
@@ -16,6 +17,7 @@ export type CreateMessagePortResult = {
 };
 
 export async function requestMessagePort({
+  id,
   target,
   targetOrigin = "*",
   context,
@@ -28,7 +30,7 @@ export async function requestMessagePort({
     "message",
     function onMessage(event) {
       debug("got message from port", event);
-      if (initialMessageShape.allows(event.data)) {
+      if (initialMessageShape.allows(event.data) && event.data.id === id) {
         result.resolve({ port: channel.port1, initialMessage: event.data });
       } else {
         result.reject(new MessagePortUnexpectedInitialMessageError());
@@ -39,14 +41,7 @@ export async function requestMessagePort({
   channel.port1.start();
 
   debug("establishing MessagePort with", targetOrigin);
-  target.postMessage(
-    initialMessageShape.from({
-      mudId: version,
-      context,
-    }),
-    targetOrigin,
-    [channel.port2],
-  );
+  target.postMessage(initialMessageShape.from({ ...initialMessage, id, context }), targetOrigin, [channel.port2]);
 
   return await Promise.race([result.promise, timeout.promise]);
 }

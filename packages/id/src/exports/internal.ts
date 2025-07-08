@@ -1,3 +1,4 @@
 export * from "../connector";
 export * from "../connectRp";
-export * from "../syncRp";
+export * from "../client/syncRp";
+export * from "../sync/sharedState";
