@@ -4,7 +4,7 @@ import { rp } from "./common";
 import { syncPort } from "../sync/syncPort";
 import { sharedState } from "../sync/sharedState";
 import { debug } from "./debug";
-import { getFrameId } from "../frameId";
+import { getFrameContext } from "../client/connectRp";
 
 const opener = window.opener ?? window.parent;
 
@@ -29,21 +29,20 @@ if (opener == null || opener === window) {
     document.body.appendChild(button);
   })();
 } else {
-  const id = getFrameId(window.location.href);
-  if (!id) throw new Error("Missing ID");
-
-  debug("rp loaded", id, "via", opener);
-  await connectClient({ id });
+  await connectClient();
 }
 
-async function connectClient({ id }: { id: string }) {
+async function connectClient() {
+  const { id, origin: targetOrigin } = getFrameContext(window.location.href);
+  debug("rp loaded", id, "via", targetOrigin, opener);
+
   sharedState.subscribe((state, prevState) => {
     if (state.accounts !== prevState.accounts) {
       debug("accounts updated by", state.lastUpdate?.by, state.accounts);
     }
   });
 
-  const { port, initialMessage } = await requestMessagePort({ id, target: opener });
+  const { port } = await requestMessagePort({ id, target: opener, targetOrigin });
   syncPort("client", port);
 
   setTimeout(() => {
