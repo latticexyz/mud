@@ -3,17 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MUD ID</title>
+    <title>id.place</title>
     <style>
-      body {
-        background: black;
-        color: white;
-        font-family: sans-serif;
+      #hello {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: monospace;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      #hello h1 {
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      #hello p {
+        margin: 0;
       }
     </style>
   </head>
   <body>
-    MUD ID
+    <div id="hello">
+      <h1>id.place</h1>
+      <p>a place for your internet identity</p>
+    </div>
     <script type="module" src="./src/rp/index.ts"></script>
   </body>
 </html>
