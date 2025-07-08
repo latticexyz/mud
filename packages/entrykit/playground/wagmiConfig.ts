@@ -5,7 +5,7 @@ import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
 import { wiresaw } from "@latticexyz/common/internal";
 import { getDefaultConnectors } from "../src/getDefaultConnectors";
-import { mudId } from "@latticexyz/id/internal";
+import { idConnector } from "@latticexyz/id/internal";
 
 const appConfig = {
   walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
@@ -108,7 +108,7 @@ const pollingInterval = {
   [pyropeWithPaymaster.id]: 2000,
 } as const;
 
-const connectors = [mudId({ chainId }), ...getDefaultConnectors(appConfig)];
+const connectors = [idConnector(), ...getDefaultConnectors(appConfig)];
 
 export const wagmiConfig = createWagmiConfig({
   ...appConfig,
