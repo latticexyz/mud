@@ -1,6 +1,6 @@
 import { Provider, RpcRequest, RpcResponse } from "ox";
-import { connectRp } from "./client/connectRp";
-import { createTimeout } from "./createTimeout";
+import { connectRp } from "./connectRp";
+import { createTimeout } from "../createTimeout";
 
 export function createProvider({}: {} = {}) {
   const emitter = Provider.createEmitter();

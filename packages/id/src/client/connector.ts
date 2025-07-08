@@ -14,6 +14,33 @@ import { createProvider } from "./createProvider";
 
 const id = "id.place";
 
+type Provider = ReturnType<typeof createProvider>["provider"];
+type Properties = {
+  connect(parameters?: {
+    chainId?: number | undefined;
+    isReconnecting?: boolean | undefined;
+    // capabilities?:
+    //   | (RpcSchema.wallet_connect.Capabilities & {
+    //       force?: boolean | undefined
+    //     })
+    //   | undefined
+  }): Promise<{
+    accounts: readonly Address[];
+    chainId: number;
+  }>;
+  onConnect(connectInfo: ProviderConnectInfo): void;
+
+  hasAccount: boolean;
+  // accounts: readonly Account[];
+  authCreate(): Promise<void>;
+  authSign(): Promise<void>;
+};
+export type IdConnector = ReturnType<CreateConnectorFn<Provider, Properties>>;
+
+export function isIdConnector(connector: ReturnType<CreateConnectorFn> | undefined): connector is IdConnector {
+  return connector?.id === id;
+}
+
 // TODO: rename
 export function idConnector<const chains extends readonly [Chain, ...Chain[]]>(
   config: {
@@ -22,23 +49,6 @@ export function idConnector<const chains extends readonly [Chain, ...Chain[]]>(
     transports?: {};
   } = {},
 ) {
-  type Provider = ReturnType<typeof createProvider>["provider"];
-  type Properties = {
-    connect(parameters?: {
-      chainId?: number | undefined;
-      isReconnecting?: boolean | undefined;
-      // capabilities?:
-      //   | (RpcSchema.wallet_connect.Capabilities & {
-      //       force?: boolean | undefined
-      //     })
-      //   | undefined
-    }): Promise<{
-      accounts: readonly Address[];
-      chainId: number;
-    }>;
-    onConnect(connectInfo: ProviderConnectInfo): void;
-  };
-
   return createConnector<Provider, Properties>((wagmiConfig) => {
     const chains = config.chains ?? wagmiConfig.chains ?? [];
     const transports = config.transports ?? wagmiConfig.transports;
@@ -53,11 +63,22 @@ export function idConnector<const chains extends readonly [Chain, ...Chain[]]>(
     let connect: Connector["onConnect"] | undefined;
     let disconnect: Connector["onDisconnect"] | undefined;
 
+    let hasAccount = false;
+
     return {
       type: "injected",
       id,
       name: "id.place",
       icon: `data:image/svg+xml;base64,${btoa(icon)}`,
+      hasAccount,
+      async authCreate() {
+        await providerContainer.provider.request({
+          method: "wallet_connect",
+        });
+      },
+      async authSign() {
+        throw new Error("not implemented");
+      },
       async connect({ chainId, isReconnecting, ...rest } = {}) {
         let accounts: readonly Address[] = [];
         if (isReconnecting) accounts = await this.getAccounts().catch(() => []);
@@ -140,6 +161,7 @@ export function idConnector<const chains extends readonly [Chain, ...Chain[]]>(
         const accounts = await provider.request({
           method: "eth_accounts",
         });
+        hasAccount = !!accounts.length;
         return accounts.map((x) => getAddress(x));
       },
       async getChainId() {
@@ -241,10 +263,6 @@ export function idConnector<const chains extends readonly [Chain, ...Chain[]]>(
       },
     };
   });
-}
-
-export function isIdConnector(connector: ReturnType<CreateConnectorFn> | undefined): connector is PasskeyConnector {
-  return connector?.id === id;
 }
 
 /* eslint-disable max-len */

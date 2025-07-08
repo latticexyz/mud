@@ -5,26 +5,11 @@ import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
-import { sharedState } from "@latticexyz/id/internal";
-import { useStore } from "zustand";
+import { useConnections } from "wagmi";
 
 export function App() {
-  useEffect(() => {
-    const id = setTimeout(() => {
-      console.log("setting accounts from client");
-      sharedState.setState({
-        accounts: ["0xclient"],
-        lastUpdate: {
-          by: "client",
-          at: new Date(),
-        },
-      });
-    }, 5000);
-  }, []);
-
-  const accounts = useStore(sharedState, (state) => state.accounts);
-
   const { openAccountModal } = useAccountModal();
+  const connections = useConnections();
 
   const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:entryKitPlayground:openModalOnMount", false);
 
@@ -54,26 +39,7 @@ export function App() {
       <div>
         <SessionWrite />
       </div>
-      <div>
-        credential{" "}
-        <button
-          type="button"
-          onClick={() => {
-            // rp.create();
-          }}
-        >
-          create
-        </button>{" "}
-        <button
-          type="button"
-          onClick={() => {
-            // rp.sign("0x");
-          }}
-        >
-          sign
-        </button>
-      </div>
-      <div>accounts: {accounts.join(", ")}</div>
+      <div>connections: {connections.map((c) => c.connector.name).join(", ")}</div>
     </div>
   );
 }
