@@ -9,7 +9,10 @@ const frameContextShape = type({
 
 let frameId = 0;
 
-export function connectRp({ onPort }: { onPort: (port: MessagePort) => void }): () => void {
+export function connectRp(): {
+  port: Promise<MessagePort>;
+  destroy: () => void;
+} {
   const id = `${Date.now()}-${++frameId}`;
   const frameContext = frameContextShape.from({ id, origin: window.location.origin });
 
@@ -29,11 +32,14 @@ export function connectRp({ onPort }: { onPort: (port: MessagePort) => void }): 
   iframe.hidden = true;
   document.body.appendChild(iframe);
 
-  const disconnect = connectMessagePort({ id, target: iframe.contentWindow!, onPort });
+  const port = connectMessagePort({ id, target: iframe.contentWindow! });
 
-  return () => {
-    disconnect();
-    iframe.remove();
+  return {
+    port,
+    destroy: () => {
+      port.then((p) => p.close());
+      iframe.remove();
+    },
   };
 }
 

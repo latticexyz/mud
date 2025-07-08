@@ -5,11 +5,10 @@ import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
-import { sharedState, syncRp } from "@latticexyz/id/internal";
+import { sharedState } from "@latticexyz/id/internal";
 import { useStore } from "zustand";
 
 export function App() {
-  useEffect(syncRp, []);
   useEffect(() => {
     const id = setTimeout(() => {
       console.log("setting accounts from client");

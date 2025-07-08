@@ -36,14 +36,21 @@ async function connectClient() {
   const { id, origin: targetOrigin } = getFrameContext(window.location.href);
   debug("rp loaded", id, "via", targetOrigin, opener);
 
+  const { port } = await requestMessagePort({ id, target: opener, targetOrigin });
+  syncPort("client", port);
+
+  port.addEventListener("message", async (event) => {
+    if (event.data === "create") {
+      await create();
+      port.postMessage("createResult");
+    }
+  });
+
   sharedState.subscribe((state, prevState) => {
     if (state.accounts !== prevState.accounts) {
       debug("accounts updated by", state.lastUpdate?.by, state.accounts);
     }
   });
-
-  const { port } = await requestMessagePort({ id, target: opener, targetOrigin });
-  syncPort("client", port);
 
   setTimeout(() => {
     debug("updating accounts from rp for funsies");
