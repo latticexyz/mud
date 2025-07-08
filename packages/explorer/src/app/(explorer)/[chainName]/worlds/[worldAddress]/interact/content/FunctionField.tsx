@@ -148,15 +148,37 @@ export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParams
 
       try {
         if (operationType === FunctionType.READ) {
-          const { data: result } = await publicClient.call({
-            account: account.address,
-            data: encodeFunctionData({
-              abi: [...worldAbi, functionAbi],
+          let result;
+          if (systemId) {
+            const encoded = encodeSystemCall({
+              abi: [functionAbi],
               functionName: functionAbi.name,
               args: encodeFunctionArgs(resolvedInputs, functionAbi),
-            }),
-            to: worldAddress as Address,
-          });
+              systemId,
+            });
+
+            const { data } = await publicClient.call({
+              account: account.address,
+              data: encodeFunctionData({
+                abi: [...worldAbi, functionAbi],
+                functionName: "call",
+                args: encoded,
+              }),
+              to: worldAddress as Address,
+            });
+            result = data;
+          } else {
+            const { data } = await publicClient.call({
+              account: account.address,
+              data: encodeFunctionData({
+                abi: [...worldAbi, functionAbi],
+                functionName: functionAbi.name,
+                args: encodeFunctionArgs(resolvedInputs, functionAbi),
+              }),
+              to: worldAddress as Address,
+            });
+            result = data;
+          }
 
           setResult(stringify(result, null, 2).replace(/^"|"$/g, ""));
         } else {
