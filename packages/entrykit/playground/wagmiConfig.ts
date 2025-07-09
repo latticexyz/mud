@@ -110,7 +110,7 @@ const pollingInterval = {
 
 const connectors = [
   // idConnector(),
-  porto({ mode }),
+  porto({ mode: mode() }),
   ...getDefaultConnectors(appConfig),
 ];
 
