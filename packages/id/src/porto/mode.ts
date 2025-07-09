@@ -1,39 +1,67 @@
-import { Mode, Account } from "porto";
-import { connectRp } from "../client/connectRp";
+import { Mode, Account, Dialog } from "porto";
+import { openRp } from "../client/openRp";
 import { createTimeout } from "../createTimeout";
 import { syncPort } from "../sync/syncPort";
 import { sharedState } from "../sync/sharedState";
+import { connectUrl } from "../rp/common";
 
-const rp = connectRp();
-rp.port.then((port) => syncPort("rp", port));
+// const rp = connectRp();
+// rp.port.then((port) => syncPort("rp", port));
 
-async function createAccount() {
-  const port = await rp.port;
-  return await new Promise<Account.Account>((resolve, reject) => {
-    function onPortMessage(event: MessageEvent) {
-      if (event.data === "createResult") {
-        console.log("got create result");
-        resolve({} as never);
-      }
-    }
-    port.addEventListener("message", onPortMessage);
+// async function createAccount() {
+//   const port = await rp.port;
+//   return await new Promise<Account.Account>((resolve, reject) => {
+//     function onPortMessage(event: MessageEvent) {
+//       if (event.data === "createResult") {
+//         console.log("got create result");
+//         resolve({} as never);
+//       }
+//     }
+//     port.addEventListener("message", onPortMessage);
 
-    const timeout = createTimeout(60_000);
-    timeout.promise.finally(() => port.removeEventListener("message", onPortMessage));
-    timeout.promise.catch(reject);
+//     const timeout = createTimeout(60_000);
+//     timeout.promise.finally(() => port.removeEventListener("message", onPortMessage));
+//     timeout.promise.catch(reject);
 
-    console.log("asking port to create account");
-    port.postMessage("create");
-  });
-}
+//     console.log("asking port to create account");
+//     port.postMessage("create");
+//   });
+// }
+
+const renderer = Dialog.popup();
 
 export const mode = Mode.from({
   name: "rp",
+  setup(params) {
+    console.log("mode.setup()");
+    const dialog = renderer.setup({
+      host: connectUrl,
+      internal: params.internal,
+    });
+
+    const unsub = params.internal.store.subscribe(
+      (x) => x.requestQueue,
+      (requestQueue) => {
+        for (const listener of listeners) listener(requestQueue);
+
+        const requests = requestQueue
+          .map((x) => (x.status === "pending" ? x : undefined))
+          .filter(Boolean) as readonly QueuedRequest[];
+        dialog.syncRequests(requests);
+        if (requests.length === 0) dialog.close();
+      },
+    );
+
+    return () => {
+      dialog.destroy();
+    };
+  },
   actions: {
     async createAccount() {
       console.log("mode.actions.createAccount()");
-      const account = await createAccount();
-      return { account };
+      throw new Error("not implemented");
+      // const account = await createAccount();
+      // return { account: Account.from({}) };
     },
 
     async loadAccounts() {
@@ -43,7 +71,10 @@ export const mode = Mode.from({
 
       if (!accounts.length) {
         console.log("create account");
-        await createAccount();
+        const rp = openRp();
+        await rp.port;
+
+        // await createAccount();
         throw new Error("failed");
       } else {
         console.log("TODO sign in");

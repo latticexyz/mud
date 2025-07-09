@@ -41,6 +41,7 @@ async function connectClient() {
 
   port.addEventListener("message", async (event) => {
     if (event.data === "create") {
+      console.log("got create request", navigator.userActivation);
       try {
         await create();
         port.postMessage("createResult");
@@ -76,7 +77,7 @@ async function create() {
     // debug("credential from localStorage", id);
     // if (id) return id;
 
-    debug("creating credential");
+    debug("creating credential", navigator.userActivation);
     const credential = await WebAuthnP256.createCredential({
       rp,
       user: {
