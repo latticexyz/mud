@@ -41,8 +41,14 @@ async function connectClient() {
 
   port.addEventListener("message", async (event) => {
     if (event.data === "create") {
-      await create();
-      port.postMessage("createResult");
+      try {
+        await create();
+        port.postMessage("createResult");
+      } catch (error) {
+        console.error("create failed", error);
+        // TODO: error result
+        port.postMessage("createResult");
+      }
     }
   });
 
