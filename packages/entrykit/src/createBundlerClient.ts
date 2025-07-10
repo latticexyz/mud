@@ -7,8 +7,7 @@ import {
 } from "viem/account-abstraction";
 import { defaultClientConfig } from "./common";
 import { getPaymaster } from "./getPaymaster";
-import { getAction } from "viem/utils";
-import { estimateFeesPerGas } from "viem/actions";
+import { cachedFeesPerGas } from "./actions/cachedFeesPerGas";
 
 export function createBundlerClient<
   transport extends Transport,
@@ -59,7 +58,6 @@ function createFeeEstimator(client: Client): undefined | (() => Promise<Estimate
   // because viem sets fees way too high by default
   // https://github.com/wevm/viem/blob/253b1072ad9fe36a0e0491e173c85a6d69209ada/src/account-abstraction/actions/bundler/prepareUserOperation.ts#L436-L457
   if ([690, 17069, 695569].includes(client.chain.id)) {
-    // TODO: move to fee ref or similar approach
-    return () => getAction(client, estimateFeesPerGas, "estimateFeesPerGas")({ chain: client.chain });
+    return cachedFeesPerGas(client);
   }
 }

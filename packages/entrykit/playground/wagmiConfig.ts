@@ -4,7 +4,6 @@ import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
 import { wiresaw } from "@latticexyz/common/internal";
-import { withFeeCache } from "../src/utils/withFeeCache";
 
 const redstoneWithPaymaster = {
   ...redstone,
@@ -81,7 +80,7 @@ const chains = [
   mainnet,
   garnetWithPaymaster,
   anvilWithPaymaster,
-  withFeeCache(redstoneWithPaymaster),
+  redstoneWithPaymaster,
   pyropeWithPaymaster,
 ] as const satisfies Chain[];
 

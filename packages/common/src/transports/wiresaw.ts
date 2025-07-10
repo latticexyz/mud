@@ -34,6 +34,7 @@ export function wiresaw<const wiresawTransport extends Transport>(
       ...rest,
       // TODO: type `request` so we don't have to cast
       async request(req): ReturnType<EIP1193RequestFn> {
+        console.log("rpc request", req.method);
         try {
           if (req.method === "eth_chainId") {
             if (chainId != null) return chainId;
