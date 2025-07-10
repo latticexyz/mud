@@ -5,6 +5,7 @@ import { createBundlerClient } from "./createBundlerClient";
 import { SessionClient } from "./common";
 import { SmartAccount } from "viem/account-abstraction";
 import { getBundlerTransport } from "./getBundlerTransport";
+import { estimateFeesPerGas } from "./actions/estimateFeesPerGas";
 
 export async function getSessionClient({
   userAddress,
@@ -30,6 +31,7 @@ export async function getSessionClient({
 
   const sessionClient = bundlerClient
     .extend(smartAccountActions)
+    .extend(estimateFeesPerGas)
     .extend(
       callFrom({
         worldAddress,
@@ -44,7 +46,6 @@ export async function getSessionClient({
         publicClient: client,
       }),
     )
-
     // TODO: add observer once we conditionally fetch receipts while bridge is open
     .extend(() => ({ userAddress, worldAddress, internal_signer: sessionSigner }));
 

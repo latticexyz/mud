@@ -40,6 +40,7 @@ export function sendUserOperationFrom(
 ) => Pick<BundlerActions<account>, "sendUserOperation"> {
   return (client) => ({
     async sendUserOperation(args) {
+      console.log("sendUserOperationFrom", client, args);
       const _sendUserOperation = getAction(client, viem_sendUserOperation, "sendUserOperation");
 
       if (args.callData) {
