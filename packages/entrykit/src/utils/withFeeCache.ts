@@ -2,11 +2,10 @@ import { Chain, createClient, http } from "viem";
 import { cachedFeesPerGas } from "../actions/cachedFeesPerGas";
 
 type WithFeeCacheOptions = {
-  updateInterval?: number;
+  refreshInterval?: number;
 };
 
-export function withFeeCache(chain: Chain, options: WithFeeCacheOptions = { updateInterval: 10_000 }): Chain {
-  console.log("withFeeCache", chain);
+export function withFeeCache(chain: Chain, options: WithFeeCacheOptions = { refreshInterval: 10_000 }): Chain {
   if (chain.fees?.estimateFeesPerGas) {
     throw new Error("withFeeCache: estimateFeesPerGas already defined in chain config");
   }

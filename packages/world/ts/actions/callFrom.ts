@@ -39,7 +39,6 @@ export function callFrom(
 ) => Pick<WalletActions<chain, account>, "writeContract"> {
   return (client) => ({
     async writeContract(writeArgs) {
-      console.log("writeContract", writeArgs);
       const _writeContract = getAction(client, viem_writeContract, "writeContract");
 
       // Skip if the contract isn't the World or the function called should not be redirected through `callFrom`.
