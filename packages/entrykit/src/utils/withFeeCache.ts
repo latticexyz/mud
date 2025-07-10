@@ -5,7 +5,10 @@ type WithFeeCacheOptions = {
   refreshInterval?: number;
 };
 
-export function withFeeCache(chain: Chain, options: WithFeeCacheOptions = { refreshInterval: 10_000 }): Chain {
+export function withFeeCache<chain extends Chain>(
+  chain: chain,
+  options: WithFeeCacheOptions = { refreshInterval: 10_000 },
+): chain {
   if (chain.fees?.estimateFeesPerGas) {
     throw new Error("withFeeCache: estimateFeesPerGas already defined in chain config");
   }

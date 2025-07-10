@@ -55,8 +55,8 @@ function createFeeEstimator(client: Client): undefined | (() => Promise<Estimate
   }
 
   // do our own fee calculation for redstone, garnet, pyrope chains
-  // because viem sets fees way too high by default
-  // https://github.com/wevm/viem/blob/253b1072ad9fe36a0e0491e173c85a6d69209ada/src/account-abstraction/actions/bundler/prepareUserOperation.ts#L436-L457
+  // to avoid the default RPC call to `eth_getBlockByNumber`
+  // https://github.com/wevm/viem/blob/3aa882692d2c4af3f5e9cc152099e07cde28e551/src/actions/public/estimateFeesPerGas.ts#L132
   if ([690, 17069, 695569].includes(client.chain.id)) {
     return cachedFeesPerGas(client);
   }
