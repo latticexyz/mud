@@ -57,7 +57,7 @@ const formSchema = z.object({
 
 const getInputLabel = (input: AbiParameter): string => {
   if (!("components" in input)) {
-    return input.type;
+    return input.name || input.type;
   }
 
   if (input.type === "tuple") {
@@ -65,7 +65,7 @@ const getInputLabel = (input: AbiParameter): string => {
   } else if (input.type === "tuple[]") {
     return `${input.name}[]`;
   }
-  return input.type;
+  return input.name || input.type;
 };
 
 export function FunctionField({ systemId, worldAbi, functionAbi, useSearchParamsArgs }: Props) {
