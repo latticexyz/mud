@@ -2,7 +2,7 @@ import { Client, Abi, Address, Hex, hexToString, parseAbi, stringToHex, toFuncti
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { getRecords } from "../getRecords";
 import { getFunctions } from "./getFunctions";
-import { groupBy } from "@latticexyz/common/utils";
+import { groupBy, isNotNull } from "@latticexyz/common/utils";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { hexToResource } from "@latticexyz/common";
 import { isAbiFunction } from "./common";
@@ -52,9 +52,15 @@ export async function getSystemAbis({
         return isAbiTag && matchesSystemId;
       })
       .map(({ resource, value }) => {
-        const abi = value === "0x" ? [] : parseAbi(hexToString(value).split("\n"));
-        return [resource, abi] as const;
-      }),
+        try {
+          const abi = value === "0x" ? [] : parseAbi(hexToString(value).split("\n"));
+          return [resource, abi] as const;
+        } catch (error) {
+          console.error("error parsing system abi", error);
+          return [resource, []] as const;
+        }
+      })
+      .filter(isNotNull),
   );
 
   const systemFunctions = Object.fromEntries(
