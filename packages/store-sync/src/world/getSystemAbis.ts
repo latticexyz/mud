@@ -57,7 +57,7 @@ export async function getSystemAbis({
           return [resource, abi] as const;
         } catch (error) {
           console.error("error parsing system abi", error);
-          return null;
+          return [resource, []] as const;
         }
       })
       .filter(isNotNull),
