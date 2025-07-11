@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- a8c404b: Support expectRevert and unusual nameless arguments in system libraries.
+  - @latticexyz/common@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

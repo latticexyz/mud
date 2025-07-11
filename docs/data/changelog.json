@@ -1,5 +1,149 @@
 [
   {
+    "version": "2.2.23",
+    "date": "2025-07-11T15:26:21.119Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAddress and name of verified worlds are now shown in the navigation tab.",
+          "type": 0,
+          "commitHash": "9c9d8eab9fea5aeaf8f3ed8b2f13bd35add462b9",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): show explored world title (#3751)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFees for Redstone, Pyrope and Garnet are now cached for 10 seconds instead of fetched before every user operation.",
+          "type": 0,
+          "commitHash": "7cd553a4588f2ddaeb4047393381cdd6ac91430f",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(entrykit): non-blocking fee estimation (#3784)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getSystemAbis` will now include the ABIs of registered functions.",
+          "type": 0,
+          "commitHash": "a7ce36bd855c91c1a0e7a515c6ed7422ef59973d",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-sync): include registered system functions in ABI (#3776)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInput parameter names are now displayed alongside method names in the \"Interact\" page.",
+          "type": 0,
+          "commitHash": "ba07cf09273fba0a246eaf341cdb4eec5328f120",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): input parameter names (#3785)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nABI in the \"Decode\" page can now be searched and filtered.",
+          "type": 0,
+          "commitHash": "e1c2958b99c9fe4c7189ab24938e0978ff85a75f",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): abi search and filter (#3773)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSupport expectRevert and unusual nameless arguments in system libraries.",
+          "type": 0,
+          "commitHash": "a8c404b4b10462f5f390a82f9e40ceb80bc5eb23",
+          "authorName": "dk1a",
+          "authorEmail": "dk1a@protonmail.com",
+          "title": "fix(world): support expectRevert and unusual nameless arguments in system libraries (#3680)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed calls to system view functions.",
+          "type": 0,
+          "commitHash": "c4447b1f597a2abb03b6fdb52e79d3fbdd05a948",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): read system functions (#3783)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInvalid registered system ABIs are now handled by displaying an empty ABI.",
+          "type": 0,
+          "commitHash": "e9e21c9f1f7d164af1b19f327d798ed2f2d0fd95",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): handle invalid system abis (#3786)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBig integer values are now encoded correctly when calling functions from \"Interact\" page.",
+          "type": 0,
+          "commitHash": "c9a7e15b89f6e4486abcb46c3a75c213741816a4",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): encode big integer arguments (#3777)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.22",
     "date": "2025-06-26T17:30:23.341Z",
     "changes": {

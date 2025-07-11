@@ -1,5 +1,15 @@
 # @latticexyz/world-module-metadata
 
+## 2.2.23
+
+### Patch Changes
+
+- a8c404b: Support expectRevert and unusual nameless arguments in system libraries.
+- Updated dependencies [a8c404b]
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
