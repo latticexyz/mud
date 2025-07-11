@@ -80,3 +80,18 @@ query.subscribe((update) => {
   console.log("Query update", update);
 });
 ```
+
+## Indices
+
+TODO
+
+- add way to track indices in the stash state
+  - an index is similar to a table, it has keys, and a set of records (instead of records being uniquely identified by a key in a table)
+- add a way to register an index for a table
+  - when a table has an index, then updating the table should immediately trigger updating the index (atomically) -> some logic in applyUpdates for this
+  - when registering an index for a table, specify a list of keys from the column names of the record (or a function to get the key from a record?)
+- add a way to unregister an index
+  - remove the index handler
+  - delete the index data from the state
+- add support for using indices in queries / queryFragments
+  - either automatically detect (prob only possible if the index follows a standard schema like a list of column names for the key), or create a new query fragment to filter based on an index (prob necessary if we allow arbitrary functions to create the index key)
