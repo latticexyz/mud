@@ -71,6 +71,7 @@
     "dev": "tsup --watch",
     "lint": "eslint .",
     "playground": "DEBUG=mud:* tsx playground/index.ts | tee playground.log",
+    "playground:stash": "tsx playground/syncToStash.ts",
     "test": "vitest",
     "test:ci": "vitest --run"
   },
