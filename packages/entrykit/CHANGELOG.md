@@ -1,5 +1,19 @@
 # @latticexyz/entrykit
 
+## 2.2.23
+
+### Patch Changes
+
+- 7cd553a: Fees for Redstone, Pyrope and Garnet are now cached for 10 seconds instead of fetched before every user operation.
+- Updated dependencies [a8c404b]
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/world-module-callwithsignature@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/paymaster@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

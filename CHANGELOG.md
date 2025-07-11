@@ -1,3 +1,47 @@
+## Version 2.2.23
+
+Release date: Fri Jul 11 2025
+
+### Patch changes
+
+**[feat(explorer): show explored world title (#3751)](https://github.com/latticexyz/mud/commit/9c9d8eab9fea5aeaf8f3ed8b2f13bd35add462b9)** (@latticexyz/explorer)
+
+Address and name of verified worlds are now shown in the navigation tab.
+
+**[feat(entrykit): non-blocking fee estimation (#3784)](https://github.com/latticexyz/mud/commit/7cd553a4588f2ddaeb4047393381cdd6ac91430f)** (@latticexyz/entrykit)
+
+Fees for Redstone, Pyrope and Garnet are now cached for 10 seconds instead of fetched before every user operation.
+
+**[feat(store-sync): include registered system functions in ABI (#3776)](https://github.com/latticexyz/mud/commit/a7ce36bd855c91c1a0e7a515c6ed7422ef59973d)** (@latticexyz/store-sync)
+
+`getSystemAbis` will now include the ABIs of registered functions.
+
+**[chore(explorer): input parameter names (#3785)](https://github.com/latticexyz/mud/commit/ba07cf09273fba0a246eaf341cdb4eec5328f120)** (@latticexyz/explorer)
+
+Input parameter names are now displayed alongside method names in the "Interact" page.
+
+**[feat(explorer): abi search and filter (#3773)](https://github.com/latticexyz/mud/commit/e1c2958b99c9fe4c7189ab24938e0978ff85a75f)** (@latticexyz/explorer)
+
+ABI in the "Decode" page can now be searched and filtered.
+
+**[fix(world): support expectRevert and unusual nameless arguments in system libraries (#3680)](https://github.com/latticexyz/mud/commit/a8c404b4b10462f5f390a82f9e40ceb80bc5eb23)** (@latticexyz/store, @latticexyz/world-module-metadata, @latticexyz/world)
+
+Support expectRevert and unusual nameless arguments in system libraries.
+
+**[fix(explorer): read system functions (#3783)](https://github.com/latticexyz/mud/commit/c4447b1f597a2abb03b6fdb52e79d3fbdd05a948)** (@latticexyz/explorer)
+
+Fixed calls to system view functions.
+
+**[fix(explorer): handle invalid system abis (#3786)](https://github.com/latticexyz/mud/commit/e9e21c9f1f7d164af1b19f327d798ed2f2d0fd95)** (@latticexyz/store-sync)
+
+Invalid registered system ABIs are now handled by displaying an empty ABI.
+
+**[fix(explorer): encode big integer arguments (#3777)](https://github.com/latticexyz/mud/commit/c9a7e15b89f6e4486abcb46c3a75c213741816a4)** (@latticexyz/explorer)
+
+Big integer values are now encoded correctly when calling functions from "Interact" page.
+
+---
+
 ## Version 2.2.22
 
 Release date: Thu Jun 26 2025
