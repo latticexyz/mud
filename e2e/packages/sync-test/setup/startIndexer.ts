@@ -101,7 +101,7 @@ export async function startIndexer(opts: StartIndexerOptions) {
   });
 
   return {
-    url: `http://127.0.0.1:${opts.port}/trpc`,
+    url: `http://127.0.0.1:${opts.port}`,
     doneSyncing,
     process: proc,
     kill: () =>
