@@ -75,6 +75,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
+    "react-intersection-observer": "^9.15.1",
     "react18-json-view": "^0.2.9",
     "sonner": "^1.5.0",
     "sql-autocomplete": "^1.1.1",
