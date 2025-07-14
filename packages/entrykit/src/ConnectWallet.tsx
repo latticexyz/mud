@@ -29,8 +29,11 @@ export function ConnectWallet() {
 
 function AccountButton({ connector }: { connector: PortoConnector }) {
   const { setOpen } = useModal();
-  const { connect, isPending } = useConnect();
+  const { connect, isPending, error } = useConnect();
 
+  if (error) {
+    console.error("connect error", error);
+  }
   return (
     <>
       <Button

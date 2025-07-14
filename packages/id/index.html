@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>id.place</title>
     <style>
-      #hello {
-        position: fixed;
-        inset: 0;
+      html,
+      body {
+        margin: 0;
+      }
+      #place {
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -17,18 +20,18 @@
         font-size: 1rem;
         line-height: 1.5;
       }
-      #hello h1 {
+      #place h1 {
         font-size: 2rem;
         margin: 0;
       }
-      #hello p {
+      #place p {
         font-size: 0.875rem;
         margin: 0;
       }
     </style>
   </head>
   <body>
-    <div id="hello">
+    <div id="place">
       <svg width="4rem" height="4rem" viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges">
         <path
           d="M2 3H0v18h24V3H2zm20 2v14H2V5h20zM10 7H6v4h4V7zm-6 6h8v4H4v-4zm16-6h-6v2h6V7zm-6 4h6v2h-6v-2zm6 4h-6v2h6v-2z"
@@ -37,6 +40,5 @@
       <h1>id.place</h1>
       <p>a place for your internet identity</p>
     </div>
-    <script type="module" src="./src/rp/index.ts"></script>
   </body>
 </html>

@@ -23,6 +23,8 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
   const { data: prerequisites } = usePrerequisites(userClient.account.address);
   const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
 
+  console.log("setup", setup.status, setup.error, sessionClient.status, sessionClient.error);
+
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
     // state between the two mutations. They're not treated as shared state but rather

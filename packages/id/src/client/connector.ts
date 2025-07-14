@@ -99,7 +99,7 @@ export function idConnector<const chains extends readonly [Chain, ...Chain[]]>(
               method: "wallet_connect",
               ...(params ? { params } : {}),
             });
-            accounts = res.accounts.map((x) => getAddress(x.address));
+            accounts = (res as any).accounts.map((x: any) => getAddress(x.address));
           }
 
           // Manage EIP-1193 event listeners

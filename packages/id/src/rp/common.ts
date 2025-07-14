@@ -5,4 +5,4 @@ export const rp = {
 
 export const rpUrl = "https://id.smartpass.dev";
 // needs trailing slash
-export const connectUrl = "https://id.smartpass.dev/connect/";
+export const popupUrl = "https://id.smartpass.dev/embed/";
