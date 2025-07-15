@@ -11,6 +11,8 @@ import { getBundlerTransport } from "./getBundlerTransport";
 import { recoverPublicKey } from "./recoverPublicKey";
 
 export function mode(): Mode.Mode {
+  let lastKey: WebAuthnKey | undefined;
+
   return Mode.from({
     name: "contract",
     actions: {
@@ -29,13 +31,16 @@ export function mode(): Mode.Mode {
         const credential = await WebAuthnP256.createCredential({ name: "test", rp });
         const key = Key.fromWebAuthnP256({ credential, rpId: rp.id });
 
-        const account = await getAccount({ client, key });
+        const smartAccount = await getSmartAccount({ client, key });
+        const account = Account.from({
+          address: smartAccount.address,
+          keys: [key],
+        });
+
+        lastKey = key;
 
         return {
-          account: Account.from({
-            address: account.address,
-            keys: [key],
-          }),
+          account,
         };
       },
       async getAccountVersion(parameters) {
@@ -76,6 +81,13 @@ export function mode(): Mode.Mode {
         } = parameters;
 
         const key = await (async () => {
+          if (
+            lastKey &&
+            (parameters.credentialId == null || parameters.credentialId === lastKey.privateKey?.credential?.id)
+          ) {
+            return lastKey;
+          }
+
           // TODO: figure out how to turn `parameters.address` and `parameters.credentialId` into an account+key
           //       (currently blocked on the fact that we can't look up the `publicKey` easily to create the `Key` for the account)
 
@@ -112,16 +124,18 @@ export function mode(): Mode.Mode {
           return key;
         })();
 
-        const account = await getAccount({ client, key });
-        console.log("got account", account.address, "via passkey", key.publicKey);
+        const smartAccount = await getSmartAccount({ client, key });
+        console.log("got account", smartAccount.address, "via passkey", key.publicKey);
+
+        const account = Account.from({
+          address: smartAccount.address,
+          keys: [key],
+        });
+
+        lastKey = key;
 
         return {
-          accounts: [
-            Account.from({
-              address: account.address,
-              keys: [key],
-            }),
-          ],
+          accounts: [account],
         };
       },
       async prepareCalls(parameters) {
@@ -158,7 +172,7 @@ export function mode(): Mode.Mode {
         if (!key) throw new Error("no key for account");
         if (!key.privateKey?.credential) throw new Error("no credential for key");
 
-        const account = await getAccount({ client, key });
+        const account = await getSmartAccount({ client, key });
 
         const bundlerClient = createBundlerClient({
           transport: getBundlerTransport(client.chain),
@@ -207,7 +221,7 @@ export function mode(): Mode.Mode {
   });
 }
 
-async function getAccount({ client, key }: { client: ServerClient.ServerClient; key: WebAuthnKey }) {
+async function getSmartAccount({ client, key }: { client: ServerClient.ServerClient; key: WebAuthnKey }) {
   return toCoinbaseSmartAccount({
     client,
     owners: [
