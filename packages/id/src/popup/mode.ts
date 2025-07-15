@@ -1,5 +1,5 @@
 import { wait } from "@latticexyz/common/utils";
-import { Hex, Json, PersonalMessage, Provider, PublicKey, Signature, TypedData, WebAuthnP256 } from "ox";
+import { Hex, Provider, PublicKey, WebAuthnP256 } from "ox";
 import { Key, Mode } from "porto";
 import { Account, ServerClient } from "porto/viem";
 import { toCoinbaseSmartAccount } from "../account/toCoinbaseSmartAccount";
@@ -8,6 +8,7 @@ import { rp } from "../rp/common";
 import { WebAuthnKey } from "porto/viem/Key";
 import { createBundlerClient } from "./createBundlerClient";
 import { getBundlerTransport } from "./getBundlerTransport";
+import { recoverPublicKey } from "./recoverPublicKey";
 
 export function mode(): Mode.Mode {
   return Mode.from({
@@ -68,9 +69,60 @@ export function mode(): Mode.Mode {
         throw new Provider.UnsupportedMethodError();
       },
       async loadAccounts(parameters) {
-        console.log("popup.mode.loadAccounts");
-        // TODO
-        throw new Provider.UnsupportedMethodError();
+        console.log("popup.mode.loadAccounts", parameters);
+
+        const {
+          internal: { client },
+        } = parameters;
+
+        const key = await (async () => {
+          // TODO: figure out how to turn `parameters.address` and `parameters.credentialId` into an account+key
+          //       (currently blocked on the fact that we can't look up the `publicKey` easily to create the `Key` for the account)
+
+          const challenge1 = Hex.random(256);
+          const signature1 = await WebAuthnP256.sign({
+            challenge: challenge1,
+            rpId: rp.id,
+          });
+          const credentialId = signature1.raw.id;
+
+          // TODO: store credential ID hash on create and use it here to look up account address instead of double signing
+
+          const challenge2 = Hex.random(256);
+          const signature2 = await WebAuthnP256.sign({
+            challenge: challenge2,
+            rpId: rp.id,
+            credentialId,
+          });
+
+          const publicKey = recoverPublicKey([
+            { challenge: challenge1, signature: signature1 },
+            { challenge: challenge2, signature: signature2 },
+          ]);
+          if (!publicKey) throw new Error("could not recover public key");
+
+          const key = Key.fromWebAuthnP256({
+            credential: {
+              id: credentialId,
+              publicKey: PublicKey.fromHex(publicKey),
+            },
+            rpId: rp.id,
+          });
+
+          return key;
+        })();
+
+        const account = await getAccount({ client, key });
+        console.log("got account", account.address, "via passkey", key.publicKey);
+
+        return {
+          accounts: [
+            Account.from({
+              address: account.address,
+              keys: [key],
+            }),
+          ],
+        };
       },
       async prepareCalls(parameters) {
         console.log("popup.mode.prepareCalls");
