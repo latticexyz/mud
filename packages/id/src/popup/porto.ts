@@ -20,17 +20,23 @@ export const porto = Porto.create({
           webSocket: ["wss://anvil.tunnel.offchain.dev"],
         },
       },
+      contracts: {
+        ...anvil.contracts,
+        paymaster: {
+          address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
+        },
+      },
     },
   ],
 });
 
-porto._internal.store.subscribe((state) => {
-  console.log("state changed", state);
-});
+// porto._internal.store.subscribe((state) => {
+//   console.log("state changed", state);
+// });
 
-porto.messenger.on("rpc-requests", (requests) => {
-  console.log("porto.messenger rpc-requests", requests);
-});
-porto.messenger.on("__internal", () => {
-  console.log("porto.messenger __internal");
-});
+// porto.messenger.on("rpc-requests", (requests) => {
+//   console.log("porto.messenger rpc-requests", requests);
+// });
+// porto.messenger.on("__internal", () => {
+//   console.log("porto.messenger __internal");
+// });

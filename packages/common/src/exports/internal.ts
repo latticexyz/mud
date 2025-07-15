@@ -5,3 +5,4 @@ export * from "../deploy/ensureDeployer";
 export * from "../deploy/getContractAddress";
 export * from "../deploy/getDeployer";
 export * from "../transports/wiresaw";
+export * from "../transports/methods/getUserOperationReceipt";

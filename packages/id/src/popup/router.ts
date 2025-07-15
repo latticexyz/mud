@@ -1,7 +1,7 @@
 import { createMemoryRouter } from "react-router";
 import { Connect } from "./routes/wallet/Connect";
 import { NotFound } from "./routes/NotFound";
-import { SignTypedData } from "./routes/eth/SignTypedData";
+import { SendCalls } from "./routes/wallet/SendCalls";
 
 export const router = createMemoryRouter([
   {
@@ -9,8 +9,8 @@ export const router = createMemoryRouter([
     Component: Connect,
   },
   {
-    path: "/request/eth_signTypedData_v4",
-    Component: SignTypedData,
+    path: "/request/wallet_sendCalls",
+    Component: SendCalls,
   },
   { path: "*", Component: NotFound },
 ]);

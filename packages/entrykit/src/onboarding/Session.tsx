@@ -25,7 +25,7 @@ export function Session({ isActive, isExpanded, connector, userClient, registerS
   const { data: prerequisites } = usePrerequisites(userClient.account.address);
   const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
 
-  console.log("setup", setup.status, setup.error, sessionClient.status, sessionClient.error);
+  console.log("setup", setup.status, setup.error, sessionClient.status, sessionClient.error, prerequisites);
 
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses

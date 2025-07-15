@@ -4,11 +4,11 @@ import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useRef } from "react";
 import { useConnect, useConnectors } from "wagmi";
-import { PortoConnector } from "@latticexyz/id/internal";
+import { PortoConnector, isPortoConnector } from "@latticexyz/id/internal";
 
 export function ConnectWallet() {
   const connectors = useConnectors();
-  const porto = connectors.find((connector): connector is PortoConnector => connector.id === "xyz.ithaca.porto");
+  const porto = connectors.find(isPortoConnector);
 
   // TODO: show error states?
 
