@@ -10,7 +10,7 @@ export const messenger = (() => {
 })();
 
 messenger.on("rpc-requests", (requests) => {
-  console.log("messenger rcp-requests", requests);
+  console.log("messenger rpc-requests", requests);
 });
 messenger.on("__internal", () => {
   console.log("messenger __internal");

@@ -1,8 +1,14 @@
 import { wait } from "@latticexyz/common/utils";
-import { Hex, Provider, WebAuthnP256 } from "ox";
-import { Account, Key, Mode } from "porto";
+import { Hex, Json, Provider, PublicKey, Signature, TypedData, WebAuthnP256 } from "ox";
+import { Key, Mode } from "porto";
+import { Account } from "porto/viem";
+import { toCoinbaseSmartAccount } from "../account/toCoinbaseSmartAccount";
+import { toWebAuthnAccount } from "viem/account-abstraction";
+import { rp } from "../rp/common";
+import { getKey } from "porto/viem/Account";
+import { WebAuthnKey } from "porto/viem/Key";
 
-export function mode() {
+export function mode(): Mode.Mode {
   return Mode.from({
     name: "contract",
     actions: {
@@ -13,15 +19,27 @@ export function mode() {
       },
       async createAccount(parameters) {
         console.log("popup.mode.createAccount");
-        const credential = await WebAuthnP256.createCredential({ name: "test" });
-        const key = Key.fromWebAuthnP256({
-          credential,
+        const credential = await WebAuthnP256.createCredential({ name: "test", rp });
+        const owner = toWebAuthnAccount({
+          credential: {
+            id: credential.id,
+            publicKey: PublicKey.toHex(credential.publicKey),
+          },
+          rpId: rp.id,
         });
-        const account = Account.from({
-          address: Hex.random(20),
-          keys: [key],
-        });
-        return { account };
+
+        const account = await toCoinbaseSmartAccount({ client: parameters.internal.client, owners: [owner] });
+
+        return {
+          account: Account.from({
+            address: account.address,
+            keys: [Key.fromWebAuthnP256({ credential, rpId: rp.id })],
+            async sign(params) {
+              console.log("account.sign called", params);
+              return account.sign(params);
+            },
+          }),
+        };
         // throw new Provider.UnsupportedMethodError();
       },
       async getAccountVersion(parameters) {
@@ -95,9 +113,52 @@ export function mode() {
         throw new Provider.UnsupportedMethodError();
       },
       async signTypedData(parameters) {
-        console.log("popup.mode.signTypedData");
-        await wait(1000);
-        throw new Provider.UnsupportedMethodError();
+        console.log("popup.mode.signTypedData", parameters, parameters.internal.store.getState());
+
+        const key = parameters.account.keys?.find(
+          (key): key is WebAuthnKey => key.role === "admin" && key.type === "webauthn-p256",
+        );
+        if (!key) throw new Error("no key for account");
+        if (!key.privateKey?.credential) throw new Error("no credential for key");
+
+        console.log("using key", key);
+        // await wait(30_000);
+
+        // We can't use `Key.sign` here because Porto assumes `userHandle` is set to the signing address.
+        // But we don't know that address ahead of time.
+        // const { signature } = await WebAuthnP256.sign({
+        //   challenge: TypedData.getSignPayload(Json.parse(parameters.data)),
+        //   credentialId: key.privateKey.credential.id,
+        //   rpId: key.privateKey.rpId,
+        //   // userVerification: requireVerification ? "required" : "preferred",
+        // });
+        // return Signature.toHex(signature);
+
+        // await wait(30_000);
+        const owner = toWebAuthnAccount({
+          credential: {
+            id: key.privateKey.credential.id,
+            publicKey: key.publicKey,
+          },
+          rpId: rp.id,
+        });
+
+        const account = await toCoinbaseSmartAccount({ client: parameters.internal.client, owners: [owner] });
+
+        return await account.signTypedData(Json.parse(parameters.data));
+        // const { account, data, internal } = parameters;
+
+        // // Only admin keys can sign typed data.
+        // const key = account.keys?.find((key) => key.role === "admin" && key.privateKey);
+        // if (!key) throw new Error("cannot find admin key to sign with.");
+
+        // const signature = await Account.sign(account, {
+        //   key,
+        //   payload: TypedData.getSignPayload(Json.parse(data)),
+        //   storage: internal.config.storage,
+        // });
+
+        // return signature;
       },
       async updateAccount(parameters) {
         console.log("popup.mode.updateAccount");

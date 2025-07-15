@@ -3,7 +3,7 @@ import { useLocation } from "react-router";
 export function NotFound() {
   const location = useLocation();
   // TODO: abstract this to get a typed request
-  const { request } = location.state;
+  const { request } = location.state ?? {};
 
   return (
     <div>

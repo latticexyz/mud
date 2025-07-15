@@ -7,14 +7,16 @@ import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../comm
 import { paymasterAbi } from "../quarry/common";
 import { waitForTransactionReceipt } from "viem/actions";
 import { defineCall } from "../utils/defineCall";
-import { useClient } from "wagmi";
+import { Connector, useClient } from "wagmi";
 import { resourceToHex } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { callWithSignature } from "../utils/callWithSignature";
 import { getPaymaster } from "../getPaymaster";
 import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.config";
+import { createBundlerClient } from "../createBundlerClient";
+import { getBundlerTransport } from "../getBundlerTransport";
 
-export function useSetupSession({ userClient }: { userClient: ConnectedClient }) {
+export function useSetupSession({ connector, userClient }: { connector: Connector; userClient: ConnectedClient }) {
   const queryClient = useQueryClient();
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
@@ -36,7 +38,7 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
       const paymaster = getPaymaster(client.chain);
       const sessionAddress = sessionClient.account.address;
 
-      console.log("setting up session");
+      console.log("setting up session", userClient);
 
       if (userClient.account.type === "smart") {
         // Set up session for smart account wallet

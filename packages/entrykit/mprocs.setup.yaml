@@ -27,3 +27,8 @@ procs:
   # deploy-bundler:
   #   cwd: ../../../alto
   #   shell: pnpm ts-node scripts/localDeployer/index.ts
+
+  # TODO: move into id package?
+  deploy-cbsw-factory:
+    cwd: ../../../coinbase-smart-wallet
+    shell: make deploy-local

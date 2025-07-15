@@ -22,6 +22,7 @@ export function popup(): Dialog {
 
   return from({
     name: "popup",
+    supportsHeadless: true,
     setup(parameters) {
       console.log("popup.setup()");
 
@@ -94,14 +95,11 @@ export function popup(): Dialog {
                 this.open();
               } catch (error) {
                 console.warn("could not open popup, treating it as a user rejection", error);
-                console.log("requests", requests);
-                console.log("queue", store.getState().requestQueue);
                 return handleBlur(store);
               }
             }
             popup?.focus();
           }
-          console.log("sending requests to popup", requests);
           messenger?.send("rpc-requests", requests);
         },
       };

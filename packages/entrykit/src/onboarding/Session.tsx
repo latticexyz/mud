@@ -8,17 +8,19 @@ import { useShowQueryError } from "../errors/useShowQueryError";
 import { useShowMutationError } from "../errors/useShowMutationError";
 import { StepContentProps } from "./common";
 import { usePrerequisites } from "./usePrerequisites";
+import { Connector } from "wagmi";
 
 export type Props = StepContentProps & {
+  connector: Connector;
   userClient: ConnectedClient;
   registerSpender: boolean;
   registerDelegation: boolean;
   sessionAddress?: Hex;
 };
 
-export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
+export function Session({ isActive, isExpanded, connector, userClient, registerSpender, registerDelegation }: Props) {
   const sessionClient = useShowQueryError(useSessionClient(userClient.account.address));
-  const setup = useShowMutationError(useSetupSession({ userClient }));
+  const setup = useShowMutationError(useSetupSession({ userClient, connector }));
   const hasSession = !registerDelegation && !registerDelegation;
   const { data: prerequisites } = usePrerequisites(userClient.account.address);
   const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
@@ -38,11 +40,12 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
         !hasSession &&
         (hasAllowance || hasGasBalance || hasQuarryGasBalance)
       ) {
-        setup.mutate({
-          sessionClient: sessionClient.data,
-          registerSpender,
-          registerDelegation,
-        });
+        // TODO: re-enable once we can catch/handle window.open errors in popup
+        // setup.mutate({
+        //   sessionClient: sessionClient.data,
+        //   registerSpender,
+        //   registerDelegation,
+        // });
       }
     });
     return () => clearTimeout(timer);
