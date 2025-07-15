@@ -3,9 +3,8 @@ import { anvil, redstone, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
-import { wiresaw } from "@latticexyz/common/internal";
 import { getDefaultConnectors } from "../src/getDefaultConnectors";
-import { idConnector, porto, mode } from "@latticexyz/id/internal";
+import { porto } from "./porto";
 
 const appConfig = {
   walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
@@ -110,7 +109,7 @@ const pollingInterval = {
 
 const connectors = [
   // idConnector(),
-  porto({ mode: mode() }),
+  porto(),
   ...getDefaultConnectors(appConfig),
 ];
 

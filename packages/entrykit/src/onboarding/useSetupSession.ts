@@ -40,6 +40,8 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
 
       console.log("setting up session", userClient);
 
+      // if (connector.id === "xyz.ithaca.porto") {
+
       if (userClient.account.type === "smart") {
         // Set up session for smart account wallet
         const calls = [];
