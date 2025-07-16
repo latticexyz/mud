@@ -3,6 +3,7 @@
 "@latticexyz/gas-report": patch
 "@latticexyz/schema-type": patch
 "@latticexyz/store": patch
+"@latticexyz/world-module-callwithsignature": patch
 "@latticexyz/world-module-erc20": patch
 "@latticexyz/world-module-metadata": patch
 "@latticexyz/world-modules": patch
