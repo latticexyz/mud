@@ -1,14 +1,19 @@
 import { wait } from "@latticexyz/common/utils";
-import { Hex, Provider, PublicKey, WebAuthnP256 } from "ox";
+import { AbiParameters, Address, Hex, Provider, PublicKey, Secp256k1, WebAuthnP256 } from "ox";
 import { Key, Mode } from "porto";
 import { Account, ServerClient } from "porto/viem";
 import { toCoinbaseSmartAccount } from "../account/toCoinbaseSmartAccount";
-import { toWebAuthnAccount } from "viem/account-abstraction";
+import { entryPoint07Abi, toWebAuthnAccount } from "viem/account-abstraction";
 import { rp } from "../rp/common";
 import { WebAuthnKey } from "porto/viem/Key";
 import { createBundlerClient } from "./createBundlerClient";
 import { getBundlerTransport } from "./getBundlerTransport";
 import { recoverPublicKey } from "./recoverPublicKey";
+import * as PreCalls from "../../node_modules/porto/core/internal/preCalls";
+import { defineCall } from "./defineCall";
+import { abi } from "../account/abi";
+import { parseEventLogs } from "viem";
+import { storeEventsAbi } from "../../../store/ts/storeEventsAbi";
 
 export function mode(): Mode.Mode {
   let lastKey: WebAuthnKey | undefined;
@@ -25,13 +30,57 @@ export function mode(): Mode.Mode {
         console.log("popup.mode.createAccount");
 
         const {
-          internal: { client },
+          internal: {
+            client,
+            config: { storage },
+          },
         } = parameters;
 
-        const credential = await WebAuthnP256.createCredential({ name: "test", rp });
-        const key = Key.fromWebAuthnP256({ credential, rpId: rp.id });
+        const eoa = Account.fromPrivateKey(Secp256k1.randomPrivateKey());
+        const smartAccount = await toCoinbaseSmartAccount({
+          client,
+          owners: [eoa],
+        });
+        console.log("eoa", eoa.address);
 
-        const smartAccount = await getSmartAccount({ client, key });
+        const key = await Key.createWebAuthnP256({
+          label: `${smartAccount.address.slice(0, 8)}\u2026${smartAccount.address.slice(-6)}`,
+          rpId: rp.id,
+          userId: Hex.toBytes(smartAccount.address),
+        });
+        const publicKey = PublicKey.fromHex(key.publicKey);
+
+        const bundlerClient = createBundlerClient({
+          transport: getBundlerTransport(client.chain),
+          client,
+          account: smartAccount,
+        });
+
+        const auth = await bundlerClient.prepareUserOperation({
+          account: smartAccount,
+          calls: [
+            defineCall({
+              to: smartAccount.address,
+              abi,
+              functionName: "addOwnerPublicKey",
+              args: [Hex.fromNumber(publicKey.x), Hex.fromNumber(publicKey.y)],
+            }),
+            defineCall({
+              to: smartAccount.address,
+              abi,
+              functionName: "removeOwnerAtIndex",
+              args: [0n, AbiParameters.encode(AbiParameters.from(["address"]), [eoa.address])],
+            }),
+          ],
+        });
+        const authSignature = await smartAccount.signUserOperation(auth);
+        const preCalls = [{ context: auth, signature: authSignature }];
+        console.log("adding preCalls for", Address.from(smartAccount.address, { checksum: true }), preCalls);
+        PreCalls.add(preCalls, {
+          address: Address.from(smartAccount.address, { checksum: true }),
+          storage,
+        });
+
         const account = Account.from({
           address: smartAccount.address,
           keys: [key],
@@ -97,8 +146,11 @@ export function mode(): Mode.Mode {
             rpId: rp.id,
           });
           const credentialId = signature1.raw.id;
+          const response = signature1.raw.response as AuthenticatorAssertionResponse;
+          const address = response.userHandle ? Hex.fromBytes(new Uint8Array(response.userHandle)) : null;
+          if (!address) throw new Error("no userHandle/address for passkey");
 
-          // TODO: store credential ID hash on create and use it here to look up account address instead of double signing
+          // TODO: look up keys on account instead of double signature
 
           const challenge2 = Hex.random(256);
           const signature2 = await WebAuthnP256.sign({
@@ -119,12 +171,19 @@ export function mode(): Mode.Mode {
               publicKey: PublicKey.fromHex(publicKey),
             },
             rpId: rp.id,
+            id: address,
           });
 
           return key;
         })();
 
-        const smartAccount = await getSmartAccount({ client, key });
+        const smartAccount = await toCoinbaseSmartAccount({
+          client,
+          address: key.id,
+          owners: ["0x", toViemAccount(key)],
+          ownerIndex: 1,
+        });
+
         console.log("got account", smartAccount.address, "via passkey", key.publicKey);
 
         const account = Account.from({
@@ -163,7 +222,10 @@ export function mode(): Mode.Mode {
 
         const {
           calls,
-          internal: { client },
+          internal: {
+            client,
+            config: { storage },
+          },
         } = parameters;
 
         const key = parameters.account.keys?.find(
@@ -172,14 +234,63 @@ export function mode(): Mode.Mode {
         if (!key) throw new Error("no key for account");
         if (!key.privateKey?.credential) throw new Error("no credential for key");
 
-        const account = await getSmartAccount({ client, key });
+        const account = await toCoinbaseSmartAccount({
+          client,
+          address: key.id,
+          owners: ["0x", toViemAccount(key)],
+          ownerIndex: 1,
+        });
+        console.log("smart account", {
+          expectedAddress: key.id,
+          actualAddress: account.address,
+        });
+
+        const preCalls =
+          (await PreCalls.get({
+            address: Address.from(account.address, { checksum: true }),
+            storage,
+          })) ?? [];
+        console.log("got precalls for", Address.from(account.address, { checksum: true }), preCalls);
+
+        PreCalls.clear({
+          address: Address.from(account.address, { checksum: true }),
+          storage,
+        });
 
         const bundlerClient = createBundlerClient({
           transport: getBundlerTransport(client.chain),
           client,
-          account,
         });
 
+        const preCallHashes: Hex.Hex[] = [];
+        for (const preCall of preCalls) {
+          console.log("sending preCall", preCall);
+          preCallHashes.push(
+            await bundlerClient.sendUserOperation({
+              ...preCall.context,
+              signature: preCall.signature,
+            }),
+          );
+        }
+
+        for (const hash of preCallHashes) {
+          const result = await bundlerClient.waitForUserOperationReceipt({ hash });
+          console.log("got result", result);
+          // TODO: better error
+          if (!result.success) throw new Error("precall failed");
+
+          console.log(
+            "parsed logs",
+            parseEventLogs({
+              logs: result.receipt.logs,
+              abi: [...entryPoint07Abi, ...abi, ...storeEventsAbi],
+            }),
+          );
+        }
+
+        // TODO: catch errors and add precalls back in or clear out account?
+
+        console.log("sending calls", calls);
         const userOpHash = await bundlerClient.sendUserOperation({
           account,
           calls,
@@ -221,17 +332,12 @@ export function mode(): Mode.Mode {
   });
 }
 
-async function getSmartAccount({ client, key }: { client: ServerClient.ServerClient; key: WebAuthnKey }) {
-  return toCoinbaseSmartAccount({
-    client,
-    owners: [
-      toWebAuthnAccount({
-        credential: {
-          id: key.privateKey!.credential!.id,
-          publicKey: key.publicKey,
-        },
-        rpId: key.privateKey!.rpId,
-      }),
-    ],
+function toViemAccount(key: WebAuthnKey) {
+  return toWebAuthnAccount({
+    credential: {
+      id: key.privateKey!.credential!.id,
+      publicKey: key.publicKey,
+    },
+    rpId: key.privateKey!.rpId,
   });
 }
