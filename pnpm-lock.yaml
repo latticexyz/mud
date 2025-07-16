@@ -1336,9 +1336,6 @@ importers:
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
-      '@types/node':
-        specifier: ^18.15.11
-        version: 18.19.50
       ejs:
         specifier: ^3.1.10
         version: 3.1.10
