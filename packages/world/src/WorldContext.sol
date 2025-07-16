@@ -23,7 +23,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return sender The `msg.sender` in the call to the World contract before the World routed the
    * call to the WorldContextConsumer contract.
    */
-  function _msgSender() public view returns (address sender) {
+  function _msgSender() public view virtual returns (address sender) {
     return WorldContextConsumerLib._msgSender();
   }
 
@@ -32,7 +32,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return value The `msg.value` in the call to the World contract before the World routed the
    * call to the WorldContextConsumer contract.
    */
-  function _msgValue() public pure returns (uint256 value) {
+  function _msgValue() public view virtual returns (uint256 value) {
     return WorldContextConsumerLib._msgValue();
   }
 
@@ -137,6 +137,22 @@ library WorldContextProviderLib {
     (success, data) = target.call{ value: 0 }(
       appendContext({ callData: callData, msgSender: msgSender, msgValue: msgValue })
     );
+  }
+
+  /**
+   * @notice Makes a staticcall to the target contract with context values appended to the calldata.
+   * @param msgSender The address of the transaction sender.
+   * @param target The address of the contract to call.
+   * @param callData The calldata for the staticcall.
+   * @return success A boolean indicating whether the staticcall was successful or not.
+   * @return data The abi encoded return data from the staticcall.
+   */
+  function staticcallWithContext(
+    address msgSender,
+    address target,
+    bytes memory callData
+  ) internal view returns (bool success, bytes memory data) {
+    (success, data) = target.staticcall(appendContext({ callData: callData, msgSender: msgSender, msgValue: 0 }));
   }
 
   /**

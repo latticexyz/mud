@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress, size } from "viem";
+import { Hex, concatHex, getAddress, size } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -13,17 +13,20 @@ import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { getChainId } from "viem/actions";
+import { getAction } from "viem/utils";
+import { GetRpcClientOptions, getRpcClient } from "@latticexyz/block-logs-stream";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
 export async function sqliteStorage({
   database,
-  publicClient,
-}: {
+  ...opts
+}: GetRpcClientOptions & {
   database: BaseSQLiteDatabase<"sync", void>;
-  publicClient: PublicClient;
 }): Promise<StorageAdapter> {
-  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const publicClient = getRpcClient(opts);
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   // TODO: should these run lazily before first `registerTables`?
   database.run(sql.raw(sqliteTableToSql(chainState)));
@@ -100,6 +103,15 @@ export async function sqliteStorage({
 
         const sqlTable = buildTable(table);
         const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
+        const keyTupleLength = log.args.keyTuple.length;
+        const keySchemaLength = Object.keys(table.keySchema).length;
+        if (keySchemaLength !== keyTupleLength) {
+          debug(
+            `key tuple length ${keyTupleLength} does not match key schema length ${keySchemaLength}, skipping log`,
+            { table, log },
+          );
+          continue;
+        }
         const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (log.eventName === "Store_SetRecord") {

@@ -1,5 +1,65 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 88ddd0c: Improved surfacing of errors during code generation.
+- ab837ce: CLI will no longer deploy abstract systems and contracts without bytecode.
+- 6897086: Added [Quarry paymaster](https://github.com/latticexyz/quarry-paymaster) address for Garnet and Pyrope chain configs. And removed defunct Rhodolite chain config.
+  - @latticexyz/schema-type@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- 1d354b8: Added Pyrope testnet chain.
+- b18c0ef: Removed the `wiresaw` RPC URL from the Pyrope chain config, since Wiresaw is not deployed to Pyrope yet.
+  - @latticexyz/schema-type@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- 10ce339: Added bundler RPC URL to Garnet chain config.
+  - @latticexyz/schema-type@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- 589fd3a: Improved approach for checking for nonce errors.
+- 7385948: Updated Rhodolite chain config with new contract addresses.
+  - @latticexyz/schema-type@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 9d71887: Loosened `publicClient` type for `transactionQueue` action decorator and `writeContract` and `sendTransaction` actions so that they can be used with plain, undecorated Viem clients.
+- 88b9daf: Updated Rhodolite chain config.
+- Updated dependencies [09e9bd5]
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

@@ -8,6 +8,7 @@
     "clean": "forge clean && shx rm -rf src/**/codegen",
     "deploy:garnet": "mud deploy --profile=garnet",
     "deploy:local": "mud deploy",
+    "deploy:pyrope": "mud deploy --profile=pyrope",
     "deploy:redstone": "mud deploy --profile=redstone",
     "dev": "mud dev-contracts",
     "lint": "pnpm run prettier && pnpm run solhint",
@@ -23,7 +24,6 @@
     "@latticexyz/world-modules": "link:../../../../packages/world-modules"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",

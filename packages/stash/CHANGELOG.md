@@ -1,5 +1,121 @@
 # @latticexyz/stash
 
+## 2.2.22
+
+### Patch Changes
+
+- 405a600: Added React 19.x to the peer dependency range.
+- b8239d8: Stash now preserves batch updates when subscribing to query results.
+  Previously, while Stash supported batching table updates for atomic onchain changes, subscribing to query results would split these updates by table.
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [1d354b8]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- Updated dependencies [06e48e0]
+  - @latticexyz/store@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/common@2.2.19
+- @latticexyz/config@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/store@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [589fd3a]
+- Updated dependencies [dead80e]
+- Updated dependencies [7385948]
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/common@2.2.16
+- @latticexyz/config@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/store@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 96f1473: Consolidated how state changes are applied and subscribers notified. Stash subscribers now receive an ordered list of state updates rather than an object.
+- 16242b7: Added `useRecord` and `useRecords` hooks for convenience.
+
+  ```ts
+  import { useRecords } from "@latticexyz/stash/react";
+
+  const players = useRecords({ stash, table: Position });
+  ```
+
+  ```ts
+  import { useRecord } from "@latticexyz/stash/react";
+
+  const player = useRecord({ stash, table: Position, key: { player: "0x..." } });
+  ```
+
+- Updated dependencies [9580d29]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [1b477d4]
+- Updated dependencies [9d71887]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

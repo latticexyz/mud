@@ -1,5 +1,7 @@
+import { MUDChain } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
+import { entryPoint07Abi } from "viem/account-abstraction";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -10,7 +12,7 @@ import {
   internalTableIds,
   WaitForTransactionResult,
 } from "./common";
-import { createBlockStream } from "@latticexyz/block-logs-stream";
+import { createBlockStream, getRpcClient } from "@latticexyz/block-logs-stream";
 import {
   filter,
   map,
@@ -30,6 +32,9 @@ import {
   throwError,
   mergeWith,
   ignoreElements,
+  switchMap,
+  Subject,
+  startWith,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -38,8 +43,34 @@ import { getSnapshot } from "./getSnapshot";
 import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
-import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
-import { watchLogs } from "./watchLogs";
+import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
+import { getAction } from "viem/utils";
+import { getChainId, getTransactionReceipt } from "viem/actions";
+import packageJson from "../package.json";
+import { createPreconfirmedBlockStream } from "./createPreconfirmedBlockStream";
+
+/**
+ * High level approach to syncing state with `createStoreSync`
+ *
+ * If preconfirmed logs are not available:
+ * - Initialize snapshot
+ * - Initialize log stream from latest block
+ *   - Catch up logs between snapshot and latest block
+ *   - Attempt to stream logs from indexer
+ *   - On failure, fallback to streaming logs from RPC
+ * - Release initial, catchup and ongoing stream to subscribers
+ *
+ * If preconfirmed logs are available:
+ * - Initialize from snapshot
+ * - Open a preconfirmed log stream
+ *   - On error recreate the stream
+ * - Open a fallback log stream (indexer or RPC)
+ * - Catch up logs between snapshot and latest block
+ * - Cache processed log indices from preconfirmed logs stream
+ * - On every new block from the fallback logs stream
+ *   - Verify that all logs have already been processed in the preconfirmed logs stream
+ *   - If missing logs are found, pass the block with missing logs to subscribers and reconnect the preconfirmed logs stream
+ */
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -59,7 +90,6 @@ type CreateStoreSyncOptions = SyncOptions & {
 export async function createStoreSync({
   storageAdapter,
   onProgress,
-  publicClient,
   address,
   filters: initialFilters = [],
   tableIds = [],
@@ -68,7 +98,8 @@ export async function createStoreSync({
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  indexerUrl: initialIndexerUrl,
+  enableHydrationChunking = true,
+  ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
@@ -85,15 +116,14 @@ export async function createStoreSync({
         )
     : undefined;
 
-  const indexerUrl =
-    initialIndexerUrl !== false
-      ? initialIndexerUrl ??
-        (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
-          ? publicClient.chain.indexerUrl
-          : undefined)
-      : undefined;
+  const publicClient = getRpcClient(opts);
+  const indexerUrl = ((): string | undefined => {
+    if (opts.indexerUrl === false) return;
+    if (opts.indexerUrl) return opts.indexerUrl;
+    if (publicClient.chain) return (publicClient.chain as MUDChain).indexerUrl;
+  })();
 
-  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
     onProgress?.({
@@ -152,26 +182,31 @@ export async function createStoreSync({
         message: "Hydrating from snapshot",
       });
 
-      // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
-      // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
-      //
-      // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
-      const chunkSize = Math.max(100, Math.floor(logs.length / 50));
-      const chunks = Array.from(chunk(logs, chunkSize));
-      for (const [i, chunk] of chunks.entries()) {
-        await storageAdapter({ blockNumber, logs: chunk });
-        onProgress?.({
-          step: SyncStep.SNAPSHOT,
-          percentage: ((i + 1) / chunks.length) * 100,
-          latestBlockNumber: 0n,
-          lastBlockNumberProcessed: blockNumber,
-          message: "Hydrating from snapshot",
-        });
-
-        // RECS is a synchronous API so hydrating in a loop like this blocks downstream render cycles
-        // that would display the percentage climbing up to 100.
-        // We wait for idle callback here to give rendering a chance to complete.
-        await waitForIdle();
+      if (enableHydrationChunking) {
+        // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
+        // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
+        //
+        // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
+        const chunkSize = Math.max(100, Math.floor(logs.length / 50));
+        const chunks = Array.from(chunk(logs, chunkSize));
+        for (const [i, chunk] of chunks.entries()) {
+          debug(`hydrating chunk ${i}/${chunks.length}`);
+          await storageAdapter({ blockNumber, logs: chunk });
+          onProgress?.({
+            step: SyncStep.SNAPSHOT,
+            percentage: ((i + 1) / chunks.length) * 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: blockNumber,
+            message: "Hydrating from snapshot",
+          });
+          // RECS is a synchronous API so hydrating in a loop like this blocks downstream render cycles
+          // that would display the percentage climbing up to 100.
+          // We wait for idle callback here to give rendering a chance to complete.
+          await waitForIdle();
+        }
+      } else {
+        debug("hydrating all logs without chunking");
+        await storageAdapter({ blockNumber, logs });
       }
 
       onProgress?.({
@@ -198,7 +233,20 @@ export async function createStoreSync({
   );
 
   let latestBlockNumber: bigint | null = null;
-  const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
+  const recreateLatestBlockStream$ = new Subject<void>();
+  const latestBlock$ = recreateLatestBlockStream$.pipe(
+    startWith(undefined),
+    switchMap(() =>
+      createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(
+        catchError((error) => {
+          debug("error in latestBlock$, recreating");
+          recreateLatestBlockStream$.next();
+          return throwError(() => error);
+        }),
+      ),
+    ),
+    shareReplay(1),
+  );
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
@@ -211,20 +259,27 @@ export async function createStoreSync({
   let lastBlockNumberProcessed: bigint | null = null;
   let caughtUp = false;
 
-  const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
-  const storedPendingLogs$ = pendingLogsWebSocketUrl
+  const preconfirmedLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
+  const storedPreconfirmedLogs$ = preconfirmedLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        switchMap((startBlock) =>
+          createPreconfirmedBlockStream({
+            ...opts,
+            fromBlock: startBlock,
+            preconfirmedLogsUrl: preconfirmedLogsWebSocketUrl,
+            chainId,
+            filters,
+            address,
+            latestBlockNumber$,
+            indexerUrl,
+          }),
+        ),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;
         }),
-        mergeWith(
-          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
-          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
-        ),
       )
-    : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
+    : throwError(() => new Error("No preconfirmed logs WebSocket RPC URL provided"));
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
@@ -244,7 +299,7 @@ export async function createStoreSync({
           if (!isLogsApiResponse(data)) {
             throw new Error("Received unexpected from indexer:" + messageEvent.data);
           }
-          return toStorageAdatperBlock(data);
+          return toStorageAdapterBlock(data);
         }),
         concatMap(async (block) => {
           await storageAdapter(block);
@@ -257,7 +312,7 @@ export async function createStoreSync({
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
-        publicClient,
+        ...opts,
         address,
         events: storeEventsAbi,
         maxBlockRange,
@@ -273,9 +328,9 @@ export async function createStoreSync({
     }),
   );
 
-  const storedBlock$ = storedPendingLogs$.pipe(
+  const storedBlock$ = storedPreconfirmedLogs$.pipe(
     catchError((error) => {
-      debug("failed to stream logs from pending log RPC:", error.message);
+      debug("failed to stream logs from preconfirmed log RPC:", error.message);
       debug("falling back to streaming logs from indexer");
       return storedIndexerLogs$;
     }),
@@ -322,7 +377,7 @@ export async function createStoreSync({
   // keep 10 blocks worth processed transactions in memory
   const recentBlocksWindow = 10;
   // most recent block first, for ease of pulling the first one off the array
-  const recentBlocks$ = storedBlockLogs$.pipe(
+  const recentStoredBlocks$ = storedBlockLogs$.pipe(
     scan<StorageAdapterBlock, StorageAdapterBlock[]>(
       (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
       [],
@@ -337,25 +392,56 @@ export async function createStoreSync({
 
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
-    const hasTransaction$ = recentBlocks$.pipe(
+    const hasTransaction$ = recentStoredBlocks$.pipe(
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
-      mergeMap(async (blocks) => {
-        for (const block of blocks) {
-          const txs = block.logs.map((op) => op.transactionHash);
-          // If the transaction caused a log, it must have succeeded
-          if (txs.includes(tx)) {
-            return { blockNumber: block.blockNumber, status: "success" as const, transactionHash: tx };
+      mergeMap(async (storedBlocks) => {
+        for (const storedBlock of storedBlocks) {
+          // If stored block had Store event logs associated with tx, it must have succeeded.
+          if (storedBlock.logs.some((log) => log.transactionHash === tx)) {
+            return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: tx } as const;
           }
         }
 
         try {
-          const lastBlock = blocks[0];
-          debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
-          if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber, transactionHash };
+          const lastStoredBlock = storedBlocks[0];
+          debug("fetching tx receipt for block", lastStoredBlock.blockNumber);
+          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash: tx });
+
+          // Skip if sync hasn't caught up to this transaction's block.
+          if (lastStoredBlock.blockNumber < receipt.blockNumber) return;
+
+          // Check if this was a user op so we can get the internal user op status.
+          const userOpEvents = parseEventLogs({
+            logs: receipt.logs,
+            abi: entryPoint07Abi,
+            eventName: "UserOperationEvent" as const,
+          });
+          if (userOpEvents.length) {
+            debug("tx receipt appears to be a user op, using user op status instead");
+            if (userOpEvents.length > 1) {
+              const issueLink = `https://github.com/latticexyz/mud/issues/new${new URLSearchParams({
+                title: "waitForTransaction found more than one user op",
+                body: `MUD version: ${packageJson.version}\nChain ID: ${chainId}\nTransaction: ${tx}\n`,
+              })}`;
+              console.warn(
+                // eslint-disable-next-line max-len
+                `Receipt for transaction ${tx} had more than one \`UserOperationEvent\`. This may have unexpected behavior.\n\nIf you encounter this, please open an issue:\n${issueLink}`,
+              );
+            }
+
+            return {
+              status: userOpEvents[0].args.success ? "success" : "reverted",
+              blockNumber: receipt.blockNumber,
+              transactionHash: receipt.transactionHash,
+            } as const;
           }
+
+          return {
+            status: receipt.status,
+            blockNumber: receipt.blockNumber,
+            transactionHash: receipt.transactionHash,
+          };
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
           if (error.name === "TransactionReceiptNotFoundError") {

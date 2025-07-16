@@ -27,7 +27,7 @@ import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol"
 contract ERC721Module is Module {
   error ERC721Module_InvalidNamespace(bytes14 namespace);
 
-  function install(bytes memory encodedArgs) public {
+  function install(bytes memory encodedArgs) public override {
     // Require the module to not be installed with these args yet
     requireNotInstalled(__self, encodedArgs);
 
@@ -60,10 +60,6 @@ contract ERC721Module is Module {
       ERC721Registry.register(ERC721_REGISTRY_TABLE_ID);
     }
     ERC721Registry.set(ERC721_REGISTRY_TABLE_ID, namespaceId, puppet);
-  }
-
-  function installRoot(bytes memory) public pure {
-    revert Module_RootInstallNotSupported();
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/block-logs-stream",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "Create a stream of EVM block logs for events",
   "repository": {
     "type": "git",
@@ -29,20 +29,20 @@
     "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
+    "test": "vitest --run",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "abitype": "catalog:",
     "debug": "^4.3.4",
-    "rxjs": "7.5.5",
-    "viem": "catalog:"
+    "rxjs": "7.5.5"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "viem": "2.30.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

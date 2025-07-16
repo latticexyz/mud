@@ -1,5 +1,66 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- @latticexyz/store@2.2.22
+- @latticexyz/recs@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- @latticexyz/store@2.2.21
+- @latticexyz/recs@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- Updated dependencies [06e48e0]
+  - @latticexyz/store@2.2.20
+  - @latticexyz/recs@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.19
+- @latticexyz/store@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- Updated dependencies [5d6fb1b]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/recs@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- @latticexyz/store@2.2.17
+- @latticexyz/recs@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.16
+- @latticexyz/store@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- Updated dependencies [09e9bd5]
+- Updated dependencies [1b477d4]
+- Updated dependencies [09536b0]
+  - @latticexyz/store@2.2.15
+  - @latticexyz/recs@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

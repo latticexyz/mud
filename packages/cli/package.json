@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
     "@aws-sdk/client-kms": "^3.556.0",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/block-logs-stream": "workspace:*",
@@ -49,16 +49,18 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@latticexyz/world-module-metadata": "workspace:*",
-    "abitype": "catalog:",
+    "abitype": "1.0.6",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
-    "execa": "^7.0.0",
+    "execa": "^9.5.2",
     "find-up": "^6.3.0",
     "glob": "^10.4.2",
     "openurl": "^1.1.1",
@@ -68,8 +70,7 @@
     "rxjs": "7.5.5",
     "throttle-debounce": "^5.0.0",
     "toposort": "^2.0.2",
-    "typescript": "5.4.2",
-    "viem": "catalog:",
+    "viem": "2.30.6",
     "yargs": "^17.7.1",
     "zod": "3.23.8",
     "zod-validation-error": "^1.3.0"
@@ -77,13 +78,10 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/ejs": "^3.1.1",
-    "@types/node": "^18.15.11",
     "@types/openurl": "^1.0.0",
     "@types/throttle-debounce": "^5.0.0",
     "@types/toposort": "^2.0.6",
     "@types/yargs": "^17.0.10",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262",
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262"
   }
 }

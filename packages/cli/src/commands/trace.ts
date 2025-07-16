@@ -3,13 +3,15 @@ import fs from "node:fs";
 import type { CommandModule } from "yargs";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
-import { cast, getRpcUrl } from "@latticexyz/common/foundry";
+import { getRpcUrl } from "@latticexyz/common/foundry";
 import worldConfig from "@latticexyz/world/mud.config";
 import { Hex, createClient, http } from "viem";
 import { getChainId, readContract } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
 import { resolveSystems } from "@latticexyz/world/node";
 import { worldAbi } from "../deploy/common";
+import { execa } from "execa";
+import { printCommand } from "../utils/printCommand";
 
 const systemsTableId = worldConfig.namespaces.world.tables.Systems.tableId;
 
@@ -57,7 +59,7 @@ const commandModule: CommandModule<Options, Options> = {
     const configPath = await resolveConfigPath(args.configPath);
     const rootDir = path.dirname(configPath);
 
-    const profile = args.profile ?? process.env.FOUNDRY_PROFILE;
+    const profile = args.profile;
     const rpc = args.rpc ?? (await getRpcUrl(profile));
 
     const config = (await loadConfig(configPath)) as WorldConfig;
@@ -80,16 +82,21 @@ const commandModule: CommandModule<Options, Options> = {
       })),
     );
 
-    const result = await cast([
-      "run",
-      "--label",
-      `${worldAddress}:World`,
-      ...labels.map(({ label, address }) => ["--label", `${address}:${label}`]).flat(),
-      `${args.tx}`,
-    ]);
-    console.log(result);
-
-    process.exit(0);
+    await printCommand(
+      execa(
+        "cast",
+        [
+          "run",
+          ["--label", `${worldAddress}:World`],
+          ...labels.map(({ label, address }) => ["--label", `${address}:${label}`]),
+          args.tx,
+        ].flat(),
+        {
+          stdio: "inherit",
+          env: { FOUNDRY_PROFILE: profile ?? process.env.FOUNDRY_PROFILE },
+        },
+      ),
+    );
   },
 };
 

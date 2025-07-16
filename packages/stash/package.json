@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/stash",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "High performance client store and query engine for MUD",
   "repository": {
     "type": "git",
@@ -39,13 +39,12 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/store": "workspace:*",
-    "viem": "catalog:"
+    "@latticexyz/store": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.0",
@@ -54,17 +53,18 @@
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
     "fast-deep-equal": "^3.1.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tsup": "^6.7.0"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "viem": "2.30.6"
   },
   "peerDependencies": {
-    "react": "18.x"
+    "react": "18.x || 19.x",
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"
   },
   "optionalPeerDependencies": {
-    "react": "18.x"
+    "react": "18.x || 19.x"
   }
 }

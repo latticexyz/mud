@@ -1,10 +1,10 @@
 import { useParams } from "next/navigation";
-import { AbiFunction, Hex } from "viem";
+import { Abi, Hex } from "viem";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { supportedChains, validateChainName } from "../../../common";
 
 type AbiQueryResult = {
-  abi: AbiFunction[];
+  abi: Abi;
   isWorldDeployed: boolean;
 };
 
@@ -28,6 +28,6 @@ export function useWorldAbiQuery(): UseQueryResult<AbiQueryResult> {
         isWorldDeployed: data.isWorldDeployed,
       };
     },
-    refetchInterval: 15000,
+    refetchInterval: 5000,
   });
 }

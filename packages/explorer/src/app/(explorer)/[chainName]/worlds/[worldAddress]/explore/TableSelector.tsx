@@ -2,8 +2,7 @@ import { CheckIcon, ChevronsUpDownIcon, Link2Icon, Link2OffIcon } from "lucide-r
 import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Hex } from "viem";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Table } from "@latticexyz/config";
 import { Button } from "../../../../../../components/ui/Button";
 import {
@@ -17,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
+import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
 import { constructTableName } from "../../../../utils/constructTableName";
 
 function TableSelectorItem({ table, selected, asOption }: { table: Table; selected: boolean; asOption?: boolean }) {
@@ -34,8 +34,11 @@ function TableSelectorItem({ table, selected, asOption }: { table: Table; select
 export function TableSelector({ tables }: { tables?: Table[] }) {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const indexer = useIndexerForChainId(chainId);
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
+  const hasScrolledTo = useRef(false);
+  const [searchValue, setSearchValue] = useState("");
   const selectedTableConfig = tables?.find(({ tableId }) => tableId === selectedTableId);
 
   useEffect(() => {
@@ -44,8 +47,22 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
     }
   }, [selectedTableId, setTableId, tables]);
 
+  useLayoutEffect(() => {
+    if (open && selectedTableId && selectedTableConfig && !hasScrolledTo.current) {
+      setTimeout(() => {
+        const selectedTableId = constructTableName(selectedTableConfig, worldAddress as Hex, indexer.type);
+        const selectedElement = document.querySelector(`[data-value="${selectedTableId}"]`);
+        selectedElement?.scrollIntoView({ behavior: "instant", block: "center" });
+        hasScrolledTo.current = true;
+      }, 0);
+    }
+    if (!open) {
+      hasScrolledTo.current = false;
+    }
+  }, [chainId, indexer.type, open, selectedTableConfig, selectedTableId, worldAddress]);
+
   return (
-    <div className="w-full py-4">
+    <div className="w-full">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -68,15 +85,22 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
 
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
           <Command>
-            <CommandInput placeholder="Search tables..." className="font-mono" />
+            <CommandInput
+              placeholder="Search tables..."
+              className="font-mono"
+              value={searchValue}
+              onValueChange={setSearchValue}
+            />
             <CommandList>
-              <CommandEmpty className="py-4 text-center font-mono text-sm">No table found.</CommandEmpty>
+              <CommandEmpty className="py-4 text-center font-mono text-sm text-muted-foreground">
+                No table found.
+              </CommandEmpty>
               <CommandGroup>
                 {tables?.map((table) => {
                   return (
                     <CommandItem
                       key={table.tableId}
-                      value={constructTableName(table, worldAddress as Hex, chainId)}
+                      value={constructTableName(table, worldAddress as Hex, indexer.type)}
                       onSelect={() => {
                         setTableId(table.tableId);
                         setOpen(false);

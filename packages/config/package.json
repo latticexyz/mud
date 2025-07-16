@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -40,14 +40,16 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "esbuild": "^0.17.15",
     "find-up": "^6.3.0",
-    "viem": "catalog:"
+    "tsx": "^4.19.1"
   },
   "devDependencies": {
-    "tsup": "^6.7.0"
+    "viem": "2.30.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   }
 }

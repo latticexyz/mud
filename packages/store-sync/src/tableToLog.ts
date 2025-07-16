@@ -11,7 +11,7 @@ import { StorageAdapterLog, Table, schemasTable } from "./common";
 /**
  * @internal
  */
-export function tableToLog(table: Table): StorageAdapterLog & { eventName: "Store_SetRecord" } {
+export function tableToLog(table: Table): Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }> {
   return {
     eventName: "Store_SetRecord",
     address: table.address,

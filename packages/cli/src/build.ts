@@ -1,8 +1,8 @@
 import { tablegen } from "@latticexyz/store/codegen";
 import { buildSystemsManifest, worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { forge } from "@latticexyz/common/foundry";
 import { execa } from "execa";
+import { printCommand } from "./utils/printCommand";
 
 type BuildOptions = {
   foundryProfile?: string;
@@ -15,13 +15,15 @@ type BuildOptions = {
   config: WorldConfig;
 };
 
-export async function build({
-  rootDir,
-  config,
-  foundryProfile = process.env.FOUNDRY_PROFILE,
-}: BuildOptions): Promise<void> {
-  await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
-  await forge(["build"], { profile: foundryProfile });
+export async function build({ rootDir, config, foundryProfile }: BuildOptions): Promise<void> {
+  await tablegen({ rootDir, config });
+  await worldgen({ rootDir, config });
+  await printCommand(
+    execa("forge", ["build"], {
+      stdio: "inherit",
+      env: { FOUNDRY_PROFILE: foundryProfile ?? process.env.FOUNDRY_PROFILE },
+    }),
+  );
   await buildSystemsManifest({ rootDir, config });
-  await execa("mud", ["abi-ts"], { stdio: "inherit" });
+  await printCommand(execa("mud", ["abi-ts"], { stdio: "inherit" }));
 }

@@ -20,7 +20,7 @@ _This contract should only be used for contracts without their own storage, like
 Extract the `msg.sender` from the context appended to the calldata.
 
 ```solidity
-function _msgSender() public view returns (address sender);
+function _msgSender() public view virtual returns (address sender);
 ```
 
 **Returns**
@@ -34,7 +34,7 @@ function _msgSender() public view returns (address sender);
 Extract the `msg.value` from the context appended to the calldata.
 
 ```solidity
-function _msgValue() public pure returns (uint256 value);
+function _msgValue() public view virtual returns (uint256 value);
 ```
 
 **Returns**
@@ -197,6 +197,33 @@ function callWithContext(
 | --------- | ------- | ------------------------------------------------------------ |
 | `success` | `bool`  | A boolean indicating whether the call was successful or not. |
 | `data`    | `bytes` | The abi encoded return data from the call.                   |
+
+#### staticcallWithContext
+
+Makes a staticcall to the target contract with context values appended to the calldata.
+
+```solidity
+function staticcallWithContext(
+  address msgSender,
+  address target,
+  bytes memory callData
+) internal view returns (bool success, bytes memory data);
+```
+
+**Parameters**
+
+| Name        | Type      | Description                            |
+| ----------- | --------- | -------------------------------------- |
+| `msgSender` | `address` | The address of the transaction sender. |
+| `target`    | `address` | The address of the contract to call.   |
+| `callData`  | `bytes`   | The calldata for the staticcall.       |
+
+**Returns**
+
+| Name      | Type    | Description                                                        |
+| --------- | ------- | ------------------------------------------------------------------ |
+| `success` | `bool`  | A boolean indicating whether the staticcall was successful or not. |
+| `data`    | `bytes` | The abi encoded return data from the staticcall.                   |
 
 #### delegatecallWithContext
 

@@ -17,11 +17,15 @@ import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 
-import { ModuleConstants } from "../src/Constants.sol";
-import { ERC20Module } from "../src/ERC20Module.sol";
+import { WorldConsumer } from "@latticexyz/world-consumer/src/experimental/WorldConsumer.sol";
+
+import { ModuleConstants } from "../src/experimental/Constants.sol";
+import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
+import { ERC20Module } from "../src/experimental/ERC20Module.sol";
 import { ERC20Registry } from "../src/codegen/tables/ERC20Registry.sol";
 
 library TestConstants {
+  bytes16 constant ERC20_SYSTEM_NAME = "erc20system";
   bytes14 constant ERC20_NAMESPACE = "erc20namespace";
 }
 
@@ -37,7 +41,12 @@ contract ERC20ModuleTest is Test, GasReporter {
   }
 
   function testInstall() public {
-    bytes memory args = abi.encode(TestConstants.ERC20_NAMESPACE, "myERC20Token", "MTK");
+    bytes memory args = abi.encode(
+      TestConstants.ERC20_NAMESPACE,
+      TestConstants.ERC20_SYSTEM_NAME,
+      "myERC20Token",
+      "MTK"
+    );
     startGasReport("install erc20 module");
     world.installModule(erc20Module, args);
     endGasReport();
@@ -54,6 +63,9 @@ contract ERC20ModuleTest is Test, GasReporter {
     // Module should transfer token namespace ownership to the creator
     assertEq(NamespaceOwner.get(erc20NamespaceId), address(this), "Token did not transfer ownership");
 
+    assertEq(MUDERC20(token).name(), "myERC20Token");
+    assertEq(MUDERC20(token).symbol(), "MTK");
+
     vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installModule(erc20Module, args);
   }
@@ -62,7 +74,12 @@ contract ERC20ModuleTest is Test, GasReporter {
     ResourceId moduleNamespaceId = ModuleConstants.namespaceId();
     world.registerNamespace(moduleNamespaceId);
 
-    bytes memory args = abi.encode(TestConstants.ERC20_NAMESPACE, "myERC20Token", "MTK");
+    bytes memory args = abi.encode(
+      TestConstants.ERC20_NAMESPACE,
+      TestConstants.ERC20_SYSTEM_NAME,
+      "myERC20Token",
+      "MTK"
+    );
 
     // Installing will revert because module namespace already exists
     vm.expectRevert(

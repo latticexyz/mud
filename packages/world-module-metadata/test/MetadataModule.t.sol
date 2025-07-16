@@ -10,6 +10,7 @@ import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@lattic
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
+import { UNLIMITED_DELEGATION } from "@latticexyz/world/src/constants.sol";
 
 import { MetadataModule } from "../src/MetadataModule.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
@@ -22,38 +23,45 @@ contract MetadataModuleTest is Test, GasReporter {
   MetadataModule metadataModule = new MetadataModule();
   ResourceId namespace = ResourceTag._tableId.getNamespaceId();
 
+  address alice = vm.addr(uint256(keccak256("alice")));
+
   function setUp() public {
     world = IWorld(address(createWorld()));
     StoreSwitch.setStoreAddress(address(world));
   }
 
   function testInstall() public {
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
+
     startGasReport("install metadata module");
     world.installModule(metadataModule, new bytes(0));
     endGasReport();
 
     assertEq(NamespaceOwner.get(namespace), address(this));
-
-    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
-    world.installModule(metadataModule, new bytes(0));
   }
 
   function testInstallExistingNamespace() public {
     world.registerNamespace(namespace);
 
-    // Installing will revert because metadata namespace isn't owned by the module, so the module is unable to write to it.
+    // Reverts if namespace is registered but not owned by caller.
+    vm.prank(alice);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, namespace.toString(), alice));
+    world.installModule(metadataModule, new bytes(0));
+
+    // Reverts without a delegation.
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, namespace.toString(), address(metadataModule))
+      abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, address(this), address(metadataModule))
     );
     world.installModule(metadataModule, new bytes(0));
 
-    // Transferring the namespace to the module and installing will return namespace ownership.
-    world.transferOwnership(namespace, address(metadataModule));
+    // Succeeds with delegation and passes namespace check.
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
     world.installModule(metadataModule, new bytes(0));
-    assertEq(NamespaceOwner.get(namespace), address(this));
   }
 
   function testSetResourceTag() public {
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
+
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = ResourceTag._tableId;
 
@@ -74,6 +82,8 @@ contract MetadataModuleTest is Test, GasReporter {
   }
 
   function testDeleteResourceTag() public {
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
+
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = ResourceTag._tableId;
 
@@ -89,24 +99,23 @@ contract MetadataModuleTest is Test, GasReporter {
     assertEq(ResourceTag.get(resource, "label"), "");
   }
 
-  function testTagNonexistentResource() public {
+  function testTagArbitraryResource() public {
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
+
     world.installModule(metadataModule, new bytes(0));
-    ResourceId resource = WorldResourceIdLib.encode("tb", "whatever", "SomeTable");
 
-    vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
-    );
-    world.metadata__setResourceTag(resource, "label", "SomeTable");
+    ResourceId resource = WorldResourceIdLib.encode("az", "whatever", "SomeResource");
+    world.registerNamespace(resource.getNamespaceId());
 
-    vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
-    );
+    world.metadata__setResourceTag(resource, "label", "SomeArbitraryResource");
     world.metadata__deleteResourceTag(resource, "label");
   }
 
   function testTagUnownedResource(address caller) public {
     vm.assume(caller != address(0));
     vm.assume(caller != address(this));
+
+    world.registerDelegation(address(metadataModule), UNLIMITED_DELEGATION, new bytes(0));
 
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = NamespaceOwner._tableId;

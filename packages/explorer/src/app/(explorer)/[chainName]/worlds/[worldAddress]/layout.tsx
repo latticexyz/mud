@@ -22,10 +22,8 @@ export default function WorldLayout({ params: { chainName }, children }: Props) 
 
   return (
     <Providers>
-      <div className="flex h-screen flex-col">
-        <Navigation />
-        {children}
-      </div>
+      <Navigation />
+      {children}
       <TransactionsWatcher />
     </Providers>
   );

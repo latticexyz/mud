@@ -14,14 +14,15 @@
   "devDependencies": {
     "@latticexyz/cli": "latest",
     "@types/debug": "4.1.7",
+    "@types/node": "^20",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
     "eslint": "8.57.0",
-    "mprocs": "^0.7.1",
+    "mprocs": "^0.7.3",
     "typescript": "5.4.2"
   },
   "engines": {
-    "node": "^18",
-    "pnpm": "^8 || ^9"
+    "node": "^20",
+    "pnpm": "^9"
   }
 }

@@ -3,12 +3,14 @@ import { loadSystemsManifest, resolveSystems } from "@latticexyz/world/node";
 import { Library, System, WorldFunction } from "./common";
 import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getContractData } from "../utils/getContractData";
-import { groupBy } from "@latticexyz/common/utils";
+import { groupBy, isDefined } from "@latticexyz/common/utils";
 import { findLibraries } from "./findLibraries";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { findUp } from "find-up";
 import { createRequire } from "node:module";
+import { excludeCallWithSignatureModule } from "./compat/excludeUnstableCallWithSignatureModule";
+import { debug } from "./debug";
 
 // TODO: replace this with a manifest/combined config output
 
@@ -28,7 +30,7 @@ export async function resolveConfig({
   if (!requirePath) throw new Error("Could not find package.json to import relative to.");
   const require = createRequire(requirePath);
 
-  const moduleOutDirs = config.modules.flatMap((mod) => {
+  const moduleOutDirs = config.modules.filter(excludeCallWithSignatureModule).flatMap((mod) => {
     if (mod.artifactPath == undefined) {
       return [];
     }
@@ -62,7 +64,7 @@ export async function resolveConfig({
 
   const systems = configSystems
     .filter((system) => !system.deploy.disabled)
-    .map((system): System => {
+    .map((system): System | undefined => {
       const manifest = systemsManifest.systems.find(({ systemId }) => systemId === system.systemId);
       if (!manifest) {
         throw new Error(
@@ -71,6 +73,11 @@ export async function resolveConfig({
       }
 
       const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
+      if (!contractData.deployedBytecodeSize) {
+        // abstract contracts have no bytecode
+        debug(`skipping ${system.label} system with no bytecode`);
+        return;
+      }
 
       // TODO: replace this with manifest
       const worldFunctions = system.deploy.registerWorldFunctions
@@ -108,10 +115,14 @@ export async function resolveConfig({
         prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
         deployedBytecodeSize: contractData.deployedBytecodeSize,
         worldFunctions,
-        abi: manifest.abi,
-        worldAbi: manifest.worldAbi,
+        abi: contractData.abi,
+        metadata: {
+          abi: manifest.abi,
+          worldAbi: manifest.worldAbi,
+        },
       };
-    });
+    })
+    .filter(isDefined);
 
   // Check for overlapping system IDs (since names get truncated when turning into IDs)
   // TODO: move this into the world config resolve step once it resolves system IDs

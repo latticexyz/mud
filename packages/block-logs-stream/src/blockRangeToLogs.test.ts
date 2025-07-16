@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
 import { Subject, lastValueFrom, map, toArray } from "rxjs";
-import { createClient, http } from "viem";
+import { createClient } from "viem";
 import { wait } from "@latticexyz/common/utils";
+import { createMockTransport } from "../test/createMockTransport";
 
 vi.useFakeTimers();
 
@@ -11,14 +12,15 @@ describe("blockRangeToLogs", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
     const publicClient = createClient({
-      transport: http("http://mock"),
-    }).extend(() => ({
-      getLogs: vi.fn(async (params) => {
-        requests.push(params);
-        await Promise.race([wait(450), vi.runAllTimersAsync()]);
-        return [];
+      transport: createMockTransport(async ({ method, params }) => {
+        requests.push({ method, params });
+        if (method === "eth_getLogs") {
+          await Promise.race([wait(450), vi.runAllTimersAsync()]);
+          return [];
+        }
+        throw new Error("not implemented");
       }),
-    }));
+    });
 
     const latestBlockNumber$ = new Subject<bigint>();
 
@@ -45,46 +47,82 @@ describe("blockRangeToLogs", () => {
     expect(requests).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x",
-          "events": [],
-          "fromBlock": 0n,
-          "strict": true,
-          "toBlock": 999n,
+          "method": "eth_getLogs",
+          "params": [
+            {
+              "address": "0x",
+              "fromBlock": "0x0",
+              "toBlock": "0x3e7",
+              "topics": [
+                [],
+              ],
+            },
+          ],
         },
         {
-          "address": "0x",
-          "events": [],
-          "fromBlock": 1000n,
-          "strict": true,
-          "toBlock": 1000n,
+          "method": "eth_getLogs",
+          "params": [
+            {
+              "address": "0x",
+              "fromBlock": "0x3e8",
+              "toBlock": "0x3e8",
+              "topics": [
+                [],
+              ],
+            },
+          ],
         },
         {
-          "address": "0x",
-          "events": [],
-          "fromBlock": 1001n,
-          "strict": true,
-          "toBlock": 1007n,
+          "method": "eth_getLogs",
+          "params": [
+            {
+              "address": "0x",
+              "fromBlock": "0x3e9",
+              "toBlock": "0x3ef",
+              "topics": [
+                [],
+              ],
+            },
+          ],
         },
         {
-          "address": "0x",
-          "events": [],
-          "fromBlock": 1008n,
-          "strict": true,
-          "toBlock": 1008n,
+          "method": "eth_getLogs",
+          "params": [
+            {
+              "address": "0x",
+              "fromBlock": "0x3f0",
+              "toBlock": "0x3f0",
+              "topics": [
+                [],
+              ],
+            },
+          ],
         },
         {
-          "address": "0x",
-          "events": [],
-          "fromBlock": 1009n,
-          "strict": true,
-          "toBlock": 1009n,
+          "method": "eth_getLogs",
+          "params": [
+            {
+              "address": "0x",
+              "fromBlock": "0x3f1",
+              "toBlock": "0x3f1",
+              "topics": [
+                [],
+              ],
+            },
+          ],
         },
         {
-          "address": "0x",
-          "events": [],
-          "fromBlock": 1010n,
-          "strict": true,
-          "toBlock": 1010n,
+          "method": "eth_getLogs",
+          "params": [
+            {
+              "address": "0x",
+              "fromBlock": "0x3f2",
+              "toBlock": "0x3f2",
+              "topics": [
+                [],
+              ],
+            },
+          ],
         },
       ]
     `);

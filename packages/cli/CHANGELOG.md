@@ -1,5 +1,268 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 03af917: `mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+  ```solidity
+  import {System} from "@latticexyz/world/src/System.sol";
+
+  contract EntityProgram is System {
+    ...
+  }
+  ```
+
+  If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+- 8fad4be: Updated JSON imports to use `with` annotation instead of `assert`.
+- ab837ce: CLI will no longer deploy abstract systems and contracts without bytecode.
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [6008573]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [6344ced]
+- Updated dependencies [490159e]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [2048adf]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-metadata@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/abi-ts@2.2.22
+  - @latticexyz/gas-report@2.2.22
+  - @latticexyz/schema-type@2.2.22
+  - @latticexyz/utils@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [1d354b8]
+- Updated dependencies [8cdc57b]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+  - @latticexyz/world-module-callwithsignature@2.2.21
+  - @latticexyz/world-module-metadata@2.2.21
+  - @latticexyz/abi-ts@2.2.21
+  - @latticexyz/gas-report@2.2.21
+  - @latticexyz/schema-type@2.2.21
+  - @latticexyz/utils@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- 3187081: Added `useDelegation` module config option to install modules using a temporary, unlimited delegation. This allows modules to install or upgrade systems and tables on your behalf.
+- b790181: Fixed forge/anvil/cast output for all CLI commands.
+- 3187081: Metadata module has been updated to install via delegation, making it easier for later module upgrades and to demonstrate modules installed via delegation.
+- Updated dependencies [3915759]
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world-module-callwithsignature@2.2.20
+  - @latticexyz/world-module-metadata@2.2.20
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/store-sync@2.2.20
+  - @latticexyz/abi-ts@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/gas-report@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+  - @latticexyz/utils@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/abi-ts@2.2.19
+- @latticexyz/block-logs-stream@2.2.19
+- @latticexyz/common@2.2.19
+- @latticexyz/config@2.2.19
+- @latticexyz/gas-report@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/store@2.2.19
+- @latticexyz/store-sync@2.2.19
+- @latticexyz/utils@2.2.19
+- @latticexyz/world@2.2.19
+- @latticexyz/world-module-callwithsignature@2.2.19
+- @latticexyz/world-module-metadata@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+- Updated dependencies [df5d393]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/world@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/store-sync@2.2.18
+  - @latticexyz/world-module-callwithsignature@2.2.18
+  - @latticexyz/world-module-metadata@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/abi-ts@2.2.18
+  - @latticexyz/gas-report@2.2.18
+  - @latticexyz/schema-type@2.2.18
+  - @latticexyz/utils@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- 452d3e5: The `verify` command should now be able to correctly verify systems using public libraries.
+- 7385948: Added an empty line to the end of `.json` output files for consistency.
+  Removed some unnecessary defaults to allow them to pass through via environment variables.
+- 5aa8a3a: Fixed an issue with `mud verify` where system contract artifacts were being resolved incorrectly.
+- ffefc8f: `CallWithSignature` module has been moved out of `@latticexyz/world-modules` and into its own package at `@latticexyz/world-module-callwithsignature`. This module is now installed by default during deploy as its needed by EntryKit.
+
+  If you previously had this module installed in your MUD config, you can now remove it.
+
+  ```diff
+   export default defineConfig({
+     tables: {
+       ...
+     },
+  -  modules: [
+  -    {
+  -      artifactPath:
+  -        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+  -      root: true,
+  -    },
+  -  ],
+   });
+  ```
+
+- 090c922: The world address stored in `worlds.json` and `deploys/latest.json` is now checksummed.
+- f52b147: Deploy now prints the current MUD CLI version for easier debugging.
+- Updated dependencies [94d82cf]
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [40aaf97]
+- Updated dependencies [227db4d]
+- Updated dependencies [dead80e]
+- Updated dependencies [56e65f6]
+- Updated dependencies [ffefc8f]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/world-module-callwithsignature@2.2.17
+  - @latticexyz/world-module-metadata@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/abi-ts@2.2.17
+  - @latticexyz/gas-report@2.2.17
+  - @latticexyz/schema-type@2.2.17
+  - @latticexyz/utils@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/abi-ts@2.2.16
+- @latticexyz/block-logs-stream@2.2.16
+- @latticexyz/common@2.2.16
+- @latticexyz/config@2.2.16
+- @latticexyz/gas-report@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/store-sync@2.2.16
+- @latticexyz/utils@2.2.16
+- @latticexyz/world@2.2.16
+- @latticexyz/world-module-metadata@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 1e09240: When upgrading an existing world, the deployer now attempts to read the deploy block number from the `worlds.json` file. If it is found, the `HelloWorld` and `HelloStore` event are fetched from this block instead of searching for the events starting from the genesis block.
+- 3168f1f: Deployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.
+- ee388ed: Deployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.
+- 7409095: In addition to a hex `--salt`, deploy commands now accept a string salt for world deployment, which will get converted to a hex.
+
+  ```
+  pnpm mud deploy --salt hello
+  ```
+
+- 8fcf9c8: Fixed an issue with overloaded system ABI types.
+- b819749: Added an `indexerUrl` option to the `mud deploy` and `mud pull` CLI commands to read table records from an indexer instead of fetching logs from an Ethereum RPC.
+- Updated dependencies [9580d29]
+- Updated dependencies [1770620]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [5f493cd]
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [5340394]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [a6fe15c]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/abi-ts@2.2.15
+  - @latticexyz/world-module-metadata@2.2.15
+  - @latticexyz/gas-report@2.2.15
+  - @latticexyz/utils@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

@@ -50,4 +50,25 @@ abstract contract Module is IModule, WorldContextConsumer {
       revert Module_AlreadyInstalled();
     }
   }
+
+  /**
+   * @notice Installs the module as a root module.
+   * @dev This function is invoked by the World contract during `installRootModule` process.
+   * The module expects to be called via the World contract and thus installs itself on the `msg.sender`.
+   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
+   */
+  function installRoot(bytes memory encodedArgs) public virtual {
+    revert Module_RootInstallNotSupported();
+  }
+
+  /**
+   * @notice Installs the module.
+   * @dev This function is invoked by the World contract during `installModule` process.
+   * The module expects to be called via the World contract and thus installs itself on the `msg.sender`.
+   * Logic might differ from `installRoot`, for example, this might accept namespace parameters.
+   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
+   */
+  function install(bytes memory encodedArgs) public virtual {
+    revert Module_NonRootInstallNotSupported();
+  }
 }

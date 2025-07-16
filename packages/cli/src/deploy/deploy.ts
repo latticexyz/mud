@@ -1,8 +1,15 @@
-import { Account, Address, Chain, Client, Hex, Transport, stringToHex } from "viem";
-import { ensureDeployer } from "./ensureDeployer";
+import { Address, Hex, stringToHex } from "viem";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
+import {
+  CommonDeployOptions,
+  Library,
+  Module,
+  System,
+  WorldDeploy,
+  supportedStoreVersions,
+  supportedWorldVersions,
+} from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
@@ -10,20 +17,18 @@ import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceToHex, resourceToLabel } from "@latticexyz/common";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
-import { waitForTransactions } from "./waitForTransactions";
 import { ContractArtifact } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
 import { deployCustomWorld } from "./deployCustomWorld";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { getLibraryMap } from "./getLibraryMap";
+import { ensureContractsDeployed, ensureDeployer, waitForTransactions } from "@latticexyz/common/internal";
 
 type DeployOptions = {
   config: World;
-  client: Client<Transport, Chain | undefined, Account>;
   tables: readonly Table[];
   systems: readonly System[];
   libraries: readonly Library[];
@@ -32,6 +37,11 @@ type DeployOptions = {
   salt?: Hex;
   worldAddress?: Address;
   /**
+   * Block number of an existing world deployment.
+   * Only used if `worldAddress` is provided.
+   */
+  worldDeployBlock?: bigint;
+  /**
    * Address of determinstic deployment proxy: https://github.com/Arachnid/deterministic-deployment-proxy
    * By default, we look for a deployment at 0x4e59b44847b379578588920ca78fbf26c0b4956c and, if not, deploy one.
    * If the target chain does not support legacy transactions, we deploy the proxy bytecode anyway, but it will
@@ -39,7 +49,7 @@ type DeployOptions = {
    */
   deployerAddress?: Hex;
   withWorldProxy?: boolean;
-};
+} & Omit<CommonDeployOptions, "worldDeploy">;
 
 /**
  * Given a viem client and MUD config, we attempt to introspect the world
@@ -57,12 +67,15 @@ export async function deploy({
   artifacts,
   salt,
   worldAddress: existingWorldAddress,
+  worldDeployBlock,
   deployerAddress: initialDeployerAddress,
+  indexerUrl,
+  chainId,
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   const worldDeploy = existingWorldAddress
-    ? await getWorldDeploy(client, existingWorldAddress)
+    ? await getWorldDeploy(client, existingWorldAddress, worldDeployBlock)
     : config.deploy.customWorld
       ? await deployCustomWorld({
           client,
@@ -77,6 +90,13 @@ export async function deploy({
           config.deploy.upgradeableWorldImplementation,
         );
 
+  const commonDeployOptions = {
+    client,
+    indexerUrl,
+    chainId,
+    worldDeploy,
+  } satisfies CommonDeployOptions;
+
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
   }
@@ -86,7 +106,7 @@ export async function deploy({
 
   const libraryMap = getLibraryMap(libraries);
   await ensureContractsDeployed({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     contracts: [
       ...libraries.map((library) => ({
@@ -108,8 +128,7 @@ export async function deploy({
   });
 
   const namespaceTxs = await ensureNamespaceOwner({
-    client,
-    worldDeploy,
+    ...commonDeployOptions,
     resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
   // Wait for namespaces to be available, otherwise referencing them below may fail.
@@ -117,15 +136,13 @@ export async function deploy({
   await waitForTransactions({ client, hashes: namespaceTxs, debugLabel: "namespace registrations" });
 
   const tableTxs = await ensureTables({
-    client,
-    worldDeploy,
+    ...commonDeployOptions,
     tables,
   });
   const systemTxs = await ensureSystems({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     libraryMap,
-    worldDeploy,
     systems,
   });
   // Wait for tables and systems to be available, otherwise referencing their resource IDs below may fail.
@@ -137,15 +154,13 @@ export async function deploy({
   });
 
   const functionTxs = await ensureFunctions({
-    client,
-    worldDeploy,
+    ...commonDeployOptions,
     functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     libraryMap,
-    worldDeploy,
     modules,
   });
 
@@ -166,18 +181,17 @@ export async function deploy({
     .filter((table) => table.label !== table.name)
     .map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
 
-  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, abi, worldAbi }) => [
+  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, metadata }) => [
     // only register labels if they differ from the resource ID
     ...(label !== name ? [{ resourceId, tag: "label", value: label }] : []),
-    { resourceId, tag: "abi", value: abi.join("\n") },
-    { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
+    { resourceId, tag: "abi", value: metadata.abi.join("\n") },
+    { resourceId, tag: "worldAbi", value: metadata.worldAbi.join("\n") },
   ]);
 
   const tagTxs = await ensureResourceTags({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     libraryMap,
-    worldDeploy,
     tags: [...namespaceTags, ...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });

@@ -20,12 +20,19 @@
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
     "eslint": "8.57.0",
-    "mprocs": "^0.7.1",
+    "mprocs": "^0.7.3",
     "shx": "^0.3.4",
     "typescript": "5.4.2"
   },
   "engines": {
-    "node": "^18",
-    "pnpm": "^8 || ^9"
+    "node": "^20",
+    "pnpm": "^9"
+  },
+  "pnpm": {
+    "overrides": {
+      "@tanstack/react-query": "link:../../packages/entrykit/node_modules/@tanstack/react-query",
+      "@types/react": "link:../../packages/entrykit/node_modules/@types/react",
+      "wagmi": "link:../../packages/entrykit/node_modules/wagmi"
+    }
   }
 }

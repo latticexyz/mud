@@ -71,6 +71,13 @@ export type ModuleInput = ModuleInputArtifactPath & {
    * @default false
    */
   readonly root?: boolean;
+  /**
+   * Allow the module to call systems on your behalf.
+   * Useful when modules need to create namespaces or
+   * upgrade systems in namespaces you own.
+   * @default false
+   */
+  readonly useDelegation?: boolean;
   /** Arguments to be passed to the module's install method */
   // TODO: make more strongly typed by taking in tables input
   readonly args?: readonly (ValueWithType | DynamicResolution)[];

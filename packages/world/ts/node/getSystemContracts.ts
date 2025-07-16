@@ -1,6 +1,9 @@
 import path from "node:path";
+import fs from "node:fs/promises";
 import { World } from "../config/v2/output";
 import { findSolidityFiles } from "./findSolidityFiles";
+import { parseSystem } from "@latticexyz/common/codegen";
+import { isDefined } from "@latticexyz/common/utils";
 
 export type SystemContract = {
   readonly sourcePath: string;
@@ -17,21 +20,23 @@ export async function getSystemContracts({
   rootDir,
   config,
 }: GetSystemContractsOptions): Promise<readonly SystemContract[]> {
-  const solidityFiles = await findSolidityFiles({
+  const filePaths = await findSolidityFiles({
     cwd: rootDir,
     pattern: path.join(config.sourceDirectory, "**"),
   });
 
-  return solidityFiles
-    .filter(
-      (file) =>
-        file.basename.endsWith("System") &&
-        // exclude the base System contract
-        file.basename !== "System" &&
-        // exclude interfaces
-        !/^I[A-Z]/.test(file.basename),
-    )
+  const files = await Promise.all(
+    filePaths.map(async (file) => {
+      const source = await fs.readFile(path.join(rootDir, file.filename), "utf-8");
+      return { ...file, source };
+    }),
+  );
+
+  return files
     .map((file) => {
+      const parsedSystem = parseSystem(file.source, file.basename);
+      if (!parsedSystem) return;
+
       const namespaceLabel = (() => {
         // TODO: remove `config.namespace` null check once this narrows properly
         if (!config.multipleNamespaces && config.namespace != null) return config.namespace;
@@ -52,6 +57,7 @@ export async function getSystemContracts({
         sourcePath: file.filename,
         namespaceLabel,
         systemLabel: file.basename,
-      };
-    });
+      } satisfies SystemContract;
+    })
+    .filter(isDefined);
 }

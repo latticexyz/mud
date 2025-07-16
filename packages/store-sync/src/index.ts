@@ -7,4 +7,6 @@ export * from "./logToTable";
 export * from "./tablesWithRecordsToLogs";
 export * from "./tableToLog";
 export * from "./recordToLog";
-export * from "./logToRecord";
+export * from "./getRecords";
+
+export { logToRecord, type LogToRecordArgs } from "@latticexyz/store/internal";

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
+import { Hex, RpcLog, createClient, decodeEventLog, formatLog, http } from "viem";
 import { foundry } from "viem/chains";
 import { PostgresStorageAdapter, createStorageAdapter } from "./createStorageAdapter";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
@@ -30,7 +30,7 @@ describe("createStorageAdapter", async () => {
     // logger: new DefaultLogger(),
   });
 
-  const publicClient = createPublicClient({
+  const publicClient = createClient({
     chain: foundry,
     transport: http(),
   });

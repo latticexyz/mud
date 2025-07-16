@@ -1,5 +1,254 @@
 # @latticexyz/explorer
 
+## 2.2.22
+
+### Patch Changes
+
+- bd9e19b: Removed Rhodolite chain support.
+- 7f1b769: Address input fields in the "Interact" tab now accept ENS names, which are automatically resolved to their underlying address.
+- fdb727e: Editable table cells no longer lose focus during editing when the query is set to "live".
+- 091ece6: The Worlds Explorer explorer now supports decoding function data.
+- 0fc224f: Array function arguments are now correctly encoded on the "Interact" page.
+- a5fdfa8: Table values updated remotely are now also reflected in the table viewer.
+- 7fd242e: World ABI endpoint is now includes the base world ABI.
+- f0c0b98: Fixed fetching data from `@latticexyz/store-indexer` `/q` API endpoint in production builds.
+- d2c77c2: Interact and Decode forms now support URL parameters.
+- ea62e9b: Interact page is now organized into collapsible namespace and system sections.
+- f06e8f2: Restore wallet connection options in the wallet connect modal.
+- 5f0b4d1: - Boolean values can now be submitted on the Interact page.
+  - Fixed redirects when only a single local world is deployed.
+  - Chain logos are now displayed correctly when running the Explorer locally.
+  - Fixed scrolling behavior in the table dropdown when viewing non-selected tables.
+  - Verified world dropdown now appears immediately after pasting a world address, without waiting for all worlds to resolve.
+- 7c2fe37: Added read-only mode with no wallet connection that only shows non-editable sections of the Explorer.
+- fc10a27: Removed the Explorer’s SQLite indexer API endpoint in favor of the equivalent `/q` endpoint from `@latticexyz/store-indexer`.
+- 13071c4: - Added the `/system-abis` endpoint to retrieve ABIs by system IDs.
+  - The search form for decoding selectors now uses all system ABIs for complete results.
+  - The `ABI` page has been renamed to `Decode`.
+- f7aa4c5: Table row data now correctly re-renders when updated outside the Explorer.
+- 34ec2ec: Chain switching between supported networks is now accessible on the homepage and the world page.
+- 120dc0d: Coinbase wallet is now supported.
+- 5fa416e: Explorer will now automatically resolve and redirect deep links using a chain ID to their corresponding chain name, e.g.
+
+  https://explorer.mud.dev/690/worlds/0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f
+
+- a3645c8: `systemIds` parameter is now optional for the system ABIs API endpoint.
+- 9c89cc3: Environment variables are now loaded from the `.env` file alongside those specified via CLI flags.
+- 66b053c: The Interact tab now supports system functions. The functions can be searched by namespace, system name, or function name.
+- 7367a81: String fields in the "Interact" tab now support multiline values.
+- 3ffa127: Table cell edits are now saved only when the value has changed.
+- d8eef92: Verified worlds are now shown in the world selection form.
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [6008573]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [582f718]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+- Updated dependencies [6bb6a79]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/store-indexer@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- 1d354b8: Added Pyrope testnet chain.
+- af2865b: Deleted records no longer appear in the table data viewer when using the SQLite indexer.
+- 581228b: The Explore tab's table viewer now supports pagination through limit/offset clauses in SQL queries.
+- aeb210f: Added an ABI page for exploring world ABI. The ABI Explorer also includes a form for searching custom errors or functions based on their selectors.
+- 303714d: Table data refetching is now enabled for locally run Explorer instances.
+- Updated dependencies [1d354b8]
+- Updated dependencies [8cdc57b]
+- Updated dependencies [b18c0ef]
+- Updated dependencies [8b83c6b]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/store-indexer@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- 3067075: Table names in SQL queries are now automatically enclosed in double quotes by default, allowing support for special characters.
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/store-sync@2.2.20
+  - @latticexyz/store-indexer@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.19
+- @latticexyz/common@2.2.19
+- @latticexyz/config@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/store@2.2.19
+- @latticexyz/store-indexer@2.2.19
+- @latticexyz/store-sync@2.2.19
+- @latticexyz/world@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- 6bd1695: Tables under internal namespace are now editable.
+- c44207f: In the Interact tab, functions with tuple arguments can now be submitted. Additionally, function input fields display the tuple name when available and indicate tuple argument types.
+- 4565714: Fixed an issue with how MUD table names were translated SQLite table names when querying.
+- 8602248: Display a loading indicator on the query execution button while refetching a non-live query.
+- Updated dependencies [16710f1]
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+- Updated dependencies [df5d393]
+  - @latticexyz/store-indexer@2.2.18
+  - @latticexyz/store@2.2.18
+  - @latticexyz/world@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/store-sync@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- dab0d08: The context for the searched namespace and selected table is now preserved when reopening the table search and selection menu.
+- 3d5b7b7: Add a separate flag and port for the indexer created by the Explorer.
+- 3264908: Previously, queries could only be executed if they had changed, as data fetching was tied to query updates. Now, it’s possible to trigger a new table data fetch explicitly, regardless of whether the query has changed.
+- 0812178: The Explorer now returns an empty array for empty results, instead of throwing an error, when using the local indexer.
+- 0ea31c3: The loader in the Explore table now appears only during the initial data load. Additionally, a loading spinner has been added to the query submit button for non-live queries to indicate when a query is being refetched.
+- Updated dependencies [94d82cf]
+- Updated dependencies [40aaf97]
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [40aaf97]
+- Updated dependencies [227db4d]
+- Updated dependencies [dead80e]
+- Updated dependencies [56e65f6]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-indexer@2.2.17
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- 59389b1: Fixed an issue where live queries were running while paused and vice versa.
+- 54e5c06: Added 'Copy to Clipboard' button to relevant sections for easier data copying.
+- 05c7298: SQL query execution time in Explore table is now measured and displayed.
+  - @latticexyz/block-logs-stream@2.2.16
+  - @latticexyz/common@2.2.16
+  - @latticexyz/config@2.2.16
+  - @latticexyz/protocol-parser@2.2.16
+  - @latticexyz/schema-type@2.2.16
+  - @latticexyz/store@2.2.16
+  - @latticexyz/store-indexer@2.2.16
+  - @latticexyz/store-sync@2.2.16
+  - @latticexyz/world@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- b819749: Improved the performance of the explorer's `Interact` tab by fetching the ABI from an indexer instead of from an Ethereum RPC if available.
+- 07b6be8: The transactions list in the explorer is now updated every 100ms instead of on every incoming transaction, to improve performance when there are many incoming transactions.
+- 53f7906: The SQL editor now shows an indicator if the query has changed since it was last run.
+- 722f4b4: The columns in the Explore tab table are now sorted correctly according to their types.
+- 35cb94a: SQL live queries in the Explore view table can now be paused and resumed.
+- 7fa68f6: Indicated MUD schema key columns in the table view of the Explore tab.
+- 1a2b3c8: The functions in the Interact tab now display the emitted logs with the block explorer URL for the submitted transaction.
+- 0592406: Added support for ERC-4337 bundled transactions, monitoring them by either listening to chain blocks or using the `observer` transport wrapper. Each user operation within a bundled transaction is displayed as an individual transaction in the Observe tab.
+- 0facee0: When accessing a new table in Explore tab, the SQL editor now encloses all column names in double quotes in order to prevent invalid queries.
+- 3258a6d: The latest ABI changes are now consistently fetched correctly.
+- 2be543f: Fixed world ABI fetching in Rhodolite.
+- d542357: Transactions in `Observe` tab now display decoded `callFrom` function calls.
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 88b9daf: Observer transport now uses the `blockExplorers.worldsExplorer.url` from the chain config if no `explorerUrl` is provided.
+- cfdfcc1: SQL queries can be executed using the Cmd/Ctrl + Enter shortcut.
+- 9c1ca41: When accessing a new table in Explore tab, the SQL editor now encloses column names that are also PostgreSQL keywords in double quotes in order to prevent invalid queries.
+- b0b42a9: Added support for exporting table data in CSV, JSON, and TXT formats.
+- c681aa6: In the Explore tab, the view table now displays results generated by SQL query functions.
+- Updated dependencies [9580d29]
+- Updated dependencies [1770620]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [5f493cd]
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [a6fe15c]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store-indexer@2.2.15
+  - @latticexyz/store@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

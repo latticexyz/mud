@@ -1,5 +1,277 @@
 # @latticexyz/store-sync
 
+## 2.2.22
+
+### Patch Changes
+
+- cd146eb: The `fetchRecords` util now supports specifying an upper bound for the block height of SQL queries.
+- 291a54a: The preconfirmed logs stream now waits before reconnecting if a previous connection attempt failed.
+- 3baa3fd: The sync stack now skips store logs with invalid key tuples instead of throwing errors.
+
+  MUD doesn’t validate schemas for onchain writes or deletions, it's the developer's responsibility to use correct encoding.
+  Using the wrong key schema onchain is effectively a no-op, since the data ends up in a storage slot that won’t be read when using the correct schema.
+  The expectation is that the sync stack ignores these no-op logs, but it was previously throwing during decode.
+
+- 91837e3: The preconfirmed logs stream is now using `isomorphic-ws` for more control over error handling and reconnection logic.
+- 490159e: `getWorldAbi` now returns a full world ABI (errors, parameter names, mutability, etc.) registered by the deployer using the metadata module.
+
+  Also added internal functions `getSystemAbi` and `getSystemAbis` to retrieve system-specific ABIs.
+
+- 1e9047e: Fixed a bug that caused the stash storage adapter to crash when deleting a dynamic field and writing to it again in the same block.
+- 7902888: Pending deletions immediately followed by field updates are now handled correctly by the Stash storage adapter.
+- 26d2e3a: `getWorldAbi()` now returns an ABI that is a combination of:
+
+  - base World ABI
+  - system ABIs stored onchain with metadata module during deploy
+  - world functions
+
+- 6508c1d: The sync stack now supports defining the chunking behavior during initial hydration. Chunking remains enabled by default.
+
+  Chunking is useful to avoid blocking the main thread for too long, but it can lead to updates that happened in the same block being split across multiple chunks.
+  If chunking is enabled, clients should account for this by waiting for full hydration before using the update stream.
+  If atomicity of updates is important and blocking the main thread is not an issue, set this to `false`.
+
+- 23b0c9a: The sync stack now handles downtime in the pending logs API and reconnects once it's available again.
+- a3918e0: Fixed a race condition in the preconfirmed logs stream by setting up the message listener before setting up the subscription.
+- 405a600: Added React 19.x to the peer dependency range.
+- db94eb2: Fetching a snapshot from the indexer will now parse JSON as a stream, avoiding issues with large snapshots where the string is too long to parse in one go.
+- 8fad4be: Updated JSON imports to use `with` annotation instead of `assert`.
+- Updated dependencies [6008573]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [6344ced]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [2048adf]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [b8239d8]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-metadata@2.2.22
+  - @latticexyz/stash@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/recs@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [1d354b8]
+- Updated dependencies [8cdc57b]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/block-logs-stream@2.2.21
+  - @latticexyz/config@2.2.21
+  - @latticexyz/protocol-parser@2.2.21
+  - @latticexyz/stash@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/recs@2.2.21
+  - @latticexyz/schema-type@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/stash@2.2.20
+  - @latticexyz/block-logs-stream@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/config@2.2.20
+  - @latticexyz/protocol-parser@2.2.20
+  - @latticexyz/recs@2.2.20
+  - @latticexyz/schema-type@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.19
+- @latticexyz/common@2.2.19
+- @latticexyz/config@2.2.19
+- @latticexyz/protocol-parser@2.2.19
+- @latticexyz/recs@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/stash@2.2.19
+- @latticexyz/store@2.2.19
+- @latticexyz/world@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- df5d393: Since Postgres doesn't support `\x00` bytes in strings, the decoded postgres indexer now removes `\x00` bytes from decoded strings.
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/world@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/stash@2.2.18
+  - @latticexyz/block-logs-stream@2.2.18
+  - @latticexyz/config@2.2.18
+  - @latticexyz/protocol-parser@2.2.18
+  - @latticexyz/recs@2.2.18
+  - @latticexyz/schema-type@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- 5a9e238: Updated `waitForTransaction` to handle receipt status for user operations.
+- 9321a5c: Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+  To enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling any sync method (e.g. `syncToStash`). For `<SyncProvider>`, only a `internal_validateBlockRange` prop is needed.
+
+  ```diff
+  -syncToStash({ publicClient, ... });
+  +syncToStash({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
+  ```
+
+  ```diff
+  -<SyncProvider adapter={createSyncAdapter(...)}>
+  +<SyncProvider adapter={createSyncAdapter(...)} internal_validateBlockRange>
+  ```
+
+  Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+- 227db4d: Added an RECS sync adapter to be used with `SyncProvider` in React apps.
+
+  ```tsx
+  import { WagmiProvider } from "wagmi";
+  import { QueryClientProvider } from "@tanstack/react-query";
+  import { SyncProvider } from "@latticexyz/store-sync/react";
+  import { createSyncAdapter } from "@latticexyz/store-sync/recs";
+  import { createWorld } from "@latticexyz/recs";
+  import config from "./mud.config";
+
+  const world = createWorld();
+  const { syncAdapter, components } = createSyncAdapter({ world, config });
+
+  export function App() {
+    return (
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>
+            {children}
+          </SyncProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    );
+  }
+  ```
+
+- Updated dependencies [94d82cf]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [40aaf97]
+- Updated dependencies [dead80e]
+- Updated dependencies [56e65f6]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/stash@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/recs@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.16
+- @latticexyz/common@2.2.16
+- @latticexyz/config@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/recs@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/stash@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/world@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 1770620: Updated the `watchLogs` util to accept the updated RPC response type.
+- 5f493cd: Added an experimental `@latticexyz/store-sync/react` export with a `SyncProvider` and `useSync` hook. This allows for easier syncing MUD data to React apps.
+
+  Note that this is currently only usable with Stash and assumes you are also using Wagmi in your React app.
+
+  ```tsx
+  import { WagmiProvider } from "wagmi";
+  import { QueryClientProvider } from "@tanstack/react-query";
+  import { SyncProvider } from "@latticexyz/store-sync/react";
+  import { createSyncAdapter } from "@latticexyz/store-sync/internal";
+
+  export function App() {
+    return (
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <SyncProvider
+            chainId={chainId}
+            address={worldAddress}
+            startBlock={startBlock}
+            adapter={createSyncAdapter({ stash })}
+          >
+            {children}
+          </SyncProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    );
+  }
+  ```
+
+- cd9fd0a: Fixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- b819749: Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+  Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+- 9ddc874: Experimental pending logs watcher now reconnects if it loses connection or times out.
+- a6fe15c: All sync methods using a `publicClient` argument now accept a plain Viem `Client` rather than a decorated `PublicClient`, allowing for more flexibility and better tree-shaking for lighter bundles.
+- Updated dependencies [9580d29]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [96f1473]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [16242b7]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/stash@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/recs@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

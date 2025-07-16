@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { Hex } from "viem";
+import { Hex, stringify } from "viem";
 import { isDefined } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
 import mudConfig from "@latticexyz/store/mud.config";
@@ -7,17 +7,17 @@ import { useQuery } from "@tanstack/react-query";
 import { internalNamespaces } from "../../../common";
 import { decodeTable } from "../api/utils/decodeTable";
 import { useChain } from "../hooks/useChain";
+import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 import { DozerResponse } from "../types";
-import { indexerForChainId } from "../utils/indexerForChainId";
 
 export function useTablesQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
+  const indexer = useIndexerForChainId(chainId);
 
   return useQuery<DozerResponse, Error, Table[]>({
     queryKey: ["tables", worldAddress, chainName],
     queryFn: async () => {
-      const indexer = indexerForChainId(chainId);
       const tableName = "store__Tables";
       const query =
         indexer.type === "sqlite"
@@ -29,7 +29,7 @@ export function useTablesQuery() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
+        body: stringify([
           {
             address: worldAddress as Hex,
             query,
@@ -55,6 +55,7 @@ export function useTablesQuery() {
         .filter(isDefined)
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
-    refetchInterval: 5000,
+    retry: false,
+    refetchInterval: 15_000,
   });
 }

@@ -24,7 +24,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "registerTable", "/store/tables#manually-register-a-table");
       content = addSampleCodeFunction(content, "registerStoreHook", "/store/store-hooks");
       content = addSampleCodeFunction(content, "setStoreAddress", "/store/table-libraries#storeswitch");
@@ -47,7 +47,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "registerTable", "/store/tables#manually-register-a-table");
       content = addSampleCodeFunction(content, "registerStoreHook", "/store/store-hooks");
 
@@ -64,7 +64,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeContract(content, "IStoreHook", "/store/store-hooks#store-hook-contract");
 
       return content;
@@ -93,7 +93,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "encode", "/world/namespaces-access-control#modifying-access-control");
 
       return content
@@ -114,7 +114,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
 
       return content;
     },
@@ -125,7 +125,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content;
     },
   },
@@ -135,7 +135,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content;
     },
   },
@@ -145,7 +145,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeContract(content, "IDelegationControl", "/world/account-delegation");
 
       return content;
@@ -157,7 +157,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return (
         content
           // fix bad placeholder
@@ -174,7 +174,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content;
     },
   },
@@ -184,7 +184,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
 
       return content;
     },
@@ -195,7 +195,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content;
     },
   },
@@ -209,7 +209,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content.replace("Constants", "systemHookTypes.sol constants");
     },
   },
@@ -219,7 +219,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "call", "/world/systems#using-call");
 
       return content;
@@ -231,7 +231,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content;
     },
   },
@@ -241,7 +241,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "call", "/world/systems#using-call");
 
       return content
@@ -251,30 +251,23 @@ const PUBLIC_APIS: PublicApis = {
   },
   "world/reference/world-external.mdx": {
     inputFiles: [
-      // After IBaseWorld we have all the things it inherits from.
-      // We delete their headings, and leave the functions, errors, etc.
       { source: "world/src/codegen/interfaces/IBaseWorld.sol" },
-      { source: "store/src/Store.sol" },
-      { source: "store/src/IStoreRegistration.sol" },
-      { source: "world/src/modules/init/implementations/AccessManagementSystem.sol" },
-      { source: "world/src/modules/init/implementations/BalanceTransferSystem.sol" },
-      { source: "world/src/modules/init/implementations/BatchCallSystem.sol" },
-      { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
-      { source: "world/src/modules/init/RegistrationSystem.sol" },
-      { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
-      { source: "store/src/IStoreErrors.sol" },
-
-      // Back to adding contracts and interfaces to the docs.
       { source: "world/src/IWorldKernel.sol" },
       { source: "world/src/IWorldErrors.sol" },
       { source: "world/src/IWorldEvents.sol" },
-      { source: "world/src/IWorldFactory.sol" },
+      { source: "world/src/codegen/interfaces/IRegistrationSystem.sol" },
+      { source: "world/src/codegen/interfaces/IAccessManagementSystem.sol" },
+      { source: "world/src/codegen/interfaces/IBalanceTransferSystem.sol" },
+      { source: "world/src/codegen/interfaces/IBatchCallSystem.sol" },
+      { source: "world/src/codegen/interfaces/IModuleInstallationSystem.sol" },
+      { source: "world/src/codegen/interfaces/IStoreRegistrationSystem.sol" },
+      { source: "world/src/codegen/interfaces/IWorldRegistrationSystem.sol" },
     ],
     processContent: (content) => {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(
         content,
         "grantAccess",
@@ -302,17 +295,7 @@ const PUBLIC_APIS: PublicApis = {
         .replaceAll(
           "*This interface is automatically generated from the corresponding system contract. Do not edit manually.*",
           "",
-        )
-        .replace(/## StoreData((.|\n)*?)### Functions/m, "### Functions")
-        .replace(/#### constructor((.|\n)*?)#### storeVersion/m, "#### storeVersion")
-        .replace(/## IStoreRegistration((.|\n)*?)#### registerTable/m, "#### registerTable")
-        .replace(/## AccessManagementSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## BalanceTransferSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## BatchCallSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## ModuleInstallationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## RegistrationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## IStoreErrors((.|\n)*?)### Errors/m, "### Errors");
+        );
     },
   },
   "world/reference/world-context.mdx": {
@@ -321,7 +304,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content.replace("Constants", "WorldContext.sol constants");
     },
   },
@@ -331,7 +314,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content;
     },
   },
@@ -341,7 +324,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "encodeNamespace", "/world/systems#registering-systems");
 
       return content
@@ -360,7 +343,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content.replace("Constants", "constants.sol").replace("Constants", "version.sol constants");
     },
   },
@@ -376,7 +359,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       return content.replace("Constants", "constants.sol");
     },
   },
@@ -393,7 +376,7 @@ const PUBLIC_APIS: PublicApis = {
       content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixInheritence(content);
+      content = fixinheritance(content);
       content = addSampleCodeFunction(content, "registerNamespace", "/world/systems#registering-systems");
       content = addSampleCodeFunction(content, "registerSystem", "/world/systems#registering-systems");
       content = addSampleCodeFunction(content, "registerFunctionSelector", "/world/function-selectors");
@@ -420,13 +403,13 @@ function fixGithubLinks(content: string, packageName: string) {
   return content.replace(pattern, replacement);
 }
 
-/* Fix inheritence links.
+/* Fix inheritance links.
  * Creating the pattern a new for every call is inefficient, but I'm optimizing for programmer time
  */
-function fixInheritence(content: string) {
+function fixinheritance(content: string) {
   let newContent = content;
-  for (let i = 0; i < inheritence.length; i++) {
-    const item = inheritence[i];
+  for (let i = 0; i < inheritance.length; i++) {
+    const item = inheritance[i];
     const pattern = `\\[${item.contract}\\]\\([/a-zA-Z0-9.#]+\\)`;
     newContent = newContent.replaceAll(new RegExp(pattern, "g"), `[${item.contract}](${item.link})`);
   }
@@ -438,8 +421,8 @@ function removeAuthor(content: string) {
   return content.replace(/\*\*Author:\*\*\n[^\n]+\n/g, "");
 }
 
-// The inheritence links that need to be fixed
-const inheritence = [
+// The inheritance links that need to be fixed
+const inheritance = [
   { contract: "StoreRead", link: "/store/reference/store-core#storeread" },
   { contract: "StoreData", link: "/store/reference/store-core#storedata" },
   { contract: "StoreKernel", link: "/store/reference/store-core#storekernel" },

@@ -24,7 +24,7 @@ import { ERC20Metadata, ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
 
-  function install(bytes memory encodedArgs) public {
+  function install(bytes memory encodedArgs) public override {
     // Require the module to not be installed with these args yet
     requireNotInstalled(__self, encodedArgs);
 
@@ -57,10 +57,6 @@ contract ERC20Module is Module {
       ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
     }
     ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, puppet);
-  }
-
-  function installRoot(bytes memory) public pure {
-    revert Module_RootInstallNotSupported();
   }
 }
 

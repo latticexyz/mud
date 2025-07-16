@@ -1,6 +1,6 @@
 import { Address, Hash } from "viem";
 import { UserOperationReceipt } from "viem/account-abstraction";
-import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useObservedTransactions";
+import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useMergedTransactions";
 import { ReceiptSummary } from "./common";
 
 export type Messages = {

@@ -1,15 +1,23 @@
-import { Abi, Address, type ContractFunctionName } from "viem";
-import IWorldCallAbi from "../out/IWorldKernel.sol/IWorldCall.abi.json";
-import { SystemCallFrom, encodeSystemCallFrom } from "./encodeSystemCallFrom";
+import { Abi, Address, encodeFunctionData } from "viem";
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
+import { worldCallAbi } from "./worldCallAbi";
+import { internal_normalizeSystemFunctionName } from "./normalizeSystemFunctionName";
+import { SystemCalls } from "./encodeSystemCalls";
 
 /** Encode system calls to be passed as arguments into `World.batchCallFrom` */
-export function encodeSystemCallsFrom<abi extends Abi, functionName extends ContractFunctionName<abi>>(
-  abi: abi,
+export function encodeSystemCallsFrom<abis extends readonly Abi[]>(
   from: Address,
-  systemCalls: readonly Omit<SystemCallFrom<abi, functionName>, "abi" | "from">[],
-): AbiParametersToPrimitiveTypes<ExtractAbiFunction<typeof IWorldCallAbi, "callFrom">["inputs"]>[] {
-  return systemCalls.map((systemCall) =>
-    encodeSystemCallFrom({ ...systemCall, abi, from } as SystemCallFrom<abi, functionName>),
-  );
+  systemCalls: SystemCalls<abis>,
+): AbiParametersToPrimitiveTypes<ExtractAbiFunction<worldCallAbi, "batchCallFrom">["inputs"]> {
+  return [
+    systemCalls.map(({ abi, systemId, functionName, args }) => ({
+      from,
+      systemId,
+      callData: encodeFunctionData({
+        abi,
+        functionName: internal_normalizeSystemFunctionName(systemId, functionName),
+        args,
+      }),
+    })),
+  ];
 }

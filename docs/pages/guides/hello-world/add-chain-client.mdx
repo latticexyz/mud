@@ -7,12 +7,14 @@ Note that this is not required if you are going to use Lattice chains, [redstone
 
 ## Setup
 
-[Create a new MUD application from the template](../../templates/typescript/getting-started).
+[Create a new MUD application from the template](../../templates/typescript/vanilla).
 Use the vanilla template.
 
 ```sh copy
-pnpm create mud@latest tutorial --template vanilla
+pnpm create mud@latest --name tutorial --template vanilla
 cd tutorial
+pnpm install
+pnpm dev
 ```
 
 You can also use the `react-ecs` or `threejs` templates without any changes to the tutorial.

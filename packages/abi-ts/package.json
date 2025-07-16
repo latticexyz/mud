@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/abi-ts",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "Create TypeScript type declaration files (`.d.ts`) for your ABI JSON files.",
   "repository": {
     "type": "git",
@@ -30,22 +30,18 @@
     "build": "tsup",
     "clean": "shx rm -rf dist",
     "dev": "tsup --watch",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
+    "test": "vitest --run",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
     "chalk": "^5.3.0",
     "debug": "^4.3.4",
-    "execa": "^7.0.0",
     "glob": "^10.4.2",
     "yargs": "^17.7.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/node": "^18.15.11",
-    "@types/yargs": "^17.0.10",
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "@types/yargs": "^17.0.10"
   },
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,169 @@
 # @latticexyz/dev-tools
 
+## 2.2.22
+
+### Patch Changes
+
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [6008573]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/react@2.2.22
+  - @latticexyz/recs@2.2.22
+  - @latticexyz/schema-type@2.2.22
+  - @latticexyz/utils@2.2.22
+
+## 2.2.21
+
+### Patch Changes
+
+- Updated dependencies [1d354b8]
+- Updated dependencies [8cdc57b]
+- Updated dependencies [b18c0ef]
+  - @latticexyz/common@2.2.21
+  - @latticexyz/world@2.2.21
+  - @latticexyz/store@2.2.21
+  - @latticexyz/store-sync@2.2.21
+  - @latticexyz/react@2.2.21
+  - @latticexyz/recs@2.2.21
+  - @latticexyz/schema-type@2.2.21
+  - @latticexyz/utils@2.2.21
+
+## 2.2.20
+
+### Patch Changes
+
+- Updated dependencies [3187081]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3915759]
+- Updated dependencies [06e48e0]
+- Updated dependencies [3187081]
+  - @latticexyz/world@2.2.20
+  - @latticexyz/store@2.2.20
+  - @latticexyz/store-sync@2.2.20
+  - @latticexyz/react@2.2.20
+  - @latticexyz/common@2.2.20
+  - @latticexyz/recs@2.2.20
+  - @latticexyz/schema-type@2.2.20
+  - @latticexyz/utils@2.2.20
+
+## 2.2.19
+
+### Patch Changes
+
+- @latticexyz/common@2.2.19
+- @latticexyz/react@2.2.19
+- @latticexyz/recs@2.2.19
+- @latticexyz/schema-type@2.2.19
+- @latticexyz/store@2.2.19
+- @latticexyz/store-sync@2.2.19
+- @latticexyz/utils@2.2.19
+- @latticexyz/world@2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- Updated dependencies [5d6fb1b]
+- Updated dependencies [10ce339]
+- Updated dependencies [df5d393]
+  - @latticexyz/store@2.2.18
+  - @latticexyz/world@2.2.18
+  - @latticexyz/common@2.2.18
+  - @latticexyz/store-sync@2.2.18
+  - @latticexyz/react@2.2.18
+  - @latticexyz/recs@2.2.18
+  - @latticexyz/schema-type@2.2.18
+  - @latticexyz/utils@2.2.18
+
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [94d82cf]
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [227db4d]
+- Updated dependencies [56e65f6]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/react@2.2.17
+  - @latticexyz/recs@2.2.17
+  - @latticexyz/schema-type@2.2.17
+  - @latticexyz/utils@2.2.17
+
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/common@2.2.16
+- @latticexyz/react@2.2.16
+- @latticexyz/recs@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/store-sync@2.2.16
+- @latticexyz/utils@2.2.16
+- @latticexyz/world@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- Updated dependencies [1770620]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [5f493cd]
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [a6fe15c]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/recs@2.2.15
+  - @latticexyz/react@2.2.15
+  - @latticexyz/utils@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

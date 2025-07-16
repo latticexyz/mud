@@ -1,8 +1,9 @@
 import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import packageJson from "../package.json";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex } from "viem";
+import { createWalletClient, http, Hex, isHex, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -18,6 +19,7 @@ import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
 import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
+import { defaultChains } from "./defaultChains";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -48,6 +50,11 @@ export const deployOptions = {
     type: "boolean",
     desc: "Deploy the World with an AWS KMS key instead of local private key.",
   },
+  indexerUrl: {
+    type: "string",
+    desc: "The indexer URL to use.",
+    required: false,
+  },
 } as const satisfies Record<string, Options>;
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
@@ -57,16 +64,15 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
  * This is used by the deploy, test, and dev-contracts CLI commands.
  */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
-  const salt = opts.salt;
-  if (salt != null && !isHex(salt)) {
-    throw new MUDError("Expected hex string for salt");
-  }
+  const salt = opts.salt != null ? (isHex(opts.salt) ? opts.salt : stringToHex(opts.salt)) : undefined;
 
-  const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
+  const profile = opts.profile;
 
   const configPath = await resolveConfigPath(opts.configPath);
   const config = (await loadConfig(configPath)) as WorldConfig;
   const rootDir = path.dirname(configPath);
+
+  console.log(chalk.green(`\nUsing ${packageJson.name}@${packageJson.version}`));
 
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
@@ -136,6 +142,16 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     account,
   });
 
+  const chainId = await getChainId(client);
+  const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+  const worldDeployBlock = opts.worldAddress
+    ? getWorldDeployBlock({
+        worldAddress: opts.worldAddress,
+        worldsFile: config.deploy.worldsFile,
+        chainId,
+      })
+    : undefined;
+
   console.log("Deploying from", client.account.address);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
@@ -147,12 +163,15 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
+    worldDeployBlock,
     client,
     tables,
     systems,
     libraries,
     modules,
     artifacts,
+    indexerUrl,
+    chainId,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
@@ -176,11 +195,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
-    const chainId = await getChainId(client);
     const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
-    writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
-    writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
+    writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2) + "\n");
+    writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2) + "\n");
 
     const localChains = [1337, 31337];
     const deploys = existsSync(config.deploy.worldsFile)
@@ -192,7 +210,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
-    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
+    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2) + "\n");
 
     console.log(
       chalk.bgGreen(
@@ -204,4 +222,18 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(deploymentInfo);
 
   return worldDeploy;
+}
+
+function getWorldDeployBlock({
+  chainId,
+  worldAddress,
+  worldsFile,
+}: {
+  chainId: number;
+  worldAddress: string;
+  worldsFile: string;
+}): bigint | undefined {
+  const deploys = existsSync(worldsFile) ? JSON.parse(readFileSync(worldsFile, "utf-8")) : {};
+  const worldDeployBlock = deploys[chainId]?.address === worldAddress ? deploys[chainId].blockNumber : undefined;
+  return worldDeployBlock ? BigInt(worldDeployBlock) : undefined;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/protocol-parser",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "Parser utilities for the MUD protocol",
   "repository": {
     "type": "git",
@@ -33,19 +33,20 @@
     "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest typecheck --run && vitest --run",
+    "test": "vitest --run",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "catalog:",
-    "viem": "catalog:"
+    "abitype": "1.0.6"
   },
   "devDependencies": {
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "viem": "2.30.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

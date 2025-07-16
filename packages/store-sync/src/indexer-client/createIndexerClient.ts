@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { input } from "./input";
-import { StorageAdapterBlock } from "../common";
+import { StorageAdapterBlock, StorageAdapterLog } from "../common";
 import { Result } from "@latticexyz/common";
+import { parseLogs } from "./parseLogs";
 import { isLogsApiResponse } from "./isLogsApiResponse";
-import { toStorageAdatperBlock } from "./toStorageAdapterBlock";
+import { toStorageAdapterBlock } from "./toStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
-   * Indexer endpoint URL like `https://indexer.holesky.redstone.xyz`.
+   * Indexer endpoint URL like `https://indexer.mud.redstonechain.com`.
    */
   url: string;
 };
@@ -28,15 +29,20 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
       try {
         const input = encodeURIComponent(JSON.stringify(opts));
         const urlOrigin = new URL(url).origin;
-        const response = await fetch(`${urlOrigin}/api/logs?input=${input}`, { method: "GET" });
 
-        // TODO: return a readable stream instead of fetching the entire response at once
-        const result = await response.json();
+        const response = await fetch(`${urlOrigin}/api/logs?input=${input}`);
+        if (!response.body) {
+          throw new Error(`Indexer response (${response.ok}) had no body.`);
+        }
+
+        const logs: StorageAdapterLog[] = [];
+        const result = await parseLogs(response.body, (log) => logs.push(log));
+
         if (!isLogsApiResponse(result)) {
           return { error: result };
         }
 
-        return { ok: toStorageAdatperBlock(result) };
+        return { ok: toStorageAdapterBlock({ ...result, logs }) };
       } catch (error) {
         return { error };
       }

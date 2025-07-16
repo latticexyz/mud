@@ -1,0 +1,46 @@
+{
+  "name": "vite-plugin-mud",
+  "version": "2.2.22",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/vite-plugin-mud"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/exports/index.d.ts",
+      "default": "./dist/exports/index.js"
+    },
+    "./env": {
+      "types": "./env.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/exports/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "env.d.ts"
+  ],
+  "scripts": {
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "shx rm -rf dist"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7"
+  },
+  "peerDependencies": {
+    "vite": "^6.0.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

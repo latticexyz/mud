@@ -1,13 +1,7 @@
 packages:
   - packages/*
+  - test/with-anvil
   - test/mock-game-contracts
   - test/puppet-modules
+  - test/system-libraries
   - test/ts-benchmarks
-
-catalog:
-  "@ark/attest": "0.12.1"
-  "@ark/util": "0.2.2"
-  "abitype": "1.0.6"
-  "arktype": "2.0.0-beta.6"
-  "viem": "2.21.19"
-  "wagmi": "2.12.11"

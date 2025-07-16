@@ -1,49 +1,10 @@
-import { headers } from "next/headers";
+"use client";
+
 import { redirect } from "next/navigation";
-import { Address } from "viem";
+import { anvil } from "viem/chains";
 import { supportedChainName, supportedChains } from "../../../../common";
-import { indexerForChainId } from "../../utils/indexerForChainId";
+import { useWorldsQuery } from "../../queries/useWorldsQuery";
 import { WorldsForm } from "./WorldsForm";
-
-type ApiResponse = {
-  items: {
-    address: {
-      hash: Address;
-    };
-  }[];
-};
-
-async function fetchWorlds(chainName: supportedChainName): Promise<Address[]> {
-  const chain = supportedChains[chainName];
-  const indexer = indexerForChainId(chain.id);
-  let worldsApiUrl: string | null = null;
-
-  if (indexer.type === "sqlite") {
-    const headersList = headers();
-    const host = headersList.get("host") || "";
-    const protocol = headersList.get("x-forwarded-proto") || "http";
-    const baseUrl = `${protocol}://${host}`;
-    worldsApiUrl = `${baseUrl}/api/sqlite-indexer/worlds`;
-  } else {
-    const blockExplorerUrl = "blockExplorers" in chain && chain.blockExplorers?.default.url;
-    if (blockExplorerUrl) {
-      worldsApiUrl = `${blockExplorerUrl}/api/v2/mud/worlds`;
-    }
-  }
-
-  if (!worldsApiUrl) {
-    return [];
-  }
-
-  try {
-    const response = await fetch(worldsApiUrl);
-    const data: ApiResponse = await response.json();
-    return data.items.map((world) => world.address.hash);
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
 
 type Props = {
   params: {
@@ -51,10 +12,17 @@ type Props = {
   };
 };
 
-export default async function WorldsPage({ params: { chainName } }: Props) {
-  const worlds = await fetchWorlds(chainName);
-  if (worlds.length === 1) {
-    return redirect(`/${chainName}/worlds/${worlds[0]}`);
+export default function WorldsPage({ params: { chainName } }: Props) {
+  const { data, isLoading, error } = useWorldsQuery();
+  if (error) {
+    throw error;
   }
-  return <WorldsForm worlds={worlds} />;
+
+  const worlds = data?.worlds || [];
+  const chain = supportedChains[chainName];
+  if (worlds.length === 1 && chain.id === anvil.id) {
+    redirect(`/${chainName}/worlds/${worlds[0]?.address}`);
+  }
+
+  return <WorldsForm worlds={worlds} isLoading={isLoading.verified || isLoading.indexer} />;
 }

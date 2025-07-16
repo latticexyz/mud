@@ -4,13 +4,14 @@ import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Hex } from "viem";
 
 export type Module = {
-  /**
-   * The name of the module
-   * @deprecated
-   */
-  readonly name?: string;
   /** Should this module be installed as a root module? */
   readonly root: boolean;
+  /**
+   * Allow the module to call systems on your behalf.
+   * Useful when modules need to create namespaces or
+   * upgrade systems in namespaces you own.
+   */
+  readonly useDelegation: boolean;
   /** Arguments to be passed to the module's install method */
   readonly args: readonly (ValueWithType | DynamicResolution)[];
   /**
@@ -23,6 +24,11 @@ export type Module = {
    * If not provided, it's assumed that this is a local module as part of the project's source and the artifact will be looked up in forge's output directory.
    */
   readonly artifactPath: string | undefined;
+  /**
+   * The name of the module
+   * @deprecated
+   */
+  readonly name?: string;
 };
 
 export type SystemDeploy = {
@@ -113,6 +119,10 @@ export type Codegen = {
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
+  /** Directory to output system libraries (Default "libraries") */
+  readonly systemLibrariesDirectory: string;
+  /** Generate libraries for each system (Default false) */
+  readonly generateSystemLibraries: boolean;
   /**
    * @internal
    * Absolute import path for a package import or starting with `.` for an import relative to project root dir.

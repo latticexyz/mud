@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/dev-tools",
-  "version": "2.2.14",
+  "version": "2.2.22",
   "description": "MUD developer tools",
   "repository": {
     "type": "git",
@@ -46,7 +46,6 @@
     "rxjs": "7.5.5",
     "tailwind-merge": "^1.12.0",
     "use-local-storage-state": "^18.3.2",
-    "viem": "catalog:",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
@@ -56,8 +55,7 @@
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "viem": "2.30.6"
   },
   "peerDependencies": {
     "@latticexyz/common": "2.x",
@@ -65,7 +63,8 @@
     "@latticexyz/store": "2.x",
     "@latticexyz/store-sync": "2.x",
     "@latticexyz/utils": "2.x",
-    "@latticexyz/world": "2.x"
+    "@latticexyz/world": "2.x",
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

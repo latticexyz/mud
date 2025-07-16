@@ -21,6 +21,7 @@
     "@latticexyz/store-sync": "link:../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../packages/utils",
     "@latticexyz/world": "link:../../../packages/world",
+    "@latticexyz/world-module-callwithsignature": "link:../../../packages/world-module-callwithsignature",
     "@latticexyz/world-modules": "link:../../../packages/world-modules",
     "@viem/anvil": "^0.0.6",
     "abitype": "1.0.6",
@@ -31,7 +32,7 @@
     "happy-dom": "^12.10.3",
     "postgres": "3.3.5",
     "typescript": "5.4.2",
-    "viem": "2.21.19",
+    "viem": "2.30.6",
     "vite": "^4.2.1",
     "vitest": "0.34.6",
     "zod": "3.23.8"

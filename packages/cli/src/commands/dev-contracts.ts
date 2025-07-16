@@ -1,5 +1,5 @@
 import type { CommandModule, InferredOptionTypes } from "yargs";
-import { anvil, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getScriptDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
@@ -11,6 +11,8 @@ import { deployOptions, runDeploy } from "../runDeploy";
 import { BehaviorSubject, debounceTime, exhaustMap, filter } from "rxjs";
 import { Address } from "viem";
 import { isDefined } from "@latticexyz/common/utils";
+import { execa } from "execa";
+import { printCommand } from "../utils/printCommand";
 
 const devOptions = {
   rpc: deployOptions.rpc,
@@ -47,8 +49,12 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
       const userHomeDir = homedir();
       rmSync(path.join(userHomeDir, ".foundry", "anvil", "tmp"), { recursive: true, force: true });
 
-      const anvilArgs = ["--block-time", "1", "--block-base-fee-per-gas", "0"];
-      anvil(anvilArgs);
+      await printCommand(
+        execa("anvil", ["--quiet", ["--block-time", "2"], ["--block-base-fee-per-gas", "0"]].flat(), {
+          stdio: "inherit",
+        }),
+      );
+
       rpc = "http://127.0.0.1:8545";
     }
 
@@ -92,6 +98,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             worldAddress,
             salt: "0x",
             kms: undefined,
+            indexerUrl: undefined,
           });
           worldAddress = deploy.address;
           // if there were changes while we were deploying, trigger it again

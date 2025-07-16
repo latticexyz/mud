@@ -1,5 +1,36 @@
 # Change Log
 
+## 2.2.22
+
+### Patch Changes
+
+- 725f1ae: Bumped Viem and Wagmi versions in templates.
+
+## 2.2.21
+
+## 2.2.20
+
+## 2.2.19
+
+## 2.2.18
+
+### Patch Changes
+
+- 491a5ac: Updated templates to Node v20.
+- 7106953: Fixed an issue with providing world deploy's start block to Vite app's env.
+
+## 2.2.17
+
+### Patch Changes
+
+- d5f4e1e: Updated React template with Stash client state library, EntryKit for wallet support, and a cleaned up app structure.
+- 09846f2: Updated React ECS template with EntryKit for wallet support and a cleaned up app structure.
+- e45e375: Replaced internal usage of `create-create-app` with a simpler recursive copy operation.
+
+## 2.2.16
+
+## 2.2.15
+
 ## 2.2.14
 
 ## 2.2.13

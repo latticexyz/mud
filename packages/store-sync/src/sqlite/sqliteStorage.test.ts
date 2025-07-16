@@ -6,7 +6,7 @@ import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { buildTable } from "./buildTable";
 import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
-import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
+import { Hex, RpcLog, createClient, decodeEventLog, formatLog, http } from "viem";
 import { foundry } from "viem/chains";
 import worldRpcLogs from "../../../../test-data/world-logs.json";
 import { storeEventsAbi } from "@latticexyz/store";
@@ -32,7 +32,7 @@ describe("sqliteStorage", async () => {
   const SqlJs = await initSqlJs();
   let db: BaseSQLiteDatabase<"sync", void>;
 
-  const publicClient = createPublicClient({
+  const publicClient = createClient({
     chain: foundry,
     transport: http(),
   });
@@ -46,10 +46,10 @@ describe("sqliteStorage", async () => {
 
   it("should create tables and data from block log", async () => {
     expect(() => db.select().from(chainState).all()).toThrowErrorMatchingInlineSnapshot(
-      '"no such table: __chainState"',
+      `[Error: no such table: __chainState]`,
     );
     expect(() => db.select().from(mudStoreTables).all()).toThrowErrorMatchingInlineSnapshot(
-      '"no such table: __mudStoreTables"',
+      `[Error: no such table: __mudStoreTables]`,
     );
 
     const storageAdapter = await sqliteStorage({ database: db, publicClient });

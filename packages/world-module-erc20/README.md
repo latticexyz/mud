@@ -4,56 +4,24 @@
 
 ## ERC20 contracts
 
-In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 contract extensions](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20), we provide a way to abstract the underlying Store being used. This allows developers to easily create ERC20 tokens that can either use its own storage as the Store, or attach themselves to an existing World.
+In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 contract extensions](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20), we use our experimental [`WorldConsumer` contract](../world-consumer) to abstract the underlying World being used. This allows developers to easily create ERC20 tokens that attach themselves to an existing World.
 
-- `StoreConsumer`: all contracts inherit from `StoreConsumer`, which abstracts the way in which `ResourceId`s are encoded. This allows us to have composable contracts whose implementations don't depend on the type of Store being used.
-- `WithStore(address) is StoreConsumer`: this contract initializes the store, using the contract's internal storage or the provided external `Store`. It encodes `ResourceId`s using `ResourceIdLib` from the `@latticexyz/store` package.
-- `WithWorld(IBaseWorld, bytes14) is WithStore`: initializes the store and also registers the provided namespace in the provided World. It encodes `ResourceId`s using `WorldResourceIdLib` (using the namespace). It also provides an `onlyNamespace` modifier, which can be used to restrict access to certain functions, only allowing calls from addresses that have access to the namespace.
+The `MUDERC20` contract is the base ERC20 implementation adapted from Openzeppelin's ERC20. Contains the ERC20 logic, reads/writes to the world through MUD's codegen libraries and initializes the tables it needs.
 
-- `MUDERC20`: base ERC20 implementation adapted from Openzeppelin's ERC20. Contains the ERC20 logic, reads/writes to the store through MUD's codegen libraries and initializes the tables it needs. As these libraries use `StoreSwitch` internally, this contract doesn't need to know about the store it's interacting with (it can be internal storage, an external `Store` or a `World`).
+Extensions and other contracts: contracts like `Ownable`, `Pausable`, `ERC20Burnable`, etc are adapted from `OpenZeppelin` contracts to use MUD's codegen libraries to read and write from a `Store`. They inherit from `WorldConsumer`, so they can obtain the `ResourceId` for the tables they use with `_encodeTableId()`.
 
-- Extensions and other contracts: contracts like `Ownable`, `Pausable`, `ERC20Burnable`, etc are adapted from `OpenZeppelin` contracts to use MUD's codegen libraries to read and write from a `Store`. They inherit from `StoreConsumer`, so they can obtain the `ResourceId` for the tables they use using `_encodeResourceId()`.
+### Example
 
-### Example 1: Using the contract's storage
-
-By using `WithStore(address(this))` as the first contract that the implementation inherits from, it allows all the other contracts in the inheritance list to use the contract's storage as a `Store`.
+The `WorldConsumer` (which `MUDERC20` inherits from) contract internally points the `StoreSwitch` to the provided World and attempts to register the provided namespace. It allows all the contracts in the inheritance list to consume the same World, using the provided namespace for all operations. Additionally, all functions that use the `onlyNamespace` modifier can only be called by addresses that have access to the namespace, by calling the token as a `System`.
 
 ```solidity
-contract ERC20WithInternalStore is WithStore(address(this)), MUDERC20, ERC20Pausable, ERC20Burnable, Ownable {
-  constructor() MUDERC20("MyERC20", "MTK") Ownable(_msgSender()) {}
-
-  function mint() public onlyOwner {
-    _mint(to, value);
-  }
-
-  function pause() public onlyOwner {
-    _pause();
-  }
-
-  function unpause() public onlyOwner {
-    _unpause();
-  }
-
-  // The following functions are overrides required by Solidity.
-
-  function _update(address from, address to, uint256 value) internal override(MUDERC20, ERC20Pausable) {
-    super._update(from, to, value);
-  }
-}
-```
-
-### Example 2: Using a World as an external Store and registering a new Namespace
-
-The `WithWorld` contract internally points the `StoreSwitch` to the provided World and attempts to register the provided namespace. It allows the other contracts in the inheritance list to use the external World as a `Store`, using the provided namespace for all operations. Additionally, all functions that use the `onlyNamespace` modifier can only be called by addresses that have access to the namespace.
-
-```solidity
-contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
+contract ERC20PausableBurnable is MUDERC20, ERC20Pausable, ERC20Burnable {
   constructor(
     IBaseWorld world,
     bytes14 namespace,
     string memory name,
     string memory symbol
-  ) WithWorld(world, namespace) MUDERC20(name, symbol) {
+  ) WorldConsumer(world, namespace, true) MUDERC20(name, symbol) {
     // transfer namespace ownership to the creator
     world.transferOwnership(getNamespaceId(), _msgSender());
   }
@@ -80,11 +48,11 @@ contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
 
 # Module usage
 
-The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a default ERC20 (`examples/ERC20WithWorld.sol`) with the following features:
+The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a default ERC20 (`examples/ERC20BurnablePausable.sol`) with the following features:
 
 - ERC20Burnable: Allows users to burn their tokens (or the ones approved to them) using the `burn` and `burnFrom` function.
-- ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses with access to the token's namespace.
-- Minting: Addresses with namespace access can call the `mint` function to mint tokens to any address.
+- ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses and systems with access to the token's namespace.
+- Minting: Addresses and systems with namespace access can call the `mint` function to mint tokens to any address.
 
 ## Installation
 
@@ -120,7 +88,7 @@ In order to get the token's address in a script or system:
 
 ```solidity
 // Table Id of the ERC20Registry, under the `erc20-module` namespace
-ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20Registry");
 
 // Namespace where the token was installed
 ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));

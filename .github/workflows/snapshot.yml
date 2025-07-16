@@ -4,6 +4,9 @@ on:
   workflow_call:
   workflow_dispatch:
 
+# Usually we'd restrict concurrency here, but this causes a deadlock with
+# called workflows. See https://github.com/latticexyz/mud/pull/2784
+
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
 
@@ -50,7 +53,7 @@ jobs:
       # so doing it manually here
       - name: Publish snapshots
         run: |
-          pnpm changeset version --snapshot ${{ github.ref_name }}
+          pnpm changeset version --snapshot
           pnpm changeset publish --tag ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

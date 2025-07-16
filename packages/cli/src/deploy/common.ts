@@ -1,13 +1,8 @@
-import { Abi, Address, Hex, padHex } from "viem";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import { Abi, Account, Address, Chain, Client, Hex, Transport } from "viem";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { LibraryMap } from "./getLibraryMap";
-
-export const salt = padHex("0x", { size: 32 });
-
-// https://eips.ethereum.org/EIPS/eip-170
-export const contractSizeLimit = parseInt("6000", 16);
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
@@ -97,25 +92,35 @@ export type System = DeterministicContract & {
   // world registration
   // TODO: replace this with system manifest data
   readonly worldFunctions: readonly WorldFunction[];
-  // human readable ABIs to register onchain
-  readonly abi: readonly string[];
-  readonly worldAbi: readonly string[];
+  // metadata to register onchain
+  readonly metadata: {
+    // human readable ABIs
+    readonly abi: readonly string[];
+    readonly worldAbi: readonly string[];
+  };
 };
 
 export type DeployedSystem = Omit<
   System,
-  "label" | "namespaceLabel" | "abi" | "worldAbi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+  "label" | "namespaceLabel" | "abi" | "metadata" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
 > & {
   address: Address;
 };
 
 export type Module = DeterministicContract & {
   readonly name: string;
-  readonly installAsRoot: boolean;
+  readonly installStrategy: "root" | "delegation" | "default";
   readonly installData: Hex; // TODO: figure out better naming for this
   /**
    * @internal
    * Optional modules warn instead of throw if they revert while being installed.
    */
   readonly optional?: boolean;
+};
+
+export type CommonDeployOptions = {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly worldDeploy: WorldDeploy;
+  readonly indexerUrl?: string;
+  readonly chainId?: number;
 };

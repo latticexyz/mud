@@ -1,5 +1,25 @@
 # @latticexyz/abi-ts
 
+## 2.2.22
+
+## 2.2.21
+
+## 2.2.20
+
+## 2.2.19
+
+## 2.2.18
+
+## 2.2.17
+
+## 2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 5340394: Using a TS extension (rather than DTS) now correctly includes `as const` in the TS output.
+
 ## 2.2.14
 
 ## 2.2.13
