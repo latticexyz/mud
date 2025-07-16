@@ -55,7 +55,7 @@
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/cli": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
     "solhint": "^3.3.7"
   },
   "publishConfig": {
