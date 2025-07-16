@@ -2,7 +2,6 @@ import { ChainNotConfiguredError, type Connector, createConnector, CreateConnect
 import {
   type Address,
   getAddress,
-  http,
   numberToHex,
   type ProviderConnectInfo,
   type RpcError,
@@ -10,8 +9,6 @@ import {
   UserRejectedRequestError,
   withRetry,
   ExactPartial,
-  Transport,
-  Chain,
   Hex,
 } from "viem";
 import { Chains, Porto, RpcSchema } from "porto";

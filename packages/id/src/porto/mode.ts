@@ -1,5 +1,5 @@
-import { Mode, RpcSchema } from "porto";
-import { popupUrl } from "../rp/common";
+import { Mode } from "porto";
+import { popupUrl } from "../common";
 import { popup } from "./popup";
 
 export function mode(): Mode.Mode {

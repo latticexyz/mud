@@ -1,0 +1,5 @@
+procs:
+  app:
+    shell: pnpm vite
+  tunnel:
+    shell: cloudflared tunnel run

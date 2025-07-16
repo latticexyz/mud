@@ -1,0 +1,41 @@
+{
+  "name": "id.place",
+  "version": "0.0.0",
+  "private": true,
+  "description": "a place for your internet identity",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/id"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "shx rm -rf dist",
+    "dev": "vite",
+    "test": "tsc --noEmit && vitest --run",
+    "test:ci": "pnpm run test"
+  },
+  "dependencies": {
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/id": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "arktype": "2.0.0-beta.6",
+    "ox": "^0.8.3",
+    "porto": "0.0.51",
+    "viem": "2.30.6",
+    "wagmi": "2.15.5",
+    "zustand": "^5.0.6"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.22",
+    "@types/react-dom": "18.2.7",
+    "@vitejs/plugin-react": "^4.6.0",
+    "mprocs": "^0.7.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.6.3",
+    "vite": "^5.4.1"
+  }
+}

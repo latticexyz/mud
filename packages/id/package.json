@@ -30,26 +30,13 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@latticexyz/common": "workspace:*",
-    "arktype": "2.0.0-beta.6",
     "debug": "^4.3.4",
-    "ox": "^0.8.3",
-    "porto": "0.0.51",
-    "viem": "2.30.6",
-    "wagmi": "2.15.5",
-    "zustand": "^5.0.6"
+    "porto": "0.0.51"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/react": "18.2.22",
-    "@types/react-dom": "18.2.7",
-    "@vitejs/plugin-react": "^4.6.0",
-    "mprocs": "^0.7.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-router": "^7.6.3",
-    "vite": "^5.4.1",
-    "wouter": "^3.7.1"
+    "viem": "2.30.6",
+    "wagmi": "2.15.5"
   },
   "peerDependencies": {
     "viem": "2.x",
