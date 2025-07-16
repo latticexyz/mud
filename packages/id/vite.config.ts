@@ -9,4 +9,12 @@ export default defineConfig({
     //   "Permissions-Policy": "publickey-credentials-get=*, publickey-credentials-create=*",
     // },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        index: "index.html",
+        embed: "embed/index.html",
+      },
+    },
+  },
 });
