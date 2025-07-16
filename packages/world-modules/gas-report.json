@@ -1,20 +1,5 @@
 [
   {
-<<<<<<< HEAD
-    "file": "test/CallWithSignatureModule.t.sol:Unstable_CallWithSignatureModuleTest",
-    "test": "testInstallRoot",
-    "name": "install delegation module",
-    "gasUsed": 691127
-  },
-  {
-    "file": "test/CallWithSignatureModule.t.sol:Unstable_CallWithSignatureModuleTest",
-    "test": "testRegisterDelegationWithSignature",
-    "name": "register an unlimited delegation with signature",
-    "gasUsed": 138532
-  },
-  {
-=======
->>>>>>> origin/main
     "file": "test/ERC20.t.sol:ERC20Test",
     "test": "testApprove",
     "name": "approve",
@@ -90,21 +75,13 @@
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testInstallComposite",
     "name": "install keys in table module",
-<<<<<<< HEAD
-    "gasUsed": 1463311
-=======
-    "gasUsed": 1462006
->>>>>>> origin/main
+    "gasUsed": 1462000
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testInstallGas",
     "name": "install keys in table module",
-<<<<<<< HEAD
-    "gasUsed": 1463311
-=======
-    "gasUsed": 1462006
->>>>>>> origin/main
+    "gasUsed": 1462000
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
@@ -116,21 +93,13 @@
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testInstallSingleton",
     "name": "install keys in table module",
-<<<<<<< HEAD
-    "gasUsed": 1463311
-=======
-    "gasUsed": 1462006
->>>>>>> origin/main
+    "gasUsed": 1462000
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "install keys in table module",
-<<<<<<< HEAD
-    "gasUsed": 1463311
-=======
-    "gasUsed": 1462006
->>>>>>> origin/main
+    "gasUsed": 1462000
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
@@ -148,11 +117,7 @@
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "install keys in table module",
-<<<<<<< HEAD
-    "gasUsed": 1463311
-=======
-    "gasUsed": 1462006
->>>>>>> origin/main
+    "gasUsed": 1462000
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
@@ -170,11 +135,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-<<<<<<< HEAD
-    "gasUsed": 719006
-=======
-    "gasUsed": 717999
->>>>>>> origin/main
+    "gasUsed": 717993
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -192,11 +153,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testInstall",
     "name": "install keys with value module",
-<<<<<<< HEAD
-    "gasUsed": 719006
-=======
-    "gasUsed": 717999
->>>>>>> origin/main
+    "gasUsed": 717993
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -208,11 +165,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-<<<<<<< HEAD
-    "gasUsed": 719006
-=======
-    "gasUsed": 717999
->>>>>>> origin/main
+    "gasUsed": 717993
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -230,11 +183,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testSetField",
     "name": "install keys with value module",
-<<<<<<< HEAD
-    "gasUsed": 719006
-=======
-    "gasUsed": 717999
->>>>>>> origin/main
+    "gasUsed": 717993
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -318,71 +267,43 @@
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-<<<<<<< HEAD
-    "gasUsed": 138979
-=======
-    "gasUsed": 138719
->>>>>>> origin/main
+    "gasUsed": 138704
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromCallboundDelegation",
     "name": "call a system via a callbound delegation",
-<<<<<<< HEAD
-    "gasUsed": 67291
-=======
-    "gasUsed": 75599
->>>>>>> origin/main
+    "gasUsed": 75593
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromSystemDelegation",
     "name": "register a systembound delegation",
-<<<<<<< HEAD
-    "gasUsed": 136101
-=======
-    "gasUsed": 135847
->>>>>>> origin/main
+    "gasUsed": 135832
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromSystemDelegation",
     "name": "call a system via a systembound delegation",
-<<<<<<< HEAD
-    "gasUsed": 69655
-=======
-    "gasUsed": 77965
->>>>>>> origin/main
+    "gasUsed": 77959
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-<<<<<<< HEAD
-    "gasUsed": 132644
-=======
-    "gasUsed": 132391
->>>>>>> origin/main
+    "gasUsed": 132376
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromTimeboundDelegation",
     "name": "call a system via a timebound delegation",
-<<<<<<< HEAD
-    "gasUsed": 58221
-=======
-    "gasUsed": 64575
->>>>>>> origin/main
+    "gasUsed": 64569
   },
   {
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
     "test": "testInstall",
     "name": "install unique entity module",
-<<<<<<< HEAD
-    "gasUsed": 718739
-=======
-    "gasUsed": 717497
->>>>>>> origin/main
+    "gasUsed": 717491
   },
   {
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
@@ -394,11 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-<<<<<<< HEAD
-    "gasUsed": 689184
-=======
-    "gasUsed": 688139
->>>>>>> origin/main
+    "gasUsed": 688133
   },
   {
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
