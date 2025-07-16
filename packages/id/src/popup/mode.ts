@@ -14,6 +14,8 @@ import { defineCall } from "./defineCall";
 import { abi } from "../account/abi";
 import { parseEventLogs } from "viem";
 import { storeEventsAbi } from "../../../store/ts/storeEventsAbi";
+import { getPossiblePublicKeys } from "./getPossiblePublicKeys";
+import { readContract } from "viem/actions";
 
 export function mode(): Mode.Mode {
   let lastKey: WebAuthnKey | undefined;
@@ -140,35 +142,53 @@ export function mode(): Mode.Mode {
           // TODO: figure out how to turn `parameters.address` and `parameters.credentialId` into an account+key
           //       (currently blocked on the fact that we can't look up the `publicKey` easily to create the `Key` for the account)
 
-          const challenge1 = Hex.random(256);
-          const signature1 = await WebAuthnP256.sign({
-            challenge: challenge1,
+          const challenge = Hex.random(256);
+          const signature = await WebAuthnP256.sign({
+            challenge: challenge,
             rpId: rp.id,
           });
-          const credentialId = signature1.raw.id;
-          const response = signature1.raw.response as AuthenticatorAssertionResponse;
+          const credentialId = signature.raw.id;
+          const response = signature.raw.response as AuthenticatorAssertionResponse;
           const address = response.userHandle ? Hex.fromBytes(new Uint8Array(response.userHandle)) : null;
           if (!address) throw new Error("no userHandle/address for passkey");
 
-          // TODO: look up keys on account instead of double signature
+          const possiblePublicKeys = getPossiblePublicKeys({ challenge, signature });
 
-          const challenge2 = Hex.random(256);
-          const signature2 = await WebAuthnP256.sign({
-            challenge: challenge2,
-            rpId: rp.id,
-            credentialId,
+          const nextOwnerIndex = await readContract(client, {
+            address,
+            abi,
+            functionName: "nextOwnerIndex",
           });
 
-          const publicKey = recoverPublicKey([
-            { challenge: challenge1, signature: signature1 },
-            { challenge: challenge2, signature: signature2 },
-          ]);
-          if (!publicKey) throw new Error("could not recover public key");
+          // TODO: batch this
+          const encodedOwners = new Set(
+            await Promise.all(
+              Array.from({ length: Number(nextOwnerIndex) }).map((_, i) =>
+                readContract(client, {
+                  address,
+                  abi,
+                  functionName: "ownerAtIndex",
+                  args: [BigInt(i)],
+                }),
+              ),
+            ),
+          );
+
+          const publicKey = possiblePublicKeys.find((publicKey) =>
+            encodedOwners.has(
+              AbiParameters.encode(AbiParameters.from(["bytes32", "bytes32"]), [
+                Hex.fromNumber(publicKey.x),
+                Hex.fromNumber(publicKey.y),
+              ]),
+            ),
+          );
+          // TODO: recover public key?
+          if (!publicKey) throw new Error("passkey not an owner of account");
 
           const key = Key.fromWebAuthnP256({
             credential: {
               id: credentialId,
-              publicKey: PublicKey.fromHex(publicKey),
+              publicKey,
             },
             rpId: rp.id,
             id: address,
