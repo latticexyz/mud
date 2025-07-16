@@ -242,6 +242,7 @@ export function mode(): Mode.Mode {
         console.log("popup.mode.sendCalls", parameters);
 
         const {
+          account,
           calls,
           internal: {
             client,
@@ -249,13 +250,13 @@ export function mode(): Mode.Mode {
           },
         } = parameters;
 
-        const key = parameters.account.keys?.find(
+        const key = account.keys?.find(
           (key): key is WebAuthnKey => key.role === "admin" && key.type === "webauthn-p256",
         );
         if (!key) throw new Error("no key for account");
         if (!key.privateKey?.credential) throw new Error("no credential for key");
 
-        const account = await toCoinbaseSmartAccount({
+        const smartAccount = await toCoinbaseSmartAccount({
           client,
           address: key.id,
           owners: ["0x", toViemAccount(key)],
@@ -271,12 +272,12 @@ export function mode(): Mode.Mode {
           client,
         });
 
-        const request = await bundlerClient.prepareUserOperation({ account, calls });
-        request.signature = await account.signUserOperation(request);
+        const request = await bundlerClient.prepareUserOperation({ account: smartAccount, calls });
+        request.signature = await smartAccount.signUserOperation(request);
 
-        const preCalls = (await PreCalls.get({ address: account.address, storage })) ?? [];
-        console.log("got precalls for", account.address, preCalls);
-        PreCalls.clear({ address: account.address, storage });
+        const preCalls = (await PreCalls.get({ address: smartAccount.address, storage })) ?? [];
+        console.log("got precalls for", smartAccount.address, preCalls);
+        PreCalls.clear({ address: smartAccount.address, storage });
 
         // TODO: move this to some prepare call helper?
         // TODO: can we do precalls + request atomically? they're signed by different accounts
@@ -295,13 +296,13 @@ export function mode(): Mode.Mode {
                 }),
                 calls: [
                   defineCall({
-                    to: account.address,
+                    to: smartAccount.address,
                     abi,
                     functionName: "addOwnerPublicKey",
                     args: [Hex.fromNumber(publicKey.x), Hex.fromNumber(publicKey.y)],
                   }),
                   defineCall({
-                    to: account.address,
+                    to: smartAccount.address,
                     abi,
                     functionName: "removeOwnerAtIndex",
                     args: [0n, AbiParameters.encode(AbiParameters.from(["address"]), [eoa.address])],
