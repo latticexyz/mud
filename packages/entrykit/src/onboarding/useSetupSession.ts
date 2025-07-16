@@ -1,4 +1,4 @@
-import { Hex, encodeFunctionData, numberToHex, parseEventLogs } from "viem";
+import { Hex, encodeFunctionData, parseEventLogs } from "viem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAction } from "viem/utils";
 import { entryPoint07Abi, sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
@@ -16,7 +16,6 @@ import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.confi
 import { createBundlerClient } from "../createBundlerClient";
 import { getBundlerTransport } from "../getBundlerTransport";
 import { isPortoConnector } from "@latticexyz/id/internal";
-import { abi } from "../../../id/src/account/abi";
 import { storeEventsAbi } from "@latticexyz/store";
 
 export function useSetupSession({ connector, userClient }: { connector: Connector; userClient: ConnectedClient }) {
@@ -105,7 +104,8 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
             logs: receipt.logs,
             abi: [
               ...entryPoint07Abi,
-              ...abi,
+              // TODO: export account abi from id package
+              // ...abi,
               ...worldAbi,
               ...storeEventsAbi,
               ...calls.flatMap((call) => call.abi as never),
