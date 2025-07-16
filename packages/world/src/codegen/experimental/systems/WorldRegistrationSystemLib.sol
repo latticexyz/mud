@@ -193,7 +193,10 @@ library WorldRegistrationSystemLib {
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
-    return abi.decode(result, (bytes4));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes4));
+    }
   }
 
   function registerRootFunctionSelector(
@@ -213,7 +216,10 @@ library WorldRegistrationSystemLib {
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
-    return abi.decode(result, (bytes4));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes4));
+    }
   }
 
   function registerDelegation(
@@ -320,7 +326,10 @@ library WorldRegistrationSystemLib {
     );
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-    return abi.decode(result, (bytes4));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes4));
+    }
   }
 
   function registerRootFunctionSelector(
@@ -335,7 +344,10 @@ library WorldRegistrationSystemLib {
     );
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-    return abi.decode(result, (bytes4));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes4));
+    }
   }
 
   function registerDelegation(

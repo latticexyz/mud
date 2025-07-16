@@ -69,8 +69,7 @@
     "@latticexyz/gas-report": "workspace:*",
     "@types/debug": "^4.1.7",
     "@types/ejs": "^3.1.1",
-    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
     "solhint": "^3.3.7",
     "viem": "2.30.6"
   },

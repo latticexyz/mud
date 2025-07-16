@@ -64,7 +64,10 @@ library BatchCallSystemLib {
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
-    return abi.decode(result, (bytes[]));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes[]));
+    }
   }
 
   function batchCallFrom(
@@ -79,7 +82,10 @@ library BatchCallSystemLib {
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
-    return abi.decode(result, (bytes[]));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes[]));
+    }
   }
 
   function batchCall(
@@ -89,7 +95,10 @@ library BatchCallSystemLib {
     bytes memory systemCall = abi.encodeCall(_batchCall_SystemCallDataArray.batchCall, (systemCalls));
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-    return abi.decode(result, (bytes[]));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes[]));
+    }
   }
 
   function batchCallFrom(
@@ -99,7 +108,10 @@ library BatchCallSystemLib {
     bytes memory systemCall = abi.encodeCall(_batchCallFrom_SystemCallFromDataArray.batchCallFrom, (systemCalls));
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-    return abi.decode(result, (bytes[]));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (bytes[]));
+    }
   }
 
   function callFrom(BatchCallSystemType self, address from) internal pure returns (CallWrapper memory) {

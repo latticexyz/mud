@@ -60,6 +60,15 @@ contract LibrariesTest is MudTest {
     assertEq(Value.get(), 2);
     aSystem.setValuesStaticArray([uint256(1), 2, 3]);
     assertEq(Value.get(), 3);
+
+    bytes memory bytesArgument = "test bytes";
+    (, bytes memory bytesResult, ) = aSystem.setWithNamelessParameters(
+      payable(0),
+      bytesArgument,
+      bytesArgument,
+      new string[](0)
+    );
+    assertEq(bytesResult, bytesArgument);
   }
 
   function testCanCallSystemFromOtherSystem() public {
@@ -94,5 +103,13 @@ contract LibrariesTest is MudTest {
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
     assertEq(rootSystem.getValueFromA(), value);
+  }
+
+  function testCanExpectRevert() public {
+    vm.expectRevert("reverted successfully");
+    aSystem.getValueWithRevert();
+
+    vm.expectRevert("reverted successfully");
+    aSystem.setAddressWithRevert();
   }
 }
