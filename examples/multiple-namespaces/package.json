@@ -20,6 +20,7 @@
     "@latticexyz/world": "link:../../packages/world",
     "@latticexyz/world-modules": "link:../../packages/world-modules",
     "@solidstate/contracts": "^0.0.52",
+    "@types/node": "^20",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
