@@ -1,15 +1,14 @@
 import { wait } from "@latticexyz/common/utils";
 import { AbiParameters, Address, Hex, Provider, PublicKey, Secp256k1, WebAuthnP256 } from "ox";
 import { Key, Mode } from "porto";
-import { Account, ServerClient } from "porto/viem";
+import { Account } from "porto/viem";
 import { toCoinbaseSmartAccount } from "../account/toCoinbaseSmartAccount";
 import { entryPoint07Abi, toWebAuthnAccount } from "viem/account-abstraction";
 import { rp } from "../rp/common";
 import { WebAuthnKey } from "porto/viem/Key";
 import { createBundlerClient } from "./createBundlerClient";
 import { getBundlerTransport } from "./getBundlerTransport";
-import { recoverPublicKey } from "./recoverPublicKey";
-import * as PreCalls from "../../node_modules/porto/core/internal/preCalls";
+import * as PreCalls from "./preCalls";
 import { defineCall } from "./defineCall";
 import { abi } from "../account/abi";
 import { parseEventLogs } from "viem";
@@ -38,7 +37,8 @@ export function mode(): Mode.Mode {
           },
         } = parameters;
 
-        const eoa = Account.fromPrivateKey(Secp256k1.randomPrivateKey());
+        const eoaPrivateKey = Secp256k1.randomPrivateKey();
+        const eoa = Account.fromPrivateKey(eoaPrivateKey);
         const smartAccount = await toCoinbaseSmartAccount({
           client,
           owners: [eoa],
@@ -50,38 +50,25 @@ export function mode(): Mode.Mode {
           rpId: rp.id,
           userId: Hex.toBytes(smartAccount.address),
         });
-        const publicKey = PublicKey.fromHex(key.publicKey);
 
-        const bundlerClient = createBundlerClient({
-          transport: getBundlerTransport(client.chain),
-          client,
-          account: smartAccount,
-        });
-
-        const auth = await bundlerClient.prepareUserOperation({
-          account: smartAccount,
-          calls: [
-            defineCall({
-              to: smartAccount.address,
-              abi,
-              functionName: "addOwnerPublicKey",
-              args: [Hex.fromNumber(publicKey.x), Hex.fromNumber(publicKey.y)],
-            }),
-            defineCall({
-              to: smartAccount.address,
-              abi,
-              functionName: "removeOwnerAtIndex",
-              args: [0n, AbiParameters.encode(AbiParameters.from(["address"]), [eoa.address])],
-            }),
+        PreCalls.add(
+          [
+            {
+              type: "bootstrap",
+              eoa: {
+                privateKey: eoaPrivateKey,
+              },
+              credential: {
+                id: key.privateKey!.credential!.id,
+                publicKey: key.publicKey,
+              },
+            },
           ],
-        });
-        const authSignature = await smartAccount.signUserOperation(auth);
-        const preCalls = [{ context: auth, signature: authSignature }];
-        console.log("adding preCalls for", Address.from(smartAccount.address, { checksum: true }), preCalls);
-        PreCalls.add(preCalls, {
-          address: Address.from(smartAccount.address, { checksum: true }),
-          storage,
-        });
+          {
+            address: smartAccount.address,
+            storage,
+          },
+        );
 
         const account = Account.from({
           address: smartAccount.address,
@@ -128,7 +115,10 @@ export function mode(): Mode.Mode {
         console.log("popup.mode.loadAccounts", parameters);
 
         const {
-          internal: { client },
+          internal: {
+            client,
+            config: { storage },
+          },
         } = parameters;
 
         const key = await (async () => {
@@ -139,8 +129,7 @@ export function mode(): Mode.Mode {
             return lastKey;
           }
 
-          // TODO: figure out how to turn `parameters.address` and `parameters.credentialId` into an account+key
-          //       (currently blocked on the fact that we can't look up the `publicKey` easily to create the `Key` for the account)
+          // TODO: update porto so we can return right away with the new `parameters.key`
 
           const challenge = Hex.random(256);
           const signature = await WebAuthnP256.sign({
@@ -151,6 +140,20 @@ export function mode(): Mode.Mode {
           const response = signature.raw.response as AuthenticatorAssertionResponse;
           const address = response.userHandle ? Hex.fromBytes(new Uint8Array(response.userHandle)) : null;
           if (!address) throw new Error("no userHandle/address for passkey");
+
+          const preCalls = (await PreCalls.get({ address, storage })) ?? [];
+          for (const preCall of preCalls) {
+            if (preCall.type === "bootstrap" && preCall.credential.id === credentialId) {
+              return Key.fromWebAuthnP256({
+                credential: {
+                  id: credentialId,
+                  publicKey: PublicKey.fromHex(preCall.credential.publicKey),
+                },
+                rpId: rp.id,
+                id: address,
+              });
+            }
+          }
 
           const possiblePublicKeys = getPossiblePublicKeys({ challenge, signature });
 
@@ -185,7 +188,7 @@ export function mode(): Mode.Mode {
           // TODO: recover public key?
           if (!publicKey) throw new Error("passkey not an owner of account");
 
-          const key = Key.fromWebAuthnP256({
+          return Key.fromWebAuthnP256({
             credential: {
               id: credentialId,
               publicKey,
@@ -193,8 +196,6 @@ export function mode(): Mode.Mode {
             rpId: rp.id,
             id: address,
           });
-
-          return key;
         })();
 
         const smartAccount = await toCoinbaseSmartAccount({
@@ -265,32 +266,52 @@ export function mode(): Mode.Mode {
           actualAddress: account.address,
         });
 
-        const preCalls =
-          (await PreCalls.get({
-            address: Address.from(account.address, { checksum: true }),
-            storage,
-          })) ?? [];
-        console.log("got precalls for", Address.from(account.address, { checksum: true }), preCalls);
-
-        PreCalls.clear({
-          address: Address.from(account.address, { checksum: true }),
-          storage,
-        });
-
         const bundlerClient = createBundlerClient({
           transport: getBundlerTransport(client.chain),
           client,
         });
 
+        const request = await bundlerClient.prepareUserOperation({ account, calls });
+        request.signature = await account.signUserOperation(request);
+
+        const preCalls = (await PreCalls.get({ address: account.address, storage })) ?? [];
+        console.log("got precalls for", account.address, preCalls);
+        PreCalls.clear({ address: account.address, storage });
+
+        // TODO: move this to some prepare call helper?
+        // TODO: can we do precalls + request atomically? they're signed by different accounts
+
         const preCallHashes: Hex.Hex[] = [];
         for (const preCall of preCalls) {
-          console.log("sending preCall", preCall);
-          preCallHashes.push(
-            await bundlerClient.sendUserOperation({
-              ...preCall.context,
-              signature: preCall.signature,
-            }),
-          );
+          if (preCall.type === "bootstrap") {
+            console.log("bootstrapping account");
+            const eoa = Account.fromPrivateKey(preCall.eoa.privateKey);
+            const publicKey = PublicKey.fromHex(preCall.credential.publicKey);
+            preCallHashes.push(
+              await bundlerClient.sendUserOperation({
+                account: await toCoinbaseSmartAccount({
+                  client,
+                  owners: [eoa],
+                }),
+                calls: [
+                  defineCall({
+                    to: account.address,
+                    abi,
+                    functionName: "addOwnerPublicKey",
+                    args: [Hex.fromNumber(publicKey.x), Hex.fromNumber(publicKey.y)],
+                  }),
+                  defineCall({
+                    to: account.address,
+                    abi,
+                    functionName: "removeOwnerAtIndex",
+                    args: [0n, AbiParameters.encode(AbiParameters.from(["address"]), [eoa.address])],
+                  }),
+                ],
+              }),
+            );
+          } else {
+            throw new Error(`unsupported preCall: ${preCall.type}`);
+          }
         }
 
         for (const hash of preCallHashes) {
@@ -311,10 +332,7 @@ export function mode(): Mode.Mode {
         // TODO: catch errors and add precalls back in or clear out account?
 
         console.log("sending calls", calls);
-        const userOpHash = await bundlerClient.sendUserOperation({
-          account,
-          calls,
-        });
+        const userOpHash = await bundlerClient.sendUserOperation(request);
 
         return { id: userOpHash };
       },

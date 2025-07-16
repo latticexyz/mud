@@ -167,6 +167,11 @@ export async function toCoinbaseSmartAccount(
     },
 
     async getFactoryArgs() {
+      // assume deployed if address was supplied
+      if (parameters.address) {
+        return { factory: undefined, factoryData: undefined };
+      }
+
       const factoryData = encodeFunctionData({
         abi: factory.abi,
         functionName: "createAccount",
