@@ -111,6 +111,21 @@ export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
   };
 };
 
+export type DerivedTable<input extends Table = Table, output extends Table = Table> = {
+  input: input;
+  output: output;
+  getKey: (record: TableRecord<input>) => Key<output>;
+  getRecord?: (record: TableRecord<input>) => TableRecord<output>;
+};
+
+export type DerivedTables = {
+  [namespaceLabel: string]: {
+    [tableLabel: string]: {
+      [derivedTableLabel: string]: DerivedTable;
+    };
+  };
+};
+
 export type State<config extends StoreConfig = StoreConfig> = {
   readonly config: {
     readonly [namespace in getNamespaces<config>]: {
@@ -178,3 +193,9 @@ export type Stash<config extends StoreConfig = StoreConfig> = {
     readonly state: MutableState<config>;
   };
 };
+
+export function requireNotDerived(table: Table) {
+  if (table.namespaceLabel === "__derived") {
+    throw new Error(`Cannot write to derived table \`${table.namespaceLabel}\``);
+  }
+}
