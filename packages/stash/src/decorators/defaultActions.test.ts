@@ -7,6 +7,7 @@ import { In } from "../queryFragments";
 import { Hex } from "viem";
 import { StoreRecords, getQueryConfig } from "../common";
 import { runQuery } from "../actions/runQuery";
+import { isDefined } from "@latticexyz/common/utils";
 
 describe("stash with default actions", () => {
   describe("decodeKey", () => {
@@ -586,8 +587,23 @@ describe("stash with default actions", () => {
       stash.registerDerivedTable({
         derivedTable: {
           input: inputTable,
-          output: derivedTable,
-          getKey: ({ field2 }) => ({ field2 }),
+          label: "derivedTable",
+          deriveUpdates: (update) => {
+            return [
+              // Remove the previous derived record
+              update.previous && {
+                table: derivedTable,
+                key: { field2: update.previous.field2 },
+                value: undefined,
+              },
+              // Add the new derived record
+              update.current && {
+                table: derivedTable,
+                key: { field2: update.current.field2 },
+                value: update.current,
+              },
+            ].filter(isDefined);
+          },
         },
       });
 
