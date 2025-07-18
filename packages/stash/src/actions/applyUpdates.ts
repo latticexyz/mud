@@ -1,15 +1,7 @@
 import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { DerivedTable, Key, Stash, TableRecord, TableUpdate, TableUpdates } from "../common";
+import { DerivedTable, PendingStashUpdate, Stash, TableUpdate, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
-import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
-import { isDefined } from "@latticexyz/common/utils";
-
-export type PendingStashUpdate<table extends Table = Table> = {
-  table: table;
-  key: Key<table>;
-  value: undefined | Partial<TableRecord<table>>;
-};
 
 export type ApplyUpdatesArgs = {
   stash: Stash;
@@ -108,22 +100,7 @@ function updateDerivedTables({ stash, derivedTables, update }: UpdateDerivedTabl
   applyUpdates({
     stash,
     updates: Object.values(derivedTables)
-      .map(({ output, getKey, getRecord }) => {
-        return [
-          // Remove the previous derived record
-          update.previous && {
-            table: output,
-            key: getKey(update.previous),
-            value: undefined,
-          },
-          // Add the new derived record
-          update.current && {
-            table: output,
-            key: getKey(update.current),
-            value: update.current && getRecord ? getRecord(update.current) : update.current,
-          },
-        ].filter(isDefined);
-      })
+      .map(({ deriveUpdates }) => deriveUpdates(update))
       .flat(),
   });
 }

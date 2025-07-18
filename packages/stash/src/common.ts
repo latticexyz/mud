@@ -116,11 +116,10 @@ export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
   };
 };
 
-export type DerivedTable<input extends Table = Table, output extends Table = Table> = {
+export type DerivedTable<input extends Table = Table> = {
   readonly input: input;
-  readonly output: output;
-  readonly getKey: (record: TableRecord<input>) => Key<output>;
-  readonly getRecord?: (record: TableRecord<input>) => TableRecord<output>;
+  readonly label: string;
+  readonly deriveUpdates: (update: TableUpdate<input>) => PendingStashUpdate[];
 };
 
 export type DerivedTables = {
@@ -147,6 +146,12 @@ export type MutableState<config extends StoreConfig = StoreConfig> = {
     };
   };
   records: MutableStoreRecords<config>;
+};
+
+export type PendingStashUpdate<table extends Table = Table> = {
+  table: table;
+  key: Key<table>;
+  value: undefined | Partial<TableRecord<table>>;
 };
 
 export type TableUpdate<table extends Table = Table> = {

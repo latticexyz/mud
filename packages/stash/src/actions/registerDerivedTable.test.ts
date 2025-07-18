@@ -5,7 +5,8 @@ import { createStash } from "../createStash";
 import { registerDerivedTable } from "./registerDerivedTable";
 import { registerTable } from "./registerTable";
 import { setRecord } from "./setRecord";
-import { getRecord } from "./getRecord";
+import { deleteRecord } from "./deleteRecord";
+import { isDefined } from "@latticexyz/common/utils";
 
 describe("registerDerivedTable", () => {
   it("should add a new derived table to the stash", () => {
@@ -16,19 +17,36 @@ describe("registerDerivedTable", () => {
       schema: { field1: "uint32", field2: "address" },
       key: ["field1"],
     });
-
     registerTable({ stash, table: inputTable });
+
+    const derivedTable = defineTable({
+      label: "derivedTable",
+      schema: { field1: "uint32", field2: "address" },
+      key: ["field2"],
+    });
+    registerTable({ stash, table: derivedTable });
 
     registerDerivedTable({
       stash,
       derivedTable: {
         input: inputTable,
-        output: defineTable({
-          label: "derivedTable",
-          schema: { field1: "uint32", field2: "address" },
-          key: ["field2"],
-        }),
-        getKey: ({ field2 }) => ({ field2 }),
+        label: "derivedTable",
+        deriveUpdates: (update) => {
+          return [
+            // Remove the previous derived record
+            update.previous && {
+              table: derivedTable,
+              key: { field2: update.previous.field2 },
+              value: undefined,
+            },
+            // Add the new derived record
+            update.current && {
+              table: derivedTable,
+              key: { field2: update.current.field2 },
+              value: update.current,
+            },
+          ].filter(isDefined);
+        },
       },
     });
 
@@ -65,7 +83,7 @@ describe("registerDerivedTable", () => {
       },
     });
     attest(stash.get().records).snap({ namespace1: { inputTable: {} }, "": { derivedTable: {} } });
-    expect(stash._.derivedTables?.namespace1?.inputTable?.__derivedTable).toBeDefined();
+    expect(stash._.derivedTables?.namespace1?.inputTable?.derivedTable).toBeDefined();
   });
 
   it("should compute the initial derived table", () => {
@@ -76,19 +94,35 @@ describe("registerDerivedTable", () => {
       schema: { field1: "uint32", field2: "address" },
       key: ["field1"],
     });
+    registerTable({ stash, table: inputTable });
     const derivedTable = defineTable({
       label: "derivedTable",
       schema: { field1: "uint32", field2: "address" },
       key: ["field2"],
     });
-    registerTable({ stash, table: inputTable });
+    registerTable({ stash, table: derivedTable });
     setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
     registerDerivedTable({
       stash,
       derivedTable: {
         input: inputTable,
-        output: derivedTable,
-        getKey: ({ field2 }) => ({ field2 }),
+        label: "derivedTable",
+        deriveUpdates: (update) => {
+          return [
+            // Remove the previous derived record
+            update.previous && {
+              table: derivedTable,
+              key: { field2: update.previous.field2 },
+              value: undefined,
+            },
+            // Add the new derived record
+            update.current && {
+              table: derivedTable,
+              key: { field2: update.current.field2 },
+              value: update.current,
+            },
+          ].filter(isDefined);
+        },
       },
     });
 
@@ -110,19 +144,35 @@ describe("registerDerivedTable", () => {
       schema: { field1: "uint32", field2: "address" },
       key: ["field1"],
     });
+    registerTable({ stash, table: inputTable });
     const derivedTable = defineTable({
       label: "derivedTable",
       schema: { field1: "uint32", field2: "address" },
       key: ["field2"],
     });
-    registerTable({ stash, table: inputTable });
+    registerTable({ stash, table: derivedTable });
     setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
     registerDerivedTable({
       stash,
       derivedTable: {
         input: inputTable,
-        output: derivedTable,
-        getKey: ({ field2 }) => ({ field2 }),
+        label: "derivedTable",
+        deriveUpdates: (update) => {
+          return [
+            // Remove the previous derived record
+            update.previous && {
+              table: derivedTable,
+              key: { field2: update.previous.field2 },
+              value: undefined,
+            },
+            // Add the new derived record
+            update.current && {
+              table: derivedTable,
+              key: { field2: update.current.field2 },
+              value: update.current,
+            },
+          ].filter(isDefined);
+        },
       },
     });
 
@@ -154,36 +204,56 @@ describe("registerDerivedTable", () => {
     });
   });
 
-  it("should return a table that's compatible with stash getRecord", () => {
+  it.skip("should handle non-unique keys", () => {
     const stash = createStash();
     const inputTable = defineTable({
-      label: "input",
+      label: "inputTable",
       namespaceLabel: "namespace1",
       schema: { field1: "uint32", field2: "address" },
       key: ["field1"],
     });
-
     registerTable({ stash, table: inputTable });
+    const derivedTable = defineTable({
+      label: "derivedTable",
+      schema: { field1: "uint32", field2: "address", index: "uint32" },
+      key: ["field2", "index"],
+    });
+    registerTable({ stash, table: derivedTable });
     setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
-    const indexTable = registerDerivedTable({
+    setRecord({ stash, table: inputTable, key: { field1: 2 }, value: { field2: "0x123" } });
+
+    registerDerivedTable({
       stash,
       derivedTable: {
         input: inputTable,
-        output: defineTable({
-          label: "derivedTable",
-          schema: { field1: "uint32", field2: "address" },
-          key: ["field2"],
-        }),
-        getKey: ({ field2 }) => ({ field2 }),
+        label: "derivedTable",
+        deriveUpdates: (update) => {
+          return [
+            // Remove the previous derived record
+            update.previous && {
+              table: derivedTable,
+              key: { field2: update.previous.field2, index: 0 },
+              value: undefined,
+            },
+            // Add the new derived record
+            update.current && {
+              table: derivedTable,
+              key: { field2: update.current.field2, index: 0 },
+              value: { ...update.current, index: 0 },
+            },
+          ].filter(isDefined);
+        },
       },
     });
 
-    const derivedRecord = getRecord({
-      stash,
-      table: indexTable,
-      key: { field2: "0x123" },
+    attest(stash.get().records[""]?.derivedTable).equals({
+      "0x123|0": { field1: 1, field2: "0x123", index: 0 },
+      "0x123|1": { field1: 2, field2: "0x123", index: 1 },
     });
 
-    attest(derivedRecord).equals({ field1: 1, field2: "0x123" });
+    deleteRecord({ stash, table: inputTable, key: { field1: 2 } });
+    attest(stash.get().records[""]?.derivedTable).equals({
+      "0x123|0": { field1: 1, field2: "0x123", index: 0 },
+    });
   });
 });
