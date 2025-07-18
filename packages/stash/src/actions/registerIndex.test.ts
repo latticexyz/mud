@@ -6,6 +6,7 @@ import { registerTable } from "./registerTable";
 import { registerIndex } from "./registerIndex";
 import { setRecord } from "./setRecord";
 import { getRecord } from "./getRecord";
+import { deleteRecord } from "./deleteRecord";
 
 describe("registerIndex", () => {
   it("should add a new index to the stash", () => {
@@ -151,5 +152,37 @@ describe("registerIndex", () => {
     });
 
     attest(indexedRecord).equals({ field1: 1, field2: "0x123", field3: "hello", index: 0 });
+  });
+
+  it("should handle non-unique keys", () => {
+    const stash = createStash();
+    const inputTable = defineTable({
+      label: "input",
+      namespaceLabel: "namespace1",
+      schema: { field1: "uint32", field2: "address", field3: "string" },
+      key: ["field1"],
+    });
+
+    registerTable({ stash, table: inputTable });
+    setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123", field3: "hello" } });
+
+    registerIndex({ stash, table: inputTable, key: ["field2"] });
+
+    attest(stash.get().records.__stash_index?.input__field2).equals({
+      "0x123|0": { field1: 1, field2: "0x123", field3: "hello", index: 0 },
+    });
+
+    setRecord({ stash, table: inputTable, key: { field1: 2 }, value: { field2: "0x123", field3: "world" } });
+
+    attest(stash.get().records.__stash_index?.input__field2).equals({
+      "0x123|0": { field1: 1, field2: "0x123", field3: "hello", index: 0 },
+      "0x123|1": { field1: 2, field2: "0x123", field3: "world", index: 1 },
+    });
+
+    deleteRecord({ stash, table: inputTable, key: { field1: 1 } });
+
+    attest(stash.get().records.__stash_index?.input__field2).equals({
+      "0x123|0": { field1: 2, field2: "0x123", field3: "world", index: 0 },
+    });
   });
 });
