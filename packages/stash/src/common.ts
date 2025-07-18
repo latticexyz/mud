@@ -112,15 +112,15 @@ export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
 };
 
 export type DerivedTable<input extends Table = Table, output extends Table = Table> = {
-  input: input;
-  output: output;
-  getKey: (record: TableRecord<input>) => Key<output>;
-  getRecord?: (record: TableRecord<input>) => TableRecord<output>;
+  readonly input: input;
+  readonly output: output;
+  readonly getKey: (record: TableRecord<input>) => Key<output>;
+  readonly getRecord?: (record: TableRecord<input>) => TableRecord<output>;
 };
 
 export type DerivedTables = {
-  [namespaceLabel: string]: {
-    [tableLabel: string]: {
+  [inputNamespaceLabel: string]: {
+    [inputTableLabel: string]: {
       [derivedTableLabel: string]: DerivedTable;
     };
   };
@@ -191,6 +191,7 @@ export type Stash<config extends StoreConfig = StoreConfig> = {
     readonly tableSubscribers: TableSubscribers;
     readonly storeSubscribers: StoreSubscribers;
     readonly state: MutableState<config>;
+    readonly derivedTables: DerivedTables;
   };
 };
 

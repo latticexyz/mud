@@ -1,9 +1,10 @@
 import { attest } from "@ark/attest";
 import { defineTable } from "@latticexyz/store/internal";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createStash } from "../createStash";
 import { registerDerivedTable } from "./registerDerivedTable";
 import { registerTable } from "./registerTable";
+import { setRecord } from "./setRecord";
 
 describe("registerDerivedTable", () => {
   it("should add a new derived table to the stash", () => {
@@ -63,8 +64,40 @@ describe("registerDerivedTable", () => {
       },
     });
     attest(stash.get().records).snap({ namespace1: { inputTable: {} }, "": { derivedTable: {} } });
+    expect(stash._.derivedTables?.namespace1?.inputTable?.__derivedTable).toBeDefined();
+  });
 
-    // TODO: check that it was added to derived tables map
+  it("should compute the initial derived table", () => {
+    const stash = createStash();
+    const inputTable = defineTable({
+      label: "inputTable",
+      namespaceLabel: "namespace1",
+      schema: { field1: "uint32", field2: "address" },
+      key: ["field1"],
+    });
+    const derivedTable = defineTable({
+      label: "derivedTable",
+      namespaceLabel: "namespace1",
+      schema: { field1: "uint32", field2: "address" },
+      key: ["field2"],
+    });
+    registerTable({ stash, table: inputTable });
+    setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
+    registerDerivedTable({
+      stash,
+      derivedTable: {
+        input: inputTable,
+        output: derivedTable,
+        getKey: ({ field2 }) => ({ field2 }),
+      },
+    });
+
+    attest(stash.get().records).snap({
+      namespace1: {
+        inputTable: { "1": { field1: 1, field2: "0x123" } },
+        derivedTable: { "0x123": { field1: 1, field2: "0x123" } },
+      },
+    });
   });
 
   it.todo("should update the derived table when the input table is updated");
