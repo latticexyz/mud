@@ -565,4 +565,54 @@ describe("stash with default actions", () => {
       ]);
     });
   });
+
+  describe("registerDerivedTable", () => {
+    it("should register a derived table", () => {
+      const stash = createStash();
+      const inputTable = defineTable({
+        label: "inputTable",
+        namespaceLabel: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      const derivedTable = defineTable({
+        label: "derivedTable",
+        namespaceLabel: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field2"],
+      });
+      stash.registerTable({ table: inputTable });
+      stash.setRecord({ table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
+      stash.registerDerivedTable({
+        derivedTable: {
+          input: inputTable,
+          output: derivedTable,
+          getKey: ({ field2 }) => ({ field2 }),
+        },
+      });
+
+      // After registering the derived table, the derived table should have been hydrated with the derived state
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: { "1": { field1: 1, field2: "0x123" } },
+          derivedTable: { "0x123": { field1: 1, field2: "0x123" } },
+        },
+      });
+
+      // Setting a new record on the source table should update the derived table
+      stash.setRecord({ table: inputTable, key: { field1: 2 }, value: { field2: "0x456" } });
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: {
+            "1": { field1: 1, field2: "0x123" },
+            "2": { field1: 2, field2: "0x456" },
+          },
+          derivedTable: {
+            "0x123": { field1: 1, field2: "0x123" },
+            "0x456": { field1: 2, field2: "0x456" },
+          },
+        },
+      });
+    });
+  });
 });
