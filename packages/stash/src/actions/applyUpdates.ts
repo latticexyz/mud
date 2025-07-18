@@ -1,8 +1,9 @@
 import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Key, Stash, TableRecord, TableUpdates } from "../common";
+import { DerivedTable, Key, Stash, TableRecord, TableUpdate, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
 import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
+import { isDefined } from "@latticexyz/common/utils";
 
 export type PendingStashUpdate<table extends Table = Table> = {
   table: table;
@@ -58,12 +59,19 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
 
     // add update to pending updates for notifying subscribers
     const tableUpdates = ((pendingUpdates[table.namespaceLabel] ??= {})[table.label] ??= []);
-    tableUpdates.push({
+    const update: TableUpdate = {
       table,
       key,
       previous: prevRecord,
       current: nextRecord,
-    });
+    };
+    tableUpdates.push(update);
+
+    // update derived tables
+    const derivedTables = stash._.derivedTables?.[table.namespaceLabel]?.[table.label];
+    if (derivedTables != null) {
+      updateDerivedTables({ stash, derivedTables, update });
+    }
   }
 
   queueMicrotask(() => {
@@ -88,4 +96,27 @@ function notifySubscribers(stash: Stash) {
   stash._.storeSubscribers.forEach((subscriber) => subscriber({ type: "records", updates }));
 
   pendingStashUpdates.delete(stash);
+}
+
+type UpdateDerivedTableArgs = {
+  stash: Stash;
+  derivedTables: Record<string, DerivedTable>;
+  update: TableUpdate;
+};
+
+function updateDerivedTables({ stash, derivedTables, update }: UpdateDerivedTableArgs): void {
+  applyUpdates({
+    stash,
+    updates: Object.values(derivedTables)
+      .map(({ output, getKey, getRecord }) => {
+        const inputRecord = update.current ?? update.previous;
+        if (inputRecord == null) return;
+        return {
+          table: output,
+          key: getKey(inputRecord),
+          value: update.current && getRecord ? getRecord(update.current) : update.current,
+        };
+      })
+      .filter(isDefined),
+  });
 }
