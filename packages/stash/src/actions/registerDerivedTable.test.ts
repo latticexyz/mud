@@ -5,6 +5,7 @@ import { createStash } from "../createStash";
 import { registerDerivedTable } from "./registerDerivedTable";
 import { registerTable } from "./registerTable";
 import { setRecord } from "./setRecord";
+import { getRecord } from "./getRecord";
 
 describe("registerDerivedTable", () => {
   it("should add a new derived table to the stash", () => {
@@ -151,5 +152,38 @@ describe("registerDerivedTable", () => {
         },
       },
     });
+  });
+
+  it("should return a table that's compatible with stash getRecord", () => {
+    const stash = createStash();
+    const inputTable = defineTable({
+      label: "input",
+      namespaceLabel: "namespace1",
+      schema: { field1: "uint32", field2: "address" },
+      key: ["field1"],
+    });
+
+    registerTable({ stash, table: inputTable });
+    setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
+    const indexTable = registerDerivedTable({
+      stash,
+      derivedTable: {
+        input: inputTable,
+        output: defineTable({
+          label: "derivedTable",
+          schema: { field1: "uint32", field2: "address" },
+          key: ["field2"],
+        }),
+        getKey: ({ field2 }) => ({ field2 }),
+      },
+    });
+
+    const derivedRecord = getRecord({
+      stash,
+      table: indexTable,
+      key: { field2: "0x123" },
+    });
+
+    attest(derivedRecord).equals({ field1: 1, field2: "0x123" });
   });
 });

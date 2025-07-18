@@ -1,4 +1,4 @@
-import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { Table } from "@latticexyz/config";
 import { QueryFragment } from "./queryFragments";
 
@@ -36,6 +36,11 @@ export type getConfig<
   namespace extends keyof config["namespaces"] | undefined,
   table extends keyof config["namespaces"][namespace extends undefined ? "" : namespace]["tables"],
 > = Omit<config["namespaces"][namespace extends undefined ? "" : namespace]["tables"][table], "codegen" | "deploy">;
+
+// Variation of getKeySchema that does not validate that keys are StaticAbiType since it's not required in stash
+type getKeySchema<table extends Table> = {
+  readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
+};
 
 /**
  * A Key is the unique identifier for a row in the table.
