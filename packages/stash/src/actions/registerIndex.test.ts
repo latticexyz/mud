@@ -24,10 +24,15 @@ describe("registerIndex", () => {
     attest<"input__field2_field3">(indexTable.name).equals("input__field2_field3");
     attest<"__stash_index">(indexTable.namespace).equals("__stash_index");
     attest<"__stash_index">(indexTable.namespaceLabel).equals("__stash_index");
-    attest<["field2", "field3"]>(indexTable.key).equals(["field2", "field3"]);
-    attest<(typeof inputTable)["schema"]>(indexTable.schema).equals(inputTable.schema);
+    attest<["field2", "field3", "index"]>(indexTable.key).equals(["field2", "field3", "index"]);
+    attest<(typeof inputTable)["schema"] & { index: { type: "uint32"; internalType: "uint32" } }>(
+      indexTable.schema,
+    ).equals({
+      ...inputTable.schema,
+      index: { type: "uint32", internalType: "uint32" },
+    });
 
-    attest(stash.get().config).snap({
+    attest(stash.get().config).equals({
       namespace1: {
         input: {
           namespace: "namespace1",
@@ -50,11 +55,12 @@ describe("registerIndex", () => {
           namespaceLabel: "__stash_index",
           name: "input__field2_field3",
           label: "input__field2_field3",
-          key: ["field2", "field3"],
+          key: ["field2", "field3", "index"],
           schema: {
             field1: { type: "uint32", internalType: "uint32" },
             field2: { type: "address", internalType: "address" },
             field3: { type: "bytes", internalType: "bytes" },
+            index: { type: "uint32", internalType: "uint32" },
           },
           type: "offchainTable",
           tableId: "0x6f745f5f73746173685f696e64657800696e7075745f5f6669656c64325f6669",
@@ -84,7 +90,7 @@ describe("registerIndex", () => {
       },
       __stash_index: {
         input__field2_field3: {
-          "0x123|hello": { field1: 1, field2: "0x123", field3: "hello" },
+          "0x123|hello|0": { field1: 1, field2: "0x123", field3: "hello", index: 0 },
         },
       },
     });
@@ -109,7 +115,7 @@ describe("registerIndex", () => {
       },
       __stash_index: {
         input__field2_field3: {
-          "0x123|hello": { field1: 1, field2: "0x123", field3: "hello" },
+          "0x123|hello|0": { field1: 1, field2: "0x123", field3: "hello", index: 0 },
         },
       },
     });
@@ -120,7 +126,7 @@ describe("registerIndex", () => {
         input: { "1": { field1: 1, field2: "0x123", field3: "world" } },
       },
       __stash_index: {
-        input__field2_field3: { "0x123|world": { field1: 1, field2: "0x123", field3: "world" } },
+        input__field2_field3: { "0x123|world|0": { field1: 1, field2: "0x123", field3: "world", index: 0 } },
       },
     });
   });
@@ -141,9 +147,9 @@ describe("registerIndex", () => {
     const indexedRecord = getRecord({
       stash,
       table: indexTable,
-      key: { field2: "0x123", field3: "hello" },
+      key: { field2: "0x123", field3: "hello", index: 0 },
     });
 
-    attest(indexedRecord).equals({ field1: 1, field2: "0x123", field3: "hello" });
+    attest(indexedRecord).equals({ field1: 1, field2: "0x123", field3: "hello", index: 0 });
   });
 });
