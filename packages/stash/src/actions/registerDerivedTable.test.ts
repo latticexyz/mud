@@ -7,6 +7,8 @@ import { registerTable } from "./registerTable";
 import { setRecord } from "./setRecord";
 import { deleteRecord } from "./deleteRecord";
 import { isDefined } from "@latticexyz/common/utils";
+import { getRecord } from "./getRecord";
+import { PendingStashUpdate, TableUpdate } from "../common";
 
 describe("registerDerivedTable", () => {
   it("should add a new derived table to the stash", () => {
@@ -204,7 +206,7 @@ describe("registerDerivedTable", () => {
     });
   });
 
-  it.skip("should handle non-unique keys", () => {
+  it("should handle non-unique keys", () => {
     const stash = createStash();
     const inputTable = defineTable({
       label: "inputTable",
@@ -227,22 +229,62 @@ describe("registerDerivedTable", () => {
       derivedTable: {
         input: inputTable,
         label: "derivedTable",
-        deriveUpdates: (update) => {
-          return [
+        deriveUpdates: (() => {
+          let count = 0;
+          return ({ previous, current }: TableUpdate<typeof inputTable>) => {
             // Remove the previous derived record
-            update.previous && {
-              table: derivedTable,
-              key: { field2: update.previous.field2, index: 0 },
-              value: undefined,
-            },
+            const updates: PendingStashUpdate[] = [];
+            if (previous) {
+              // Find the previous derived record
+              for (let i = 0; i < count; i++) {
+                const previousDerivedRecord = getRecord({
+                  stash,
+                  table: derivedTable,
+                  key: { field2: previous.field2, index: i },
+                });
+                if (previousDerivedRecord?.field1 === previous.field1) {
+                  // Remove the previous derived record
+                  updates.push({
+                    table: derivedTable,
+                    key: { field2: previous.field2, index: i },
+                    value: undefined,
+                  });
+                  if (i < count - 1) {
+                    // Update the index of the last derived record if it exists
+                    const lastDerivedRecord = getRecord({
+                      stash,
+                      table: derivedTable,
+                      key: { field2: previous.field2, index: count - 1 },
+                    });
+                    updates.push({
+                      table: derivedTable,
+                      key: { field2: previous.field2, index: count - 1 },
+                      value: undefined,
+                    });
+                    updates.push({
+                      table: derivedTable,
+                      key: { field2: previous.field2, index: i },
+                      value: { ...lastDerivedRecord, index: i },
+                    });
+                  }
+                  count--;
+                  break;
+                }
+              }
+            }
             // Add the new derived record
-            update.current && {
-              table: derivedTable,
-              key: { field2: update.current.field2, index: 0 },
-              value: { ...update.current, index: 0 },
-            },
-          ].filter(isDefined);
-        },
+            if (current) {
+              updates.push({
+                table: derivedTable,
+                key: { field2: current.field2, index: count },
+                value: { ...current, index: count },
+              });
+              count++;
+            }
+
+            return updates;
+          };
+        })(),
       },
     });
 
