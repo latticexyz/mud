@@ -3,6 +3,10 @@ import { Keys, Stash } from "./common";
 import { TableRecord } from "./common";
 import { getRecords } from "./actions/getRecords";
 import { getKeys } from "./actions/getKeys";
+import { getIndexerTableLabel, IndexKey } from "./actions/registerIndex";
+import { getRecord } from "./actions/getRecord";
+import { getKey } from "@latticexyz/protocol-parser/internal";
+import { encodeKey } from "./actions/encodeKey";
 
 /**
  * Compare two {@link TableRecord}s.
@@ -76,9 +80,30 @@ export function Matches<table extends Table>(
     const record = getRecords({ stash, table })[encodedKey];
     return recordMatches(partialRecord, record);
   };
-  // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
-  const getInitialKeys = (stash: Stash) =>
-    Object.fromEntries(Object.entries(getKeys({ stash, table })).filter(([key]) => pass(stash, key)));
+  const getInitialKeys = (stash: Stash) => {
+    // If an index exists for this table and search key, we can shortcut the lookup
+    const searchKey = Object.keys(partialRecord) as IndexKey<table>;
+    const { label, namespaceLabel } = getIndexerTableLabel(table, searchKey);
+    const indexTable = stash.get().config[namespaceLabel ?? ""]?.[label];
+    if (indexTable) {
+      const keys: Keys<table> = {};
+      let index = 0;
+      let nextRecord: TableRecord<table> | undefined;
+      do {
+        const indexKey = { ...partialRecord, index };
+        nextRecord = getRecord({ stash, table: indexTable, key: indexKey as never });
+        if (nextRecord) {
+          const key = getKey(table, nextRecord);
+          keys[encodeKey({ table, key })] = key;
+          index++;
+        }
+      } while (nextRecord);
+      return keys;
+    }
+
+    return Object.fromEntries(Object.entries(getKeys({ stash, table })).filter(([key]) => pass(stash, key)));
+  };
+
   return { table, pass, getInitialKeys };
 }
 

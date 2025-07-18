@@ -130,6 +130,22 @@ describe("registerIndex", () => {
         input__field2_field3: { "0x123|world|0": { field1: 1, field2: "0x123", field3: "world", index: 0 } },
       },
     });
+
+    setRecord({ stash, table: inputTable, key: { field1: 0 }, value: { field2: "0x456", field3: "hello" } });
+    attest(stash.get().records).equals({
+      namespace1: {
+        input: {
+          "1": { field1: 1, field2: "0x123", field3: "world" },
+          "0": { field1: 0, field2: "0x456", field3: "hello" },
+        },
+      },
+      __stash_index: {
+        input__field2_field3: {
+          "0x123|world|0": { field1: 1, field2: "0x123", field3: "world", index: 0 },
+          "0x456|hello|0": { field1: 0, field2: "0x456", field3: "hello", index: 0 },
+        },
+      },
+    });
   });
 
   it("should return a table that's compatible with stash getRecord", () => {

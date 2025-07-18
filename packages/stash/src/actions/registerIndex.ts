@@ -1,13 +1,11 @@
 import { Table } from "@latticexyz/config";
-import { PendingStashUpdate, Stash, TableUpdate } from "../common";
+import { indexNamespace, PendingStashUpdate, Stash, TableUpdate } from "../common";
 import { registerDerivedTable } from "./registerDerivedTable";
-import { resourceToHex } from "@latticexyz/common";
+import { resourceToHex, resourceToLabel } from "@latticexyz/common";
 import { registerTable } from "./registerTable";
 import { getRecord } from "./getRecord";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { recordMatches } from "../queryFragments";
-
-const indexNamespace = "__stash_index";
 
 export type IndexKey<table extends Table> = [keyof table["schema"], ...(keyof table["schema"])[]];
 
@@ -25,6 +23,8 @@ type joinKey<key extends unknown[]> = key extends []
       : never
     : string;
 
+type getIndexerTableName<table extends Table, key extends IndexKey<table>> = `${table["label"]}_${joinKey<key>}`;
+
 export type RegisterIndexResult<table extends Table, key extends IndexKey<table>> = {
   [prop in keyof Table]: prop extends "key"
     ? [...key, "index"]
@@ -35,9 +35,9 @@ export type RegisterIndexResult<table extends Table, key extends IndexKey<table>
         : prop extends "namespaceLabel"
           ? typeof indexNamespace
           : prop extends "label"
-            ? `${table["label"]}_${joinKey<key>}`
+            ? getIndexerTableName<table, key>
             : prop extends "name"
-              ? `${table["label"]}_${joinKey<key>}`
+              ? getIndexerTableName<table, key>
               : Table[prop];
 };
 
@@ -51,13 +51,13 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
   key,
 }: RegisterIndexArgs<table, key>): RegisterIndexResult<table, key> {
   // Register the index table
-  const label = `${table["label"]}__${key.join("_")}`;
-  const tableId = resourceToHex({ namespace: indexNamespace, name: label, type: "offchainTable" });
+  const { label, name, namespace, namespaceLabel } = getIndexerTableLabel(table, key);
+  const tableId = resourceToHex({ namespace, name, type: "offchainTable" });
   const indexTable = {
     label,
-    name: label,
-    namespaceLabel: indexNamespace,
-    namespace: indexNamespace,
+    name,
+    namespaceLabel,
+    namespace,
     schema: { ...table.schema, index: { type: "uint32", internalType: "uint32" } },
     key: [...key, "index"] as string[],
     type: "offchainTable",
@@ -73,15 +73,17 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
     stash,
     derivedTable: {
       input: table,
-      label: `${indexNamespace}__${label}`,
+      label: resourceToLabel({ namespace, name }),
       deriveUpdates: (() => {
-        let count = 0;
+        const countByKey: Record<string, number> = {};
         return ({ previous, current }: TableUpdate<typeof table>) => {
           // Remove the previous index record
           const updates: PendingStashUpdate[] = [];
           if (previous) {
             // Find the previous index record
             const previousKey = pick(previous, key);
+            const encodedKey = Object.values(previousKey).join("|");
+            const count = countByKey[encodedKey] ?? 0;
             for (let i = 0; i < count; i++) {
               const previousIndexRecord = getRecord({
                 stash,
@@ -113,7 +115,7 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
                     value: { ...lastIndexRecord, index: i },
                   });
                 }
-                count--;
+                countByKey[encodedKey] = count - 1;
                 break;
               }
             }
@@ -121,12 +123,14 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
           // Add the new index record
           if (current) {
             const currentKey = pick(current, key);
+            const encodedKey = Object.values(currentKey).join("|");
+            const count = countByKey[encodedKey] ?? 0;
             updates.push({
               table: indexTable,
               key: { ...currentKey, index: count },
               value: { ...current, index: count },
             });
-            count++;
+            countByKey[encodedKey] = count + 1;
           }
 
           return updates;
@@ -136,6 +140,23 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
   });
 
   return indexTable as never;
+}
+
+export function getIndexerTableLabel<table extends Table, key extends IndexKey<table>>(
+  table: table,
+  key: key,
+): {
+  label: getIndexerTableName<table, key>;
+  name: getIndexerTableName<table, key>;
+  namespace: typeof indexNamespace;
+  namespaceLabel: typeof indexNamespace;
+} {
+  return {
+    label: `${table["label"]}__${key.join("_")}` as never,
+    name: `${table["label"]}__${key.join("_")}` as never,
+    namespace: indexNamespace,
+    namespaceLabel: indexNamespace,
+  };
 }
 
 function pick<table extends Table, key extends IndexKey<table>>(

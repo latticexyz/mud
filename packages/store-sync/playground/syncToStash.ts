@@ -1,6 +1,6 @@
 import { defineWorld } from "@latticexyz/world";
 import { snapshotJson } from "./snapshot";
-import { createStash, Matches, runQuery } from "@latticexyz/stash/internal";
+import { createStash, getRecord, Matches, registerIndex, runQuery } from "@latticexyz/stash/internal";
 import { syncToStash } from "@latticexyz/store-sync/stash/syncToStash";
 import { redstone as redstoneBase } from "@latticexyz/common/chains";
 import { StorageAdapterBlock } from "@latticexyz/store-sync";
@@ -86,6 +86,41 @@ console.log("synced");
 
 const entityId = "0x000000000000000000000000000000000000000000000000000000000000194b";
 const queryStart = performance.now();
-const queryResult = runQuery({ stash, query: [Matches(tables.InventorySlot, { entityId })] });
+const queryResult = runQuery({
+  stash,
+  query: [Matches(tables.InventorySlot, { entityId })],
+  options: { includeRecords: true },
+});
 const queryDuration = performance.now() - queryStart;
-console.log("result in", queryDuration.toFixed(2), "ms: ", queryResult);
+console.log(
+  "Running query on original table. Result in",
+  queryDuration.toFixed(2),
+  "ms: ",
+  Object.values(queryResult.records[""].InventorySlot),
+);
+
+const indexingStart = performance.now();
+const indexedTable = registerIndex({ stash, table: tables.InventorySlot, key: ["entityId"] });
+const indexingDuration = performance.now() - indexingStart;
+console.log("Indexed inventory table in", indexingDuration.toFixed(2), "ms");
+
+const indexedQueryStart = performance.now();
+const indexedQueryResult = runQuery({
+  stash,
+  query: [Matches(tables.InventorySlot, { entityId })],
+  options: { includeRecords: true },
+});
+const indexedQueryDuration = performance.now() - indexedQueryStart;
+console.log(
+  "Running query on indexed table. Result in",
+  indexedQueryDuration.toFixed(2),
+  "ms: ",
+  Object.values(indexedQueryResult.records[""].InventorySlot),
+);
+
+const indexedLookupStart = performance.now();
+const indexedLookupResult = getRecord({ stash, table: indexedTable, key: { entityId, index: 0 } });
+const indexedLookupDuration = performance.now() - indexedLookupStart;
+console.log("Indexed lookup in", indexedLookupDuration.toFixed(3), "ms: ", [indexedLookupResult]);
+
+process.exit(0);

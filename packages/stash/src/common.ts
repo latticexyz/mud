@@ -205,8 +205,4 @@ export type Stash<config extends StoreConfig = StoreConfig> = {
   };
 };
 
-export function requireNotDerived(table: Table) {
-  if (table.namespaceLabel === "__derived") {
-    throw new Error(`Cannot write to derived table \`${table.namespaceLabel}\``);
-  }
-}
+export const indexNamespace = "__stash_index";

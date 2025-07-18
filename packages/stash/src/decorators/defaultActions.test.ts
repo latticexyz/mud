@@ -654,7 +654,7 @@ describe("stash with default actions", () => {
           inputTable: { "1": { field1: 1, field2: "0x123" } },
         },
         __stash_index: {
-          inputTable__field2: { "0x123": { field1: 1, field2: "0x123" } },
+          inputTable__field2: { "0x123|0": { field1: 1, field2: "0x123", index: 0 } },
         },
       });
 
@@ -669,8 +669,8 @@ describe("stash with default actions", () => {
         },
         __stash_index: {
           inputTable__field2: {
-            "0x123": { field1: 1, field2: "0x123" },
-            "0x456": { field1: 2, field2: "0x456" },
+            "0x123|0": { field1: 1, field2: "0x123", index: 0 },
+            "0x456|0": { field1: 2, field2: "0x456", index: 0 },
           },
         },
       });
