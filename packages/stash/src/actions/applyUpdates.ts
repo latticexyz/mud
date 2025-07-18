@@ -109,14 +109,21 @@ function updateDerivedTables({ stash, derivedTables, update }: UpdateDerivedTabl
     stash,
     updates: Object.values(derivedTables)
       .map(({ output, getKey, getRecord }) => {
-        const inputRecord = update.current ?? update.previous;
-        if (inputRecord == null) return;
-        return {
-          table: output,
-          key: getKey(inputRecord),
-          value: update.current && getRecord ? getRecord(update.current) : update.current,
-        };
+        return [
+          // Remove the previous derived record
+          update.previous && {
+            table: output,
+            key: getKey(update.previous),
+            value: undefined,
+          },
+          // Add the new derived record
+          update.current && {
+            table: output,
+            key: getKey(update.current),
+            value: update.current && getRecord ? getRecord(update.current) : update.current,
+          },
+        ].filter(isDefined);
       })
-      .filter(isDefined),
+      .flat(),
   });
 }

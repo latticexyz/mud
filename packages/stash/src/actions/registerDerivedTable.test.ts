@@ -77,7 +77,6 @@ describe("registerDerivedTable", () => {
     });
     const derivedTable = defineTable({
       label: "derivedTable",
-      namespaceLabel: "namespace1",
       schema: { field1: "uint32", field2: "address" },
       key: ["field2"],
     });
@@ -92,9 +91,11 @@ describe("registerDerivedTable", () => {
       },
     });
 
-    attest(stash.get().records).snap({
+    attest(stash.get().records).equals({
       namespace1: {
         inputTable: { "1": { field1: 1, field2: "0x123" } },
+      },
+      "": {
         derivedTable: { "0x123": { field1: 1, field2: "0x123" } },
       },
     });
@@ -110,7 +111,6 @@ describe("registerDerivedTable", () => {
     });
     const derivedTable = defineTable({
       label: "derivedTable",
-      namespaceLabel: "namespace1",
       schema: { field1: "uint32", field2: "address" },
       key: ["field2"],
     });
@@ -129,6 +129,8 @@ describe("registerDerivedTable", () => {
     attest(stash.get().records).equals({
       namespace1: {
         inputTable: { "1": { field1: 1, field2: "0x123" } },
+      },
+      "": {
         derivedTable: { "0x123": { field1: 1, field2: "0x123" } },
       },
     });
@@ -141,6 +143,8 @@ describe("registerDerivedTable", () => {
           "1": { field1: 1, field2: "0x123" },
           "2": { field1: 2, field2: "0x456" },
         },
+      },
+      "": {
         derivedTable: {
           "0x123": { field1: 1, field2: "0x123" },
           "0x456": { field1: 2, field2: "0x456" },

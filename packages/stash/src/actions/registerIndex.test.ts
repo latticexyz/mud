@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { createStash } from "../createStash";
 import { registerTable } from "./registerTable";
 import { registerIndex } from "./registerIndex";
+import { setRecord } from "./setRecord";
 
 describe("registerIndex", () => {
   it("should add a new index to the stash", () => {
@@ -61,5 +62,65 @@ describe("registerIndex", () => {
     });
     attest(stash.get().records).equals({ namespace1: { input: {} }, __stash_index: { input__field2_field3: {} } });
     expect(stash._.derivedTables?.namespace1?.input?.__stash_index__input__field2_field3).toBeDefined();
+  });
+
+  it("should compute the initial index", () => {
+    const stash = createStash();
+    const inputTable = defineTable({
+      label: "input",
+      namespaceLabel: "namespace1",
+      schema: { field1: "uint32", field2: "address", field3: "string" },
+      key: ["field1"],
+    });
+
+    registerTable({ stash, table: inputTable });
+    setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123", field3: "hello" } });
+    registerIndex({ stash, table: inputTable, key: ["field2", "field3"] });
+
+    attest(stash.get().records).equals({
+      namespace1: {
+        input: { "1": { field1: 1, field2: "0x123", field3: "hello" } },
+      },
+      __stash_index: {
+        input__field2_field3: {
+          "0x123|hello": { field1: 1, field2: "0x123", field3: "hello" },
+        },
+      },
+    });
+  });
+
+  it("should update the index when the input table is updated", () => {
+    const stash = createStash();
+    const inputTable = defineTable({
+      label: "input",
+      namespaceLabel: "namespace1",
+      schema: { field1: "uint32", field2: "address", field3: "string" },
+      key: ["field1"],
+    });
+
+    registerTable({ stash, table: inputTable });
+    setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123", field3: "hello" } });
+    registerIndex({ stash, table: inputTable, key: ["field2", "field3"] });
+
+    attest(stash.get().records).equals({
+      namespace1: {
+        input: { "1": { field1: 1, field2: "0x123", field3: "hello" } },
+      },
+      __stash_index: {
+        input__field2_field3: {
+          "0x123|hello": { field1: 1, field2: "0x123", field3: "hello" },
+        },
+      },
+    });
+
+    setRecord({ stash, table: inputTable, key: { field1: 1 }, value: { field2: "0x123", field3: "world" } });
+    attest(stash.get().records).equals({
+      namespace1: {
+        input: { "1": { field1: 1, field2: "0x123", field3: "world" } },
+      },
+      __stash_index: {
+        input__field2_field3: { "0x123|world": { field1: 1, field2: "0x123", field3: "world" } },
+      },
+    });
   });
 });
