@@ -21,6 +21,7 @@ import {
   RegisterDerivedTableArgs,
   RegisterDerivedTableResult,
 } from "../actions/registerDerivedTable";
+import { IndexKey, registerIndex, RegisterIndexArgs, RegisterIndexResult } from "../actions/registerIndex";
 
 export type StashBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "stash">;
 export type StashBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "stash">;
@@ -47,6 +48,10 @@ export type StashBoundRegisterDerivedTableArgs<input extends Table, output exten
   RegisterDerivedTableArgs<input, output>,
   "stash"
 >;
+export type StashBoundRegisterIndexArgs<table extends Table, key extends IndexKey<table>> = Omit<
+  RegisterIndexArgs<table, key>,
+  "stash"
+>;
 
 export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: <table extends Table>(args: StashBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
@@ -70,6 +75,9 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   registerDerivedTable: <input extends Table, output extends Table>(
     args: StashBoundRegisterDerivedTableArgs<input, output>,
   ) => RegisterDerivedTableResult<output>;
+  registerIndex: <table extends Table, key extends IndexKey<table>>(
+    args: StashBoundRegisterIndexArgs<table, key>,
+  ) => RegisterIndexResult<table, key>;
 };
 
 export function defaultActions<config extends StoreConfig>(stash: Stash<config>): DefaultActions<config> {
@@ -97,5 +105,7 @@ export function defaultActions<config extends StoreConfig>(stash: Stash<config>)
     registerDerivedTable: <input extends Table, output extends Table>(
       args: StashBoundRegisterDerivedTableArgs<input, output>,
     ) => registerDerivedTable({ stash, ...args }),
+    registerIndex: <table extends Table, key extends IndexKey<table>>(args: StashBoundRegisterIndexArgs<table, key>) =>
+      registerIndex({ stash, ...args }),
   };
 }

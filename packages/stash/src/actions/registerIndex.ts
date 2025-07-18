@@ -5,7 +5,7 @@ import { resourceToHex } from "@latticexyz/common";
 
 const indexNamespace = "__stash_index";
 
-type IndexKey<table extends Table> = [keyof table["schema"], ...(keyof table["schema"])[]];
+export type IndexKey<table extends Table> = [keyof table["schema"], ...(keyof table["schema"])[]];
 
 export type RegisterIndexArgs<table extends Table, key extends IndexKey<table>> = {
   stash: Stash;

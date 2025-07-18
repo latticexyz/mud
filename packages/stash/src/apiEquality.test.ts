@@ -19,6 +19,7 @@ describe("stash actions, bound table", () => {
     const excludedStoreKeys = [
       "registerTable",
       "registerDerivedTable",
+      "registerIndex",
       "getTable",
       "getTables",
       "runQuery",

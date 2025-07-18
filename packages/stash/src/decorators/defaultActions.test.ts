@@ -615,4 +615,49 @@ describe("stash with default actions", () => {
       });
     });
   });
+
+  describe("registerIndex", () => {
+    it("should register an index", () => {
+      const stash = createStash();
+      const inputTable = defineTable({
+        label: "inputTable",
+        namespaceLabel: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      stash.registerTable({ table: inputTable });
+      stash.setRecord({ table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
+      stash.registerIndex({
+        table: inputTable,
+        key: ["field2"],
+      });
+
+      // After registering the index, the index should have been hydrated with the indexed state
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: { "1": { field1: 1, field2: "0x123" } },
+        },
+        __stash_index: {
+          inputTable__field2: { "0x123": { field1: 1, field2: "0x123" } },
+        },
+      });
+
+      // Setting a new record on the source table should update the index
+      stash.setRecord({ table: inputTable, key: { field1: 2 }, value: { field2: "0x456" } });
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: {
+            "1": { field1: 1, field2: "0x123" },
+            "2": { field1: 2, field2: "0x456" },
+          },
+        },
+        __stash_index: {
+          inputTable__field2: {
+            "0x123": { field1: 1, field2: "0x123" },
+            "0x456": { field1: 2, field2: "0x456" },
+          },
+        },
+      });
+    });
+  });
 });
