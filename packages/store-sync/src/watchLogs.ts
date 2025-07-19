@@ -47,40 +47,24 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
       ws = new WebSocket(url);
 
-      ws.on("error", (error) => {
+      ws.addEventListener("error", (error) => {
         const errorMessage = `ws${wsId} error`;
         debugError(errorMessage, error);
         subscriber.error(errorMessage);
       });
 
-      ws.on("close", () => {
+      ws.addEventListener("close", () => {
         const errorMessage = `ws${wsId} close`;
         debug(errorMessage);
         subscriber.error(errorMessage);
       });
 
-      ws.on("open", () => {
+      ws.addEventListener("open", () => {
         debug(`ws${wsId} open`);
       });
 
-      ws.on("ping", () => {
-        debug(`ws${wsId} ping`);
-      });
-
-      ws.on("pong", () => {
-        debug(`ws${wsId} pong`);
-      });
-
-      ws.on("unexpected-response", (message) => {
-        debugError(`ws${wsId} unexpected-response`, message);
-      });
-
-      ws.on("upgrade", () => {
-        debug(`ws${wsId} upgrade`);
-      });
-
-      ws.on("message", (message) => {
-        const data = JSON.parse(message.toString());
+      ws.addEventListener("message", (message) => {
+        const data = JSON.parse(message.data.toString());
 
         if ("error" in data) {
           const errorMessage = `ws${wsId} json-rpc error`;
