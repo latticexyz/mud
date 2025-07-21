@@ -3,7 +3,7 @@ import { Keys, Stash } from "./common";
 import { TableRecord } from "./common";
 import { getRecords } from "./actions/getRecords";
 import { getKeys } from "./actions/getKeys";
-import { getIndexerTableLabel, IndexKey } from "./actions/registerIndex";
+import { getIndexTableLabel, IndexKey } from "./actions/registerIndex";
 import { getRecord } from "./actions/getRecord";
 import { getKey } from "@latticexyz/protocol-parser/internal";
 import { encodeKey } from "./actions/encodeKey";
@@ -83,7 +83,7 @@ export function Matches<table extends Table>(
   const getInitialKeys = (stash: Stash) => {
     // If an index exists for this table and search key, we can shortcut the lookup
     const searchKey = Object.keys(partialRecord) as IndexKey<table>;
-    const { label, namespaceLabel } = getIndexerTableLabel(table, searchKey);
+    const { label, namespaceLabel } = getIndexTableLabel(table, searchKey);
     const indexTable = stash.get().config[namespaceLabel ?? ""]?.[label];
     if (indexTable) {
       const keys: Keys<table> = {};

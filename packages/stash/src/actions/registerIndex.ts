@@ -23,7 +23,7 @@ type joinKey<key extends unknown[]> = key extends []
       : never
     : string;
 
-type getIndexerTableName<table extends Table, key extends IndexKey<table>> = `${table["label"]}_${joinKey<key>}`;
+type getIndexTableName<table extends Table, key extends IndexKey<table>> = `${table["label"]}_${joinKey<key>}`;
 
 export type RegisterIndexResult<table extends Table, key extends IndexKey<table>> = {
   [prop in keyof Table]: prop extends "key"
@@ -35,15 +35,15 @@ export type RegisterIndexResult<table extends Table, key extends IndexKey<table>
         : prop extends "namespaceLabel"
           ? typeof indexNamespace
           : prop extends "label"
-            ? getIndexerTableName<table, key>
+            ? getIndexTableName<table, key>
             : prop extends "name"
-              ? getIndexerTableName<table, key>
+              ? getIndexTableName<table, key>
               : Table[prop];
 };
 
 /**
  * An index is a simple derived table where the key is a subset of the input table's record and the record is equal to the input record.
- * For more advanced use cases, use `registerDerivedTable` instead.
+ * For more advanced use cases use `registerDerivedTable` instead.
  */
 export function registerIndex<table extends Table, key extends IndexKey<table>>({
   stash,
@@ -51,7 +51,7 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
   key,
 }: RegisterIndexArgs<table, key>): RegisterIndexResult<table, key> {
   // Register the index table
-  const { label, name, namespace, namespaceLabel } = getIndexerTableLabel(table, key);
+  const { label, name, namespace, namespaceLabel } = getIndexTableLabel(table, key);
   const tableId = resourceToHex({ namespace, name, type: "offchainTable" });
   const indexTable = {
     label,
@@ -68,7 +68,7 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
     table: indexTable,
   });
 
-  // Register derived table
+  // Register derivation logic
   registerDerivedTable({
     stash,
     derivedTable: {
@@ -77,13 +77,15 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
       deriveUpdates: (() => {
         const countByKey: Record<string, number> = {};
         return ({ previous, current }: TableUpdate<typeof table>) => {
-          // Remove the previous index record
           const updates: PendingStashUpdate[] = [];
+          // There is one record in the index table for each record in the input table.
+          // When a record in the input table is updated, we need to find the corresponding index record,
+          // remove it from it's previous index location, and add it to it's new index location.
           if (previous) {
-            // Find the previous index record
             const previousKey = pick(previous, key);
             const encodedKey = Object.values(previousKey).join("|");
             const count = countByKey[encodedKey] ?? 0;
+            // Search for the index record corresponding to the previous record by comparing each matching key
             for (let i = 0; i < count; i++) {
               const previousIndexRecord = getRecord({
                 stash,
@@ -97,8 +99,8 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
                   key: { ...previousKey, index: i },
                   value: undefined,
                 });
+                // To avoid gaps we update the index of the last record with the index of the record we're removing
                 if (i < count - 1) {
-                  // Update the index of the last record if it exists
                   const lastIndexRecord = getRecord({
                     stash,
                     table: indexTable,
@@ -142,12 +144,12 @@ export function registerIndex<table extends Table, key extends IndexKey<table>>(
   return indexTable as never;
 }
 
-export function getIndexerTableLabel<table extends Table, key extends IndexKey<table>>(
+export function getIndexTableLabel<table extends Table, key extends IndexKey<table>>(
   table: table,
   key: key,
 ): {
-  label: getIndexerTableName<table, key>;
-  name: getIndexerTableName<table, key>;
+  label: getIndexTableName<table, key>;
+  name: getIndexTableName<table, key>;
   namespace: typeof indexNamespace;
   namespaceLabel: typeof indexNamespace;
 } {

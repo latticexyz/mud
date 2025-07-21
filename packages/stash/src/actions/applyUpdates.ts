@@ -51,12 +51,12 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
 
     // add update to pending updates for notifying subscribers
     const tableUpdates = ((pendingUpdates[table.namespaceLabel] ??= {})[table.label] ??= []);
-    const update: TableUpdate = {
+    const update = {
       table,
       key,
       previous: prevRecord,
       current: nextRecord,
-    };
+    } satisfies TableUpdate;
     tableUpdates.push(update);
 
     // update derived tables
