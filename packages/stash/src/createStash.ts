@@ -45,6 +45,7 @@ export function createStash<config extends Config>(storeConfig?: config): Create
       state,
       tableSubscribers,
       storeSubscribers,
+      derivedTables: {},
     },
   } satisfies Stash;
 

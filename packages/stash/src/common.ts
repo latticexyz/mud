@@ -1,4 +1,4 @@
-import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { Table } from "@latticexyz/config";
 import { QueryFragment } from "./queryFragments";
 
@@ -36,6 +36,11 @@ export type getConfig<
   namespace extends keyof config["namespaces"] | undefined,
   table extends keyof config["namespaces"][namespace extends undefined ? "" : namespace]["tables"],
 > = Omit<config["namespaces"][namespace extends undefined ? "" : namespace]["tables"][table], "codegen" | "deploy">;
+
+// Variation of getKeySchema that does not validate that keys are StaticAbiType since it's not required in stash
+type getKeySchema<table extends Table> = {
+  readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
+};
 
 /**
  * A Key is the unique identifier for a row in the table.
@@ -111,6 +116,20 @@ export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
   };
 };
 
+export type DerivedTable<input extends Table = Table> = {
+  readonly input: input;
+  readonly label: string;
+  readonly deriveUpdates: (update: TableUpdate<input>) => PendingStashUpdate[];
+};
+
+export type DerivedTables = {
+  [inputNamespaceLabel: string]: {
+    [inputTableLabel: string]: {
+      [derivedTableLabel: string]: DerivedTable;
+    };
+  };
+};
+
 export type State<config extends StoreConfig = StoreConfig> = {
   readonly config: {
     readonly [namespace in getNamespaces<config>]: {
@@ -127,6 +146,12 @@ export type MutableState<config extends StoreConfig = StoreConfig> = {
     };
   };
   records: MutableStoreRecords<config>;
+};
+
+export type PendingStashUpdate<table extends Table = Table> = {
+  table: table;
+  key: Key<table>;
+  value: undefined | Partial<TableRecord<table>>;
 };
 
 export type TableUpdate<table extends Table = Table> = {
@@ -176,5 +201,8 @@ export type Stash<config extends StoreConfig = StoreConfig> = {
     readonly tableSubscribers: TableSubscribers;
     readonly storeSubscribers: StoreSubscribers;
     readonly state: MutableState<config>;
+    readonly derivedTables: DerivedTables;
   };
 };
+
+export const indexNamespace = "__stash_index";

@@ -7,6 +7,7 @@ import { In } from "../queryFragments";
 import { Hex } from "viem";
 import { StoreRecords, getQueryConfig } from "../common";
 import { runQuery } from "../actions/runQuery";
+import { isDefined } from "@latticexyz/common/utils";
 
 describe("stash with default actions", () => {
   describe("decodeKey", () => {
@@ -563,6 +564,116 @@ describe("stash with default actions", () => {
           current: { a: "0x00", b: 1n, c: 3 },
         },
       ]);
+    });
+  });
+
+  describe("registerDerivedTable", () => {
+    it("should register a derived table", () => {
+      const stash = createStash();
+      const inputTable = defineTable({
+        label: "inputTable",
+        namespaceLabel: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      const derivedTable = defineTable({
+        label: "derivedTable",
+        namespaceLabel: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field2"],
+      });
+      stash.registerTable({ table: inputTable });
+      stash.setRecord({ table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
+      stash.registerDerivedTable({
+        derivedTable: {
+          input: inputTable,
+          label: "derivedTable",
+          deriveUpdates: (update) => {
+            return [
+              // Remove the previous derived record
+              update.previous && {
+                table: derivedTable,
+                key: { field2: update.previous.field2 },
+                value: undefined,
+              },
+              // Add the new derived record
+              update.current && {
+                table: derivedTable,
+                key: { field2: update.current.field2 },
+                value: update.current,
+              },
+            ].filter(isDefined);
+          },
+        },
+      });
+
+      // After registering the derived table, the derived table should have been hydrated with the derived state
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: { "1": { field1: 1, field2: "0x123" } },
+          derivedTable: { "0x123": { field1: 1, field2: "0x123" } },
+        },
+      });
+
+      // Setting a new record on the source table should update the derived table
+      stash.setRecord({ table: inputTable, key: { field1: 2 }, value: { field2: "0x456" } });
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: {
+            "1": { field1: 1, field2: "0x123" },
+            "2": { field1: 2, field2: "0x456" },
+          },
+          derivedTable: {
+            "0x123": { field1: 1, field2: "0x123" },
+            "0x456": { field1: 2, field2: "0x456" },
+          },
+        },
+      });
+    });
+  });
+
+  describe("registerIndex", () => {
+    it("should register an index", () => {
+      const stash = createStash();
+      const inputTable = defineTable({
+        label: "inputTable",
+        namespaceLabel: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      stash.registerTable({ table: inputTable });
+      stash.setRecord({ table: inputTable, key: { field1: 1 }, value: { field2: "0x123" } });
+      stash.registerIndex({
+        table: inputTable,
+        key: ["field2"],
+      });
+
+      // After registering the index, the index should have been hydrated with the indexed state
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: { "1": { field1: 1, field2: "0x123" } },
+        },
+        __stash_index: {
+          inputTable__field2: { "0x123|0": { field1: 1, field2: "0x123", index: 0 } },
+        },
+      });
+
+      // Setting a new record on the source table should update the index
+      stash.setRecord({ table: inputTable, key: { field1: 2 }, value: { field2: "0x456" } });
+      attest(stash.get().records).equals({
+        namespace1: {
+          inputTable: {
+            "1": { field1: 1, field2: "0x123" },
+            "2": { field1: 2, field2: "0x456" },
+          },
+        },
+        __stash_index: {
+          inputTable__field2: {
+            "0x123|0": { field1: 1, field2: "0x123", index: 0 },
+            "0x456|0": { field1: 2, field2: "0x456", index: 0 },
+          },
+        },
+      });
     });
   });
 });

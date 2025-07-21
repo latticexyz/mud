@@ -1,14 +1,7 @@
 import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Key, Stash, TableRecord, TableUpdates } from "../common";
+import { DerivedTable, PendingStashUpdate, Stash, TableUpdate, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
-import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
-
-export type PendingStashUpdate<table extends Table = Table> = {
-  table: table;
-  key: Key<table>;
-  value: undefined | Partial<TableRecord<table>>;
-};
 
 export type ApplyUpdatesArgs = {
   stash: Stash;
@@ -58,12 +51,19 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
 
     // add update to pending updates for notifying subscribers
     const tableUpdates = ((pendingUpdates[table.namespaceLabel] ??= {})[table.label] ??= []);
-    tableUpdates.push({
+    const update = {
       table,
       key,
       previous: prevRecord,
       current: nextRecord,
-    });
+    } satisfies TableUpdate;
+    tableUpdates.push(update);
+
+    // update derived tables
+    const derivedTables = stash._.derivedTables?.[table.namespaceLabel]?.[table.label];
+    if (derivedTables != null) {
+      updateDerivedTables({ stash, derivedTables, update });
+    }
   }
 
   queueMicrotask(() => {
@@ -88,4 +88,19 @@ function notifySubscribers(stash: Stash) {
   stash._.storeSubscribers.forEach((subscriber) => subscriber({ type: "records", updates }));
 
   pendingStashUpdates.delete(stash);
+}
+
+type UpdateDerivedTableArgs = {
+  stash: Stash;
+  derivedTables: Record<string, DerivedTable>;
+  update: TableUpdate;
+};
+
+function updateDerivedTables({ stash, derivedTables, update }: UpdateDerivedTableArgs): void {
+  applyUpdates({
+    stash,
+    updates: Object.values(derivedTables)
+      .map(({ deriveUpdates }) => deriveUpdates(update))
+      .flat(),
+  });
 }
