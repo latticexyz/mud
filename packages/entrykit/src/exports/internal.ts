@@ -12,6 +12,8 @@ export { useAccountModal } from "../useAccountModal";
 export { useSessionClientReady as useSessionClient } from "../useSessionClientReady";
 export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmiConfig";
 export { withFeeCache } from "../utils/withFeeCache";
+export { getSessionClient } from "../getSessionClient";
+export { getSessionAccount } from "../getSessionAccount";
 
 // And some additional internal things
 export * from "../validateSigner";
