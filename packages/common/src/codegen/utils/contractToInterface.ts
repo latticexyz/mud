@@ -32,9 +32,7 @@ export interface QualifiedSymbol {
 export function contractToInterface(
   source: string,
   contractName: string,
-  additionalContext?: {
-    findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined;
-  },
+  findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined,
 ): {
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
@@ -84,7 +82,7 @@ export function contractToInterface(
 
           for (const { typeName } of parameters.concat(returnParameters ?? [])) {
             const symbols = typeNameToSymbols(typeName);
-            symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, additionalContext, qualifiedSymbols));
+            symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, findInheritedSymbol, qualifiedSymbols));
           }
         }
       } catch (error: unknown) {
@@ -102,7 +100,7 @@ export function contractToInterface(
 
       for (const parameter of parameters) {
         const symbols = typeNameToSymbols(parameter.typeName);
-        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, additionalContext, qualifiedSymbols));
+        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, findInheritedSymbol, qualifiedSymbols));
       }
     },
   });
@@ -195,9 +193,7 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
 function symbolsToImports(
   ast: SourceUnit,
   symbols: string[],
-  additionalContext?: {
-    findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined;
-  },
+  findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined,
   qualifiedSymbols?: Map<string, QualifiedSymbol>,
 ): SymbolImport[] {
   const imports: SymbolImport[] = [];
@@ -211,8 +207,8 @@ function symbolsToImports(
     }
 
     // Then check inherited symbols
-    if (additionalContext?.findInheritedSymbol) {
-      const inheritedSymbol = additionalContext.findInheritedSymbol(symbol);
+    if (findInheritedSymbol) {
+      const inheritedSymbol = findInheritedSymbol(symbol);
       if (inheritedSymbol) {
         // Track qualified symbol
         if (qualifiedSymbols) {

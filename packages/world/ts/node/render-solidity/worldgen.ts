@@ -93,13 +93,23 @@ export async function worldgen({
       // get external functions from a contract
       let functions, errors, symbolImports, qualifiedSymbols;
       try {
-        ({ functions, errors, symbolImports, qualifiedSymbols } = contractToInterface(source, system.label, {
+        ({ functions, errors, symbolImports, qualifiedSymbols } = contractToInterface(
+          source,
+          system.label,
           findInheritedSymbol,
-        }));
+        ));
       } catch (error) {
         console.error(`Error parsing system ${system.label} at ${system.sourcePath}:`);
         console.error(error);
         throw error;
+      }
+
+      // Create type qualifiers map from qualified symbols
+      const typeQualifiers = new Map<string, string>();
+      for (const [symbol, qualified] of qualifiedSymbols) {
+        if (qualified.qualifier) {
+          typeQualifiers.set(symbol, `${qualified.qualifier}.${symbol}`);
+        }
       }
 
       if (system.deploy.registerWorldFunctions) {
@@ -115,13 +125,13 @@ export async function worldgen({
         // Apply type qualifiers to functions and errors for the interface
         const qualifiedFunctions = functions.map((func) => ({
           ...func,
-          parameters: applyTypeQualifiers(func.parameters, qualifiedSymbols),
-          returnParameters: applyTypeQualifiers(func.returnParameters, qualifiedSymbols),
+          parameters: applyTypeQualifiers(func.parameters, typeQualifiers),
+          returnParameters: applyTypeQualifiers(func.returnParameters, typeQualifiers),
         }));
 
         const qualifiedErrors = errors.map((error) => ({
           ...error,
-          parameters: applyTypeQualifiers(error.parameters, qualifiedSymbols),
+          parameters: applyTypeQualifiers(error.parameters, typeQualifiers),
         }));
 
         const systemInterface = renderSystemInterface({
@@ -153,14 +163,6 @@ export async function worldgen({
               : importPath,
           }),
         );
-
-        // Create type qualifiers map from qualified symbols
-        const typeQualifiers = new Map<string, string>();
-        for (const [symbol, qualified] of qualifiedSymbols) {
-          if (qualified.qualifier) {
-            typeQualifiers.set(symbol, `${qualified.qualifier}.${symbol}`);
-          }
-        }
 
         const systemLibrary = renderSystemLibrary({
           libraryName: system.libraryName,

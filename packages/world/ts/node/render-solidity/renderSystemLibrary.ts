@@ -4,7 +4,7 @@ import {
   renderedSolidityHeader,
   renderImports,
   ContractInterfaceFunction,
-  applySimpleTypeQualifiers,
+  applyTypeQualifiers,
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
@@ -28,8 +28,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const functions = functionsInput.map((func) => ({
     ...func,
     // Format parameters (add auxiliary argument names, replace calldata location, apply type qualifiers)
-    parameters: formatParams("__auxArg", applySimpleTypeQualifiers(func.parameters, typeQualifiers)),
-    returnParameters: formatParams("__auxRet", applySimpleTypeQualifiers(func.returnParameters, typeQualifiers)),
+    parameters: formatParams("__auxArg", applyTypeQualifiers(func.parameters, typeQualifiers)),
+    returnParameters: formatParams("__auxRet", applyTypeQualifiers(func.returnParameters, typeQualifiers)),
     // Remove `payable` from stateMutability for library functions
     stateMutability: func.stateMutability.replace("payable", ""),
   }));
@@ -72,7 +72,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     { name: callingFromRootSystemErrorName, parameters: [] },
     ...systemErrors.map((error) => ({
       ...error,
-      parameters: applySimpleTypeQualifiers(error.parameters, typeQualifiers),
+      parameters: applyTypeQualifiers(error.parameters, typeQualifiers),
     })),
   ];
 
