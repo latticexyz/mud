@@ -7,6 +7,7 @@ import {
   applyTypeQualifiers,
   type ImportDatum,
 } from "@latticexyz/common/codegen";
+import { getRemappings } from "@latticexyz/common/foundry";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { renderSystemLibrary } from "./renderSystemLibrary";
@@ -23,6 +24,8 @@ export async function worldgen({
   config: WorldConfig;
   clean?: boolean;
 }) {
+  // Get forge remappings for resolving npm packages
+  const remappings = await getRemappings();
   const worldgenOutDir = path.join(
     rootDir,
     config.sourceDirectory,
@@ -88,7 +91,12 @@ export async function worldgen({
       const source = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
 
       // Create inheritance resolver for this system
-      const findInheritedSymbol = await createInheritanceResolver(path.join(rootDir, system.sourcePath), system.label);
+      const findInheritedSymbol = await createInheritanceResolver(
+        path.join(rootDir, system.sourcePath),
+        system.label,
+        rootDir,
+        remappings,
+      );
 
       // get external functions from a contract
       let functions, errors, symbolImports, qualifiedSymbols;

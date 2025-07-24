@@ -5,6 +5,7 @@ import path from "node:path";
 import { findContractNode } from "./findContractNode";
 import { QualifiedSymbol } from "./contractToInterface";
 import { findSymbolImport } from "./findSymbolImport";
+import { resolveRemapping } from "./resolveRemapping";
 
 interface InheritanceInfo {
   baseContracts: string[];
@@ -22,6 +23,8 @@ interface InheritanceInfo {
 export async function createInheritanceResolver(
   contractPath: string,
   contractName: string,
+  rootDir: string,
+  remappings: string[] = [],
 ): Promise<(symbol: string) => QualifiedSymbol | undefined> {
   const resolvedContracts = new Map<string, InheritanceInfo>();
   const visitedPaths = new Set<string>();
@@ -29,10 +32,11 @@ export async function createInheritanceResolver(
   async function parseContract(filePath: string, targetContractName?: string): Promise<InheritanceInfo | undefined> {
     // Prevent infinite recursion
     const normalizedPath = path.resolve(filePath);
-    if (visitedPaths.has(normalizedPath)) {
+    const visitKey = targetContractName ? `${normalizedPath}:${targetContractName}` : normalizedPath;
+    if (visitedPaths.has(visitKey)) {
       return undefined;
     }
-    visitedPaths.add(normalizedPath);
+    visitedPaths.add(visitKey);
 
     try {
       const source = await readFile(filePath, "utf8");
@@ -80,7 +84,7 @@ export async function createInheritanceResolver(
           }
         }
 
-        // Extract symbols defined in this contract
+        // Extract symbols defined in this contract/interface
         visit(contractNode, {
           StructDefinition(node) {
             if (node.name) {
@@ -109,11 +113,11 @@ export async function createInheritanceResolver(
             // Store the original import path
             info.baseContractImports.set(baseName, importInfo.path);
 
-            const importPath = importInfo.path.startsWith(".")
+            const resolvedPath = importInfo.path.startsWith(".")
               ? path.resolve(path.dirname(filePath), importInfo.path)
-              : importInfo.path;
+              : resolveRemapping(importInfo.path, remappings, rootDir);
 
-            await parseContract(importPath, baseName);
+            await parseContract(resolvedPath, baseName);
           }
         }
       }
@@ -157,8 +161,24 @@ export async function createInheritanceResolver(
         const baseInfo = resolvedContracts.get(baseName);
         if (baseInfo?.symbols.has(symbol)) {
           // Found the symbol in a base contract
-          // Get the import path from the main contract to this base contract
-          const importPath = mainInfo?.baseContractImports.get(baseName) || `./${baseName}.sol`;
+          // Find the import path for this base contract
+          let importPath: string | undefined;
+
+          for (const [, info] of resolvedContracts) {
+            const baseImportPath = info.baseContractImports.get(baseName);
+            if (baseImportPath) {
+              importPath = baseImportPath;
+              break;
+            }
+          }
+
+          // If we still don't have an import path, throw an error
+          if (!importPath) {
+            throw new Error(
+              `Could not find import path for base contract "${baseName}" which defines "${symbol}". ` +
+                `Make sure "${baseName}" is properly imported in your contract or its dependencies.`,
+            );
+          }
 
           return {
             symbol,
