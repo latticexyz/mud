@@ -55,8 +55,6 @@ export function contractToInterface(
     throw new MUDError(`Contract not found: ${contractName}`);
   }
 
-  // We'll collect base contract imports as we find symbols that need them
-
   visit(contractNode, {
     FunctionDefinition({
       name,
@@ -223,7 +221,6 @@ function symbolsToImports(
             path: inheritedSymbol.sourcePath,
           });
         }
-        continue;
       }
     }
   }

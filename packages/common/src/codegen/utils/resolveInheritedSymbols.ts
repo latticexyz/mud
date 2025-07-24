@@ -161,23 +161,14 @@ export async function createInheritanceResolver(
         const baseInfo = resolvedContracts.get(baseName);
         if (baseInfo?.symbols.has(symbol)) {
           // Found the symbol in a base contract
-          // We need to find the best import path for this base contract
-
-          // Strategy: Look through all contracts we've resolved to find the import path
-          // Prefer non-relative imports (remapped imports) over relative imports
+          // Find the import path for this base contract
           let importPath: string | undefined;
 
           for (const [, info] of resolvedContracts) {
             const baseImportPath = info.baseContractImports.get(baseName);
             if (baseImportPath) {
-              if (!baseImportPath.startsWith(".")) {
-                // This is a remapped package import, use it immediately
-                importPath = baseImportPath;
-                break;
-              } else if (!importPath) {
-                // Use relative import as fallback
-                importPath = baseImportPath;
-              }
+              importPath = baseImportPath;
+              break;
             }
           }
 
