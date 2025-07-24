@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+
 ## 2.2.22
 
 ## 2.2.21
