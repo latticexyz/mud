@@ -5,6 +5,7 @@ pragma solidity >=0.8.24;
 
 import { ASystem } from "../../ASystem.sol";
 import { ASystemThing, Position } from "../../ASystemTypes.sol";
+import { ISomeInterface } from "../../ISomeInterface.sol";
 import { THREE } from "../../ASystemConstants.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
@@ -42,6 +43,10 @@ library ASystemLib {
   }
 
   function setValue(ASystemType self, uint256 value) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValue(value);
+  }
+
+  function setValue(ASystemType self, ISomeInterface.InheritedStruct memory value) internal {
     return CallWrapper(self.toResourceId(), address(0)).setValue(value);
   }
 
@@ -114,6 +119,16 @@ library ASystemLib {
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
     bytes memory systemCall = abi.encodeCall(_setValue_uint256.setValue, (value));
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
+  function setValue(CallWrapper memory self, ISomeInterface.InheritedStruct memory value) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_setValue_ISomeInterface_InheritedStruct.setValue, (value));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -300,6 +315,11 @@ library ASystemLib {
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
+  function setValue(RootCallWrapper memory self, ISomeInterface.InheritedStruct memory value) internal {
+    bytes memory systemCall = abi.encodeCall(_setValue_ISomeInterface_InheritedStruct.setValue, (value));
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
   function setPosition(RootCallWrapper memory self, Position memory position) internal {
     bytes memory systemCall = abi.encodeCall(_setPosition_Position.setPosition, (position));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -446,6 +466,10 @@ interface _setValue_ASystemThing {
 
 interface _setValue_uint256 {
   function setValue(uint256 value) external;
+}
+
+interface _setValue_ISomeInterface_InheritedStruct {
+  function setValue(ISomeInterface.InheritedStruct memory value) external;
 }
 
 interface _setPosition_Position {

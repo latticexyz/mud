@@ -4,6 +4,7 @@ import {
   renderedSolidityHeader,
   renderImports,
   ContractInterfaceFunction,
+  applySimpleTypeQualifiers,
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
@@ -21,13 +22,14 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
+    typeQualifiers,
   } = options;
 
   const functions = functionsInput.map((func) => ({
     ...func,
-    // Format parameters (add auxiliary argument names, replace calldata location)
-    parameters: formatParams("__auxArg", func.parameters),
-    returnParameters: formatParams("__auxRet", func.returnParameters),
+    // Format parameters (add auxiliary argument names, replace calldata location, apply type qualifiers)
+    parameters: formatParams("__auxArg", applySimpleTypeQualifiers(func.parameters, typeQualifiers)),
+    returnParameters: formatParams("__auxRet", applySimpleTypeQualifiers(func.returnParameters, typeQualifiers)),
     // Remove `payable` from stateMutability for library functions
     stateMutability: func.stateMutability.replace("payable", ""),
   }));
@@ -66,7 +68,13 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   ];
 
   const callingFromRootSystemErrorName = `${libraryName}_CallingFromRootSystem`;
-  const errors = [{ name: callingFromRootSystemErrorName, parameters: [] }, ...systemErrors];
+  const errors = [
+    { name: callingFromRootSystemErrorName, parameters: [] },
+    ...systemErrors.map((error) => ({
+      ...error,
+      parameters: applySimpleTypeQualifiers(error.parameters, typeQualifiers),
+    })),
+  ];
 
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
@@ -290,6 +298,7 @@ function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
   const { name, parameters } = contractFunction;
   const paramTypes = parameters
     .map((param) => param.split(" ")[0])
+    .map((type) => type.replace(".", "_"))
     .map((type) => type.replace("[]", "Array"))
     // Static arrays may contain multiple disallowed symbols, for name uniqueness toHex is easier than escaping
     .map((type) => type.replace(/\[.+\]/, (match) => stringToHex(match)))

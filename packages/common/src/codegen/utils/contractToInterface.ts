@@ -16,6 +16,12 @@ export interface ContractInterfaceError {
   parameters: string[];
 }
 
+export interface QualifiedSymbol {
+  symbol: string;
+  qualifier?: string; // e.g., "IParentContract" for IParentContract.SomeStruct
+  sourcePath: string;
+}
+
 /**
  * Parse the contract data to get the functions necessary to generate an interface,
  * and symbols to import from the original contract.
@@ -26,16 +32,26 @@ export interface ContractInterfaceError {
 export function contractToInterface(
   source: string,
   contractName: string,
+  additionalContext?: {
+    findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined;
+  },
 ): {
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
   symbolImports: SymbolImport[];
+  qualifiedSymbols: Map<string, QualifiedSymbol>;
 } {
-  const ast = parse(source);
+  let ast: SourceUnit;
+  try {
+    ast = parse(source);
+  } catch (error) {
+    throw new MUDError(`Failed to parse contract ${contractName}: ${error}`);
+  }
   const contractNode = findContractNode(ast, contractName);
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
+  const qualifiedSymbols = new Map<string, QualifiedSymbol>();
 
   if (!contractNode) {
     throw new MUDError(`Contract not found: ${contractName}`);
@@ -68,7 +84,7 @@ export function contractToInterface(
 
           for (const { typeName } of parameters.concat(returnParameters ?? [])) {
             const symbols = typeNameToSymbols(typeName);
-            symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
+            symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, additionalContext, qualifiedSymbols));
           }
         }
       } catch (error: unknown) {
@@ -86,7 +102,7 @@ export function contractToInterface(
 
       for (const parameter of parameters) {
         const symbols = typeNameToSymbols(parameter.typeName);
-        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
+        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, additionalContext, qualifiedSymbols));
       }
     },
   });
@@ -95,6 +111,7 @@ export function contractToInterface(
     functions,
     errors,
     symbolImports,
+    qualifiedSymbols,
   };
 }
 
@@ -175,10 +192,51 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
   }
 }
 
-function symbolsToImports(ast: SourceUnit, symbols: string[]): SymbolImport[] {
-  return symbols.map((symbol) => {
-    const symbolImport = findSymbolImport(ast, symbol);
-    if (!symbolImport) throw new MUDError(`Symbol "${symbol}" has no explicit import`);
-    return symbolImport;
-  });
+function symbolsToImports(
+  ast: SourceUnit,
+  symbols: string[],
+  additionalContext?: {
+    findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined;
+  },
+  qualifiedSymbols?: Map<string, QualifiedSymbol>,
+): SymbolImport[] {
+  const imports: SymbolImport[] = [];
+
+  for (const symbol of symbols) {
+    // First check explicit imports
+    const explicitImport = findSymbolImport(ast, symbol);
+    if (explicitImport) {
+      imports.push(explicitImport);
+      continue;
+    }
+
+    // Then check inherited symbols
+    if (additionalContext?.findInheritedSymbol) {
+      const inheritedSymbol = additionalContext.findInheritedSymbol(symbol);
+      if (inheritedSymbol) {
+        // Track qualified symbol
+        if (qualifiedSymbols) {
+          qualifiedSymbols.set(symbol, inheritedSymbol);
+        }
+        // Add import for the parent contract if it has a qualifier
+        if (inheritedSymbol.qualifier) {
+          imports.push({
+            symbol: inheritedSymbol.qualifier,
+            path: inheritedSymbol.sourcePath,
+          });
+        }
+      }
+    }
+  }
+
+  // Deduplicate imports
+  const uniqueImports = new Map<string, SymbolImport>();
+  for (const imp of imports) {
+    const key = `${imp.symbol}:${imp.path}`;
+    if (!uniqueImports.has(key)) {
+      uniqueImports.set(key, imp);
+    }
+  }
+
+  return Array.from(uniqueImports.values());
 }

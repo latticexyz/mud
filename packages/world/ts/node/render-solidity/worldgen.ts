@@ -1,6 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { formatAndWriteSolidity, contractToInterface, type ImportDatum } from "@latticexyz/common/codegen";
+import {
+  formatAndWriteSolidity,
+  contractToInterface,
+  createInheritanceResolver,
+  applyTypeQualifiers,
+  type ImportDatum,
+} from "@latticexyz/common/codegen";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { renderSystemLibrary } from "./renderSystemLibrary";
@@ -80,8 +86,21 @@ export async function worldgen({
   await Promise.all(
     systems.map(async (system) => {
       const source = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
+
+      // Create inheritance resolver for this system
+      const findInheritedSymbol = await createInheritanceResolver(path.join(rootDir, system.sourcePath), system.label);
+
       // get external functions from a contract
-      const { functions, errors, symbolImports } = contractToInterface(source, system.label);
+      let functions, errors, symbolImports, qualifiedSymbols;
+      try {
+        ({ functions, errors, symbolImports, qualifiedSymbols } = contractToInterface(source, system.label, {
+          findInheritedSymbol,
+        }));
+      } catch (error) {
+        console.error(`Error parsing system ${system.label} at ${system.sourcePath}:`);
+        console.error(error);
+        throw error;
+      }
 
       if (system.deploy.registerWorldFunctions) {
         const interfaceImports = symbolImports.map(
@@ -93,11 +112,23 @@ export async function worldgen({
           }),
         );
 
+        // Apply type qualifiers to functions and errors for the interface
+        const qualifiedFunctions = functions.map((func) => ({
+          ...func,
+          parameters: applyTypeQualifiers(func.parameters, qualifiedSymbols),
+          returnParameters: applyTypeQualifiers(func.returnParameters, qualifiedSymbols),
+        }));
+
+        const qualifiedErrors = errors.map((error) => ({
+          ...error,
+          parameters: applyTypeQualifiers(error.parameters, qualifiedSymbols),
+        }));
+
         const systemInterface = renderSystemInterface({
           name: system.interfaceName,
           functionPrefix: system.namespace === "" ? "" : `${system.namespace}__`,
-          functions,
-          errors,
+          functions: qualifiedFunctions,
+          errors: qualifiedErrors,
           imports: interfaceImports,
         });
         // write to file
@@ -123,6 +154,14 @@ export async function worldgen({
           }),
         );
 
+        // Create type qualifiers map from qualified symbols
+        const typeQualifiers = new Map<string, string>();
+        for (const [symbol, qualified] of qualifiedSymbols) {
+          if (qualified.qualifier) {
+            typeQualifiers.set(symbol, `${qualified.qualifier}.${symbol}`);
+          }
+        }
+
         const systemLibrary = renderSystemLibrary({
           libraryName: system.libraryName,
           interfaceName: system.interfaceName,
@@ -137,6 +176,7 @@ export async function worldgen({
           worldImportPath: config.codegen.worldImportPath.startsWith(".")
             ? "./" + path.relative(path.dirname(system.libraryPath), path.join(rootDir, config.codegen.worldImportPath))
             : config.codegen.worldImportPath,
+          typeQualifiers,
         });
         // write to file
         await formatAndWriteSolidity(systemLibrary, system.libraryPath, "Generated system library");
