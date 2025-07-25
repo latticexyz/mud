@@ -129,6 +129,10 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
     },
     manualPagination: true,
     pageCount: -1,
+    getRowId: (row, idx) => {
+      const values = Object.values(row).join("-");
+      return keccak256(toHex(`${query}-${idx}-${values}`));
+    },
     onSortingChange: setSorting,
     onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
