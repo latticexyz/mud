@@ -6,7 +6,8 @@ import { useEffect } from "react";
 export function SendCalls() {
   const location = useLocation();
   // TODO: abstract this to get a typed request
-  const { request } = location.state;
+  const searchParams = new URLSearchParams(location.search);
+  const request = JSON.parse(searchParams.get("request")!);
 
   // TODO: clean this up with react-query to show pending state etc.
   useEffect(() => {

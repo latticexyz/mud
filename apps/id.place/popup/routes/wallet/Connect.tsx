@@ -5,7 +5,8 @@ import { porto } from "../../../src/popup/porto";
 export function Connect() {
   const location = useLocation();
   // TODO: abstract this to get a typed request
-  const { request } = location.state;
+  const searchParams = new URLSearchParams(location.search);
+  const request = JSON.parse(searchParams.get("request")!);
 
   return (
     <div style={{ display: "flex", gap: "0.5em" }}>
