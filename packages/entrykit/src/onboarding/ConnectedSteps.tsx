@@ -19,8 +19,8 @@ export type Props = {
 };
 
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
-  const { chain } = useEntryKitConfig();
-  const paymaster = getPaymaster(chain);
+  const { chain, paymasterOverride } = useEntryKitConfig();
+  const paymaster = getPaymaster(chain, paymasterOverride);
   const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const userAddress = userClient.account.address;

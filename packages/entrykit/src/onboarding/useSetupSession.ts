@@ -16,7 +16,7 @@ import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.confi
 
 export function useSetupSession({ userClient }: { userClient: ConnectedClient }) {
   const queryClient = useQueryClient();
-  const { chainId, worldAddress } = useEntryKitConfig();
+  const { chainId, worldAddress, paymasterOverride } = useEntryKitConfig();
   const client = useClient({ chainId });
 
   const mutationKey = ["setupSession", client?.chain.id, userClient.account.address];
@@ -33,7 +33,7 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
       registerDelegation: boolean;
     }): Promise<void> => {
       if (!client) throw new Error("Client not ready.");
-      const paymaster = getPaymaster(client.chain);
+      const paymaster = getPaymaster(client.chain, paymasterOverride);
       const sessionAddress = sessionClient.account.address;
 
       console.log("setting up session");

@@ -23,7 +23,7 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
   const { chainId: userChainId } = useAccount();
   const queryClient = useQueryClient();
   const client = useClient({ chainId });
-  const paymaster = getPaymaster(chain);
+  const paymaster = getPaymaster(chain, undefined);
   const balance = useShowQueryError(useBalance(userAddress));
   const shouldSwitchChain = chainId != null && chainId !== userChainId;
 
@@ -31,7 +31,7 @@ export function WithdrawGasBalanceButton({ userAddress }: Props) {
     mutationKey: ["withdraw", userAddress],
     mutationFn: async () => {
       if (!client) throw new Error("Client not ready.");
-      if (!paymaster) throw new Error("Paymaster not found");
+      if (!paymaster?.address) throw new Error("Paymaster not found");
       if (!balance.data) throw new Error("No gas balance to withdraw.");
 
       try {

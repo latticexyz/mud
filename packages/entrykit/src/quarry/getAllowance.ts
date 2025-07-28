@@ -11,7 +11,7 @@ export type GetAllowanceParams = {
 };
 
 export async function getAllowance({ client, userAddress }: GetAllowanceParams) {
-  const paymaster = getPaymaster(client.chain);
+  const paymaster = getPaymaster(client.chain, undefined);
   if (paymaster?.type !== "quarry") return null;
 
   const record = await getRecord(client, {
@@ -32,7 +32,7 @@ export function getAllowanceSlot({ userAddress }: { userAddress: Address }) {
 
 // TODO: move this into some sort of store util to `setField`
 export async function setAllowanceSlot({ client, userAddress, allowance }: GetAllowanceParams & { allowance: bigint }) {
-  const paymaster = getPaymaster(client.chain);
+  const paymaster = getPaymaster(client.chain, undefined);
   if (paymaster?.type !== "quarry") return;
 
   const slot = getStaticDataLocation(

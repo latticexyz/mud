@@ -16,8 +16,8 @@ type Props = {
 };
 
 export function DepositViaTransferForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
-  const { chain } = useEntryKitConfig();
-  const paymaster = getPaymaster(chain);
+  const { chain, paymasterOverride } = useEntryKitConfig();
+  const paymaster = getPaymaster(chain, paymasterOverride);
   const publicClient = usePublicClient();
   const { address: userAddress } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -50,7 +50,7 @@ export function DepositViaTransferForm({ amount, setAmount, sourceChain, setSour
   const deposit = useMutation({
     mutationKey: ["depositViaTransfer", amount?.toString()],
     mutationFn: async () => {
-      if (!paymaster) throw new Error("Paymaster not found");
+      if (!paymaster?.address) throw new Error("Paymaster not found");
       if (!publicClient) throw new Error("Public client not found");
       if (!amount) throw new Error("Amount cannot be 0");
 
