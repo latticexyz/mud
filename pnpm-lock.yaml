@@ -110,6 +110,9 @@ importers:
       react-router:
         specifier: ^7.6.3
         version: 7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      tailwind-merge:
+        specifier: ^1.12.0
+        version: 1.12.0
       viem:
         specifier: 2.30.6
         version: 2.30.6(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)

@@ -12,7 +12,7 @@ import {
 
 // TODO: remove this once https://github.com/ithacaxyz/porto/pull/565 and https://github.com/ithacaxyz/porto/pull/568 land
 
-const defaultSize = { width: 400, height: 400 };
+export const defaultSize = { width: 400, height: 400 };
 
 export function popup(): Dialog {
   if (typeof window === "undefined") return noop();
