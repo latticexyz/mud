@@ -16,6 +16,12 @@ import { SubscribeQueryArgs, SubscribeQueryResult, subscribeQuery } from "../act
 import { SubscribeStashArgs, SubscribeStashResult, subscribeStash } from "../actions/subscribeStash";
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 import { Table } from "@latticexyz/config";
+import {
+  registerDerivedTable,
+  RegisterDerivedTableArgs,
+  RegisterDerivedTableResult,
+} from "../actions/registerDerivedTable";
+import { IndexKey, registerIndex, RegisterIndexArgs, RegisterIndexResult } from "../actions/registerIndex";
 
 export type StashBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "stash">;
 export type StashBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "stash">;
@@ -38,6 +44,11 @@ export type StashBoundSubscribeStashArgs<config extends StoreConfig = StoreConfi
   "stash"
 >;
 export type StashBoundSubscribeTableArgs<table extends Table = Table> = Omit<SubscribeTableArgs<table>, "stash">;
+export type StashBoundRegisterDerivedTableArgs<input extends Table> = Omit<RegisterDerivedTableArgs<input>, "stash">;
+export type StashBoundRegisterIndexArgs<table extends Table, key extends IndexKey<table>> = Omit<
+  RegisterIndexArgs<table, key>,
+  "stash"
+>;
 
 export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: <table extends Table>(args: StashBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
@@ -58,6 +69,12 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   subscribeQuery: <query extends Query>(args: StashBoundSubscribeQueryArgs<query>) => SubscribeQueryResult<query>;
   subscribeStash: (args: StashBoundSubscribeStashArgs<config>) => SubscribeStashResult;
   subscribeTable: <table extends Table>(args: StashBoundSubscribeTableArgs<table>) => SubscribeTableResult;
+  registerDerivedTable: <input extends Table>(
+    args: StashBoundRegisterDerivedTableArgs<input>,
+  ) => RegisterDerivedTableResult;
+  registerIndex: <table extends Table, key extends IndexKey<table>>(
+    args: StashBoundRegisterIndexArgs<table, key>,
+  ) => RegisterIndexResult<table, key>;
 };
 
 export function defaultActions<config extends StoreConfig>(stash: Stash<config>): DefaultActions<config> {
@@ -82,5 +99,9 @@ export function defaultActions<config extends StoreConfig>(stash: Stash<config>)
       subscribeStash({ stash, subscriber: args.subscriber as StoreUpdatesSubscriber }),
     subscribeTable: <table extends Table>(args: StashBoundSubscribeTableArgs<table>) =>
       subscribeTable({ stash, ...args }),
+    registerDerivedTable: <input extends Table>(args: StashBoundRegisterDerivedTableArgs<input>) =>
+      registerDerivedTable({ stash, ...args }),
+    registerIndex: <table extends Table, key extends IndexKey<table>>(args: StashBoundRegisterIndexArgs<table, key>) =>
+      registerIndex({ stash, ...args }),
   };
 }

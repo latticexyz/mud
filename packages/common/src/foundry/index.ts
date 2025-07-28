@@ -76,3 +76,12 @@ export async function getRpcUrl(profile?: string): Promise<string> {
     "http://127.0.0.1:8545"
   );
 }
+
+/**
+ * Get the remappings from forge config.
+ * @param profile The foundry profile to use
+ * @returns Array of remapping strings (e.g., ["@latticexyz/=node_modules/@latticexyz/"])
+ */
+export async function getRemappings(profile?: string): Promise<string[]> {
+  return (await getForgeConfig(profile)).remappings;
+}
