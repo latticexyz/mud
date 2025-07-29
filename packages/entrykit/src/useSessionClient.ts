@@ -9,6 +9,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { EntryKitConfig } from "./config/output";
 import { getSessionClient } from "./getSessionClient";
 import { SessionClient } from "./common";
 import { getSessionAccountQueryOptions } from "./useSessionAccount";
@@ -18,11 +19,13 @@ export function getSessionClientQueryOptions({
   client,
   userAddress,
   worldAddress,
+  paymasterOverride,
 }: {
   queryClient: QueryClient;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
   worldAddress: Address;
+  paymasterOverride: EntryKitConfig["paymasterOverride"];
 }): UndefinedInitialDataOptions<SessionClient> {
   return queryOptions<SessionClient>({
     queryKey: ["getSessionClient", client?.uid, userAddress, worldAddress],
@@ -37,6 +40,7 @@ export function getSessionClientQueryOptions({
         sessionSigner,
         userAddress,
         worldAddress,
+        paymasterOverride,
       });
     },
     staleTime: Infinity,
@@ -47,7 +51,7 @@ export function getSessionClientQueryOptions({
 
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
   const queryClient = useQueryClient();
-  const { chainId, worldAddress } = useEntryKitConfig();
+  const { chainId, worldAddress, paymasterOverride } = useEntryKitConfig();
   const client = useClient({ chainId });
   return useQuery(
     getSessionClientQueryOptions({
@@ -55,6 +59,7 @@ export function useSessionClient(userAddress: Address | undefined): UseQueryResu
       client,
       userAddress,
       worldAddress,
+      paymasterOverride,
     }),
   );
 }

@@ -1,3 +1,4 @@
+import { BundlerClientConfig } from "viem/account-abstraction";
 import { Address } from "viem/accounts";
 
 export type EntryKitConfig = {
@@ -28,4 +29,9 @@ export type EntryKitConfig = {
    * Icon should be 1:1 aspect ratio, at least 200x200.
    */
   readonly appIcon: string;
+
+  /**
+   * Custom paymaster client which overrides any paymaster address passed through the chain config.
+   */
+  readonly paymasterOverride?: BundlerClientConfig["paymaster"];
 };
