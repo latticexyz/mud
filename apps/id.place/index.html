@@ -8,20 +8,16 @@
     <link rel="shortcut icon" href="/icon.svg" type="image/x-icon" />
   </head>
   <body>
-    <div class="min-h-screen flex flex-col items-center justify-center text-center font-mono gap-1">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="size-16"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        shape-rendering="crispEdges"
-      >
-        <path
-          d="M2 3H0v18h24V3H2zm20 2v14H2V5h20zM10 7H6v4h4V7zm-6 6h8v4H4v-4zm16-6h-6v2h6V7zm-6 4h6v2h-6v-2zm6 4h-6v2h6v-2z"
-        />
-      </svg>
-      <h1 class="text-3xl font-bold">id.place</h1>
-      <p class="text-sm">a place for your internet identity</p>
+    <div class="min-h-screen grid place-items-center">
+      <div class="flex flex-col items-center gap-2">
+        <div class="flex items-center gap-4">
+          <img src="/icon.svg" class="w-18" />
+          <h1 class="text-4xl font-mono font-semibold tracking-tighter leading-none text-indigo-600">
+            <span class="text-black">id</span>.place
+          </h1>
+        </div>
+        <p class="font-medium text-slate-600">A place for your internet identity.</p>
+      </div>
     </div>
   </body>
 </html>
