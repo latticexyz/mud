@@ -1,13 +1,22 @@
 import { twMerge } from "tailwind-merge";
 import { Logo } from "./icons/Logo";
 import { PopupContainer } from "./PopupContainer";
+import { Button } from "./Button";
+import { useMutation } from "@tanstack/react-query";
 
 export type Props = {
-  createAccount: () => void;
-  signIn: () => void;
+  onCreateAccount: () => Promise<void>;
+  onSignIn: () => Promise<void>;
 };
 
-export function LoginContainer({ createAccount, signIn }: Props) {
+export function LoginContainer({ onCreateAccount, onSignIn }: Props) {
+  const createAccount = useMutation({
+    mutationFn: onCreateAccount,
+  });
+  const signIn = useMutation({
+    mutationFn: onSignIn,
+  });
+
   return (
     <PopupContainer>
       <div className="grow self-center flex flex-col justify-center gap-12">
@@ -22,26 +31,26 @@ export function LoginContainer({ createAccount, signIn }: Props) {
           </h1>
         </a>
         <div className="flex flex-col gap-2">
-          <button
-            type="button"
-            className="py-5 px-6 text-lg leading-none bg-indigo-600 hover:brightness-125 active:brightness-90 rounded text-white cursor-pointer"
+          <Button
+            className="text-lg"
             onClick={(event) => {
               event.preventDefault();
-              createAccount();
+              createAccount.mutate();
             }}
+            pending={createAccount.isPending}
           >
             Create account
-          </button>
-          <button
-            type="button"
-            className="py-3 px-6 leading-none bg-indigo-400 hover:brightness-125 active:brightness-90 rounded text-white cursor-pointer"
+          </Button>
+          <Button
+            variant="secondary"
             onClick={(event) => {
               event.preventDefault();
-              signIn();
+              signIn.mutate();
             }}
+            pending={signIn.isPending}
           >
             Sign in
-          </button>
+          </Button>
         </div>
         <p
           className={twMerge(

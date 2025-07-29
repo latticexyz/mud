@@ -11,12 +11,11 @@ export function Connect() {
 
   // TODO: reorder buttons based on whether we have accounts cached
   // TODO: figure out how to avoid double prompt on sign in when you decline the first
-  // TODO: move to react-query so we can get pending indicators
 
   return (
     <>
       <LoginContainer
-        createAccount={async () => {
+        onCreateAccount={async () => {
           try {
             await Actions.respond(porto, {
               ...request,
@@ -35,7 +34,7 @@ export function Connect() {
             Actions.reject(porto, request);
           }
         }}
-        signIn={async () => {
+        onSignIn={async () => {
           try {
             await Actions.respond(porto, request);
           } catch (error) {

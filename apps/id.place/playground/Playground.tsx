@@ -3,18 +3,31 @@ import { defaultSize } from "@latticexyz/id/internal";
 import { LoginContainer } from "../src/ui/LoginContainer";
 import { RequestContainer } from "../src/ui/RequestContainer";
 import { twMerge } from "tailwind-merge";
+import { Button } from "../src/ui/Button";
+import { wait } from "@latticexyz/common/utils";
 
 export function Playground() {
   return (
-    <div className="p-4 *:m-6">
+    <div className="min-h-screen bg-white p-8 *:m-4">
       <Popup>
-        <LoginContainer createAccount={() => {}} signIn={() => {}} />
+        <LoginContainer
+          onCreateAccount={async () => {
+            await wait(1000);
+          }}
+          onSignIn={async () => {
+            await wait(1000);
+          }}
+        />
       </Popup>
       <Popup>
         <RequestContainer
           account={{ address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" }}
-          onApprove={() => {}}
-          onCancel={() => {}}
+          onApprove={async () => {
+            await wait(1000);
+          }}
+          onCancel={async () => {
+            await wait(1000);
+          }}
         >
           <div className="grow flex flex-col gap-3">
             <h1 className="text-center text-xl font-medium">Transaction request</h1>
@@ -38,6 +51,24 @@ export function Playground() {
           </div>
         </RequestContainer>
       </Popup>
+      <div>
+        <div className="inline-flex flex-col gap-2">
+          <Button className="text-lg">Create account</Button>
+          <Button className="text-lg" pending>
+            Create account
+          </Button>
+          <Button className="text-lg" disabled>
+            Create account
+          </Button>
+          <Button variant="secondary">Sign in</Button>
+          <Button variant="secondary" pending>
+            Sign in
+          </Button>
+          <Button variant="secondary" disabled>
+            Sign in
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -55,7 +86,7 @@ function Popup({ title, children }: { title?: string; children: ReactNode }) {
           {title ?? "id.place"}
         </div>
       </div>
-      <div className="bg-white overflow-auto" style={defaultSize}>
+      <div className="bg-indigo-100 overflow-auto" style={defaultSize}>
         {children}
       </div>
     </div>
