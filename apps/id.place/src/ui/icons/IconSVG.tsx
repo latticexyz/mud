@@ -9,7 +9,7 @@ export function IconSVG({ className, children, ...props }: Props) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className={twMerge("size-[1em] inline-flex", className)}
+      className={twMerge("h-[1em] inline-flex", className)}
       {...props}
     >
       {children}

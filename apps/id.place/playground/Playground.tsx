@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { defaultSize } from "@latticexyz/id/internal";
 import { LoginContainer } from "../src/ui/LoginContainer";
 import { RequestContainer } from "../src/ui/RequestContainer";
+import { twMerge } from "tailwind-merge";
 
 export function Playground() {
   return (
@@ -11,7 +12,26 @@ export function Playground() {
       </Popup>
       <Popup>
         <RequestContainer>
-          <h1 className="text-center text-xl">Signature request</h1>
+          <div className="grow flex flex-col gap-3">
+            <h1 className="text-center text-xl font-medium">Transaction request</h1>
+            <dl
+              className={twMerge(
+                "grow bg-white/50 rounded",
+                "grid grid-cols-[auto_1fr] place-content-start gap-x-4 gap-y-2 p-4 leading-snug",
+                "text-sm break-all",
+                "[&_dt]:text-slate-500",
+              )}
+            >
+              <dt>System</dt>
+              <dd>Delegation</dd>
+              <dt>Spender</dt>
+              <dd>0x893EC2238Dfa089469191159acdE0bB2033a9661</dd>
+              <dt>Nonce</dt>
+              <dd>234</dd>
+              <dt>Chain ID</dt>
+              <dd>690</dd>
+            </dl>
+          </div>
         </RequestContainer>
       </Popup>
     </div>
@@ -31,7 +51,7 @@ function Popup({ title, children }: { title?: string; children: ReactNode }) {
           {title ?? "id.place"}
         </div>
       </div>
-      <div className="bg-white overflow-hidden" style={defaultSize}>
+      <div className="bg-white overflow-auto" style={defaultSize}>
         {children}
       </div>
     </div>
