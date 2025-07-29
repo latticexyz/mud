@@ -8,10 +8,14 @@ export function Playground() {
   return (
     <div className="p-4 *:m-6">
       <Popup>
-        <LoginContainer />
+        <LoginContainer createAccount={() => {}} signIn={() => {}} />
       </Popup>
       <Popup>
-        <RequestContainer>
+        <RequestContainer
+          account={{ address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" }}
+          onApprove={() => {}}
+          onCancel={() => {}}
+        >
           <div className="grow flex flex-col gap-3">
             <h1 className="text-center text-xl font-medium">Transaction request</h1>
             <dl

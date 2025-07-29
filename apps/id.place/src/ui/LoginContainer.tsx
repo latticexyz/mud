@@ -2,10 +2,15 @@ import { twMerge } from "tailwind-merge";
 import { Logo } from "./icons/Logo";
 import { PopupContainer } from "./PopupContainer";
 
-export function LoginContainer() {
+export type Props = {
+  createAccount: () => void;
+  signIn: () => void;
+};
+
+export function LoginContainer({ createAccount, signIn }: Props) {
   return (
     <PopupContainer>
-      <div className={twMerge("grow self-center flex flex-col justify-center gap-12")}>
+      <div className="grow self-center flex flex-col justify-center gap-12">
         <a
           href="https://id.place/"
           target="_blank"
@@ -17,10 +22,24 @@ export function LoginContainer() {
           </h1>
         </a>
         <div className="flex flex-col gap-2">
-          <button className="py-5 px-6 text-lg leading-none bg-indigo-600 hover:brightness-125 active:brightness-90 rounded text-white cursor-pointer">
+          <button
+            type="button"
+            className="py-5 px-6 text-lg leading-none bg-indigo-600 hover:brightness-125 active:brightness-90 rounded text-white cursor-pointer"
+            onClick={(event) => {
+              event.preventDefault();
+              createAccount();
+            }}
+          >
             Create account
           </button>
-          <button className="py-3 px-6 leading-none bg-indigo-400 hover:brightness-125 active:brightness-90 rounded text-white cursor-pointer">
+          <button
+            type="button"
+            className="py-3 px-6 leading-none bg-indigo-400 hover:brightness-125 active:brightness-90 rounded text-white cursor-pointer"
+            onClick={(event) => {
+              event.preventDefault();
+              signIn();
+            }}
+          >
             Sign in
           </button>
         </div>

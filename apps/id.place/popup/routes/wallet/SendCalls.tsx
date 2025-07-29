@@ -1,27 +1,73 @@
 import * as Actions from "porto/remote/Actions";
 import { useLocation } from "react-router";
 import { porto } from "../../../src/popup/porto";
-import { useEffect } from "react";
+import { RequestContainer } from "../../../src/ui/RequestContainer";
+import { twMerge } from "tailwind-merge";
+import { RpcRequest } from "ox";
+import { RpcSchema } from "porto";
+import { TruncatedHex } from "../../../src/ui/TruncatedHex";
+import { ChevronUpIcon } from "../../../src/ui/icons/ChevronUpIcon";
 
 export function SendCalls() {
   const location = useLocation();
   // TODO: abstract this to get a typed request
   const searchParams = new URLSearchParams(location.search);
-  const request = JSON.parse(searchParams.get("request")!);
+  const request = JSON.parse(searchParams.get("request")!) as Extract<
+    RpcRequest.RpcRequest<RpcSchema.Schema>,
+    { method: "wallet_sendCalls" }
+  >;
 
-  // TODO: clean this up with react-query to show pending state etc.
-  useEffect(() => {
-    const id = setTimeout(() => {
-      Actions.respond(porto, request).catch(() => Actions.reject(porto, request));
-    }, 600);
-    return () => clearTimeout(id);
-  }, []);
+  // TODO: move this validation somewhere else
+  if (request.params.length > 1) {
+    throw new Error("Calling `wallet_sendCalls` with more than one `params` entry is not yet supported.");
+  }
+  const { from, calls } = request.params[0];
+  // TODO: look up account in store
+  const account = from ? { address: from } : null;
+  if (!account) throw new Error("no account");
 
   return (
-    <div>
-      <button type="button" onClick={() => Actions.respond(porto, request).catch(() => Actions.reject(porto, request))}>
-        approve
-      </button>
-    </div>
+    <RequestContainer
+      account={account}
+      onApprove={() => Actions.respond(porto, request).catch(() => Actions.reject(porto, request))}
+      onCancel={() => Actions.reject(porto, request)}
+    >
+      <div className="grow flex flex-col gap-4">
+        <h1 className="text-center text-xl font-medium leading-snug">Transaction request</h1>
+        {calls.map((call, i) => (
+          <dl
+            key={i}
+            className={twMerge(
+              "grow bg-indigo-50 rounded",
+              "grid grid-cols-[auto_1fr] place-content-start gap-x-4 gap-y-2 p-4 leading-snug",
+              "text-sm break-all",
+              "[&_dt]:text-slate-500",
+            )}
+          >
+            <dt>To</dt>
+            <dd>
+              {/* TODO: link to block explorer */}
+              <span className="font-mono">
+                <TruncatedHex hex={call.to} />
+              </span>
+            </dd>
+            <dt>Call data</dt>
+            <dd>
+              <details className="group">
+                <summary className="list-none cursor-pointer pointer-events-none flex">
+                  <span className="font-mono not-group-open:line-clamp-2">{call.data}</span>
+                  <span
+                    className={twMerge("pointer-events-auto user-select-none", "text-slate-400 hover:text-current")}
+                    aria-hidden
+                  >
+                    <ChevronUpIcon className="rotate-180 not-group-open:-rotate-90 text-base" />
+                  </span>
+                </summary>
+              </details>
+            </dd>
+          </dl>
+        ))}
+      </div>
+    </RequestContainer>
   );
 }

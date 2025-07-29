@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+body {
+  @apply bg-indigo-100;
+}
+
+#react-root {
+  @apply min-h-screen h-0;
+}
