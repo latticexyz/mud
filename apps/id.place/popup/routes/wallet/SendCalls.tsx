@@ -6,7 +6,10 @@ import { twMerge } from "tailwind-merge";
 import { RpcRequest } from "ox";
 import { RpcSchema } from "porto";
 import { TruncatedHex } from "../../../src/ui/TruncatedHex";
-import { ChevronUpIcon } from "../../../src/ui/icons/ChevronUpIcon";
+import { decodeFunctionData, formatEther, stringify } from "viem";
+import { worldAbi } from "../../../src/worldAbi";
+import { LineClamp } from "../../../src/ui/LineClamp";
+import { Fragment } from "react";
 
 export function SendCalls() {
   const location = useLocation();
@@ -34,39 +37,78 @@ export function SendCalls() {
     >
       <div className="grow flex flex-col gap-4">
         <h1 className="text-center text-xl font-medium leading-snug">Transaction request</h1>
-        {calls.map((call, i) => (
-          <dl
-            key={i}
-            className={twMerge(
-              "grow bg-indigo-50 rounded",
-              "grid grid-cols-[auto_1fr] place-content-start gap-x-4 gap-y-2 p-4 leading-snug",
-              "text-sm break-all",
-              "[&_dt]:text-slate-500",
-            )}
-          >
-            <dt>To</dt>
-            <dd>
-              {/* TODO: link to block explorer */}
-              <span className="font-mono">
-                <TruncatedHex hex={call.to} />
-              </span>
-            </dd>
-            <dt>Call data</dt>
-            <dd>
-              <details className="group">
-                <summary className="list-none cursor-pointer pointer-events-none flex">
-                  <span className="font-mono not-group-open:line-clamp-2">{call.data}</span>
-                  <span
-                    className={twMerge("pointer-events-auto user-select-none", "text-slate-400 hover:text-current")}
-                    aria-hidden
-                  >
-                    <ChevronUpIcon className="rotate-180 not-group-open:-rotate-90 text-base" />
-                  </span>
-                </summary>
-              </details>
-            </dd>
-          </dl>
-        ))}
+        {calls.map((call, i) => {
+          const value = call.value ? BigInt(call.value) : null;
+
+          const decodedCall = (() => {
+            if (!call.data) return;
+            try {
+              return decodeFunctionData({
+                abi: worldAbi,
+                data: call.data,
+              });
+            } catch (error) {
+              return;
+            }
+          })();
+
+          return (
+            <dl
+              key={i}
+              className={twMerge(
+                "grow bg-indigo-50 rounded p-4",
+                "grid grid-cols-[auto_1fr] place-content-start gap-x-4 gap-y-2",
+                "text-sm leading-snug break-all",
+                "[&_dt]:text-slate-500",
+              )}
+            >
+              <dt>To</dt>
+              <dd>
+                {/* TODO: link to block explorer */}
+                <span className="font-mono">
+                  <TruncatedHex hex={call.to} />
+                </span>
+              </dd>
+              {value ? (
+                <>
+                  <dt>Value</dt>
+                  <dd>{formatEther(value)} ETH</dd>
+                </>
+              ) : null}
+              {decodedCall ? (
+                <>
+                  <dt>Function</dt>
+                  <dd className="font-mono">{decodedCall.functionName}</dd>
+                  <dt>Args</dt>
+                  <dd>
+                    <dl
+                      className={twMerge(
+                        "grid grid-cols-[auto_1fr] place-content-start gap-x-1 gap-y-1",
+                        "text-sm leading-snug break-all",
+                        "[&_dt]:text-slate-500",
+                        "[&_dd]:font-mono",
+                      )}
+                    >
+                      {decodedCall.args.map((arg, i) => (
+                        <Fragment key={i}>
+                          <dt>{i}:</dt>
+                          <dd>{stringify(arg)}</dd>
+                        </Fragment>
+                      ))}
+                    </dl>
+                  </dd>
+                </>
+              ) : call.data ? (
+                <>
+                  <dt>Call data</dt>
+                  <dd className="font-mono">
+                    <LineClamp>{call.data}</LineClamp>
+                  </dd>
+                </>
+              ) : null}
+            </dl>
+          );
+        })}
       </div>
     </RequestContainer>
   );
