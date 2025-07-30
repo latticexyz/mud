@@ -123,45 +123,79 @@ export function mode(): Mode.Mode {
 
           const possiblePublicKeys = getPossiblePublicKeys({ challenge, signature });
 
-          const nextOwnerIndex = await readContract(client, {
-            address,
-            abi,
-            functionName: "nextOwnerIndex",
-          });
+          try {
+            // this will fail if passkey was created but smart account wasn't initialized yet
+            // TODO: recover public key?
+            const nextOwnerIndex = await readContract(client, {
+              address,
+              abi,
+              functionName: "nextOwnerIndex",
+            });
 
-          // TODO: batch this
-          const encodedOwners = new Set(
-            await Promise.all(
-              Array.from({ length: Number(nextOwnerIndex) }).map((_, i) =>
-                readContract(client, {
-                  address,
-                  abi,
-                  functionName: "ownerAtIndex",
-                  args: [BigInt(i)],
-                }),
+            // TODO: batch this
+            const encodedOwners = new Set(
+              await Promise.all(
+                Array.from({ length: Number(nextOwnerIndex) }).map((_, i) =>
+                  readContract(client, {
+                    address,
+                    abi,
+                    functionName: "ownerAtIndex",
+                    args: [BigInt(i)],
+                  }),
+                ),
               ),
-            ),
-          );
+            );
 
-          const publicKey = possiblePublicKeys.find((publicKey) =>
-            encodedOwners.has(
-              AbiParameters.encode(AbiParameters.from(["bytes32", "bytes32"]), [
-                Hex.fromNumber(publicKey.x),
-                Hex.fromNumber(publicKey.y),
-              ]),
-            ),
-          );
-          // TODO: recover public key?
-          if (!publicKey) throw new Error("passkey not an owner of account");
+            const publicKey = possiblePublicKeys.find((publicKey) =>
+              encodedOwners.has(
+                AbiParameters.encode(AbiParameters.from(["bytes32", "bytes32"]), [
+                  Hex.fromNumber(publicKey.x),
+                  Hex.fromNumber(publicKey.y),
+                ]),
+              ),
+            );
+            // TODO: recover public key?
+            if (!publicKey) throw new Error("passkey not an owner of account");
 
-          return Key.fromWebAuthnP256({
-            credential: {
-              id: credentialId,
-              publicKey,
-            },
-            rpId: rp.id,
-            id: address,
-          });
+            return Key.fromWebAuthnP256({
+              credential: {
+                id: credentialId,
+                publicKey,
+              },
+              rpId: rp.id,
+              id: address,
+            });
+          } catch (error) {
+            console.log("Could not retrieve account owner to match with possible public keys", error);
+            console.log("Asking for another signature instead...");
+
+            const secondChallenge = Hex.random(256);
+            const secondSignature = await WebAuthnP256.sign({
+              challenge: secondChallenge,
+              rpId: rp.id,
+            });
+
+            const secondPossiblePublicKeys = getPossiblePublicKeys({
+              challenge: secondChallenge,
+              signature: secondSignature,
+            });
+
+            const publicKey = possiblePublicKeys.find((key, i) =>
+              Hex.isEqual(PublicKey.toHex(key), PublicKey.toHex(secondPossiblePublicKeys[i]!)),
+            );
+            if (!publicKey) throw new Error("could not recover public key of passkey");
+
+            // TODO: add bootstrapping precall if account not deployed
+
+            return Key.fromWebAuthnP256({
+              credential: {
+                id: credentialId,
+                publicKey,
+              },
+              rpId: rp.id,
+              id: address,
+            });
+          }
         })();
 
         const smartAccount = await toCoinbaseSmartAccount({
