@@ -5,17 +5,45 @@ import { Button } from "./Button";
 import { useMutation } from "@tanstack/react-query";
 
 export type Props = {
+  isNewUser: boolean;
   onCreateAccount: () => Promise<void>;
   onSignIn: () => Promise<void>;
 };
 
-export function LoginContainer({ onCreateAccount, onSignIn }: Props) {
+export function LoginContainer({ isNewUser, onCreateAccount, onSignIn }: Props) {
   const createAccount = useMutation({
     mutationFn: onCreateAccount,
   });
   const signIn = useMutation({
     mutationFn: onSignIn,
   });
+
+  const buttons = [
+    <Button
+      key="create"
+      className={isNewUser ? "text-lg" : undefined}
+      variant={isNewUser ? "primary" : "secondary"}
+      onClick={() => createAccount.mutate()}
+      pending={createAccount.isPending}
+      autoFocus={isNewUser}
+    >
+      Create account
+    </Button>,
+    <Button
+      key="signIn"
+      className={!isNewUser ? "text-lg" : undefined}
+      variant={!isNewUser ? "primary" : "secondary"}
+      onClick={() => signIn.mutate()}
+      pending={signIn.isPending}
+      autoFocus={!isNewUser}
+    >
+      Sign in
+    </Button>,
+  ];
+
+  if (!isNewUser) {
+    buttons.reverse();
+  }
 
   return (
     <PopupContainer>
@@ -30,28 +58,7 @@ export function LoginContainer({ onCreateAccount, onSignIn }: Props) {
             <span className="text-black">id</span>.place
           </h1>
         </a>
-        <div className="flex flex-col gap-2">
-          <Button
-            className="text-lg"
-            onClick={(event) => {
-              event.preventDefault();
-              createAccount.mutate();
-            }}
-            pending={createAccount.isPending}
-          >
-            Create account
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={(event) => {
-              event.preventDefault();
-              signIn.mutate();
-            }}
-            pending={signIn.isPending}
-          >
-            Sign in
-          </Button>
-        </div>
+        <div className="flex flex-col gap-2">{buttons}</div>
         <p
           className={twMerge(
             "text-xs text-slate-500 text-center",
