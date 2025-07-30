@@ -10,6 +10,9 @@ import { decodeFunctionData, formatEther, stringify } from "viem";
 import { worldAbi } from "../../../src/worldAbi";
 import { LineClamp } from "../../../src/ui/LineClamp";
 import { Fragment } from "react";
+import { Hooks } from "porto/remote";
+
+// TODO: show the origin of the call
 
 export function SendCalls() {
   const location = useLocation();
@@ -25,8 +28,8 @@ export function SendCalls() {
     throw new Error("Calling `wallet_sendCalls` with more than one `params` entry is not yet supported.");
   }
   const { from, calls } = request.params[0];
-  // TODO: look up account in store
-  const account = from ? { address: from } : null;
+  const accounts = Hooks.usePortoStore(porto, (state) => state.accounts);
+  const account = accounts.find((account) => from != null && account.address === from);
   if (!account) throw new Error("no account");
 
   return (
