@@ -151,7 +151,6 @@ export function mode(): Mode.Mode {
               ]),
             ),
           );
-          // TODO: recover public key?
           if (!publicKey) throw new Error("passkey not an owner of account");
 
           return Key.fromWebAuthnP256({
