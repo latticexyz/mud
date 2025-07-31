@@ -11,11 +11,12 @@ contract World {
   function update(Data.Entity[] memory entities, uint delta) public returns (bool) {}
   function visible() view external {}
   function invisible() internal {}
+  error UpdateError(uint entityId);
 }
 `;
 
 describe("contractToInterface", () => {
-  it("extracts public functions from contract", () => {
+  it("extracts public functions and errors from contract", () => {
     const { functions, errors, symbolImports } = contractToInterface(source, "World");
     expect(functions).toStrictEqual([
       {
@@ -31,7 +32,12 @@ describe("contractToInterface", () => {
         stateMutability: "view",
       },
     ]);
-    expect(errors).toHaveLength(0);
+    expect(errors).toStrictEqual([
+      {
+        name: "UpdateError",
+        parameters: ["uint entityId"],
+      },
+    ]);
     expect(symbolImports).toStrictEqual([
       {
         path: "./lib.sol",
