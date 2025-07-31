@@ -98,7 +98,7 @@ export function contractToInterface(
           ) {
             visibility = attribute;
           }
-          if (attribute === "view" || attribute === "pure") {
+          if (attribute === "view" || attribute === "pure" || attribute === "payable") {
             stateMutability = attribute;
           }
         }
