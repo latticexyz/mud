@@ -19,6 +19,10 @@ export const router = createHashRouter([
   { path: "*", Component: NotFound },
 ]);
 
+// TODO: instead of URL params which could be tampered with or linked to from outside our flow, we should
+//       store the request somewhere and use the ID to look it up, then we can also store the origin of the message event
+//       instead of relying on document.referrer (which may be blank for private sessions)
+// TODO: add `origin` to `onDialogRequest` callback
 const offDialogRequest = onDialogRequest(porto, ({ request }) => {
   if (request) {
     router.navigate(`/request/${request.method}?${new URLSearchParams({ request: JSON.stringify(request ?? null) })}`, {

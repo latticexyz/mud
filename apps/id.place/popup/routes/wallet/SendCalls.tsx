@@ -8,8 +8,6 @@ import { RpcSchema } from "porto";
 import { TruncatedHex } from "../../../src/ui/TruncatedHex";
 import { decodeFunctionData, formatEther, stringify } from "viem";
 import { worldAbi } from "../../../src/worldAbi";
-import { LineClamp } from "../../../src/ui/LineClamp";
-import { Fragment } from "react";
 import { Hooks } from "porto/remote";
 
 // TODO: show the origin of the call
@@ -32,6 +30,8 @@ export function SendCalls() {
   const account = accounts.find((account) => from != null && account.address === from);
   if (!account) throw new Error("no account");
 
+  const referrer = document.referrer ? new URL(document.referrer) : undefined;
+
   return (
     <RequestContainer
       account={account}
@@ -39,7 +39,8 @@ export function SendCalls() {
       onCancel={() => Actions.reject(porto, request)}
     >
       <div className="grow flex flex-col gap-4">
-        <h1 className="text-center text-xl font-medium leading-snug">Transaction request</h1>
+        <h1 className="text-center text-xl font-medium">Transaction request</h1>
+
         {calls.map((call, i) => {
           const value = call.value ? BigInt(call.value) : null;
 
@@ -56,60 +57,52 @@ export function SendCalls() {
           })();
 
           return (
-            <dl
-              key={i}
-              className={twMerge(
-                "grow bg-indigo-50 rounded p-4",
-                "grid grid-cols-[auto_1fr] place-content-start gap-x-4 gap-y-2",
-                "text-sm leading-snug break-all",
-                "[&_dt]:text-slate-500",
-              )}
-            >
-              <dt>To</dt>
-              <dd>
-                {/* TODO: link to block explorer */}
-                <span className="font-mono">
+            <div key={i} className="flex flex-col gap-2">
+              <dl
+                className={twMerge(
+                  "grid grid-cols-[auto_1fr] place-content-start gap-x-4 gap-y-2",
+                  "text-sm leading-snug break-all",
+                  "[&_dt]:text-slate-500",
+                )}
+              >
+                {referrer ? (
+                  <>
+                    <dt>Request from</dt>
+                    <dd>{referrer.host}</dd>
+                  </>
+                ) : null}
+                <dt>Interacting with</dt>
+                <dd className="font-mono">
+                  {/* TODO: link to block explorer */}
                   <TruncatedHex hex={call.to} />
-                </span>
-              </dd>
-              {value ? (
-                <>
-                  <dt>Value</dt>
-                  <dd>{formatEther(value)} ETH</dd>
-                </>
-              ) : null}
-              {decodedCall ? (
-                <>
-                  <dt>Function</dt>
-                  <dd className="font-mono">{decodedCall.functionName}</dd>
-                  <dt>Args</dt>
-                  <dd>
-                    <dl
-                      className={twMerge(
-                        "grid grid-cols-[auto_1fr] place-content-start gap-x-1 gap-y-1",
-                        "text-sm leading-snug break-all",
-                        "[&_dt]:text-slate-500",
-                        "[&_dd]:font-mono",
-                      )}
-                    >
-                      {decodedCall.args.map((arg, i) => (
-                        <Fragment key={i}>
-                          <dt>{i}:</dt>
-                          <dd>{stringify(arg)}</dd>
-                        </Fragment>
-                      ))}
-                    </dl>
-                  </dd>
-                </>
-              ) : call.data ? (
-                <>
-                  <dt>Call data</dt>
-                  <dd className="font-mono">
-                    <LineClamp>{call.data}</LineClamp>
-                  </dd>
-                </>
-              ) : null}
-            </dl>
+                </dd>
+                {value ? (
+                  <>
+                    <dt>Value</dt>
+                    <dd>{formatEther(value)} ETH</dd>
+                  </>
+                ) : null}
+                {decodedCall ? (
+                  <>
+                    <dt>Call</dt>
+                    <dd className="col-span-2">
+                      <textarea className="font-mono p-2 rounded bg-indigo-50 w-full" rows={4} readOnly>
+                        {`${decodedCall.functionName}(\n${decodedCall.args.map((arg) => `  ${stringify(arg)}`).join(",\n")}\n)`}
+                      </textarea>
+                    </dd>
+                  </>
+                ) : call.data ? (
+                  <>
+                    <dt>Call data</dt>
+                    <dd className="col-span-2">
+                      <textarea className="font-mono p-2 rounded bg-indigo-50 w-full" rows={4} readOnly>
+                        {call.data}
+                      </textarea>
+                    </dd>
+                  </>
+                ) : null}
+              </dl>
+            </div>
           );
         })}
       </div>
