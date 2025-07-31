@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
+    "@nomicfoundation/slang": "^1.2.1",
     "@solidity-parser/parser": "^0.16.0",
     "abitype": "1.0.9",
     "debug": "^4.3.4",
