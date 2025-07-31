@@ -1,6 +1,5 @@
-import { parse } from "@solidity-parser/parser";
 import { findContractNodeSlang } from "./findContractNode";
-import { findSymbolImport } from "./findSymbolImport";
+import { findSymbolImportSlang } from "./findSymbolImport";
 import { Parser } from "@nomicfoundation/slang/parser";
 import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Query } from "@nomicfoundation/slang/cst";
@@ -33,7 +32,7 @@ export function parseSystem(
       ]
     `),
   ])) {
-    if (findSymbolImport(parse(source), baseSystemName)?.path === baseSystemPath) {
+    if (findSymbolImportSlang(root, baseSystemName)?.path === baseSystemPath) {
       return { contractType };
     }
   }

@@ -1,3 +1,4 @@
+import { Cursor, Query } from "@nomicfoundation/slang/cst";
 import { visit } from "@solidity-parser/parser";
 import type { SourceUnit } from "@solidity-parser/parser/dist/src/ast-types";
 
@@ -37,4 +38,28 @@ export function findSymbolImport(ast: SourceUnit, symbol: string): SymbolImport 
   });
 
   return symbolImport;
+}
+
+export function findSymbolImportSlang(root: Cursor, symbol: string): SymbolImport | undefined {
+  for (const result of root.query([
+    Query.create(`
+      [ImportDeconstruction
+        [_ item: [ImportDeconstructionSymbol
+          @name [Identifier]
+          alias: [_ @alias identifier: [Identifier]]?]
+        ]
+        path: [StringLiteral @path [_]]
+      ]
+    `),
+  ])) {
+    const symbolName = result.captures.name?.[0].node.unparse();
+    const symbolAlias = result.captures.alias?.[0].node.unparse() ?? symbolName;
+    const path = result.captures.path?.[0].node.unparse().slice(1, -1);
+    if (symbol === symbolAlias) {
+      return {
+        symbol: symbolName,
+        path,
+      };
+    }
+  }
 }
