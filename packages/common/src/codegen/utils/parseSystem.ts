@@ -1,5 +1,5 @@
-import { findContractNodeSlang } from "./findContractNode";
-import { findSymbolImportSlang } from "./findSymbolImport";
+import { findContractOrInterfaceNode } from "./findContractNode";
+import { findSymbolImport } from "./findSymbolImport";
 import { Parser } from "@nomicfoundation/slang/parser";
 import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Query } from "@nomicfoundation/slang/cst";
@@ -15,10 +15,14 @@ export function parseSystem(
   const parser = Parser.create(LanguageFacts.latestVersion());
   const root = parser.parseFileContents(source).createTreeCursor();
 
-  const contractCursor = findContractNodeSlang(root, contractName);
+  const contractCursor = findContractOrInterfaceNode(root, contractName);
   if (!contractCursor) return;
 
   assertNonterminalNode(contractCursor.node);
+  if (contractCursor.node.kind !== "ContractDefinition") {
+    // it's an interface
+    return;
+  }
   const contract = new ContractDefinition(contractCursor.node);
   const contractType = contract.abstractKeyword ? "abstract" : "contract";
 
@@ -32,7 +36,7 @@ export function parseSystem(
       ]
     `),
   ])) {
-    if (findSymbolImportSlang(root, baseSystemName)?.path === baseSystemPath) {
+    if (findSymbolImport(root, baseSystemName)?.path === baseSystemPath) {
       return { contractType };
     }
   }

@@ -1,6 +1,6 @@
 import { MUDError } from "../../errors";
-import { findContractNodeSlang } from "./findContractNode";
-import { SymbolImport, findSymbolImportSlang } from "./findSymbolImport";
+import { findContractOrInterfaceNode } from "./findContractNode";
+import { SymbolImport, findSymbolImport } from "./findSymbolImport";
 import { Parser } from "@nomicfoundation/slang/parser";
 import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Cursor, Query, TerminalNode } from "@nomicfoundation/slang/cst";
@@ -60,7 +60,7 @@ export function contractToInterface(
     throw new MUDError(`Failed to parse contract ${contractName}: ${errorMessage}`);
   }
   const root = parserResult.createTreeCursor();
-  const contractNode = findContractNodeSlang(root, contractName);
+  const contractNode = findContractOrInterfaceNode(root, contractName);
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
@@ -187,7 +187,7 @@ function symbolsToImports(
 
   for (const symbol of symbols) {
     // First check explicit imports
-    const explicitImport = findSymbolImportSlang(root, symbol);
+    const explicitImport = findSymbolImport(root, symbol);
     if (explicitImport) {
       imports.push(explicitImport);
       continue;

@@ -1,13 +1,13 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { findContractNodeSlang } from "./findContractNode";
+import { findContractOrInterfaceNode } from "./findContractNode";
 import { QualifiedSymbol } from "./contractToInterface";
-import { findSymbolImportSlang } from "./findSymbolImport";
+import { findSymbolImport } from "./findSymbolImport";
 import { resolveRemapping } from "./resolveRemapping";
 import { Parser } from "@nomicfoundation/slang/parser";
 import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Cursor, Query } from "@nomicfoundation/slang/cst";
-import { ContractDefinition } from "@nomicfoundation/slang/ast";
+import { ContractDefinition, InterfaceDefinition } from "@nomicfoundation/slang/ast";
 
 interface InheritanceInfo {
   baseContracts: string[];
@@ -61,12 +61,12 @@ export async function createInheritanceResolver(
       const contractsToProcess: Cursor[] = [];
 
       if (targetContractName) {
-        const contractCursor = findContractNodeSlang(root, targetContractName);
+        const contractCursor = findContractOrInterfaceNode(root, targetContractName);
         if (contractCursor) {
           contractsToProcess.push(contractCursor);
         }
       } else {
-        for (const result of root.query([Query.create(`@contract [ContractDefinition]`)])) {
+        for (const result of root.query([Query.create(`@contract ([ContractDefinition] | [InterfaceDefinition])`)])) {
           contractsToProcess.push(result.captures.contract?.[0]);
         }
       }
@@ -82,7 +82,10 @@ export async function createInheritanceResolver(
 
         const contractNode = contractCursor.node;
         assertNonterminalNode(contractNode);
-        const contract = new ContractDefinition(contractNode);
+        const contract =
+          contractNode.kind === "ContractDefinition"
+            ? new ContractDefinition(contractNode)
+            : new InterfaceDefinition(contractNode);
         const contractName = contract.name.unparse();
 
         // Extract base contracts
@@ -91,14 +94,15 @@ export async function createInheritanceResolver(
             [InheritanceType type_name: [IdentifierPath @baseName [Identifier]]]
           `),
         ])) {
-          info.baseContracts.push(result.captures.baseName?.[0].node.unparse());
+          const baseName = result.captures.baseName?.[0].node.unparse();
+          info.baseContracts.push(baseName);
         }
 
         // Extract symbols defined in this contract/interface
         for (const result of contractCursor.query([
           Query.create(`[StructDefinition @name [Identifier]]`),
           Query.create(`[EnumDefinition @name [Identifier]]`),
-          Query.create(`[CustomErrorDefinition @name [Identifier]]`),
+          Query.create(`[ErrorDefinition @name [Identifier]]`),
         ])) {
           const name = result.captures.name?.[0].node.unparse();
           switch (result.queryIndex) {
@@ -119,7 +123,7 @@ export async function createInheritanceResolver(
         // Recursively process base contracts
         for (const baseName of info.baseContracts) {
           // First check if it's imported
-          const importInfo = findSymbolImportSlang(root, baseName);
+          const importInfo = findSymbolImport(root, baseName);
           if (importInfo) {
             // Store the original import path
             info.baseContractImports.set(baseName, importInfo.path);
