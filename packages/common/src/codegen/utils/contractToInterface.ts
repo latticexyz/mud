@@ -110,7 +110,7 @@ export function contractToInterface(
         functions.push({
           name,
           parameters: splatParameters(funcDef.parameters),
-          stateMutability: stateMutability || "",
+          stateMutability,
           returnParameters: splatParameters(funcDef.returns?.variables),
         });
 
@@ -143,6 +143,8 @@ export function contractToInterface(
       }
     }
   }
+
+  symbolImports = deduplicateSymbolImports(symbolImports);
 
   return {
     functions,
@@ -212,6 +214,10 @@ function symbolsToImports(
     }
   }
 
+  return imports;
+}
+
+function deduplicateSymbolImports(imports: SymbolImport[]): SymbolImport[] {
   // Deduplicate imports
   const uniqueImports = new Map<string, SymbolImport>();
   for (const imp of imports) {
