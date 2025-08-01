@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "noUncheckedIndexedAccess": true,
-    "noErrorTruncation": true
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src"]
 }

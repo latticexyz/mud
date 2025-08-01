@@ -3,7 +3,13 @@ import { anvil, redstone, mainnet } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
-import { wiresaw } from "@latticexyz/common/internal";
+import { getDefaultConnectors } from "../src/getDefaultConnectors";
+import { porto } from "./porto";
+
+const appConfig = {
+  walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
+  appName: document.title,
+};
 
 const redstoneWithPaymaster = {
   ...redstone,
@@ -52,18 +58,17 @@ const anvilWithPaymaster = {
     // bundler: {
     //   http: ["http://127.0.0.1:4337"],
     // },
-    // TODO: automatically grant allowance in anvil instead of requiring the service
-    // quarryPassIssuer: {
-    //   http: ["http://127.0.0.1:3003/rpc"],
-    // },
+    quarrySponsor: {
+      http: ["https://sponsor.tunnel.offchain.dev/rpc"],
+    },
   },
   contracts: {
-    // quarryPaymaster: {
+    quarryPaymaster: {
+      address: "0x6439113f0e1f64018c3167DA2aC21e2689818086",
+    },
+    // paymaster: {
     //   address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
     // },
-    paymaster: {
-      address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
-    },
   },
 };
 
@@ -77,32 +82,41 @@ const pyropeWithPaymaster = {
 };
 
 const chains = [
-  mainnet,
-  garnetWithPaymaster,
+  // mainnet,
+  // garnetWithPaymaster,
   anvilWithPaymaster,
-  redstoneWithPaymaster,
-  pyropeWithPaymaster,
+  // redstoneWithPaymaster,
+  // pyropeWithPaymaster,
 ] as const satisfies Chain[];
 
 const transports = {
-  [mainnet.id]: http(),
+  // [mainnet.id]: http(),
   [anvilWithPaymaster.id]: http(),
-  [garnetWithPaymaster.id]: wiresaw(),
-  [redstoneWithPaymaster.id]: wiresaw(),
-  [pyropeWithPaymaster.id]: http(),
+  // [garnetWithPaymaster.id]: wiresaw(),
+  // [redstoneWithPaymaster.id]: wiresaw(),
+  // [pyropeWithPaymaster.id]: http(),
 } as const;
 
+// TODO: remove once we bump viem to include https://github.com/wevm/viem/commit/b55ec5a6ee448367d3da844303a6f1a5bc71514a
+const pollingInterval = {
+  // [mainnet.id]: 2000,
+  [anvilWithPaymaster.id]: 500,
+  // [garnetWithPaymaster.id]: 2000,
+  // [redstoneWithPaymaster.id]: 2000,
+  // [pyropeWithPaymaster.id]: 2000,
+} as const;
+
+const connectors = [
+  // idConnector(),
+  porto(),
+  ...getDefaultConnectors(appConfig),
+];
+
 export const wagmiConfig = createWagmiConfig({
+  ...appConfig,
   chainId,
-  walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
-  appName: document.title,
   chains,
   transports,
-  pollingInterval: {
-    [mainnet.id]: 2000,
-    [anvilWithPaymaster.id]: 500,
-    [garnetWithPaymaster.id]: 2000,
-    [redstoneWithPaymaster.id]: 2000,
-    [pyropeWithPaymaster.id]: 2000,
-  },
+  pollingInterval,
+  connectors,
 });

@@ -1,12 +1,12 @@
 import { Chain, Transport } from "viem";
 import { Config, CreateConfigParameters, CreateConnectorFn, createConfig } from "wagmi";
 import { getDefaultConfig } from "connectkit";
-import { injected, coinbaseWallet, safe } from "wagmi/connectors";
-import { walletConnect } from "./connectors/walletConnect";
+import { getDefaultConnectors } from "./getDefaultConnectors";
 
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport> = Record<chains[number]["id"], Transport>,
+  connectorFns extends readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
 > = {
   readonly chainId: number;
   readonly chains: chains;
@@ -17,41 +17,14 @@ export type CreateWagmiConfigOptions<
   // TODO: make optional and hide wallet options if so?
   readonly walletConnectProjectId: string;
   readonly appName: string;
-} & Pick<CreateConfigParameters<chains, transports>, "pollingInterval">;
+} & Pick<CreateConfigParameters<chains, transports, connectorFns>, "pollingInterval" | "connectors">;
 
 export function createWagmiConfig<
   const chains extends readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport>,
->(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
-  // TODO: remove connectors and use ConnectKit's default once https://github.com/wevm/wagmi/pull/4691 lands
-  const connectors: CreateConnectorFn[] = [];
-
-  // If we're in an iframe, include the SafeConnector
-  const shouldUseSafeConnector = !(typeof window === "undefined") && window?.parent !== window;
-  if (shouldUseSafeConnector) {
-    connectors.push(
-      safe({
-        allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/],
-      }),
-    );
-  }
-
-  connectors.push(
-    injected({ target: "metaMask" }),
-    coinbaseWallet({
-      appName: config.appName,
-      overrideIsMetaMask: false,
-    }),
-  );
-
-  if (config.walletConnectProjectId) {
-    connectors.push(
-      walletConnect({
-        showQrModal: false,
-        projectId: config.walletConnectProjectId,
-      }),
-    );
-  }
+  const connectorFns extends readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
+>(config: CreateWagmiConfigOptions<chains, transports, connectorFns>): Config<chains, transports, connectorFns> {
+  const connectors = config.connectors ?? getDefaultConnectors(config);
 
   const configParams = getDefaultConfig({
     chains: config.chains,

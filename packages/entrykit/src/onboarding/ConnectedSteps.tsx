@@ -12,13 +12,15 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
 import { GasBalance as GasBalanceQuarry } from "./quarry/GasBalance";
+import { Connector } from "wagmi";
 
 export type Props = {
+  connector: Connector;
   userClient: ConnectedClient;
   initialUserAddress: Address | undefined;
 };
 
-export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
+export function ConnectedSteps({ connector, userClient, initialUserAddress }: Props) {
   const { chain } = useEntryKitConfig();
   const paymaster = getPaymaster(chain);
   const [focusedId, setFocusedId] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         });
       }
     } else if (paymaster.type === "quarry") {
-      if (paymaster.isGasPass) {
+      if (paymaster.canSponsor) {
         steps.push({
           id: "allowance",
           isComplete: !!hasAllowance,
@@ -99,7 +101,13 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       id: "session",
       isComplete: !!isSpender && !!hasDelegation,
       content: (props) => (
-        <Session {...props} userClient={userClient} registerSpender={!isSpender} registerDelegation={!hasDelegation} />
+        <Session
+          {...props}
+          userClient={userClient}
+          connector={connector}
+          registerSpender={!isSpender}
+          registerDelegation={!hasDelegation}
+        />
       ),
     });
 
@@ -114,6 +122,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     sessionAddress,
     userAddress,
     userClient,
+    connector,
   ]);
 
   const [selectedStepId] = useState<null | string>(null);

@@ -38,7 +38,7 @@
     "deploy": "tsx src/bin/deploy.ts",
     "dev": "tsup --watch",
     "playground": "mprocs",
-    "playground:deploy": "mprocs --config mprocs.deploy.yaml",
+    "playground:setup": "mprocs --config mprocs.setup.yaml",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },
@@ -68,6 +68,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@latticexyz/id": "workspace:*",
     "@tanstack/react-query": "^5.56.2",
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",

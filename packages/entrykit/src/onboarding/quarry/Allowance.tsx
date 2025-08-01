@@ -1,7 +1,7 @@
 import { Hex, parseEther } from "viem";
 import { useAllowance } from "./useAllowance";
 import { PendingIcon } from "../../icons/PendingIcon";
-import { useClaimGasPass } from "./useClaimGasPass";
+import { useRequestAllowance } from "./useRequestAllowance";
 import { Button } from "../../ui/Button";
 import { Balance } from "../../ui/Balance";
 import { useEffect } from "react";
@@ -15,7 +15,7 @@ export type Props = StepContentProps & {
 
 export function Allowance({ isActive, isExpanded, userAddress }: Props) {
   const allowance = useShowQueryError(useAllowance(userAddress));
-  const claimGasPass = useShowMutationError(useClaimGasPass());
+  const requestAllowance = useShowMutationError(useRequestAllowance());
 
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
@@ -25,16 +25,16 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
     const timer = setTimeout(() => {
       if (
         isActive &&
-        claimGasPass.status === "idle" &&
+        requestAllowance.status === "idle" &&
         allowance.isSuccess &&
         allowance.data != null &&
         allowance.data < parseEther("0.01")
       ) {
-        claimGasPass.mutate(userAddress);
+        requestAllowance.mutate(userAddress);
       }
     });
     return () => clearTimeout(timer);
-  }, [allowance.data, allowance.isSuccess, claimGasPass, isActive, userAddress]);
+  }, [allowance.data, allowance.isSuccess, requestAllowance, isActive, userAddress]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,8 +49,8 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
           variant={isActive ? "primary" : "tertiary"}
           className="flex-shrink-0 text-sm p-1 w-28"
           autoFocus={isActive || isExpanded}
-          pending={allowance.status === "pending" || claimGasPass.status === "pending"}
-          onClick={() => claimGasPass.mutate(userAddress)}
+          pending={allowance.status === "pending" || requestAllowance.status === "pending"}
+          onClick={() => requestAllowance.mutate(userAddress)}
         >
           Top up
         </Button>
