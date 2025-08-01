@@ -9,9 +9,9 @@ procs:
   #   cwd: ../..
   #   shell: pnpm run dev --filter=!@latticexyz/entrykit
 
-  # quarry-issuer:
-  #   cwd: ../../../quarry-paymaster/packages/issuer
-  #   shell: pnpm start
+  quarry-sponsor:
+    cwd: ../../../quarry-paymaster/packages/sponsor-api
+    shell: pnpm start
 
   # bundler:
   #   cwd: ../../../alto

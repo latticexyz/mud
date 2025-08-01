@@ -58,18 +58,17 @@ const anvilWithPaymaster = {
     // bundler: {
     //   http: ["http://127.0.0.1:4337"],
     // },
-    // TODO: automatically grant allowance in anvil instead of requiring the service
-    // quarryPassIssuer: {
-    //   http: ["http://127.0.0.1:3003/rpc"],
-    // },
+    quarrySponsor: {
+      http: ["https://sponsor.tunnel.offchain.dev/rpc"],
+    },
   },
   contracts: {
-    // quarryPaymaster: {
+    quarryPaymaster: {
+      address: "0x6439113f0e1f64018c3167DA2aC21e2689818086",
+    },
+    // paymaster: {
     //   address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
     // },
-    paymaster: {
-      address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
-    },
   },
 };
 

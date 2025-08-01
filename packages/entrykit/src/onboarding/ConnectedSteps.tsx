@@ -82,7 +82,7 @@ export function ConnectedSteps({ connector, userClient, initialUserAddress }: Pr
         });
       }
     } else if (paymaster.type === "quarry") {
-      if (paymaster.isGasPass) {
+      if (paymaster.canSponsor) {
         steps.push({
           id: "allowance",
           isComplete: !!hasAllowance,
@@ -122,6 +122,7 @@ export function ConnectedSteps({ connector, userClient, initialUserAddress }: Pr
     sessionAddress,
     userAddress,
     userClient,
+    connector,
   ]);
 
   const [selectedStepId] = useState<null | string>(null);
