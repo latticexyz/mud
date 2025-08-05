@@ -3,6 +3,7 @@ import { Address, ExactPartial, ProviderConnectInfo } from "viem";
 import { Chains, Porto, RpcSchema } from "porto";
 import { porto } from "porto/wagmi";
 import { rp } from "../common";
+import { mode } from "../mode";
 
 // TODO: import from porto
 export type Provider = ReturnType<typeof Porto.create>["provider"];
@@ -27,7 +28,11 @@ export type IdPlaceConnector = Connector<CreateConnectorFn<Provider, Properties>
 export function idPlace<const chains extends readonly [Chains.Chain, ...Chains.Chain[]]>(
   config: ExactPartial<Porto.Config<chains>> = {},
 ): CreateConnectorFn<Provider, Properties> {
-  const createPortoConnector = porto(config);
+  const createPortoConnector = porto({
+    ...config,
+    mode: config.mode ?? mode(),
+  });
+
   return createConnector<Provider, Properties>((wagmiConfig) => {
     return {
       ...createPortoConnector(wagmiConfig),
