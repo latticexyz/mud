@@ -5,13 +5,16 @@ import { parseAbi } from "viem";
 
 export const paymasterAbi = parseAbi([
   // AllowanceSystem
-  "error AllowanceSystem_AllowanceBelowMinimum(uint256 allowance, uint256 min)",
-  "error AllowanceSystem_AllowancesLimitReached(uint256 length, uint256 max)",
-  "error AllowanceSystem_InsufficientBalance(uint256 balance, uint256 allowance)",
+  "error AllowanceSystem_InsufficientAllowance(uint256 allowance, uint256 required)",
   "error AllowanceSystem_NotAuthorized(address caller, address sponsor, address user)",
-  "function grantAllowance(address user, uint256 allowance)",
+  "error AllowanceSystem_NotFound(address user, address sponsor)",
   "function removeAllowance(address user, address sponsor)",
   "function getAllowance(address user) view returns (uint256)",
+  // GrantSystem
+  "error GrantSystem_AllowanceBelowMinimum(uint256 allowance, uint256 min)",
+  "error GrantSystem_AllowancesLimitReached(uint256 length, uint256 max)",
+  "error GrantSystem_InsufficientBalance(uint256 balance, uint256 required)",
+  "function grantAllowance(address user, uint256 allowance) payable",
   // BalanceSystem
   "error BalanceSystem_InsufficientBalance(address user, uint256 amount, uint256 balance)",
   "function depositTo(address to)",
@@ -47,6 +50,7 @@ export const paymasterConfig = defineStore({
             sponsor: "address",
             allowance: "uint256",
             next: "address",
+            previous: "address",
           },
           key: ["user", "sponsor"],
         },
@@ -55,13 +59,6 @@ export const paymasterConfig = defineStore({
             user: "address",
             first: "address",
             length: "uint256",
-          },
-          key: ["user"],
-        },
-        BlockedAllowance: {
-          schema: {
-            user: "address",
-            blocked: "uint256",
           },
           key: ["user"],
         },
