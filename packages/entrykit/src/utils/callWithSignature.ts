@@ -15,9 +15,7 @@ export async function callWithSignature<chain extends Chain = Chain>({
   sessionClient,
   ...opts
 }: CallWithSignatureOptions<chain>) {
-  console.log("getting signature", opts);
   const rawSignature = await signCall(opts);
-  console.log("got signature for call", opts, rawSignature);
 
   // TODO: add support for ERC-6492 inside CallWithSignature module
   const { address, signature } = parseErc6492Signature(rawSignature);

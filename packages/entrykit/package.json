@@ -47,6 +47,7 @@
     "@ark/util": "0.2.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/id.place": "workspace:*",
     "@latticexyz/paymaster": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
@@ -68,7 +69,6 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@latticexyz/id.place": "workspace:*",
     "@tanstack/react-query": "^5.56.2",
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",

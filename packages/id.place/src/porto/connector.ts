@@ -14,6 +14,7 @@ import {
 import { Chains, Porto, RpcSchema } from "porto";
 // TODO: import from porto once exported?
 import * as Schema from "../../node_modules/porto/core/internal/schema/schema";
+import { rp } from "../common";
 
 // TODO: PR to porto to let us change name + icon?
 
@@ -37,8 +38,6 @@ export type Properties = {
 };
 
 export type PortoConnector = Connector<CreateConnectorFn<Provider, Properties>>;
-
-const connectorId = "id.place";
 
 export function porto<const chains extends readonly [Chains.Chain, ...Chains.Chain[]]>(
   config: ExactPartial<Porto.Config<chains>> = {},
@@ -65,8 +64,8 @@ export function porto<const chains extends readonly [Chains.Chain, ...Chains.Cha
 
     return {
       type: "injected",
-      id: connectorId,
-      name: "id.place",
+      id: rp.id,
+      name: rp.name,
       icon: `data:image/svg+xml;base64,${btoa(icon)}`,
 
       async connect({ chainId, isReconnecting, ...rest } = {}) {
@@ -267,7 +266,7 @@ export function porto<const chains extends readonly [Chains.Chain, ...Chains.Cha
 }
 
 export function isPortoConnector(connector: Connector): connector is PortoConnector {
-  return connector.id === connectorId;
+  return connector.id === rp.id;
 }
 
 /* eslint-disable max-len */

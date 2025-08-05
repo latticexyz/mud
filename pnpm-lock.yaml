@@ -481,6 +481,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
+      '@latticexyz/id.place':
+        specifier: workspace:*
+        version: link:../id.place
       '@latticexyz/paymaster':
         specifier: workspace:*
         version: link:../paymaster
@@ -539,9 +542,6 @@ importers:
         specifier: ^4.5.2
         version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
     devDependencies:
-      '@latticexyz/id.place':
-        specifier: workspace:*
-        version: link:../id.place
       '@tanstack/react-query':
         specifier: ^5.56.2
         version: 5.56.2(react@18.2.0)
