@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { defaultSize } from "@latticexyz/id.place/internal";
 import { LoginContainer } from "../src/ui/LoginContainer";
 import { RequestContainer } from "../src/ui/RequestContainer";
 import { twMerge } from "tailwind-merge";
@@ -11,6 +10,7 @@ export function Playground() {
     <div className="min-h-screen bg-white p-8 *:m-4">
       <Popup>
         <LoginContainer
+          isNewUser
           onCreateAccount={async () => {
             await wait(1000);
           }}
@@ -86,7 +86,7 @@ function Popup({ title, children }: { title?: string; children: ReactNode }) {
           {title ?? "id.place"}
         </div>
       </div>
-      <div className="bg-indigo-100 overflow-auto" style={defaultSize}>
+      <div className="bg-indigo-100 overflow-auto" style={{ width: 400, height: 400 }}>
         {children}
       </div>
     </div>
