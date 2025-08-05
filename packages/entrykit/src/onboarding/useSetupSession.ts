@@ -15,7 +15,7 @@ import { getPaymaster } from "../getPaymaster";
 import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.config";
 import { createBundlerClient } from "../createBundlerClient";
 import { getBundlerTransport } from "../getBundlerTransport";
-import { isPortoConnector } from "@latticexyz/id.place/internal";
+import { isIdPlaceConnector } from "@latticexyz/id.place/internal";
 import { storeEventsAbi } from "@latticexyz/store";
 
 export function useSetupSession({ connector, userClient }: { connector: Connector; userClient: ConnectedClient }) {
@@ -42,7 +42,7 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
 
       console.log("setting up session", userClient);
 
-      if (isPortoConnector(connector)) {
+      if (isIdPlaceConnector(connector)) {
         // Set up session for smart account wallet
         const calls = [];
 

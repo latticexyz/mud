@@ -4,7 +4,7 @@ import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
 import { getDefaultConnectors } from "../src/getDefaultConnectors";
-import { porto } from "./porto";
+import { idPlace, mode, popupUrl } from "@latticexyz/id.place/internal";
 
 const appConfig = {
   walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
@@ -107,8 +107,11 @@ const pollingInterval = {
 } as const;
 
 const connectors = [
-  // idConnector(),
-  porto(),
+  idPlace({
+    mode: mode({
+      host: import.meta.env.PROD ? popupUrl : popupUrl.replace("https://id.place/", "https://id.smartpass.dev/"),
+    }),
+  }),
   ...getDefaultConnectors(appConfig),
 ];
 

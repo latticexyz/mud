@@ -4,11 +4,11 @@ import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useRef } from "react";
 import { useConnect, useConnectors } from "wagmi";
-import { PortoConnector, isPortoConnector } from "@latticexyz/id.place/internal";
+import { IdPlaceConnector, isIdPlaceConnector } from "@latticexyz/id.place/internal";
 
 export function ConnectWallet() {
   const connectors = useConnectors();
-  const porto = connectors.find(isPortoConnector);
+  const porto = connectors.find(isIdPlaceConnector);
 
   // TODO: show error states?
 
@@ -27,13 +27,14 @@ export function ConnectWallet() {
   );
 }
 
-function AccountButton({ connector }: { connector: PortoConnector }) {
+function AccountButton({ connector }: { connector: IdPlaceConnector }) {
   const { setOpen } = useModal();
   const { connect, isPending, error } = useConnect();
 
   if (error) {
     console.error("connect error", error);
   }
+
   return (
     <>
       <Button

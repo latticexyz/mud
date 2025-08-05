@@ -1,5 +1,5 @@
 import { Dialog, Mode } from "porto";
-import { popupUrl } from "../common";
+import { popupUrl } from "./common";
 
 export function mode({ host = popupUrl }: { host?: string } = {}): Mode.Mode {
   return Mode.dialog({
