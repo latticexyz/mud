@@ -17,7 +17,7 @@ export const paymasterAbi = parseAbi([
   "function grantAllowance(address user, uint256 allowance) payable",
   // BalanceSystem
   "error BalanceSystem_InsufficientBalance(address user, uint256 amount, uint256 balance)",
-  "function depositTo(address to)",
+  "function depositTo(address to) payable",
   "function withdrawTo(address to, uint256 amount)",
   // SpenderSystem
   "error SpenderSystem_AlreadyRegistered(address spender, address user)",

@@ -36,8 +36,12 @@ export function SendCalls() {
   return (
     <RequestContainer
       account={account}
-      onApprove={() => Actions.respond(porto, request).catch(() => Actions.reject(porto, request))}
-      onCancel={() => Actions.reject(porto, request)}
+      onApprove={async () => {
+        Actions.respond(porto, request).catch(() => Actions.reject(porto, request));
+      }}
+      onCancel={async () => {
+        Actions.reject(porto, request);
+      }}
     >
       <div className="grow flex flex-col gap-6">
         <div className="flex flex-col items-center gap-1">

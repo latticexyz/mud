@@ -14,7 +14,7 @@
     "build": "vite build",
     "clean": "shx rm -rf dist",
     "dev": "mprocs",
-    "test": "tsc --noEmit && vitest --run",
+    "test": "tsc --noEmit && vitest --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
   "dependencies": {

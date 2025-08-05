@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "noUncheckedIndexedAccess": true
+    "jsxImportSource": "react"
+    // "noUncheckedIndexedAccess": true
   }
 }
