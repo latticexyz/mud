@@ -3,14 +3,31 @@ import "zustand/middleware";
 import { Storage } from "porto";
 import { Porto } from "porto/remote";
 import { mode } from "./mode";
-
+import { garnet, pyrope, redstone } from "@latticexyz/common/chains";
 import { anvil } from "viem/chains";
 
 export const porto = Porto.create({
   mode: mode(),
   storage: Storage.localStorage(),
   chains: [
-    // TODO: add more supported chains
+    {
+      ...redstone,
+      rpcUrls: {
+        ...redstone.rpcUrls,
+        bundler: {
+          http: ["https://rpc.redstonechain.com"],
+          webSocket: ["wss://rpc.redstonechain.com"],
+        },
+      },
+      contracts: {
+        ...redstone.contracts,
+        quarryPaymaster: {
+          address: "0x2d70F1eFFbFD865764CAF19BE2A01a72F3CE774f",
+        },
+      },
+    },
+    garnet,
+    pyrope,
     {
       ...anvil,
       rpcUrls: {
@@ -22,8 +39,8 @@ export const porto = Porto.create({
       },
       contracts: {
         ...anvil.contracts,
-        paymaster: {
-          address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
+        quarryPaymaster: {
+          address: "0x6439113f0e1f64018c3167DA2aC21e2689818086",
         },
       },
     },
