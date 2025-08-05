@@ -24,8 +24,6 @@ export function popup(): Dialog {
     name: "popup",
     supportsHeadless: true,
     setup(parameters) {
-      console.log("popup.setup()");
-
       const { host, internal } = parameters;
       const { store } = internal;
 

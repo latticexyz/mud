@@ -1,5 +1,5 @@
 procs:
   app:
-    shell: pnpm vite
+    shell: pnpm vite --force
   tunnel:
     shell: cloudflared tunnel run

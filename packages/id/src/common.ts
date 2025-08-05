@@ -1,4 +1,9 @@
-export const rpId = "smartpass.dev";
-export const rpUrl = "https://id.smartpass.dev";
-// needs trailing slash for now
-export const popupUrl = "https://id.smartpass.dev/popup/";
+// relying party for the passkey
+export const rp = {
+  id: "id.place",
+  name: "id.place",
+} satisfies PublicKeyCredentialRpEntity;
+
+// must be a valid origin for the relying party
+// needs trailing slash while it's a Vite static site
+export const popupUrl = "https://id.place/popup/";

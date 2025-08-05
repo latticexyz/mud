@@ -4,7 +4,7 @@ import { Key, Mode } from "porto";
 import { Account } from "porto/viem";
 import { toCoinbaseSmartAccount } from "../account/toCoinbaseSmartAccount";
 import { entryPoint07Abi, toWebAuthnAccount } from "viem/account-abstraction";
-import { rp } from "../common";
+import { rp as productionRp } from "@latticexyz/id/internal";
 import { WebAuthnKey } from "porto/viem/Key";
 import { createBundlerClient } from "../../../../packages/entrykit/src/createBundlerClient";
 import { getBundlerTransport } from "../../../../packages/entrykit/src/getBundlerTransport";
@@ -15,6 +15,8 @@ import { parseEventLogs } from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
 import { getPossiblePublicKeys } from "./getPossiblePublicKeys";
 import { readContract } from "viem/actions";
+
+const rp = import.meta.env.PROD ? productionRp : { id: "id.smartpass.dev", name: "id.smartpass.dev" };
 
 export function mode(): Mode.Mode {
   let lastKey: WebAuthnKey | undefined;

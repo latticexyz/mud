@@ -10,10 +10,14 @@
   "license": "MIT",
   "type": "module",
   "exports": {
+    ".": "./dist/index.js",
     "./internal": "./dist/internal.js"
   },
   "typesVersions": {
     "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
       "internal": [
         "./dist/internal.d.ts"
       ]

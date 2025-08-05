@@ -12,7 +12,10 @@ import {
   Hex,
 } from "viem";
 import { Chains, Porto, RpcSchema } from "porto";
+// TODO: import from porto once exported?
 import * as Schema from "../../node_modules/porto/core/internal/schema/schema";
+
+// TODO: PR to porto to let us change name + icon?
 
 export type Provider = ReturnType<typeof Porto.create>["provider"];
 export type Properties = {

@@ -3,5 +3,5 @@ import { baseConfig } from "../../tsup.config.base";
 
 export default defineConfig((opts) => ({
   ...baseConfig(opts),
-  entry: ["src/exports/internal.ts"],
+  entry: ["src/exports/index.ts", "src/exports/internal.ts"],
 }));

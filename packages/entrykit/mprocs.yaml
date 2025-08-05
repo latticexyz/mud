@@ -19,6 +19,6 @@ procs:
 
   id:
     cwd: ../../apps/id.place
-    shell: pnpm vite
+    shell: pnpm vite --force
   tunnel:
     shell: cloudflared tunnel run
