@@ -5,6 +5,7 @@ import { chainId } from "./common";
 import { garnet, pyrope } from "@latticexyz/common/chains";
 import { getDefaultConnectors } from "../src/getDefaultConnectors";
 import { idPlace, mode, popupUrl } from "@latticexyz/id.place/internal";
+import { wiresaw } from "@latticexyz/common/internal";
 
 const appConfig = {
   walletConnectProjectId: "3f1000f6d9e0139778ab719fddba894a",
@@ -82,28 +83,28 @@ const pyropeWithPaymaster = {
 };
 
 const chains = [
-  // mainnet,
-  // garnetWithPaymaster,
+  mainnet,
+  garnetWithPaymaster,
   anvilWithPaymaster,
-  // redstoneWithPaymaster,
-  // pyropeWithPaymaster,
+  redstoneWithPaymaster,
+  pyropeWithPaymaster,
 ] as const satisfies Chain[];
 
 const transports = {
-  // [mainnet.id]: http(),
+  [mainnet.id]: http(),
   [anvilWithPaymaster.id]: http(),
-  // [garnetWithPaymaster.id]: wiresaw(),
-  // [redstoneWithPaymaster.id]: wiresaw(),
-  // [pyropeWithPaymaster.id]: http(),
+  [garnetWithPaymaster.id]: wiresaw(),
+  [redstoneWithPaymaster.id]: wiresaw(),
+  [pyropeWithPaymaster.id]: http(),
 } as const;
 
 // TODO: remove once we bump viem to include https://github.com/wevm/viem/commit/b55ec5a6ee448367d3da844303a6f1a5bc71514a
 const pollingInterval = {
-  // [mainnet.id]: 2000,
+  [mainnet.id]: 2000,
   [anvilWithPaymaster.id]: 500,
-  // [garnetWithPaymaster.id]: 2000,
-  // [redstoneWithPaymaster.id]: 2000,
-  // [pyropeWithPaymaster.id]: 2000,
+  [garnetWithPaymaster.id]: 2000,
+  [redstoneWithPaymaster.id]: 2000,
+  [pyropeWithPaymaster.id]: 2000,
 } as const;
 
 const connectors = [
