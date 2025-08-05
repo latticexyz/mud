@@ -4,7 +4,7 @@ import { Key, Mode } from "porto";
 import { Account } from "porto/viem";
 import { toCoinbaseSmartAccount } from "../account/toCoinbaseSmartAccount";
 import { entryPoint07Abi, toWebAuthnAccount } from "viem/account-abstraction";
-import { rp as productionRp } from "@latticexyz/id/internal";
+import { rp as productionRp } from "@latticexyz/id.place/internal";
 import { WebAuthnKey } from "porto/viem/Key";
 import { createBundlerClient } from "../../../../packages/entrykit/src/createBundlerClient";
 import { getBundlerTransport } from "../../../../packages/entrykit/src/getBundlerTransport";

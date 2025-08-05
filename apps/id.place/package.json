@@ -1,12 +1,12 @@
 {
-  "name": "id.place",
+  "name": "@apps/id.place",
   "version": "0.0.0",
   "private": true,
   "description": "a place for your internet identity",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/id"
+    "directory": "apps/id.place"
   },
   "license": "MIT",
   "type": "module",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "@latticexyz/id": "workspace:*",
+    "@latticexyz/id.place": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@tanstack/react-query": "^5.83.0",
     "arktype": "2.0.0-beta.6",

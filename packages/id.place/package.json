@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/id",
+  "name": "@latticexyz/id.place",
   "version": "0.0.0",
-  "description": "Simple MUD accounts with passkeys",
+  "description": "A place for your internet identity",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/id"
+    "directory": "packages/id.place"
   },
   "license": "MIT",
   "type": "module",

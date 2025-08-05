@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { defaultSize } from "@latticexyz/id/internal";
+import { defaultSize } from "@latticexyz/id.place/internal";
 import { LoginContainer } from "../src/ui/LoginContainer";
 import { RequestContainer } from "../src/ui/RequestContainer";
 import { twMerge } from "tailwind-merge";

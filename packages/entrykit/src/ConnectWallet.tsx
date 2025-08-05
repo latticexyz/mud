@@ -4,7 +4,7 @@ import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useRef } from "react";
 import { useConnect, useConnectors } from "wagmi";
-import { PortoConnector, isPortoConnector } from "@latticexyz/id/internal";
+import { PortoConnector, isPortoConnector } from "@latticexyz/id.place/internal";
 
 export function ConnectWallet() {
   const connectors = useConnectors();

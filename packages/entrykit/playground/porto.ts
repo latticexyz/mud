@@ -1,4 +1,4 @@
-import { mode, popupUrl, porto as portoConnector } from "@latticexyz/id/internal";
+import { mode, popupUrl, porto as portoConnector } from "@latticexyz/id.place/internal";
 
 export function porto() {
   return portoConnector({

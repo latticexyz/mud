@@ -86,9 +86,9 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../../packages/common
-      '@latticexyz/id':
+      '@latticexyz/id.place':
         specifier: workspace:*
-        version: link:../../packages/id
+        version: link:../../packages/id.place
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../../packages/store
@@ -539,9 +539,9 @@ importers:
         specifier: ^4.5.2
         version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
     devDependencies:
-      '@latticexyz/id':
+      '@latticexyz/id.place':
         specifier: workspace:*
-        version: link:../id
+        version: link:../id.place
       '@tanstack/react-query':
         specifier: ^5.56.2
         version: 5.56.2(react@18.2.0)
@@ -861,7 +861,7 @@ importers:
         specifier: https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f
         version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/60acb7aaadcce2d68e52986a0a66fe79f07d138f
 
-  packages/id:
+  packages/id.place:
     dependencies:
       debug:
         specifier: ^4.3.4
