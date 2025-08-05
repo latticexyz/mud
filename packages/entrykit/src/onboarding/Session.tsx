@@ -25,8 +25,6 @@ export function Session({ isActive, isExpanded, connector, userClient, registerS
   const { data: prerequisites } = usePrerequisites(userClient.account.address);
   const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
 
-  console.log("setup", setup.status, setup.error, sessionClient.status, sessionClient.error, prerequisites);
-
   useEffect(() => {
     // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
     // state between the two mutations. They're not treated as shared state but rather
@@ -41,6 +39,7 @@ export function Session({ isActive, isExpanded, connector, userClient, registerS
         (hasAllowance || hasGasBalance || hasQuarryGasBalance)
       ) {
         // TODO: re-enable once we can catch/handle window.open errors in popup
+        //       https://github.com/ithacaxyz/porto/issues/581
         // setup.mutate({
         //   sessionClient: sessionClient.data,
         //   registerSpender,
