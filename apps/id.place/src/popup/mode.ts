@@ -90,14 +90,23 @@ export function mode(): Mode.Mode {
         } = parameters;
 
         const key = await (async () => {
+          if (parameters.address && parameters.key?.credentialId) {
+            return Key.fromWebAuthnP256({
+              credential: {
+                id: parameters.key.credentialId,
+                publicKey: PublicKey.fromHex(parameters.key.publicKey),
+              },
+              rpId: rp.id,
+              id: parameters.address,
+            });
+          }
+
           if (
             lastKey &&
-            (parameters.credentialId == null || parameters.credentialId === lastKey.privateKey?.credential?.id)
+            (parameters.key == null || parameters.key.credentialId === lastKey.privateKey?.credential?.id)
           ) {
             return lastKey;
           }
-
-          // TODO: update porto so we can return right away with the new `parameters.key`
 
           const challenge = Hex.random(256);
           const signature = await WebAuthnP256.sign({
