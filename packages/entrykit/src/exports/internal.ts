@@ -17,3 +17,6 @@ export { withFeeCache } from "../utils/withFeeCache";
 // And some additional internal things
 export * from "../validateSigner";
 export * from "../useFunds";
+export { createBundlerClient } from "../createBundlerClient";
+export { getBundlerTransport } from "../getBundlerTransport";
+export { defineCall } from "../utils/defineCall";

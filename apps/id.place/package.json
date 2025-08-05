@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/entrykit": "workspace:*",
     "@latticexyz/id.place": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@tanstack/react-query": "^5.83.0",

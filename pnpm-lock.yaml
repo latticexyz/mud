@@ -86,6 +86,9 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@latticexyz/entrykit':
+        specifier: workspace:*
+        version: link:../../packages/entrykit
       '@latticexyz/id.place':
         specifier: workspace:*
         version: link:../../packages/id.place
