@@ -5,9 +5,11 @@ import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
+import { useConnections } from "wagmi";
 
 export function App() {
   const { openAccountModal } = useAccountModal();
+  const connections = useConnections();
 
   const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:entryKitPlayground:openModalOnMount", false);
 
@@ -37,6 +39,7 @@ export function App() {
       <div>
         <SessionWrite />
       </div>
+      <div>connections: {connections.map((c) => c.connector.name).join(", ")}</div>
     </div>
   );
 }

@@ -1,20 +1,24 @@
-import { Hex, encodeFunctionData } from "viem";
+import { Hex, encodeFunctionData, parseEventLogs } from "viem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAction } from "viem/utils";
-import { sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
+import { entryPoint07Abi, sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../quarry/common";
-import { waitForTransactionReceipt } from "viem/actions";
+import { sendCalls, waitForTransactionReceipt } from "viem/actions";
 import { defineCall } from "../utils/defineCall";
-import { useClient } from "wagmi";
+import { Connector, useClient } from "wagmi";
 import { resourceToHex } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { callWithSignature } from "../utils/callWithSignature";
 import { getPaymaster } from "../getPaymaster";
 import { systemsConfig as worldSystemsConfig } from "@latticexyz/world/mud.config";
+import { createBundlerClient } from "../createBundlerClient";
+import { getBundlerTransport } from "../getBundlerTransport";
+import { isIdPlaceConnector } from "@latticexyz/id.place/internal";
+import { storeEventsAbi } from "@latticexyz/store";
 
-export function useSetupSession({ userClient }: { userClient: ConnectedClient }) {
+export function useSetupSession({ connector, userClient }: { connector: Connector; userClient: ConnectedClient }) {
   const queryClient = useQueryClient();
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
@@ -36,9 +40,79 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
       const paymaster = getPaymaster(client.chain);
       const sessionAddress = sessionClient.account.address;
 
-      console.log("setting up session");
+      console.log("setting up session", userClient);
 
-      if (userClient.account.type === "smart") {
+      if (isIdPlaceConnector(connector)) {
+        // Set up session for smart account wallet
+        const calls = [];
+
+        if (registerSpender && paymaster?.type === "quarry") {
+          console.log("registering spender");
+          calls.push(
+            defineCall({
+              to: paymaster.address,
+              abi: paymasterAbi,
+              functionName: "registerSpender",
+              args: [sessionAddress],
+            }),
+          );
+        }
+
+        if (registerDelegation) {
+          console.log("registering delegation");
+          calls.push(
+            defineCall({
+              to: worldAddress,
+              abi: worldAbi,
+              functionName: "registerDelegation",
+              args: [sessionAddress, unlimitedDelegationControlId, "0x"],
+            }),
+          );
+        }
+
+        if (!calls.length) return;
+
+        console.log("setting up account with", calls, userClient.account.address, sessionAddress);
+
+        const { id } = await getAction(
+          userClient,
+          sendCalls,
+          "sendCalls",
+        )({
+          account: userClient.account,
+          calls,
+        });
+        console.log("got send calls ID", id);
+
+        const bundlerClient = createBundlerClient({
+          transport: getBundlerTransport(client.chain),
+          client,
+        });
+
+        console.log("waiting for receipt");
+        const receipt = await getAction(
+          bundlerClient,
+          waitForUserOperationReceipt,
+          "waitForUserOperationReceipt",
+        )({ hash: id as Hex });
+
+        console.log("got result", receipt);
+        console.log(
+          "parsed logs",
+          worldAddress,
+          parseEventLogs({
+            logs: receipt.logs,
+            abi: [
+              ...entryPoint07Abi,
+              // TODO: export account abi from id package
+              // ...abi,
+              ...worldAbi,
+              ...storeEventsAbi,
+              ...calls.flatMap((call) => call.abi as never),
+            ],
+          }),
+        );
+      } else if (userClient.account.type === "smart") {
         // Set up session for smart account wallet
         const calls = [];
 
