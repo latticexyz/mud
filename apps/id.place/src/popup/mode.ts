@@ -227,12 +227,45 @@ export function mode(): Mode.Mode {
           client,
         });
 
-        const request = await bundlerClient.prepareUserOperation({ account: smartAccount, calls });
-        request.signature = await smartAccount.signUserOperation(request);
-
         const preCalls = (await PreCalls.get({ address: smartAccount.address, storage })) ?? [];
         console.log("got precalls for", smartAccount.address, preCalls);
-        PreCalls.clear({ address: smartAccount.address, storage });
+
+        // If we're estimating with a not-yet-created smart account, we need to
+        // provide the simulation with a smart account with correct factory args,
+        // otherwise the simulation fails.
+        const initialSmartAccount = (() => {
+          for (const preCall of preCalls) {
+            if (preCall.type === "bootstrap") {
+              const eoa = Account.fromPrivateKey(preCall.eoa.privateKey);
+              return toCoinbaseSmartAccount({
+                client,
+                owners: [eoa],
+              });
+            }
+          }
+        })();
+
+        const request = await bundlerClient.prepareUserOperation(
+          initialSmartAccount
+            ? {
+                account: await initialSmartAccount,
+                calls,
+                // exclude factory from default parameters so that we don't
+                // try to create the smart account again when we execute this
+                // transaction after bootstrapping
+                parameters: [
+                  // "factory",
+                  "fees",
+                  "gas",
+                  "paymaster",
+                  "nonce",
+                  "signature",
+                  "authorization",
+                ],
+              }
+            : { account: smartAccount, calls },
+        );
+        request.signature = await smartAccount.signUserOperation(request);
 
         // TODO: move this to some prepare call helper?
         // TODO: can we do precalls + request atomically? they're signed by different accounts
@@ -269,6 +302,9 @@ export function mode(): Mode.Mode {
             throw new Error(`unsupported preCall: ${preCall.type}`);
           }
         }
+
+        // TODO: only clear if precall succeeded?
+        PreCalls.clear({ address: smartAccount.address, storage });
 
         for (const hash of preCallHashes) {
           const result = await bundlerClient.waitForUserOperationReceipt({ hash });

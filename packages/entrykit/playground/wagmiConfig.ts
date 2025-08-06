@@ -24,6 +24,9 @@ const redstoneWithPaymaster = {
       http: ["https://rpc.redstonechain.com"],
       webSocket: ["wss://rpc.redstonechain.com"],
     },
+    quarrySponsor: {
+      http: ["https://sponsor.mud.redstonechain.com/rpc"],
+    },
   },
   contracts: {
     quarryPaymaster: {
