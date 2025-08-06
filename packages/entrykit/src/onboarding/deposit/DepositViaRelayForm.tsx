@@ -20,8 +20,8 @@ type Props = {
 };
 
 export function DepositViaRelayForm({ amount, setAmount, sourceChain, setSourceChainId }: Props) {
-  const { chain, chainId: destinationChainId } = useEntryKitConfig();
-  const paymaster = getPaymaster(chain);
+  const { chain, chainId: destinationChainId, paymasterOverride } = useEntryKitConfig();
+  const paymaster = getPaymaster(chain, paymasterOverride);
   const { data: wallet } = useWalletClient();
   const { address: userAddress } = useAccount();
   const { addDeposit } = useDeposits();

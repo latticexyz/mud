@@ -20,7 +20,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 
 export function useSetupSession({ connector, userClient }: { connector: Connector; userClient: ConnectedClient }) {
   const queryClient = useQueryClient();
-  const { chainId, worldAddress } = useEntryKitConfig();
+  const { chainId, worldAddress, paymasterOverride } = useEntryKitConfig();
   const client = useClient({ chainId });
 
   const mutationKey = ["setupSession", client?.chain.id, userClient.account.address];
@@ -37,7 +37,7 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
       registerDelegation: boolean;
     }): Promise<void> => {
       if (!client) throw new Error("Client not ready.");
-      const paymaster = getPaymaster(client.chain);
+      const paymaster = getPaymaster(client.chain, paymasterOverride);
       const sessionAddress = sessionClient.account.address;
 
       console.log("setting up session", userClient);
