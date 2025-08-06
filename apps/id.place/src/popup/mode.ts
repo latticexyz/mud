@@ -245,10 +245,26 @@ export function mode(): Mode.Mode {
           }
         })();
 
-        const request = await bundlerClient.prepareUserOperation({
-          account: initialSmartAccount ? await initialSmartAccount : smartAccount,
-          calls,
-        });
+        const request = await bundlerClient.prepareUserOperation(
+          initialSmartAccount
+            ? {
+                account: await initialSmartAccount,
+                calls,
+                // exclude factory from default parameters so that we don't
+                // try to create the smart account again when we execute this
+                // transaction after bootstrapping
+                parameters: [
+                  // "factory",
+                  "fees",
+                  "gas",
+                  "paymaster",
+                  "nonce",
+                  "signature",
+                  "authorization",
+                ],
+              }
+            : { account: smartAccount, calls },
+        );
         request.signature = await smartAccount.signUserOperation(request);
 
         // TODO: move this to some prepare call helper?
