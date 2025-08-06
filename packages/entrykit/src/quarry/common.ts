@@ -1,16 +1,31 @@
 import { defineStore } from "@latticexyz/store";
 import { parseAbi } from "viem";
 
-// TODO: move the whole paymaster in here so we can just re-export ABI + MUD config
+// TODO: import this from quarry-paymaster
 
 export const paymasterAbi = parseAbi([
-  "error SpenderSystem_AlreadyRegistered(address spender, address user)",
-  "error SpenderSystem_HasOwnBalance(address spender)",
-  "error BalanceSystem_BalanceTooHigh(address user, uint256 balance, uint256 max)",
+  // AllowanceSystem
+  "error AllowanceSystem_InsufficientAllowance(uint256 allowance, uint256 required)",
+  "error AllowanceSystem_NotAuthorized(address caller, address sponsor, address user)",
+  "error AllowanceSystem_NotFound(address user, address sponsor)",
+  "function removeAllowance(address user, address sponsor)",
+  "function getAllowance(address user) view returns (uint256)",
+  // GrantSystem
+  "error GrantSystem_AllowanceBelowMinimum(uint256 allowance, uint256 min)",
+  "error GrantSystem_AllowancesLimitReached(uint256 length, uint256 max)",
+  "error GrantSystem_InsufficientBalance(uint256 balance, uint256 required)",
+  "function grantAllowance(address user, uint256 allowance) payable",
+  // BalanceSystem
   "error BalanceSystem_InsufficientBalance(address user, uint256 amount, uint256 balance)",
-  "function registerSpender(address spender)",
   "function depositTo(address to) payable",
   "function withdrawTo(address to, uint256 amount)",
+  // SpenderSystem
+  "error SpenderSystem_AlreadyRegistered(address spender, address user)",
+  "error SpenderSystem_HasOwnBalance(address spender)",
+  "function registerSpender(address spender)",
+  // PaymasterSystem
+  "error PaymasterSystem_InsufficientFunds(address user, uint256 maxCost, uint256 availableAllowance, uint256 availableBalance)",
+  "error PaymasterSystem_OnlyEntryPoint()",
 ]);
 
 export const paymasterConfig = defineStore({
@@ -18,13 +33,7 @@ export const paymasterConfig = defineStore({
     root: {
       namespace: "",
       tables: {
-        Allowance: {
-          schema: {
-            user: "address",
-            allowance: "uint256",
-          },
-          key: ["user"],
-        },
+        // Balance gets deposited and is withdrawable
         Balance: {
           schema: {
             user: "address",
@@ -32,31 +41,26 @@ export const paymasterConfig = defineStore({
           },
           key: ["user"],
         },
-        Grantor: {
-          schema: {
-            grantor: "address",
-            allowance: "uint256",
-          },
-          key: ["grantor"],
-        },
-        PassHolder: {
+        // Allowance gets granted and is not withdrawable
+        // Allowance is organized as a linked list and gets spent from smallest to largest
+        Allowance: {
+          name: "AllowanceV2",
           schema: {
             user: "address",
-            passId: "bytes32",
-            lastRenewed: "uint256",
-            lastClaimed: "uint256",
+            sponsor: "address",
+            allowance: "uint256",
+            next: "address",
+            previous: "address",
           },
-          key: ["user", "passId"],
+          key: ["user", "sponsor"],
         },
-        PassConfig: {
+        AllowanceList: {
           schema: {
-            passId: "bytes32",
-            claimAmount: "uint256",
-            claimInterval: "uint256",
-            validityPeriod: "uint256",
-            grantor: "address",
+            user: "address",
+            first: "address",
+            length: "uint256",
           },
-          key: ["passId"],
+          key: ["user"],
         },
         Spender: {
           schema: {

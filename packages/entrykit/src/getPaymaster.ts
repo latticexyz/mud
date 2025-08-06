@@ -6,7 +6,7 @@ export type Paymaster =
   | {
       readonly type: "simple" | "quarry";
       readonly address: Hex;
-      readonly isGasPass?: boolean;
+      readonly canSponsor?: boolean;
     }
   | {
       readonly type: "custom";
@@ -32,7 +32,7 @@ export function getPaymaster(
       return {
         type: "quarry",
         address: contracts.quarryPaymaster.address,
-        isGasPass: !!chain.rpcUrls.quarryPassIssuer?.http?.[0],
+        canSponsor: !!chain.rpcUrls.quarrySponsor?.http?.[0],
       };
     }
   }

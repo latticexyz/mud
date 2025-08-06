@@ -6,7 +6,7 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [],
+  "ignore": ["@apps/*"],
   "snapshot": {
     "useCalculatedVersion": true,
     "prereleaseTemplate": "{commit}"

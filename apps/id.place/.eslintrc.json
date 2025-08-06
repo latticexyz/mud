@@ -1,0 +1,6 @@
+{
+  "extends": ["../../.eslintrc"],
+  "rules": {
+    "@typescript-eslint/no-namespace": "off"
+  }
+}

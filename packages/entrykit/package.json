@@ -38,7 +38,7 @@
     "deploy": "tsx src/bin/deploy.ts",
     "dev": "tsup --watch",
     "playground": "mprocs",
-    "playground:deploy": "mprocs --config mprocs.deploy.yaml",
+    "playground:setup": "mprocs --config mprocs.setup.yaml",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },
@@ -47,6 +47,7 @@
     "@ark/util": "0.2.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/id.place": "workspace:*",
     "@latticexyz/paymaster": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",

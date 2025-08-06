@@ -4,21 +4,22 @@ import { twMerge } from "tailwind-merge";
 import { ConnectedClient } from "../common";
 import { usePrerequisites } from "./usePrerequisites";
 import { Wallet } from "./Wallet";
-import { Allowance } from "./quarry/Allowance";
 import { Session } from "./Session";
 import { Step } from "./common";
 import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
-import { GasBalance as GasBalanceQuarry } from "./quarry/GasBalance";
+import { GasBalance as QuarryGasBalance } from "./quarry/GasBalance";
+import { Connector } from "wagmi";
 
 export type Props = {
+  connector: Connector;
   userClient: ConnectedClient;
   initialUserAddress: Address | undefined;
 };
 
-export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
+export function ConnectedSteps({ connector, userClient, initialUserAddress }: Props) {
   const { chain, paymasterOverride } = useEntryKitConfig();
   const paymaster = getPaymaster(chain, paymasterOverride);
   const [focusedId, setFocusedId] = useState<string | null>(null);
@@ -80,26 +81,24 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
         });
       }
     } else if (paymaster.type === "quarry") {
-      if (paymaster.isGasPass) {
-        steps.push({
-          id: "allowance",
-          isComplete: !!hasAllowance,
-          content: (props) => <Allowance {...props} userAddress={userAddress} />,
-        });
-      } else {
-        steps.push({
-          id: "gasBalanceQuarry",
-          isComplete: !!hasQuarryGasBalance,
-          content: (props) => <GasBalanceQuarry {...props} userAddress={userAddress} />,
-        });
-      }
+      steps.push({
+        id: "gasBalanceQuarry",
+        isComplete: !!hasQuarryGasBalance || !!hasAllowance,
+        content: (props) => <QuarryGasBalance {...props} userAddress={userAddress} paymaster={paymaster} />,
+      });
     }
 
     steps.push({
       id: "session",
       isComplete: !!isSpender && !!hasDelegation,
       content: (props) => (
-        <Session {...props} userClient={userClient} registerSpender={!isSpender} registerDelegation={!hasDelegation} />
+        <Session
+          {...props}
+          userClient={userClient}
+          connector={connector}
+          registerSpender={!isSpender}
+          registerDelegation={!hasDelegation}
+        />
       ),
     });
 
@@ -114,6 +113,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     sessionAddress,
     userAddress,
     userClient,
+    connector,
   ]);
 
   const [selectedStepId] = useState<null | string>(null);
