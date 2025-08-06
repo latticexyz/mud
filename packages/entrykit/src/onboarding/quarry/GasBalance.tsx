@@ -11,15 +11,23 @@ import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { StepContentProps } from "../common";
 import { usePrevious } from "../../errors/usePrevious";
 import { WithdrawGasBalanceButton } from "./WithdrawGasBalanceButton";
+import { useAllowance } from "./useAllowance";
+import { useRequestAllowance } from "./useRequestAllowance";
+import { Paymaster } from "../../getPaymaster";
 
 export type Props = StepContentProps & {
   userAddress: Hex;
+  paymaster: Paymaster;
 };
 
-export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAddress }: Props) {
+export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAddress, paymaster }: Props) {
   const queryClient = useQueryClient();
   const balance = useShowQueryError(useBalance(userAddress));
   const prevBalance = usePrevious(balance.data || 0n);
+
+  const allowance = useShowQueryError(useAllowance(userAddress));
+  const prevAllowance = usePrevious(allowance.data || 0n);
+  const requestAllowance = useRequestAllowance();
 
   useEffect(() => {
     if (balance.data != null && prevBalance === 0n && balance.data > 0n) {
@@ -27,6 +35,38 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
       setFocused(false);
     }
   }, [balance.data, prevBalance, setFocused, queryClient, userAddress]);
+
+  useEffect(() => {
+    if (allowance.data != null && prevAllowance === 0n && allowance.data > 0n) {
+      queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] });
+      setFocused(false);
+    }
+  }, [allowance.data, prevAllowance, setFocused, queryClient, userAddress]);
+
+  const gasBalance = balance.data != null && allowance.data != null ? balance.data + allowance.data : null;
+  useEffect(() => {
+    if (!isActive) return;
+    if (!paymaster.canSponsor) return;
+    if (gasBalance !== 0n) return;
+    if (requestAllowance.status !== "idle") return;
+
+    // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
+    // state between the two mutations. They're not treated as shared state but rather
+    // individual mutations, even though the keys match. And the one we want the status of
+    // seems to stay pending. This is sorta resolved by triggering this after a timeout.
+    const timer = setTimeout(() => {
+      console.log("no funds, requesting allowance");
+      requestAllowance.mutate(userAddress, {
+        onSuccess(data) {
+          console.log("got allowance", data);
+        },
+        onError(error) {
+          console.log("failed to get allowance", error);
+        },
+      });
+    });
+    return () => clearTimeout(timer);
+  }, [isActive, paymaster.canSponsor, gasBalance, requestAllowance, userAddress]);
 
   if (isFocused) {
     return (
@@ -52,7 +92,7 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
         <div>
           <div>Gas balance</div>
           <div className="font-mono text-white">
-            {balance.data != null ? <Balance wei={balance.data} /> : <PendingIcon className="text-sm" />}
+            {gasBalance != null ? <Balance wei={gasBalance} /> : <PendingIcon className="text-sm" />}
           </div>
         </div>
 
@@ -61,7 +101,9 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
             variant={isActive ? "primary" : "tertiary"}
             className="flex-shrink-0 text-sm p-1 w-28"
             autoFocus={isActive || isExpanded}
-            pending={balance.status === "pending"}
+            pending={
+              balance.status === "pending" || allowance.status === "pending" || requestAllowance.status === "pending"
+            }
             onClick={() => setFocused(true)}
           >
             Top up
@@ -70,7 +112,22 @@ export function GasBalance({ isActive, isExpanded, isFocused, setFocused, userAd
           <WithdrawGasBalanceButton userAddress={userAddress} />
         </div>
       </div>
-      {isExpanded ? <p className="text-sm">Your gas balance is used to pay for onchain computation.</p> : null}
+      {isExpanded ? (
+        <div className="text-sm space-y-2">
+          <p>Your gas balance is used to pay for onchain computation.</p>
+          <p>
+            You have{" "}
+            <span className="font-mono">
+              {balance.data != null ? <Balance wei={balance.data} /> : <PendingIcon className="text-sm" />}
+            </span>{" "}
+            in gas deposits and{" "}
+            <span className="font-mono">
+              {allowance.data != null ? <Balance wei={allowance.data} /> : <PendingIcon className="text-sm" />}
+            </span>{" "}
+            in gas grants.
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

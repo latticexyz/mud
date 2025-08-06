@@ -114,29 +114,6 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
             ],
           }),
         );
-
-        // create session account instead of doing lazily
-        await (async () => {
-          console.log("creating session account by sending empty user op");
-          const hash = await getAction(
-            sessionClient,
-            sendUserOperation,
-            "sendUserOperation",
-          )({
-            calls: [{ to: zeroAddress }],
-          });
-
-          const receipt = await getAction(
-            bundlerClient,
-            waitForUserOperationReceipt,
-            "waitForUserOperationReceipt",
-          )({ hash });
-          console.log("got user op receipt", receipt);
-
-          if (!receipt.success) {
-            console.error("not successful?", receipt);
-          }
-        })();
       } else if (userClient.account.type === "smart") {
         // Set up session for smart account wallet
         const calls = [];
@@ -232,6 +209,28 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
           }
         }
       }
+
+      // attempt to create session smart account instead of doing lazily
+      // so downstream can expect the session account to exist
+      await (async () => {
+        if (await sessionClient.account.isDeployed?.()) return;
+
+        console.log("creating session account by sending empty user op");
+        const hash = await getAction(
+          sessionClient,
+          sendUserOperation,
+          "sendUserOperation",
+        )({
+          calls: [{ to: zeroAddress }],
+        });
+
+        const receipt = await getAction(
+          sessionClient,
+          waitForUserOperationReceipt,
+          "waitForUserOperationReceipt",
+        )({ hash });
+        console.log("got user op receipt", receipt);
+      })();
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["getSpender"] }),
