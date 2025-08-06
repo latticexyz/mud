@@ -1,6 +1,6 @@
 import { defineWorld } from "@latticexyz/world";
 
-export default defineWorld({
+export const rawMudConfig = {
   tables: {
     Number: {
       schema: {
@@ -65,4 +65,6 @@ export default defineWorld({
       },
     },
   },
-});
+} as const;
+
+export default defineWorld(rawMudConfig);
