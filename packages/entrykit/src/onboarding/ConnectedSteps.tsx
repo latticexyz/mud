@@ -4,14 +4,13 @@ import { twMerge } from "tailwind-merge";
 import { ConnectedClient } from "../common";
 import { usePrerequisites } from "./usePrerequisites";
 import { Wallet } from "./Wallet";
-import { Allowance } from "./quarry/Allowance";
 import { Session } from "./Session";
 import { Step } from "./common";
 import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
 import { GasBalance } from "./GasBalance";
-import { GasBalance as GasBalanceQuarry } from "./quarry/GasBalance";
+import { GasBalance as QuarryGasBalance } from "./quarry/GasBalance";
 import { Connector } from "wagmi";
 
 export type Props = {
@@ -82,19 +81,11 @@ export function ConnectedSteps({ connector, userClient, initialUserAddress }: Pr
         });
       }
     } else if (paymaster.type === "quarry") {
-      if (paymaster.canSponsor) {
-        steps.push({
-          id: "allowance",
-          isComplete: !!hasAllowance,
-          content: (props) => <Allowance {...props} userAddress={userAddress} />,
-        });
-      } else {
-        steps.push({
-          id: "gasBalanceQuarry",
-          isComplete: !!hasQuarryGasBalance,
-          content: (props) => <GasBalanceQuarry {...props} userAddress={userAddress} />,
-        });
-      }
+      steps.push({
+        id: "gasBalanceQuarry",
+        isComplete: !!hasQuarryGasBalance || !!hasAllowance,
+        content: (props) => <QuarryGasBalance {...props} userAddress={userAddress} paymaster={paymaster} />,
+      });
     }
 
     steps.push({
