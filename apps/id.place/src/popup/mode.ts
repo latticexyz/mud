@@ -9,10 +9,22 @@ import { WebAuthnKey } from "porto/viem/Key";
 import { createBundlerClient, getBundlerTransport, defineCall } from "@latticexyz/entrykit/internal";
 import * as PreCalls from "./preCalls";
 import { abi } from "../account/abi";
-import { parseEventLogs } from "viem";
+import {
+  bytesToHex,
+  encodeAbiParameters,
+  hexToBigInt,
+  hexToBytes,
+  hexToNumber,
+  keccak256,
+  numberToHex,
+  parseAbiParameter,
+  parseAbiParameters,
+  parseEventLogs,
+  zeroAddress,
+} from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
 import { getPossiblePublicKeys } from "./getPossiblePublicKeys";
-import { readContract } from "viem/actions";
+import { getCode, readContract } from "viem/actions";
 
 const rp = import.meta.env.PROD ? productionRp : { id: "id.smartpass.dev", name: "id.smartpass.dev" };
 
@@ -233,21 +245,79 @@ export function mode(): Mode.Mode {
         // If we're estimating with a not-yet-created smart account, we need to
         // provide the simulation with a smart account with correct factory args,
         // otherwise the simulation fails.
-        const initialSmartAccount = (() => {
-          for (const preCall of preCalls) {
-            if (preCall.type === "bootstrap") {
-              const eoa = Account.fromPrivateKey(preCall.eoa.privateKey);
-              return toCoinbaseSmartAccount({
-                client,
-                owners: [eoa],
-              });
-            }
-          }
-        })();
+        // const initialSmartAccount = (() => {
+        //   for (const preCall of preCalls) {
+        //     if (preCall.type === "bootstrap") {
+        //       const eoa = Account.fromPrivateKey(preCall.eoa.privateKey);
+        //       return toCoinbaseSmartAccount({
+        //         client,
+        //         owners: [eoa],
+        //       });
+        //     }
+        //   }
+        // })();
+
+        const implementation = await readContract(client, {
+          address: smartAccount.factory.address,
+          abi: smartAccount.factory.abi,
+          functionName: "implementation",
+        });
+
+        const multiOwnableSlot = hexToBigInt("0x97e2c6aad4ce5d562ebfaa00db6b9e0fb66ea5d8162ed5b243f51a2e03086f00");
+        const nextOwnerIndexSlot = numberToHex(multiOwnableSlot);
+        const removedOwnersCountSlot = numberToHex(multiOwnableSlot + 1n);
+        const ownerAtIndex0Slot = keccak256(
+          encodeAbiParameters(parseAbiParameters("uint256, uint256"), [0n, multiOwnableSlot + 2n]),
+        );
+        const ownerAtIndex1Slot = keccak256(
+          encodeAbiParameters(parseAbiParameters("uint256, uint256"), [1n, multiOwnableSlot + 2n]),
+        );
+
+        const ownerBytes = hexToBytes(toViemAccount(key).publicKey);
+        const ownerLength = BigInt(ownerBytes.length);
+        const dataSlot = hexToBigInt(keccak256(ownerAtIndex1Slot));
+        const chunk0 = ownerBytes.slice(0, 32);
+        const chunk1 = ownerBytes.slice(32, 64);
 
         const request = await bundlerClient.prepareUserOperation({
-          account: initialSmartAccount ? await initialSmartAccount : smartAccount,
+          account: smartAccount,
           calls,
+          stateOverride: [
+            {
+              address: key.id,
+              code: await getCode(client, { address: implementation }),
+              stateDiff: [
+                {
+                  slot: nextOwnerIndexSlot,
+                  value: encodeAbiParameters(parseAbiParameters("uint256"), [2n]),
+                },
+                {
+                  slot: removedOwnersCountSlot,
+                  value: encodeAbiParameters(parseAbiParameters("uint256"), [1n]),
+                },
+                {
+                  slot: ownerAtIndex0Slot,
+                  value: encodeAbiParameters(parseAbiParameters("address"), [zeroAddress]),
+                },
+                // {
+                //   slot: ownerAtIndex1Slot,
+                //   value: encodeAbiParameters(parseAbiParameters("bytes"), [toViemAccount(key).publicKey]),
+                // },
+                {
+                  slot: ownerAtIndex1Slot,
+                  value: numberToHex((ownerLength << 1n) | 1n, { size: 32 }),
+                },
+                {
+                  slot: numberToHex(dataSlot),
+                  value: bytesToHex(chunk0, { size: 32 }),
+                },
+                {
+                  slot: numberToHex(dataSlot + 1n),
+                  value: bytesToHex(chunk1, { size: 32 }),
+                },
+              ],
+            },
+          ],
         });
         request.signature = await smartAccount.signUserOperation(request);
 
