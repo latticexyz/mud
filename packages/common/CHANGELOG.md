@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- 94cac74: Correctly resolve remappings when going through the inheritance chain during worldgen.
+- 122945e: Support using inherited symbols when generating System interfaces and libraries.
+- Updated dependencies [b803eb1]
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
