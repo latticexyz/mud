@@ -1,4 +1,4 @@
-import { Hex, encodeFunctionData, parseEventLogs } from "viem";
+import { Hex, encodeFunctionData, parseEventLogs, zeroAddress } from "viem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAction } from "viem/utils";
 import { entryPoint07Abi, sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
@@ -84,6 +84,8 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
         });
         console.log("got send calls ID", id);
 
+        // TODO: switch to `waitForCallsStatus`, but needs to be able to run "headless" (no popup)
+
         const bundlerClient = createBundlerClient({
           transport: getBundlerTransport(client.chain),
           client,
@@ -112,6 +114,29 @@ export function useSetupSession({ connector, userClient }: { connector: Connecto
             ],
           }),
         );
+
+        // create session account instead of doing lazily
+        await (async () => {
+          console.log("creating session account by sending empty user op");
+          const hash = await getAction(
+            sessionClient,
+            sendUserOperation,
+            "sendUserOperation",
+          )({
+            calls: [{ to: zeroAddress }],
+          });
+
+          const receipt = await getAction(
+            bundlerClient,
+            waitForUserOperationReceipt,
+            "waitForUserOperationReceipt",
+          )({ hash });
+          console.log("got user op receipt", receipt);
+
+          if (!receipt.success) {
+            console.error("not successful?", receipt);
+          }
+        })();
       } else if (userClient.account.type === "smart") {
         // Set up session for smart account wallet
         const calls = [];
