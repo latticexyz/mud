@@ -1,4 +1,4 @@
-import { Hex, parseEther } from "viem";
+import { Hex } from "viem";
 import { useAllowance } from "./useAllowance";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { useRequestAllowance } from "./useRequestAllowance";
@@ -23,13 +23,7 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
     // individual mutations, even though the keys match. And the one we want the status of
     // seems to stay pending. This is sorta resolved by triggering this after a timeout.
     const timer = setTimeout(() => {
-      if (
-        isActive &&
-        requestAllowance.status === "idle" &&
-        allowance.isSuccess &&
-        allowance.data != null &&
-        allowance.data < parseEther("0.01")
-      ) {
+      if (isActive && requestAllowance.status === "idle" && allowance.isSuccess && allowance.data === 0n) {
         requestAllowance.mutate(userAddress);
       }
     });
