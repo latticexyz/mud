@@ -11,6 +11,7 @@ export type Paymaster =
   | {
       readonly type: "custom";
       readonly address?: Hex;
+      readonly canSponsor?: undefined;
       readonly paymasterClient: BundlerClientConfig["paymaster"];
     };
 
