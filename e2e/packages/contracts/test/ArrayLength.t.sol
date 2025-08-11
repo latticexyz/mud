@@ -14,7 +14,7 @@ import { toStaticArray_uint256_3 } from "../src/codegen/tables/StaticArray.sol";
 /**
  * @title GetItemValueWrapper
  * @dev For testing that calling getItemValue properly reverts
- * We use a seperate contract to ensure `expectRevert` does not only check the first external call
+ * We use a separate contract to ensure `expectRevert` does not only check the first external call
  */
 contract GetItemValueWrapper {
   function getItemValue(address worldAddress, uint256 _index) public {
