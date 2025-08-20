@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { RpcRequest } from "ox";
 import { RpcSchema } from "porto";
 import { TruncatedHex } from "../../../src/ui/TruncatedHex";
-import { decodeFunctionData, formatEther, stringify } from "viem";
+import { decodeFunctionData, formatEther, isAddressEqual, stringify } from "viem";
 import { worldAbi } from "../../../src/worldAbi";
 import { Hooks } from "porto/remote";
 
@@ -27,7 +27,7 @@ export function SendCalls() {
   }
   const { from, calls } = request.params[0];
   const accounts = Hooks.usePortoStore(porto, (state) => state.accounts);
-  const account = accounts.find((account) => from != null && account.address === from);
+  const account = from != null ? accounts.find((account) => isAddressEqual(account.address, from)) : undefined;
   if (!account) throw new Error("no account");
 
   // TODO: replace with request origin after upgrading porto

@@ -155,8 +155,8 @@ export function mode(): Mode.Mode {
           const publicKey = possiblePublicKeys.find((publicKey) =>
             encodedOwners.has(
               AbiParameters.encode(AbiParameters.from(["bytes32", "bytes32"]), [
-                Hex.fromNumber(publicKey.x),
-                Hex.fromNumber(publicKey.y),
+                Hex.fromNumber(publicKey.x, { size: 32 }),
+                Hex.fromNumber(publicKey.y, { size: 32 }),
               ]),
             ),
           );
