@@ -339,11 +339,6 @@ export function mode(): Mode.Mode {
         await wait(1000);
         throw new Provider.UnsupportedMethodError();
       },
-      async getAssets(parameters) {
-        console.log("popup.mode.getAssets", parameters);
-        await wait(1000);
-        throw new Provider.UnsupportedMethodError();
-      },
       async getCallsStatus(parameters) {
         console.log("popup.mode.getCallsStatus", parameters);
         await wait(1000);

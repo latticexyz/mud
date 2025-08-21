@@ -5,7 +5,6 @@ import { twMerge } from "tailwind-merge";
 import { useEffect, useRef } from "react";
 import { useConnect, useConnectors } from "wagmi";
 import { IdPlaceConnector, isIdPlaceConnector } from "@latticexyz/id.place/internal";
-import { useEntryKitConfig } from "./EntryKitConfigProvider";
 
 export function ConnectWallet() {
   const connectors = useConnectors();
@@ -31,7 +30,6 @@ export function ConnectWallet() {
 function AccountButton({ connector }: { connector: IdPlaceConnector }) {
   const { setOpen } = useModal();
   const { connect, isPending, error } = useConnect();
-  const { chainId } = useEntryKitConfig();
 
   if (error) {
     console.error("connect error", error);
@@ -44,7 +42,7 @@ function AccountButton({ connector }: { connector: IdPlaceConnector }) {
         variant="secondary"
         className="self-auto flex justify-center"
         pending={isPending}
-        onClick={() => connect({ connector, chainId })}
+        onClick={() => connect({ connector })}
         autoFocus
       >
         Sign in
