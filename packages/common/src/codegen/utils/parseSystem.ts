@@ -1,7 +1,6 @@
-import { findContractOrInterfaceNode } from "./findContractNode";
+import { findContractOrInterfaceNode } from "./findContractOrInterfaceNode";
 import { findSymbolImport } from "./findSymbolImport";
 import { Parser } from "@nomicfoundation/slang/parser";
-import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Query } from "@nomicfoundation/slang/cst";
 import { ContractDefinition } from "@nomicfoundation/slang/ast";
 
@@ -12,14 +11,14 @@ export function parseSystem(
   source: string,
   contractName: string,
 ): undefined | { contractType: "contract" | "abstract" } {
-  const parser = Parser.create(LanguageFacts.latestVersion());
+  const parser = Parser.create("0.8.24");
   const root = parser.parseFileContents(source).createTreeCursor();
 
   const contractCursor = findContractOrInterfaceNode(root, contractName);
   if (!contractCursor) return;
 
   assertNonterminalNode(contractCursor.node);
-  if (contractCursor.node.kind !== "ContractDefinition") {
+  if (contractCursor.node.kind === "InterfaceDefinition") {
     // it's an interface
     return;
   }

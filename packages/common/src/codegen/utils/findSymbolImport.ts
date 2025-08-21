@@ -27,6 +27,7 @@ export function findSymbolImport(root: Cursor, symbol: string): SymbolImport | u
   ])) {
     const symbolName = result.captures.name?.[0].node.unparse();
     const symbolAlias = result.captures.alias?.[0].node.unparse() ?? symbolName;
+    // The path node includes the quotation marks, so we stripped them off.
     const path = result.captures.path?.[0].node.unparse().slice(1, -1);
     if (symbol === symbolAlias) {
       return {

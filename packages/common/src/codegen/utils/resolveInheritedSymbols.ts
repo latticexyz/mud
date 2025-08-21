@@ -1,11 +1,10 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { findContractOrInterfaceNode } from "./findContractNode";
+import { findContractOrInterfaceNode } from "./findContractOrInterfaceNode";
 import { QualifiedSymbol } from "./contractToInterface";
 import { findSymbolImport } from "./findSymbolImport";
 import { resolveRemapping } from "./resolveRemapping";
 import { Parser } from "@nomicfoundation/slang/parser";
-import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Cursor, Query } from "@nomicfoundation/slang/cst";
 import { ContractDefinition, InterfaceDefinition } from "@nomicfoundation/slang/ast";
 
@@ -44,7 +43,7 @@ export async function createInheritanceResolver(
       const source = await readFile(filePath, "utf8");
 
       // Try to parse the source
-      const parser = Parser.create(LanguageFacts.latestVersion());
+      const parser = Parser.create("0.8.24");
       const parserResult = parser.parseFileContents(source);
       if (!parserResult.isValid()) {
         const errorMessage = parserResult

@@ -1,8 +1,7 @@
 import { MUDError } from "../../errors";
-import { findContractOrInterfaceNode } from "./findContractNode";
+import { findContractOrInterfaceNode } from "./findContractOrInterfaceNode";
 import { SymbolImport, findSymbolImport } from "./findSymbolImport";
 import { Parser } from "@nomicfoundation/slang/parser";
-import { LanguageFacts } from "@nomicfoundation/slang/utils";
 import { assertNonterminalNode, Cursor, Query, TerminalNode } from "@nomicfoundation/slang/cst";
 import {
   ArrayTypeName,
@@ -50,7 +49,7 @@ export function contractToInterface(
   symbolImports: SymbolImport[];
   qualifiedSymbols: Map<string, QualifiedSymbol>;
 } {
-  const parser = Parser.create(LanguageFacts.latestVersion());
+  const parser = Parser.create("0.8.24");
   const parserResult = parser.parseFileContents(source);
   if (!parserResult.isValid()) {
     const errorMessage = parserResult
@@ -78,68 +77,56 @@ export function contractToInterface(
       @error [ErrorDefinition]
     `),
   ])) {
-    switch (match.queryIndex) {
-      case 0: {
-        // Functions
-        const funcNode = match.captures["function"]?.[0].node;
-        assertNonterminalNode(funcNode);
-        const funcDef = new FunctionDefinition(funcNode);
-        const name = funcDef.name.cst.unparse().trim();
+    if (match.captures["function"]) {
+      // Functions
+      const funcNode = match.captures["function"]?.[0].node;
+      assertNonterminalNode(funcNode);
+      const funcDef = new FunctionDefinition(funcNode);
+      const name = funcDef.name.cst.unparse().trim();
 
-        let visibility = "default";
-        let stateMutability = "";
-        for (const item of funcDef.attributes.items) {
-          const attribute = item.cst.unparse().trim();
-          if (
-            attribute === "public" ||
-            attribute === "private" ||
-            attribute === "internal" ||
-            attribute === "external"
-          ) {
-            visibility = attribute;
-          }
-          if (attribute === "view" || attribute === "pure" || attribute === "payable") {
-            stateMutability = attribute;
-          }
+      let visibility = undefined;
+      let stateMutability = "";
+      for (const item of funcDef.attributes.items) {
+        const attribute = item.cst.unparse().trim();
+        if (attribute === "public" || attribute === "private" || attribute === "internal" || attribute === "external") {
+          visibility = attribute;
         }
-        if (visibility === "default") throw new MUDError(`Visibility is not specified for function '${name}'`);
-        if (visibility !== "public" && visibility !== "external") {
-          continue;
+        if (attribute === "view" || attribute === "pure" || attribute === "payable") {
+          stateMutability = attribute;
         }
-
-        functions.push({
-          name,
-          parameters: splatParameters(funcDef.parameters),
-          stateMutability,
-          returnParameters: splatParameters(funcDef.returns?.variables),
-        });
-
-        for (const { typeName } of funcDef.parameters.parameters.items.concat(
-          funcDef.returns?.variables.parameters.items ?? [],
-        )) {
-          const symbols = typeNameToSymbols(typeName);
-          symbolImports = symbolImports.concat(symbolsToImports(root, symbols, findInheritedSymbol, qualifiedSymbols));
-        }
-
-        break;
       }
-      case 1: {
-        // Custom errors
-        const errorNode = match.captures.error?.[0].node;
-        assertNonterminalNode(errorNode);
-        const errorDef = new ErrorDefinition(errorNode);
-        const name = errorDef.name.unparse().trim();
-        errors.push({
-          name,
-          parameters: splatParameters(errorDef.members),
-        });
+      if (visibility === undefined) throw new MUDError(`Visibility is not specified for function '${name}'`);
+      if (visibility !== "public" && visibility !== "external") {
+        continue;
+      }
 
-        for (const { typeName } of errorDef.members.parameters.items) {
-          const symbols = typeNameToSymbols(typeName);
-          symbolImports = symbolImports.concat(symbolsToImports(root, symbols, findInheritedSymbol, qualifiedSymbols));
-        }
+      functions.push({
+        name,
+        parameters: splatParameters(funcDef.parameters),
+        stateMutability,
+        returnParameters: splatParameters(funcDef.returns?.variables),
+      });
 
-        break;
+      for (const { typeName } of funcDef.parameters.parameters.items.concat(
+        funcDef.returns?.variables.parameters.items ?? [],
+      )) {
+        const symbols = typeNameToSymbols(typeName);
+        symbolImports = symbolImports.concat(symbolsToImports(root, symbols, findInheritedSymbol, qualifiedSymbols));
+      }
+    } else if (match.captures["error"]) {
+      // Custom errors
+      const errorNode = match.captures.error?.[0].node;
+      assertNonterminalNode(errorNode);
+      const errorDef = new ErrorDefinition(errorNode);
+      const name = errorDef.name.unparse().trim();
+      errors.push({
+        name,
+        parameters: splatParameters(errorDef.members),
+      });
+
+      for (const { typeName } of errorDef.members.parameters.items) {
+        const symbols = typeNameToSymbols(typeName);
+        symbolImports = symbolImports.concat(symbolsToImports(root, symbols, findInheritedSymbol, qualifiedSymbols));
       }
     }
   }
