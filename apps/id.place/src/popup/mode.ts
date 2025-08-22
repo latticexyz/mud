@@ -329,11 +329,6 @@ export function mode(): Mode.Mode {
         return { id: userOpHash };
       },
 
-      async addFaucetFunds(parameters) {
-        console.log("popup.mode.addFaucetFunds", parameters);
-        await wait(1000);
-        throw new Provider.UnsupportedMethodError();
-      },
       async addFunds(parameters) {
         console.log("popup.mode.addFunds", parameters);
         await wait(1000);
