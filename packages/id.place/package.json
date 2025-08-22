@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "porto": "0.0.74"
+    "porto": "0.0.76"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
