@@ -177,6 +177,28 @@ library Mixed {
   }
 
   /**
+   * @notice Get a32 slice.
+   */
+  function getA32Slice(bytes32 key, uint256 startIndex, uint256 endIndex) internal view returns (uint32[] memory a32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 4 * startIndex, 4 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /**
+   * @notice Get a32 slice.
+   */
+  function _getA32Slice(bytes32 key, uint256 startIndex, uint256 endIndex) internal view returns (uint32[] memory a32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 4 * startIndex, 4 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /**
    * @notice Set a32.
    */
   function setA32(bytes32 key, uint32[] memory a32) internal {
