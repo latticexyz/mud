@@ -8,7 +8,7 @@ export function LatestBlock() {
     watch: true,
     chainId,
     query: {
-      refetchInterval: 1000,
+      refetchInterval: 2_000,
     },
   });
 
