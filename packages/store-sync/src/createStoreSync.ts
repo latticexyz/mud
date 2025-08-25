@@ -239,6 +239,7 @@ export async function createStoreSync({
     debug("creating block stream");
     return createBlockStream({ ...opts, blockTag: followBlockTag });
   }).pipe(
+    // TODO: detect network online and reset this
     retry({
       delay: (error, retryCount) => {
         const backoff = Math.min(4_000, 2 ** retryCount * 50);
