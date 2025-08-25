@@ -33,8 +33,9 @@ import {
   mergeWith,
   ignoreElements,
   switchMap,
-  Subject,
-  startWith,
+  ReplaySubject,
+  timer,
+  retry,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -233,20 +234,27 @@ export async function createStoreSync({
   );
 
   let latestBlockNumber: bigint | null = null;
-  const recreateLatestBlockStream$ = new Subject<void>();
-  const latestBlock$ = recreateLatestBlockStream$.pipe(
-    startWith(undefined),
-    switchMap(() =>
-      createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(
-        catchError((error) => {
-          debug("error in latestBlock$, recreating");
-          recreateLatestBlockStream$.next();
-          return throwError(() => error);
-        }),
-      ),
-    ),
-    shareReplay(1),
+
+  const latestBlock$ = defer(() => {
+    debug("creating block stream");
+    return createBlockStream({ ...opts, blockTag: followBlockTag });
+  }).pipe(
+    // TODO: detect network online and reset this
+    retry({
+      delay: (error, retryCount) => {
+        const backoff = Math.min(4_000, 2 ** retryCount * 50);
+        return timer(backoff);
+      },
+      resetOnSuccess: true,
+    }),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnError: true,
+      resetOnComplete: false,
+      resetOnRefCountZero: true,
+    }),
   );
+
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {

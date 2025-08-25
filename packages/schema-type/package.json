@@ -43,12 +43,12 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "abitype": "1.0.6"
+    "abitype": "1.0.9"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
-    "viem": "2.30.6"
+    "viem": "2.35.1"
   },
   "peerDependencies": {
     "viem": "2.x"

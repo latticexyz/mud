@@ -35,12 +35,12 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "porto": "0.0.60"
+    "porto": "0.0.76"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "viem": "2.30.6",
-    "wagmi": "2.15.5"
+    "viem": "2.35.1",
+    "wagmi": "2.16.5"
   },
   "peerDependencies": {
     "viem": "2.x",

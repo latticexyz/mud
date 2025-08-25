@@ -155,8 +155,8 @@ export function mode(): Mode.Mode {
           const publicKey = possiblePublicKeys.find((publicKey) =>
             encodedOwners.has(
               AbiParameters.encode(AbiParameters.from(["bytes32", "bytes32"]), [
-                Hex.fromNumber(publicKey.x),
-                Hex.fromNumber(publicKey.y),
+                Hex.fromNumber(publicKey.x, { size: 32 }),
+                Hex.fromNumber(publicKey.y, { size: 32 }),
               ]),
             ),
           );
@@ -336,6 +336,11 @@ export function mode(): Mode.Mode {
       },
       async getAccountVersion(parameters) {
         console.log("popup.mode.getAccountVersion", parameters);
+        await wait(1000);
+        throw new Provider.UnsupportedMethodError();
+      },
+      async getAssets(parameters) {
+        console.log("popup.mode.getAssets", parameters);
         await wait(1000);
         throw new Provider.UnsupportedMethodError();
       },
