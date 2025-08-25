@@ -13,7 +13,7 @@ export function serialize(obj: unknown): string {
 export function deserialize(blob: string): Record<string, unknown> {
   const obj = JSON.parse(blob);
 
-  // Check whether the value matches the mattern `bigint(${number}n)`
+  // Check whether the value matches the pattern `bigint(${number}n)`
   // (serialization of bigint in `serialize`)
   // and turn it back into a bigint
   const regex = /^bigint\((-?\d+)\)$/; // Regular expression pattern.
