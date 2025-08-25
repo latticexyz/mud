@@ -62,7 +62,7 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "abitype": "1.0.6",
+    "abitype": "1.0.9",
     "arktype": "2.0.0-beta.6",
     "debug": "^4.3.4"
   },
@@ -75,7 +75,7 @@
     "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
     "glob": "^10.4.2",
     "solhint": "^3.3.7",
-    "viem": "2.30.6"
+    "viem": "2.35.1"
   },
   "peerDependencies": {
     "viem": "2.x"

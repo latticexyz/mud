@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "viem": "2.30.6"
+    "viem": "2.35.1"
   },
   "peerDependencies": {
     "viem": "2.x"
