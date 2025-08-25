@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+- Updated dependencies [84b8926]
+- Updated dependencies [a7ce36b]
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [e76d725]
+- Updated dependencies [e9e21c9]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/store-sync@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world-module-metadata@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+  - @latticexyz/gas-report@2.2.23
+  - @latticexyz/world-module-callwithsignature@2.2.23
+  - @latticexyz/abi-ts@2.2.23
+  - @latticexyz/utils@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

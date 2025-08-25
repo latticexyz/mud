@@ -1,5 +1,41 @@
 # @latticexyz/stash
 
+## 2.2.23
+
+### Patch Changes
+
+- b84bcc6: Added experimental support for indices and derived tables to Stash.
+
+  Derived tables are synchronously updated based on changes to source tables, enabling computed or reorganized views of existing data.
+
+  Indices are a special case of derived tables that mirror another table with a different key.
+  They provide a more ergonomic API for this common pattern and are automatically considered in the `Matches` query fragment to optimize lookups on large tables.
+
+  Example:
+
+  ```ts
+  const stash = createStash();
+  const inputTable = defineTable({
+    label: "input",
+    schema: { field1: "uint32", field2: "address", field3: "string" },
+    key: ["field1"],
+  });
+  registerTable({ stash, table: inputTable });
+  const indexTable = registerIndex({ stash, table: inputTable, key: ["field2", "field3"] });
+  ```
+
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/common@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

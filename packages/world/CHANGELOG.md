@@ -1,5 +1,26 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- 94cac74: Correctly resolve remappings when going through the inheritance chain during worldgen.
+- a8c404b: Support expectRevert and unusual nameless arguments in system libraries.
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+- 122945e: Support using inherited symbols when generating System interfaces and libraries.
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/common@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
