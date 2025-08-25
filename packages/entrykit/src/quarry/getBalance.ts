@@ -9,7 +9,7 @@ export type GetBalanceParams = {
 };
 
 export async function getBalance({ client, userAddress }: GetBalanceParams) {
-  const paymaster = getPaymaster(client.chain);
+  const paymaster = getPaymaster(client.chain, undefined);
   if (paymaster?.type !== "quarry") return null;
 
   const record = await getRecord(client, {

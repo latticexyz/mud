@@ -23,18 +23,20 @@ export function createBundlerClient<
   if (!client) throw new Error("No `client` provided to `createBundlerClient`.");
 
   const chain = config.chain ?? client.chain;
-  const paymaster = chain ? getPaymaster(chain) : undefined;
+  const paymaster = chain ? getPaymaster(chain, config.paymaster) : undefined;
 
   // TODO: lift this out to make `createBundlerClient` configurable?
   return viem_createBundlerClient({
     ...defaultClientConfig,
     paymaster: paymaster
-      ? {
-          getPaymasterData: async () => ({
-            paymaster: paymaster.address,
-            paymasterData: "0x",
-          }),
-        }
+      ? paymaster.type === "custom"
+        ? paymaster.paymasterClient
+        : {
+            getPaymasterData: async () => ({
+              paymaster: paymaster.address,
+              paymasterData: "0x",
+            }),
+          }
       : undefined,
     userOperation: {
       estimateFeesPerGas: createFeeEstimator(client),
