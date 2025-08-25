@@ -71,7 +71,7 @@
     "@types/ejs": "^3.1.1",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
     "solhint": "^3.3.7",
-    "viem": "2.30.6"
+    "viem": "2.35.1"
   },
   "peerDependencies": {
     "viem": "2.x"
