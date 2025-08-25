@@ -72,7 +72,7 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
-    "abitype": "1.0.6",
+    "abitype": "1.0.9",
     "debug": "^4.3.4",
     "execa": "^9.5.2",
     "p-queue": "^7.4.1",

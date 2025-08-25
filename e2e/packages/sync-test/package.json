@@ -24,7 +24,7 @@
     "@latticexyz/world-module-callwithsignature": "link:../../../packages/world-module-callwithsignature",
     "@latticexyz/world-modules": "link:../../../packages/world-modules",
     "@viem/anvil": "^0.0.6",
-    "abitype": "1.0.6",
+    "abitype": "1.0.9",
     "chalk": "^5.2.0",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.28.5",

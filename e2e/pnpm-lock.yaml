@@ -157,8 +157,8 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       abitype:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
+        specifier: 1.0.9
+        version: 1.0.9(typescript@5.4.2)(zod@3.23.8)
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -615,8 +615,8 @@ packages:
   '@vitest/utils@0.34.6':
     resolution: {integrity: sha512-IG5aDD8S6zlvloDsnzHw0Ut5xczlF+kv2BOTo+iXfPr54Yhi5qbVOgGB1hZaVq4iJ4C/MZ2J0y15IlsV/ZcI0A==}
 
-  abitype@1.0.6:
-    resolution: {integrity: sha512-MMSqYh4+C/aVqI2RQaWqbvI4Kxo5cQV40WQ4QFtDnNzCkqChm8MuENhElmynZlO0qUy/ObkEUaXtKqYnx1Kp3A==}
+  abitype@1.0.8:
+    resolution: {integrity: sha512-ZeiI6h3GnW06uYDLx0etQtX/p8E24UaHHBj57RSjK7YBFe7iuVn07EDpOeP451D06sF27VOz9JJPlIKJmXgkEg==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
@@ -626,8 +626,8 @@ packages:
       zod:
         optional: true
 
-  abitype@1.0.8:
-    resolution: {integrity: sha512-ZeiI6h3GnW06uYDLx0etQtX/p8E24UaHHBj57RSjK7YBFe7iuVn07EDpOeP451D06sF27VOz9JJPlIKJmXgkEg==}
+  abitype@1.0.9:
+    resolution: {integrity: sha512-oN0S++TQmlwWuB+rkA6aiEefLv3SP+2l/tC5mux/TLj6qdA6rF15Vbpex4fHovLsMkwLwTIRj8/Q8vXCS3GfOg==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
@@ -1631,12 +1631,12 @@ snapshots:
       loupe: 2.3.6
       pretty-format: 29.7.0
 
-  abitype@1.0.6(typescript@5.4.2)(zod@3.23.8):
+  abitype@1.0.8(typescript@5.4.2)(zod@3.23.8):
     optionalDependencies:
       typescript: 5.4.2
       zod: 3.23.8
 
-  abitype@1.0.8(typescript@5.4.2)(zod@3.23.8):
+  abitype@1.0.9(typescript@5.4.2)(zod@3.23.8):
     optionalDependencies:
       typescript: 5.4.2
       zod: 3.23.8
@@ -1984,7 +1984,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.4.2)(zod@3.23.8)
+      abitype: 1.0.9(typescript@5.4.2)(zod@3.23.8)
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.4.2

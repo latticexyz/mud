@@ -43,7 +43,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "abitype": "1.0.6"
+    "abitype": "1.0.9"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",

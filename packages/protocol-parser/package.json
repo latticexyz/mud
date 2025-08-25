@@ -40,7 +40,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "1.0.6"
+    "abitype": "1.0.9"
   },
   "devDependencies": {
     "viem": "2.35.1"

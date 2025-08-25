@@ -54,7 +54,7 @@
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@latticexyz/world-module-metadata": "workspace:*",
-    "abitype": "1.0.6",
+    "abitype": "1.0.9",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
