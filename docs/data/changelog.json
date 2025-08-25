@@ -1,5 +1,383 @@
 [
   {
+    "version": "2.2.23",
+    "date": "2025-08-25T02:48:07.555Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAddress and name of verified worlds are now shown in the navigation tab.",
+          "type": 0,
+          "commitHash": "9c9d8eab9fea5aeaf8f3ed8b2f13bd35add462b9",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): show explored world title (#3751)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental support for indices and derived tables to Stash.\n\nDerived tables are synchronously updated based on changes to source tables, enabling computed or reorganized views of existing data.\n\nIndices are a special case of derived tables that mirror another table with a different key.\nThey provide a more ergonomic API for this common pattern and are automatically considered in the `Matches` query fragment to optimize lookups on large tables.\n\nExample:\n\n```ts\nconst stash = createStash();\nconst inputTable = defineTable({\n  label: \"input\",\n  schema: { field1: \"uint32\", field2: \"address\", field3: \"string\" },\n  key: [\"field1\"],\n});\nregisterTable({ stash, table: inputTable });\nconst indexTable = registerIndex({ stash, table: inputTable, key: [\"field2\", \"field3\"] });\n```",
+          "type": 0,
+          "commitHash": "b84bcc6141e8fecb564eaecfc6e60c764d91bf39",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(stash): add experimental support for indices and derived tables (#3787)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFees for Redstone, Pyrope and Garnet are now cached for 10 seconds instead of fetched before every user operation.",
+          "type": 0,
+          "commitHash": "7cd553a4588f2ddaeb4047393381cdd6ac91430f",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(entrykit): non-blocking fee estimation (#3784)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue where losing connection would get stuck in a retry loop.",
+          "type": 0,
+          "commitHash": "84b8926b9c97fd6d0807aa5b84326fe9a698f264",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(store-sync): block stream retry backoff (#3805)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getSystemAbis` will now include the ABIs of registered functions.",
+          "type": 0,
+          "commitHash": "a7ce36bd855c91c1a0e7a515c6ed7422ef59973d",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-sync): include registered system functions in ABI (#3776)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInput parameter names are now displayed alongside method names in the \"Interact\" page.",
+          "type": 0,
+          "commitHash": "ba07cf09273fba0a246eaf341cdb4eec5328f120",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "chore(explorer): input parameter names (#3785)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nCorrectly resolve remappings when going through the inheritance chain during worldgen.",
+          "type": 0,
+          "commitHash": "94cac741be24bb5743f2f36235cc3bb40012417a",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "fix(worldgen): correctly resolve remappings when going through the inheritance chain (#3791)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded experimental support for [id.place](https://id.place/) passkey-based wallets.",
+          "type": 0,
+          "commitHash": "63fb9640350ff7d87d226fa827ad53e1e79f77e9",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): id.place (#3781)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nABI in the \"Decode\" page can now be searched and filtered.",
+          "type": 0,
+          "commitHash": "e1c2958b99c9fe4c7189ab24938e0978ff85a75f",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): abi search and filter (#3773)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSupport expectRevert and unusual nameless arguments in system libraries.",
+          "type": 0,
+          "commitHash": "a8c404b4b10462f5f390a82f9e40ceb80bc5eb23",
+          "authorName": "dk1a",
+          "authorEmail": "dk1a@protonmail.com",
+          "title": "fix(world): support expectRevert and unusual nameless arguments in system libraries (#3680)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed calls to system view functions.",
+          "type": 0,
+          "commitHash": "c4447b1f597a2abb03b6fdb52e79d3fbdd05a948",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): read system functions (#3783)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated usage of `ws.on` to `ws.addEventListener` for browser compatibility.",
+          "type": 0,
+          "commitHash": "e76d72504e7ee51c76fa380bdc4a56f4815b7b59",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): update watchLogs websocket api (#3788)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInvalid registered system ABIs are now handled by displaying an empty ABI.",
+          "type": 0,
+          "commitHash": "e9e21c9f1f7d164af1b19f327d798ed2f2d0fd95",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): handle invalid system abis (#3786)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/id.place",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInitial release of experimental passkey-based wallet provider.",
+          "type": 0,
+          "commitHash": "63fb9640350ff7d87d226fa827ad53e1e79f77e9",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): id.place (#3781)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/block-logs-stream",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/config",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/dev-tools",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/faucet",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/id.place",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/protocol-parser",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/schema-type",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            },
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.",
+          "type": 0,
+          "commitHash": "cd0fa57c590233c5f099d6e469c46c6b51e2c46d",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "chore: bump viem, wagmi, abitype (#3804)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/gas-report",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/schema-type",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-callwithsignature",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-metadata",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-modules",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            },
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)",
+          "type": 0,
+          "commitHash": "b803eb1d495ce20f644a81c61473d0c33f9ecf54",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "chore: bump forge-std (#3344)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSupport using inherited symbols when generating System interfaces and libraries.",
+          "type": 0,
+          "commitHash": "122945eb02d5d8b6475aec2e88f72340ea81f2d6",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "feat(worldgen): support inherited symbols in worldgen (#3790)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBig integer values are now encoded correctly when calling functions from \"Interact\" page.",
+          "type": 0,
+          "commitHash": "c9a7e15b89f6e4486abcb46c3a75c213741816a4",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): encode big integer arguments (#3777)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.22",
     "date": "2025-06-26T17:30:23.341Z",
     "changes": {

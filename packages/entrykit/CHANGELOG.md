@@ -1,5 +1,27 @@
 # @latticexyz/entrykit
 
+## 2.2.23
+
+### Patch Changes
+
+- 7cd553a: Fees for Redstone, Pyrope and Garnet are now cached for 10 seconds instead of fetched before every user operation.
+- 63fb964: Added experimental support for [id.place](https://id.place/) passkey-based wallets.
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [63fb964]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/common@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/id.place@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/world-module-callwithsignature@2.2.23
+  - @latticexyz/paymaster@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

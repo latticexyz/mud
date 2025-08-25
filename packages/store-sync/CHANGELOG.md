@@ -1,5 +1,31 @@
 # @latticexyz/store-sync
 
+## 2.2.23
+
+### Patch Changes
+
+- 84b8926: Fixed an issue where losing connection would get stuck in a retry loop.
+- a7ce36b: `getSystemAbis` will now include the ABIs of registered functions.
+- e76d725: Updated usage of `ws.on` to `ws.addEventListener` for browser compatibility.
+- e9e21c9: Invalid registered system ABIs are now handled by displaying an empty ABI.
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- Updated dependencies [b84bcc6]
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/stash@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world-module-metadata@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+  - @latticexyz/recs@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
