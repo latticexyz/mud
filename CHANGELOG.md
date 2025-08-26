@@ -1,3 +1,101 @@
+## Version 2.2.23
+
+Release date: Mon Aug 25 2025
+
+### Patch changes
+
+**[feat(explorer): show explored world title (#3751)](https://github.com/latticexyz/mud/commit/9c9d8eab9fea5aeaf8f3ed8b2f13bd35add462b9)** (@latticexyz/explorer)
+
+Address and name of verified worlds are now shown in the navigation tab.
+
+**[feat(stash): add experimental support for indices and derived tables (#3787)](https://github.com/latticexyz/mud/commit/b84bcc6141e8fecb564eaecfc6e60c764d91bf39)** (@latticexyz/stash)
+
+Added experimental support for indices and derived tables to Stash.
+
+Derived tables are synchronously updated based on changes to source tables, enabling computed or reorganized views of existing data.
+
+Indices are a special case of derived tables that mirror another table with a different key.
+They provide a more ergonomic API for this common pattern and are automatically considered in the `Matches` query fragment to optimize lookups on large tables.
+
+Example:
+
+```ts
+const stash = createStash();
+const inputTable = defineTable({
+  label: "input",
+  schema: { field1: "uint32", field2: "address", field3: "string" },
+  key: ["field1"],
+});
+registerTable({ stash, table: inputTable });
+const indexTable = registerIndex({ stash, table: inputTable, key: ["field2", "field3"] });
+```
+
+**[feat(entrykit): non-blocking fee estimation (#3784)](https://github.com/latticexyz/mud/commit/7cd553a4588f2ddaeb4047393381cdd6ac91430f)** (@latticexyz/entrykit)
+
+Fees for Redstone, Pyrope and Garnet are now cached for 10 seconds instead of fetched before every user operation.
+
+**[fix(store-sync): block stream retry backoff (#3805)](https://github.com/latticexyz/mud/commit/84b8926b9c97fd6d0807aa5b84326fe9a698f264)** (@latticexyz/store-sync)
+
+Fixed an issue where losing connection would get stuck in a retry loop.
+
+**[feat(store-sync): include registered system functions in ABI (#3776)](https://github.com/latticexyz/mud/commit/a7ce36bd855c91c1a0e7a515c6ed7422ef59973d)** (@latticexyz/store-sync)
+
+`getSystemAbis` will now include the ABIs of registered functions.
+
+**[chore(explorer): input parameter names (#3785)](https://github.com/latticexyz/mud/commit/ba07cf09273fba0a246eaf341cdb4eec5328f120)** (@latticexyz/explorer)
+
+Input parameter names are now displayed alongside method names in the "Interact" page.
+
+**[fix(worldgen): correctly resolve remappings when going through the inheritance chain (#3791)](https://github.com/latticexyz/mud/commit/94cac741be24bb5743f2f36235cc3bb40012417a)** (@latticexyz/common, @latticexyz/world)
+
+Correctly resolve remappings when going through the inheritance chain during worldgen.
+
+**[feat(entrykit): id.place (#3781)](https://github.com/latticexyz/mud/commit/63fb9640350ff7d87d226fa827ad53e1e79f77e9)** (@latticexyz/entrykit)
+
+Added experimental support for [id.place](https://id.place/) passkey-based wallets.
+
+**[feat(explorer): abi search and filter (#3773)](https://github.com/latticexyz/mud/commit/e1c2958b99c9fe4c7189ab24938e0978ff85a75f)** (@latticexyz/explorer)
+
+ABI in the "Decode" page can now be searched and filtered.
+
+**[fix(world): support expectRevert and unusual nameless arguments in system libraries (#3680)](https://github.com/latticexyz/mud/commit/a8c404b4b10462f5f390a82f9e40ceb80bc5eb23)** (@latticexyz/store, @latticexyz/world-module-metadata, @latticexyz/world)
+
+Support expectRevert and unusual nameless arguments in system libraries.
+
+**[fix(explorer): read system functions (#3783)](https://github.com/latticexyz/mud/commit/c4447b1f597a2abb03b6fdb52e79d3fbdd05a948)** (@latticexyz/explorer)
+
+Fixed calls to system view functions.
+
+**[fix(store-sync): update watchLogs websocket api (#3788)](https://github.com/latticexyz/mud/commit/e76d72504e7ee51c76fa380bdc4a56f4815b7b59)** (@latticexyz/store-sync)
+
+Updated usage of `ws.on` to `ws.addEventListener` for browser compatibility.
+
+**[fix(explorer): handle invalid system abis (#3786)](https://github.com/latticexyz/mud/commit/e9e21c9f1f7d164af1b19f327d798ed2f2d0fd95)** (@latticexyz/store-sync)
+
+Invalid registered system ABIs are now handled by displaying an empty ABI.
+
+**[feat(entrykit): id.place (#3781)](https://github.com/latticexyz/mud/commit/63fb9640350ff7d87d226fa827ad53e1e79f77e9)** (@latticexyz/id.place)
+
+Initial release of experimental passkey-based wallet provider.
+
+**[chore: bump viem, wagmi, abitype (#3804)](https://github.com/latticexyz/mud/commit/cd0fa57c590233c5f099d6e469c46c6b51e2c46d)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/entrykit, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/id.place, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+
+**[chore: bump forge-std (#3344)](https://github.com/latticexyz/mud/commit/b803eb1d495ce20f644a81c61473d0c33f9ecf54)** (@latticexyz/cli, @latticexyz/gas-report, @latticexyz/schema-type, @latticexyz/store, @latticexyz/world-module-callwithsignature, @latticexyz/world-module-erc20, @latticexyz/world-module-metadata, @latticexyz/world-modules, @latticexyz/world, create-mud)
+
+Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+
+**[feat(worldgen): support inherited symbols in worldgen (#3790)](https://github.com/latticexyz/mud/commit/122945eb02d5d8b6475aec2e88f72340ea81f2d6)** (@latticexyz/common, @latticexyz/world)
+
+Support using inherited symbols when generating System interfaces and libraries.
+
+**[fix(explorer): encode big integer arguments (#3777)](https://github.com/latticexyz/mud/commit/c9a7e15b89f6e4486abcb46c3a75c213741816a4)** (@latticexyz/explorer)
+
+Big integer values are now encoded correctly when calling functions from "Interact" page.
+
+---
+
 ## Version 2.2.22
 
 Release date: Thu Jun 26 2025

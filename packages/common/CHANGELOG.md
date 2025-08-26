@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- 94cac74: Correctly resolve remappings when going through the inheritance chain during worldgen.
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- 122945e: Support using inherited symbols when generating System interfaces and libraries.
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes

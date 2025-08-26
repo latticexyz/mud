@@ -1,5 +1,19 @@
 # @latticexyz/world-module-callwithsignature
 
+## 2.2.23
+
+### Patch Changes
+
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
 ## 2.2.22
 
 ### Patch Changes
