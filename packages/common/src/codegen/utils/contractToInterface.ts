@@ -88,11 +88,18 @@ export function contractToInterface(
       let stateMutability = "";
       for (const item of funcDef.attributes.items) {
         const attribute = item.cst.unparse().trim();
-        if (attribute === "public" || attribute === "private" || attribute === "internal" || attribute === "external") {
-          visibility = attribute;
-        }
-        if (attribute === "view" || attribute === "pure" || attribute === "payable") {
-          stateMutability = attribute;
+        switch (attribute) {
+          case "public":
+          case "private":
+          case "internal":
+          case "external":
+            visibility = attribute;
+            break;
+          case "view":
+          case "pure":
+          case "payable":
+            stateMutability = attribute;
+            break;
         }
       }
       if (visibility === undefined) throw new MUDError(`Visibility is not specified for function '${name}'`);
