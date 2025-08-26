@@ -76,6 +76,17 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
     form.reset({ query });
   }, [query, form]);
 
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.addAction({
+        id: "executeSQL",
+        label: "Execute SQL command",
+        keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
+        run: () => handleSubmit(),
+      });
+    }
+  }, [handleSubmit]);
+
   const updateHeight = () => {
     if (editorRef.current) {
       const contentHeight = Math.min(200, editorRef.current.getContentHeight());
@@ -120,13 +131,6 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                       },
                     });
                     monaco.editor.setTheme("custom-vs-dark");
-
-                    editor.addAction({
-                      id: "executeSQL",
-                      label: "Execute SQL command",
-                      keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
-                      run: () => handleSubmit(),
-                    });
 
                     updateHeight();
                     editor.onDidContentSizeChange(updateHeight);
