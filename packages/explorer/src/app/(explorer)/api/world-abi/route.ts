@@ -9,7 +9,7 @@ import { supportedChainId, validateChainId } from "../../../../common";
 import { getClient } from "../utils/getClient";
 import { getIndexerUrl } from "../utils/getIndexerUrl";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 async function getParameters(chainId: supportedChainId, worldAddress: Address) {
   const client = await getClient(chainId);
