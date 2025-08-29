@@ -119,7 +119,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                   value={decodeURIComponent(field.value)}
                   options={monacoOptions}
                   language="sql"
-                  onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
+                  onChange={(value) => field.onChange(value ?? "")}
                   onMount={(editor, monaco) => {
                     editorRef.current = editor;
                     monaco.editor.defineTheme("custom-vs-dark", {
