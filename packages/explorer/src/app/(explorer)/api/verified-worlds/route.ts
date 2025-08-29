@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { Pool } from "pg";
 import { Address, getAddress } from "viem";
 
+export const revalidate = 0;
+
 export type VerifiedWorld = {
   address: Address;
   name: string;
