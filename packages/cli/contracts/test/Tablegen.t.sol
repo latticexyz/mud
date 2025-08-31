@@ -174,7 +174,7 @@ contract TablegenTest is Test, StoreMock {
     assertEq(Singleton.lengthV4, 1);
     assertEq(Singleton.getItemV4(0), 5);
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 4, 4));
-    assertEq(Singleton.getItemV4(1), 0);
+    Singleton.getItemV4(1);
   }
 
   function testOffchain() public {

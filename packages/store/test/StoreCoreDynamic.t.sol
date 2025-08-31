@@ -208,7 +208,6 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(length, thirdDataBytes.length);
   }
 
-  /// forge-config: default.allow_internal_expect_revert = true
   function testGetDynamicFieldSlice() public {
     ResourceId tableId = _tableId;
     bytes32[] memory keyTuple = _keyTuple;
@@ -234,10 +233,10 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     // Expect a revert if the end index is out of bounds
     uint256 length = secondDataBytes.length;
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
-    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, length + 1);
+    this.getDynamicFieldSlice(tableId, keyTuple, 0, 0, length + 1);
 
     // Expect a revert if the start index is out of bounds
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
-    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
+    this.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
   }
 }
