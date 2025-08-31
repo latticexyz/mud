@@ -1,4 +1,3 @@
-
 import nextra from "nextra";
 
 const withNextra = nextra({
@@ -308,6 +307,16 @@ export default withNextra({
       {
         source: "/services/indexer",
         destination: "/indexer",
+        permanent: false,
+      },
+      {
+        source: "/state-query/typescript/zustand",
+        destination: "/state-query/stash",
+        permanent: false,
+      },
+      {
+        source: "/state-query/typescript/recs",
+        destination: "/state-query/recs",
         permanent: false,
       },
     ];

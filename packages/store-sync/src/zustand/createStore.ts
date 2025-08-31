@@ -49,6 +49,7 @@ export type CreateStoreOptions<tables extends Tables> = {
   tables: tables;
 };
 
+/** @deprecated Zustand support is deprecated in favor of Stash, a more performant MUD state library. Use `createStash` instead. */
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => ({
     syncProgress: {
