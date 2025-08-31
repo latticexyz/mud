@@ -8,7 +8,7 @@ runs:
 
     - name: Install node dependencies
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --ignore-scripts --frozen-lockfile
 
     # Workaround for parallel building with forge:
     # https://github.com/foundry-rs/foundry/issues/4736
