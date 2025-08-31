@@ -55,8 +55,12 @@ export type ValueType<T = unknown> = {
 /**
  * Used to infer the TypeScript type of a component value corresponding to a given {@link Schema}.
  */
-export type ComponentValue<S extends Schema = Schema, T = unknown> = {
-  [key in keyof S]: ValueType<T>[S[key]];
+export type ComponentValue<S extends Schema, T = unknown> = {
+  readonly [K in keyof S]: T extends { readonly [key: string]: infer R }
+    ? R
+    : S[K] extends Array<infer U>
+    ? ReadonlyArray<U>
+    : S[K];
 };
 
 /**
