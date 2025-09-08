@@ -1,9 +1,12 @@
 import type { CommandModule, InferredOptionTypes } from "yargs";
-import { createClient, getAddress, http } from "viem";
+import { createClient, getAddress, http, isHex } from "viem";
 import chalk from "chalk";
 import { getChainId } from "viem/actions";
 import { defaultChains } from "../defaultChains";
 import { mirror } from "../mirror/mirror";
+import { MUDError } from "@latticexyz/common/errors";
+import { kmsKeyToAccount } from "@latticexyz/common/kms";
+import { privateKeyToAccount } from "viem/accounts";
 
 const options = {
   rpcBatch: {
@@ -18,6 +21,10 @@ const options = {
     type: "string",
     desc: "Source world address to mirror from.",
     required: true,
+  },
+  fromBlock: {
+    type: "number",
+    desc: "Block number of source world deploy.",
   },
   fromRpc: {
     type: "string",
@@ -55,11 +62,36 @@ const commandModule: CommandModule<Options, Options> = {
     });
     const fromChainId = await getChainId(fromClient);
     const fromIndexer = opts.fromIndexer ?? defaultChains.find((chain) => chain.id === fromChainId)?.indexerUrl;
+    if (!fromIndexer) {
+      throw new MUDError(`No \`--fromIndexer\` provided or indexer URL configured for chain ${fromChainId}.`);
+    }
+
+    const account = await (async () => {
+      if (opts.kms) {
+        const keyId = process.env.AWS_KMS_KEY_ID;
+        if (!keyId) {
+          throw new MUDError(
+            "Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option.",
+          );
+        }
+
+        return await kmsKeyToAccount({ keyId });
+      } else {
+        const privateKey = process.env.PRIVATE_KEY;
+        if (!isHex(privateKey)) {
+          throw new MUDError(
+            `Missing or invalid \`PRIVATE_KEY\` environment variable. To use the default Anvil private key, run\n\n  echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env\n`,
+          );
+        }
+        return privateKeyToAccount(privateKey);
+      }
+    })();
 
     const toClient = createClient({
       transport: http(opts.toRpc, {
         batch: opts.rpcBatch ? { batchSize: 100, wait: 1000 } : undefined,
       }),
+      account,
     });
     const toChainId = await getChainId(toClient);
 
@@ -71,11 +103,17 @@ const commandModule: CommandModule<Options, Options> = {
       ),
     );
 
-    // TODO: load up account from KMS or private key
-
     await mirror({
-      from: { world: fromWorld, client: fromClient, indexer: fromIndexer },
-      to: { client: toClient },
+      rootDir: process.cwd(),
+      from: {
+        world: fromWorld,
+        block: opts.fromBlock != null ? BigInt(opts.fromBlock) : undefined,
+        client: fromClient,
+        indexer: fromIndexer,
+      },
+      to: {
+        client: toClient,
+      },
     });
   },
 };

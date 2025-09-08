@@ -49,7 +49,7 @@ export async function getSnapshot({
           });
 
       if (logsFilters && logsFilters.length === 0) {
-        return undefined;
+        return;
       }
 
       return getSnapshotLogs({
