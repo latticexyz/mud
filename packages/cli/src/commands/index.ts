@@ -15,6 +15,7 @@ import trace from "./trace";
 import devContracts from "./dev-contracts";
 import verify from "./verify";
 import pull from "./pull";
+import mirror from "./mirror";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
@@ -32,4 +33,5 @@ export const commands: CommandModule<any, any>[] = [
   abiTs,
   verify,
   pull,
+  mirror,
 ];
