@@ -6,4 +6,12 @@ export default defineWorld({
     // generate into experimental dir until these are stable/audited
     systemLibrariesDirectory: "experimental/systems",
   },
+  systems: {
+    BatchStoreSystem: {
+      deploy: {
+        disabled: true,
+        registerWorldFunctions: false,
+      },
+    },
+  },
 });

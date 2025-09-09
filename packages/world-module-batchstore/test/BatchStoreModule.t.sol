@@ -40,10 +40,10 @@ contract BatchStoreModuleTest is Test, GasReporter {
     keys[0] = NamespaceOwner.encodeKeyTuple(WorldResourceIdLib.encodeNamespace(""));
 
     startGasReport("get table records");
-    world.getTableRecords(NamespaceOwner._tableId, keys);
+    batchStoreSystem.getTableRecords(NamespaceOwner._tableId, keys);
     endGasReport();
 
-    TableRecord[] memory records = world.getTableRecords(NamespaceOwner._tableId, keys);
+    TableRecord[] memory records = batchStoreSystem.getTableRecords(NamespaceOwner._tableId, keys);
     assertEq(records.length, 1);
     assertEq(records[0].keyTuple, keys[0]);
 
@@ -73,7 +73,7 @@ contract BatchStoreModuleTest is Test, GasReporter {
     });
 
     startGasReport("set table records");
-    world.setTableRecords(NamespaceOwner._tableId, records);
+    batchStoreSystem.setTableRecords(NamespaceOwner._tableId, records);
     endGasReport();
 
     assertEq(NamespaceOwner.get(namespace), address(this));
@@ -91,7 +91,7 @@ contract BatchStoreModuleTest is Test, GasReporter {
     keys[0] = NamespaceOwner.encodeKeyTuple(namespace);
 
     startGasReport("delete table records");
-    world.deleteTableRecords(NamespaceOwner._tableId, keys);
+    batchStoreSystem.deleteTableRecords(NamespaceOwner._tableId, keys);
     endGasReport();
 
     assertEq(NamespaceOwner.get(namespace), address(0));

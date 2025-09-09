@@ -17,26 +17,8 @@ contract BatchStoreModule is Module {
   function installRoot(bytes memory encodedArgs) public override {
     ResourceId systemId = batchStoreSystem.toResourceId();
 
-    if (!ResourceIds.getExists(systemId)) {
-      worldRegistrationSystem.callAsRoot().registerSystem(systemId, systemAddress, true);
-      // TODO: since this is a scary/internal and use-with-caution module/system, should we not register function selectors?
-      worldRegistrationSystem.callAsRoot().registerRootFunctionSelector(
-        systemId,
-        "getTableRecords(bytes32,bytes32[][])",
-        "getTableRecords(bytes32,bytes32[][])"
-      );
-      worldRegistrationSystem.callAsRoot().registerRootFunctionSelector(
-        systemId,
-        "setTableRecords(bytes32,(bytes32[],bytes,bytes32,bytes)[])",
-        "setTableRecords(bytes32,(bytes32[],bytes,bytes32,bytes)[])"
-      );
-      worldRegistrationSystem.callAsRoot().registerRootFunctionSelector(
-        systemId,
-        "deleteTableRecords(bytes32,bytes32[][])",
-        "deleteTableRecords(bytes32,bytes32[][])"
-      );
-    } else if (batchStoreSystem.getAddress() != address(systemAddress)) {
-      // upgrade system
+    if (batchStoreSystem.getAddress() != address(systemAddress)) {
+      // install or upgrade system
       worldRegistrationSystem.callAsRoot().registerSystem(systemId, systemAddress, true);
     }
   }
