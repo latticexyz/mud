@@ -2,5 +2,5 @@ import { chainIdToName, supportedChainId, supportedChains } from "../../../../co
 
 export function getIndexerUrl(chainId: supportedChainId) {
   const chain = supportedChains[chainIdToName[chainId]];
-  return "indexerUrl" in chain ? chain.indexerUrl : undefined;
+  return process.env.INDEXER_URL ? process.env.INDEXER_URL : "indexerUrl" in chain ? chain.indexerUrl : undefined;
 }

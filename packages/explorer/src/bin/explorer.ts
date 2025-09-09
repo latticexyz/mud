@@ -24,11 +24,16 @@ const argv = yargs(process.argv.slice(2))
       type: "number",
       default: process.env.PORT || 13690,
     },
-    indexerPort: {
+    devIndexerPort: {
       alias: "pi",
-      description: "Port number for the indexer",
+      description: "Port number for the development indexer",
       type: "number",
-      default: process.env.INDEXER_PORT || 3001,
+      default: process.env.DEV_INDEXER_PORT || 3001,
+    },
+    indexerUrl: {
+      alias: "iu",
+      description: "The indexer URL to use. Defaults to the one from the chain config",
+      type: "string",
     },
     hostname: {
       alias: "H",
@@ -60,7 +65,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, indexerPort, hostname, chainId, indexerDatabase, dev } = argv;
+const { port, devIndexerPort, indexerUrl, hostname, chainId, indexerDatabase, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let explorerProcess: ChildProcess;
@@ -70,7 +75,8 @@ async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
-    INDEXER_PORT: indexerPort.toString(),
+    DEV_INDEXER_PORT: devIndexerPort.toString(),
+    INDEXER_URL: indexerUrl,
   };
 
   if (dev) {
@@ -115,7 +121,7 @@ async function startStoreIndexer() {
       ENABLE_UNSAFE_QUERY_API: "true",
       SQLITE_FILENAME: indexerDatabase,
       ...process.env,
-      PORT: indexerPort.toString(),
+      PORT: devIndexerPort.toString(),
     },
   });
 }

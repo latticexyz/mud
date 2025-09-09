@@ -7,12 +7,11 @@ export function useIndexerForChainId(chainId: number) {
   validateChainId(chainId);
 
   const env = useEnv();
-  const indexerPort = env.INDEXER_PORT;
 
   if (chainId === anvil.id) {
     return {
       type: "sqlite" as const,
-      url: new URL("/q", `http://localhost:${indexerPort}`).toString(),
+      url: new URL("/q", `http://localhost:${env.DEV_INDEXER_PORT}`).toString(),
     };
   }
 
@@ -21,6 +20,6 @@ export function useIndexerForChainId(chainId: number) {
 
   return {
     type: "hosted" as const,
-    url: new URL("/q", chain.indexerUrl).toString(),
+    url: new URL("/q", env.INDEXER_URL ? env.INDEXER_URL : chain.indexerUrl).toString(),
   };
 }
