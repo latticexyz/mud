@@ -1,6 +1,6 @@
-import { Account, Address, Chain, Client, Transport, getAddress, isAddress, isHex, size, withCache } from "viem";
+import { Address, Client } from "viem";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { getChainId, getCode } from "viem/actions";
+import { getChainId } from "viem/actions";
 import { getTables } from "../deploy/getTables";
 import { resourceToLabel } from "@latticexyz/common";
 import { getRecordsAsLogs } from "@latticexyz/store-sync";
@@ -11,7 +11,6 @@ import { createJsonArrayWriter } from "./createJsonArrayWriter";
 import { mkdir, rm } from "fs/promises";
 import { mirrorPlansDirectory } from "./common";
 import { getSystems } from "../deploy/getSystems";
-import { execa } from "execa";
 import { getDeployedBytecode } from "./getDeployedBytecode";
 
 // TODO: attempt to create world the same way as it was originally created, thus preserving world address
@@ -31,7 +30,7 @@ export async function createMirrorPlan({
 }) {
   const fromChainId = await getChainId(from.client);
 
-  const planFilename = path.join(rootDir, mirrorPlansDirectory, `${fromChainId}_${getAddress(from.world)}`);
+  const planFilename = path.join(rootDir, mirrorPlansDirectory, `${fromChainId}_${from.world.toLowerCase()}`);
   await mkdir(path.dirname(planFilename), { recursive: true });
 
   const plan = createJsonArrayWriter(planFilename);
@@ -91,11 +90,11 @@ export async function createMirrorPlan({
       await makePlan;
     } finally {
       console.log("writing plan to disk");
-      plan.end();
+      await plan.end();
     }
     return planFilename;
   } catch (error) {
-    await rm(planFilename);
+    await rm(planFilename, { force: true });
     throw error;
   }
 }

@@ -1,5 +1,5 @@
 import { Address, Client, Hex, isAddress, keccak256, withCache } from "viem";
-import { getCode } from "viem/actions";
+import { getCode, getProof } from "viem/actions";
 import { execa } from "execa";
 
 export type DeployedBytecode = {
@@ -10,6 +10,8 @@ export type DeployedBytecode = {
     reference: DeployedBytecode;
   }[];
 };
+
+const emptyTrieRoot = "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421";
 
 export async function getDeployedBytecode({ client, address }: { client: Client; address: Address }) {
   const code = await withCache(() => getCode(client, { address }), {
@@ -27,16 +29,25 @@ export async function getDeployedBytecode({ client, address }: { client: Client;
   for (const match of matches) {
     // address bytecode offset after opcode
     const offset = parseInt(match[1], 16) + 1;
-    const address = match[2];
-    if (!isAddress(address, { strict: false })) {
-      throw new Error(`Found PUSH20 with invalid address: ${address}`);
+    const value = match[2];
+    if (!isAddress(value, { strict: false })) {
+      throw new Error(`Found PUSH20 with invalid address: ${value}`);
     }
     // check if PUSH20 is followed by a DELEGATECALL within a reasonable number of opcodes
     // otherwise it's probably not a public library
-    if (!new RegExp(`PUSH20 ${address}\n(\N+\n){0,24}DELEGATECALL`).test(stdout)) {
+    if (!new RegExp(`PUSH20 ${value}\n([^\n]+\n){0,24}[0-9a-f]+: DELEGATECALL`).test(stdout)) {
       continue;
     }
-    const reference = await getDeployedBytecode({ client, address });
+
+    const { storageHash } = await withCache(() => getProof(client, { address: value, storageKeys: [] }), {
+      cacheKey: `getProof:${client.uid}:${address.toLowerCase()}`,
+    });
+    // if contract storage is used, it's probably not a public library
+    if (storageHash !== emptyTrieRoot) {
+      continue;
+    }
+
+    const reference = await getDeployedBytecode({ client, address: value });
     if (!reference) continue;
 
     libraries.push({ offset, reference });
