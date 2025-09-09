@@ -56,6 +56,7 @@ export async function mirror({
     chainId: fromChainId,
   });
 
+  let count = 0;
   for (const table of tables) {
     const logs = await pRetry(() =>
       getRecordsAsLogs<Table>({
@@ -70,7 +71,9 @@ export async function mirror({
     for (const log of logs) {
       plan.add("setRecord", log.args);
     }
+    count += logs.length;
   }
+  console.log("got", count, "total records");
 
   await plan.end();
 }
