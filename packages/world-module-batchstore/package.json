@@ -1,0 +1,58 @@
+{
+  "name": "@latticexyz/world-module-batchstore",
+  "version": "2.2.23",
+  "description": "BatchStore world module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/world-module-batchstore"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./mud.config": "./dist/mud.config.js",
+    "./out/*": "./out/*"
+  },
+  "typesVersions": {
+    "*": {
+      "mud.config": [
+        "./dist/mud.config.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "out",
+    "src"
+  ],
+  "scripts": {
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
+    "build:abi": "forge build",
+    "build:abi-ts": "abi-ts",
+    "build:js": "tsup",
+    "build:mud": "tsx ./ts/build.ts",
+    "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
+    "clean:abi": "forge clean",
+    "clean:js": "shx rm -rf dist",
+    "clean:mud": "shx rm -rf src/**/codegen",
+    "dev": "tsup --watch",
+    "gas-report": "gas-report --save gas-report.json",
+    "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
+    "test": "tsc --noEmit && forge test",
+    "test:ci": "pnpm run test"
+  },
+  "dependencies": {
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/world": "workspace:*"
+  },
+  "devDependencies": {
+    "@latticexyz/abi-ts": "workspace:*",
+    "@latticexyz/gas-report": "workspace:*",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
+    "solhint": "^3.3.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
