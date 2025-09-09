@@ -233,6 +233,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@latticexyz/world-module-batchstore':
+        specifier: workspace:*
+        version: link:../world-module-batchstore
       '@latticexyz/world-module-callwithsignature':
         specifier: workspace:*
         version: link:../world-module-callwithsignature
