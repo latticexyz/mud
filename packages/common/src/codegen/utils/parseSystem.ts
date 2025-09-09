@@ -3,6 +3,7 @@ import { findSymbolImport } from "./findSymbolImport";
 import { Parser } from "@nomicfoundation/slang/parser";
 import { assertNonterminalNode, Query } from "@nomicfoundation/slang/cst";
 import { ContractDefinition } from "@nomicfoundation/slang/ast";
+import { LanguageFacts } from "@nomicfoundation/slang/utils";
 
 const baseSystemName = "System";
 const baseSystemPath = "@latticexyz/world/src/System.sol";
@@ -11,7 +12,8 @@ export function parseSystem(
   source: string,
   contractName: string,
 ): undefined | { contractType: "contract" | "abstract" } {
-  const parser = Parser.create("0.8.24");
+  const version = LanguageFacts.inferLanguageVersions(source).at(-1);
+  const parser = Parser.create(version);
   const root = parser.parseFileContents(source).createTreeCursor();
 
   const contractCursor = findContractOrInterfaceNode(root, contractName);

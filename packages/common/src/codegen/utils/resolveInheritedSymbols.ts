@@ -7,6 +7,7 @@ import { resolveRemapping } from "./resolveRemapping";
 import { Parser } from "@nomicfoundation/slang/parser";
 import { assertNonterminalNode, Cursor, Query } from "@nomicfoundation/slang/cst";
 import { ContractDefinition, InterfaceDefinition } from "@nomicfoundation/slang/ast";
+import { LanguageFacts } from "@nomicfoundation/slang/utils";
 
 interface InheritanceInfo {
   baseContracts: string[];
@@ -43,7 +44,8 @@ export async function createInheritanceResolver(
       const source = await readFile(filePath, "utf8");
 
       // Try to parse the source
-      const parser = Parser.create("0.8.24");
+      const version = LanguageFacts.inferLanguageVersions(source).at(-1);
+      const parser = Parser.create(version);
       const parserResult = parser.parseFileContents(source);
       if (!parserResult.isValid()) {
         const errorMessage = parserResult

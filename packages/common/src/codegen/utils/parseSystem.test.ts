@@ -14,7 +14,7 @@ describe("parseSystem", () => {
     expect(parseSystem("abstract contract TestSystem {}", "TestSystem")).toStrictEqual({ contractType: "abstract" });
   });
 
-  it("returns undefined for interaces", () => {
+  it("returns undefined for interfaces", () => {
     expect(parseSystem("interface TestSystem {}", "TestSystem")).toBeUndefined();
   });
 

@@ -13,6 +13,7 @@ import {
   ParametersDeclaration,
   TypeName,
 } from "@nomicfoundation/slang/ast";
+import { LanguageFacts } from "@nomicfoundation/slang/utils";
 
 export interface ContractInterfaceFunction {
   name: string;
@@ -49,7 +50,8 @@ export function contractToInterface(
   symbolImports: SymbolImport[];
   qualifiedSymbols: Map<string, QualifiedSymbol>;
 } {
-  const parser = Parser.create("0.8.24");
+  const version = LanguageFacts.inferLanguageVersions(source).at(-1);
+  const parser = Parser.create(version);
   const parserResult = parser.parseFileContents(source);
   if (!parserResult.isValid()) {
     const errorMessage = parserResult
