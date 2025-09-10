@@ -7,7 +7,7 @@ import { getRecordsAsLogs } from "@latticexyz/store-sync";
 import pRetry from "p-retry";
 import { Table } from "@latticexyz/config";
 import path from "path";
-import { createJsonArrayWriter } from "./createJsonArrayWriter";
+import { createPlanWriter } from "./createPlanWriter";
 import { mkdir, rm } from "fs/promises";
 import { mirrorPlansDirectory } from "./common";
 import { getSystems } from "../deploy/getSystems";
@@ -30,13 +30,13 @@ export async function createMirrorPlan({
 }) {
   const fromChainId = await getChainId(from.client);
 
-  const planFilename = path.join(rootDir, mirrorPlansDirectory, `${fromChainId}_${from.world.toLowerCase()}`);
+  const planFilename = path.join(rootDir, mirrorPlansDirectory, `${fromChainId}_${from.world.toLowerCase()}.ndjson.gz`);
   await mkdir(path.dirname(planFilename), { recursive: true });
 
-  const plan = createJsonArrayWriter(planFilename);
+  const plan = createPlanWriter(planFilename);
 
   const makePlan = (async () => {
-    plan.push({ step: "mirror", chainId: fromChainId, world: from.world });
+    plan.write({ step: "mirror", chainId: fromChainId, worldAddress: from.world });
 
     const worldDeploy = await getWorldDeploy(from.client, from.world, from.block);
     console.log("getting systems");
@@ -55,7 +55,8 @@ export async function createMirrorPlan({
       }),
     );
     for (const { system, bytecode } of systemsWithBytecode) {
-      plan.push({ type: "deploySystem", system, bytecode });
+      if (!bytecode) continue;
+      plan.write({ step: "deploySystem", system, bytecode });
     }
 
     const tables = await getTables({
@@ -65,7 +66,10 @@ export async function createMirrorPlan({
       chainId: fromChainId,
     });
 
+    // TODO: sort tables so that the insert order is correct (e.g. namespaces first)
+
     let count = 0;
+    plan.write({ step: "start:setRecords" });
     for (const table of tables) {
       const logs = await pRetry(() =>
         getRecordsAsLogs<Table>({
@@ -78,18 +82,19 @@ export async function createMirrorPlan({
       );
       console.log("got", logs.length, "logs for", resourceToLabel(table));
       for (const log of logs) {
-        plan.push({ step: "setRecord", record: log.args });
+        plan.write({ step: "setRecord", record: log.args });
       }
       count += logs.length;
     }
-    console.log("got", count, "total records");
+    plan.write({ step: "end:setRecords" });
+    console.log("got", count, "total record logs");
   })();
 
   try {
     try {
       await makePlan;
     } finally {
-      console.log("writing plan to disk");
+      console.log("writing plan to", path.relative(rootDir, planFilename));
       await plan.end();
     }
     return planFilename;

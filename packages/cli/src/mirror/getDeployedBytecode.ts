@@ -1,15 +1,7 @@
-import { Address, Client, Hex, isAddress, keccak256, withCache } from "viem";
+import { Address, Client, isAddress, keccak256, withCache } from "viem";
 import { getCode, getProof } from "viem/actions";
 import { execa } from "execa";
-
-export type DeployedBytecode = {
-  address: Address;
-  code: Hex;
-  libraries: {
-    offset: number;
-    reference: DeployedBytecode;
-  }[];
-};
+import { DeployedBytecode } from "./common";
 
 const emptyTrieRoot = "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421";
 
