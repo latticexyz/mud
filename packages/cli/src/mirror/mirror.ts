@@ -13,13 +13,14 @@ export async function mirror({
 }: {
   rootDir: string;
   from: {
-    block?: bigint;
-    world: Address;
     client: Client;
     indexer: string;
+    world: Address;
+    block?: bigint;
   };
   to: {
     client: Client<Transport, Chain | undefined, Account>;
+    world: Address;
   };
 }) {
   // TODO: check for world balance, warn

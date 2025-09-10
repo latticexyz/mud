@@ -19,7 +19,7 @@ const options = {
   },
   fromWorld: {
     type: "string",
-    desc: "Source world address to mirror from.",
+    desc: "Source world address to mirror data from.",
     required: true,
   },
   fromBlock: {
@@ -34,6 +34,11 @@ const options = {
   fromIndexer: {
     type: "string",
     desc: "MUD indexer URL of source chain to mirror from.",
+  },
+  toWorld: {
+    type: "string",
+    desc: "Target world address to mirror data to.",
+    required: true,
   },
   toRpc: {
     type: "string",
@@ -80,6 +85,7 @@ const commandModule: CommandModule<Options, Options> = {
         const privateKey = process.env.PRIVATE_KEY;
         if (!isHex(privateKey)) {
           throw new MUDError(
+            // eslint-disable-next-line max-len
             `Missing or invalid \`PRIVATE_KEY\` environment variable. To use the default Anvil private key, run\n\n  echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env\n`,
           );
         }
@@ -87,6 +93,7 @@ const commandModule: CommandModule<Options, Options> = {
       }
     })();
 
+    const toWorld = getAddress(opts.toWorld);
     const toClient = createClient({
       transport: http(opts.toRpc, {
         batch: opts.rpcBatch ? { batchSize: 100, wait: 1000 } : undefined,
@@ -97,22 +104,25 @@ const commandModule: CommandModule<Options, Options> = {
 
     console.log(
       chalk.bgBlue(
-        chalk.whiteBright(
-          `\n Mirroring MUD world at ${opts.fromWorld} from chain ${fromChainId} to chain ${toChainId} \n`,
-        ),
+        chalk.whiteBright(`
+ Mirroring MUD data 
+   from world at ${fromWorld} on chain ${fromChainId} 
+   to world at ${toWorld} on chain ${toChainId} 
+`),
       ),
     );
 
     await mirror({
       rootDir: process.cwd(),
       from: {
-        world: fromWorld,
-        block: opts.fromBlock != null ? BigInt(opts.fromBlock) : undefined,
         client: fromClient,
         indexer: fromIndexer,
+        world: fromWorld,
+        block: opts.fromBlock != null ? BigInt(opts.fromBlock) : undefined,
       },
       to: {
         client: toClient,
+        world: toWorld,
       },
     });
   },

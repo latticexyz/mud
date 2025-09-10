@@ -1,33 +1,22 @@
-import { Account, Chain, Client, Transport } from "viem";
+import { Account, Address, Chain, Client, Transport } from "viem";
 import { readPlan } from "./readPlan";
-import { ensureDeployer } from "@latticexyz/common/internal";
-import { randomBytes } from "node:crypto";
-import { deployWorld } from "../deploy/deployWorld";
 import { hexToResource, resourceToLabel, writeContract } from "@latticexyz/common";
 import { StoreLog } from "@latticexyz/store";
 import { encodeSystemCall, worldCallAbi } from "@latticexyz/world/internal";
 import batchStoreConfig from "@latticexyz/world-module-batchstore/mud.config";
 import { groupBy } from "@latticexyz/common/utils";
 import { waitForTransactionReceipt } from "viem/actions";
-
-// TODO: attempt to copy over previous world bytecode (might be difficult with proxy?)
-// TODO: attempt to redeploy with same deployer/salt?
+import { getWorldDeploy } from "../deploy/getWorldDeploy";
 
 export async function executeMirrorPlan({
   planFilename,
-  to: { client },
+  to: { client, world: worldAddress },
 }: {
   planFilename: string;
-  to: { client: Client<Transport, Chain | undefined, Account> };
+  to: { client: Client<Transport, Chain | undefined, Account>; world: Address };
 }) {
-  // TODO: configurable deployer address
-  const deployerAddress = await ensureDeployer(client);
-  // TODO: support custom world?
-  // TODO: configurable salt
-  // TODO: configurable upgradeable world (currently defaulting to true)
-  console.log("deploying world from", client.account.address, "via deployer at", deployerAddress);
-  const worldDeploy = await deployWorld(client, deployerAddress, `0x${randomBytes(32).toString("hex")}`, true);
-  console.log("deployed world at", worldDeploy.address);
+  const worldDeploy = await getWorldDeploy(client, worldAddress);
+  console.log("found world deploy at", worldDeploy.address);
 
   const recordBatcher = createBatcher<Extract<StoreLog, { eventName: "Store_SetRecord" }>["args"]>({
     // TODO: custom onBatch function rather than batchSize to trigger on table IDs

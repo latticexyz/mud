@@ -17,7 +17,7 @@ const callWithSignatureModuleArtifact = getContractArtifact(callWithSignatureMod
 const batchStoreModuleArtifact = getContractArtifact(batchStoreModule);
 
 // metadata module is installed inside `ensureResourceTags`
-const defaultModules: Module[] = [
+export const defaultModules: Module[] = [
   {
     // optional for now
     // TODO: figure out approach to install on existing worlds where deployer may not own root namespace
