@@ -13,7 +13,7 @@ export function parseSystem(
   contractName: string,
 ): undefined | { contractType: "contract" | "abstract" } {
   const version = LanguageFacts.inferLanguageVersions(source).at(-1);
-  const parser = Parser.create(version);
+  const parser = Parser.create(version ?? LanguageFacts.latestVersion());
   const root = parser.parseFileContents(source).createTreeCursor();
 
   const contractCursor = findContractOrInterfaceNode(root, contractName);

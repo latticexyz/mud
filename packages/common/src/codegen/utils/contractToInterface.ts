@@ -51,7 +51,7 @@ export function contractToInterface(
   qualifiedSymbols: Map<string, QualifiedSymbol>;
 } {
   const version = LanguageFacts.inferLanguageVersions(source).at(-1);
-  const parser = Parser.create(version);
+  const parser = Parser.create(version ?? LanguageFacts.latestVersion());
   const parserResult = parser.parseFileContents(source);
   if (!parserResult.isValid()) {
     const errorMessage = parserResult

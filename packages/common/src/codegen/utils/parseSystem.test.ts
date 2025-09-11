@@ -25,4 +25,10 @@ contract Test is System {}
 `;
     expect(parseSystem(source, "Test")).toStrictEqual({ contractType: "contract" });
   });
+
+  it("handles unsupported version in pragma directive", () => {
+    expect(parseSystem("pragma solidity 0.7.99;\ncontract TestSystem {}", "TestSystem")).toStrictEqual({
+      contractType: "contract",
+    });
+  });
 });
