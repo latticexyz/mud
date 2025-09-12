@@ -31,6 +31,7 @@ export async function createMirrorPlan({
   const fromChainId = await getChainId(from.client);
 
   const planFilename = path.join(rootDir, mirrorPlansDirectory, `${fromChainId}_${from.world.toLowerCase()}.ndjson.gz`);
+  return planFilename;
   await mkdir(path.dirname(planFilename), { recursive: true });
 
   const plan = createPlanWriter(planFilename);

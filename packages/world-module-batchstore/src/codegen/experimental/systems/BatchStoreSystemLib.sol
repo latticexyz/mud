@@ -54,6 +54,14 @@ library BatchStoreSystemLib {
     return CallWrapper(self.toResourceId(), address(0)).deleteTableRecords(tableId, keyTuples);
   }
 
+  function _setTableRecords(BatchStoreSystemType self, ResourceId tableId, TableRecord[] memory records) internal {
+    return CallWrapper(self.toResourceId(), address(0))._setTableRecords(tableId, records);
+  }
+
+  function _deleteTableRecords(BatchStoreSystemType self, ResourceId tableId, bytes32[][] memory keyTuples) internal {
+    return CallWrapper(self.toResourceId(), address(0))._deleteTableRecords(tableId, keyTuples);
+  }
+
   function getTableRecords(
     CallWrapper memory self,
     ResourceId tableId,
@@ -105,6 +113,32 @@ library BatchStoreSystemLib {
       : _world().callFrom(self.from, self.systemId, systemCall);
   }
 
+  function _setTableRecords(CallWrapper memory self, ResourceId tableId, TableRecord[] memory records) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert BatchStoreSystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(
+      __setTableRecords_ResourceId_TableRecordArray._setTableRecords,
+      (tableId, records)
+    );
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
+  function _deleteTableRecords(CallWrapper memory self, ResourceId tableId, bytes32[][] memory keyTuples) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert BatchStoreSystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(
+      __deleteTableRecords_ResourceId_bytes32ArrayArray._deleteTableRecords,
+      (tableId, keyTuples)
+    );
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
   function setTableRecords(RootCallWrapper memory self, ResourceId tableId, TableRecord[] memory records) internal {
     bytes memory systemCall = abi.encodeCall(
       _setTableRecords_ResourceId_TableRecordArray.setTableRecords,
@@ -116,6 +150,22 @@ library BatchStoreSystemLib {
   function deleteTableRecords(RootCallWrapper memory self, ResourceId tableId, bytes32[][] memory keyTuples) internal {
     bytes memory systemCall = abi.encodeCall(
       _deleteTableRecords_ResourceId_bytes32ArrayArray.deleteTableRecords,
+      (tableId, keyTuples)
+    );
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function _setTableRecords(RootCallWrapper memory self, ResourceId tableId, TableRecord[] memory records) internal {
+    bytes memory systemCall = abi.encodeCall(
+      __setTableRecords_ResourceId_TableRecordArray._setTableRecords,
+      (tableId, records)
+    );
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function _deleteTableRecords(RootCallWrapper memory self, ResourceId tableId, bytes32[][] memory keyTuples) internal {
+    bytes memory systemCall = abi.encodeCall(
+      __deleteTableRecords_ResourceId_bytes32ArrayArray._deleteTableRecords,
       (tableId, keyTuples)
     );
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
@@ -169,6 +219,14 @@ interface _setTableRecords_ResourceId_TableRecordArray {
 
 interface _deleteTableRecords_ResourceId_bytes32ArrayArray {
   function deleteTableRecords(ResourceId tableId, bytes32[][] memory keyTuples) external;
+}
+
+interface __setTableRecords_ResourceId_TableRecordArray {
+  function _setTableRecords(ResourceId tableId, TableRecord[] memory records) external;
+}
+
+interface __deleteTableRecords_ResourceId_bytes32ArrayArray {
+  function _deleteTableRecords(ResourceId tableId, bytes32[][] memory keyTuples) external;
 }
 
 using BatchStoreSystemLib for BatchStoreSystemType global;

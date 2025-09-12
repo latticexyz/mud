@@ -96,4 +96,46 @@ contract BatchStoreModuleTest is Test, GasReporter {
 
     assertEq(NamespaceOwner.get(namespace), address(0));
   }
+
+  function testRootSetTableRecords() public {
+    world.installRootModule(batchStoreModule, new bytes(0));
+
+    ResourceId namespace = WorldResourceIdLib.encodeNamespace("example");
+    assertEq(NamespaceOwner.get(namespace), address(0));
+
+    TableRecord[] memory records = new TableRecord[](1);
+    (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = NamespaceOwner.encode(
+      address(this)
+    );
+    records[0] = TableRecord({
+      keyTuple: NamespaceOwner.encodeKeyTuple(WorldResourceIdLib.encodeNamespace("example")),
+      staticData: staticData,
+      encodedLengths: encodedLengths,
+      dynamicData: dynamicData
+    });
+
+    startGasReport("set table records");
+    batchStoreSystem._setTableRecords(NamespaceOwner._tableId, records);
+    endGasReport();
+
+    assertEq(NamespaceOwner.get(namespace), address(this));
+  }
+
+  function testRootDeleteTableRecords() public {
+    world.installRootModule(batchStoreModule, new bytes(0));
+
+    ResourceId namespace = WorldResourceIdLib.encodeNamespace("example");
+    NamespaceOwner.set(namespace, address(this));
+
+    assertEq(NamespaceOwner.get(namespace), address(this));
+
+    bytes32[][] memory keys = new bytes32[][](1);
+    keys[0] = NamespaceOwner.encodeKeyTuple(namespace);
+
+    startGasReport("delete table records");
+    batchStoreSystem._deleteTableRecords(NamespaceOwner._tableId, keys);
+    endGasReport();
+
+    assertEq(NamespaceOwner.get(namespace), address(0));
+  }
 }

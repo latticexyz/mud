@@ -64,6 +64,7 @@ const commandModule: CommandModule<Options, Options> = {
       transport: http(opts.fromRpc, {
         batch: opts.rpcBatch ? { batchSize: 100, wait: 1000 } : undefined,
       }),
+      pollingInterval: 500,
     });
     const fromChainId = await getChainId(fromClient);
     const fromIndexer = opts.fromIndexer ?? defaultChains.find((chain) => chain.id === fromChainId)?.indexerUrl;
@@ -95,10 +96,11 @@ const commandModule: CommandModule<Options, Options> = {
 
     const toWorld = getAddress(opts.toWorld);
     const toClient = createClient({
+      account,
       transport: http(opts.toRpc, {
         batch: opts.rpcBatch ? { batchSize: 100, wait: 1000 } : undefined,
       }),
-      account,
+      pollingInterval: 500,
     });
     const toChainId = await getChainId(toClient);
 
@@ -106,8 +108,8 @@ const commandModule: CommandModule<Options, Options> = {
       chalk.bgBlue(
         chalk.whiteBright(`
  Mirroring MUD data 
-   from world at ${fromWorld} on chain ${fromChainId} 
-   to world at ${toWorld} on chain ${toChainId} 
+   from world ${fromWorld} on chain ${fromChainId} 
+   to world ${toWorld} on chain ${toChainId} 
 `),
       ),
     );
