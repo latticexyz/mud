@@ -26,20 +26,19 @@ export async function createMirrorPlan({
     world: Address;
     client: Client;
     indexer: string;
+    blockscout: string;
   };
 }) {
   const fromChainId = await getChainId(from.client);
 
   const planFilename = path.join(rootDir, mirrorPlansDirectory, `${fromChainId}_${from.world.toLowerCase()}.ndjson.gz`);
-  return planFilename;
   await mkdir(path.dirname(planFilename), { recursive: true });
 
   const plan = createPlanWriter(planFilename);
 
   const makePlan = (async () => {
-    plan.write({ step: "mirror", chainId: fromChainId, worldAddress: from.world });
-
     const worldDeploy = await getWorldDeploy(from.client, from.world, from.block);
+
     console.log("getting systems");
     const systems = await getSystems({
       client: from.client,
@@ -51,7 +50,13 @@ export async function createMirrorPlan({
     console.log("getting bytecode for", systems.length, "systems");
     const systemsWithBytecode = await Promise.all(
       systems.map(async (system) => {
-        const bytecode = await getDeployedBytecode({ client: from.client, address: system.address });
+        const bytecode = await getDeployedBytecode({
+          client: from.client,
+          address: system.address,
+          debugLabel: `${resourceToLabel(system)} system`,
+          allowedStorage: ["empty", { worldConsumer: worldDeploy.address }],
+          blockscoutUrl: from.blockscout,
+        });
         return { system, bytecode };
       }),
     );
@@ -70,7 +75,6 @@ export async function createMirrorPlan({
     // TODO: sort tables so that the insert order is correct (e.g. namespaces first)
 
     let count = 0;
-    plan.write({ step: "start:setRecords" });
     for (const table of tables) {
       const logs = await pRetry(() =>
         getRecordsAsLogs<Table>({
@@ -87,7 +91,6 @@ export async function createMirrorPlan({
       }
       count += logs.length;
     }
-    plan.write({ step: "end:setRecords" });
     console.log("got", count, "total record logs");
   })();
 

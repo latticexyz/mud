@@ -6,15 +6,12 @@ import { StoreLog } from "@latticexyz/store";
 export const mirrorPlansDirectory = `${mudDataDirectory}/mirror-plans`;
 
 export type PlanStep =
-  | { step: "mirror"; chainId: number; worldAddress: Address }
   | { step: "deploySystem"; system: DeployedSystem; bytecode: DeployedBytecode }
-  | { step: "start:setRecords" }
-  | { step: "setRecord"; record: Extract<StoreLog, { eventName: "Store_SetRecord" }>["args"] }
-  | { step: "end:setRecords" };
+  | { step: "setRecord"; record: Extract<StoreLog, { eventName: "Store_SetRecord" }>["args"] };
 
 export type DeployedBytecode = {
   address: Address;
-  code: Hex;
+  initCode: Hex;
   libraries: {
     offset: number;
     reference: DeployedBytecode;

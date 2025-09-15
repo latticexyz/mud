@@ -17,6 +17,7 @@ export async function mirror({
     indexer: string;
     world: Address;
     block?: bigint;
+    blockscout: string;
   };
   to: {
     client: Client<Transport, Chain | undefined, Account>;

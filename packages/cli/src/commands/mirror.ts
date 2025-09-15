@@ -33,7 +33,11 @@ const options = {
   },
   fromIndexer: {
     type: "string",
-    desc: "MUD indexer URL of source chain to mirror from.",
+    desc: "MUD indexer URL of source chain to mirror from. Used to fetch table data.",
+  },
+  fromBlockscout: {
+    type: "string",
+    desc: "Blockscout URL of source chain to mirror from. Used to fetch contract init code.",
   },
   toWorld: {
     type: "string",
@@ -67,9 +71,19 @@ const commandModule: CommandModule<Options, Options> = {
       pollingInterval: 500,
     });
     const fromChainId = await getChainId(fromClient);
-    const fromIndexer = opts.fromIndexer ?? defaultChains.find((chain) => chain.id === fromChainId)?.indexerUrl;
+    const fromChain = defaultChains.find((chain) => chain.id === fromChainId);
+    const fromIndexer = opts.fromIndexer ?? fromChain?.indexerUrl;
     if (!fromIndexer) {
       throw new MUDError(`No \`--fromIndexer\` provided or indexer URL configured for chain ${fromChainId}.`);
+    }
+
+    const fromBlockscout = opts.fromBlockscout
+      ? ({ name: "Blockscout", url: opts.fromBlockscout } as const)
+      : fromChain?.blockExplorers.default;
+    if (!fromBlockscout || fromBlockscout.name !== "Blockscout") {
+      throw new MUDError(
+        `No \`--fromBlockscout\` provided or Blockscout block explorer URL configured for chain ${fromChainId}.`,
+      );
     }
 
     const account = await (async () => {
@@ -121,6 +135,7 @@ const commandModule: CommandModule<Options, Options> = {
         indexer: fromIndexer,
         world: fromWorld,
         block: opts.fromBlock != null ? BigInt(opts.fromBlock) : undefined,
+        blockscout: fromBlockscout.url,
       },
       to: {
         client: toClient,

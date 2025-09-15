@@ -1,18 +1,69 @@
-import { Address, Client, isAddress, keccak256, withCache } from "viem";
-import { getCode, getProof } from "viem/actions";
+import { Address, Client, isAddress, isHex, keccak256, withCache } from "viem";
+import { getProof } from "viem/actions";
 import { execa } from "execa";
 import { DeployedBytecode } from "./common";
+import { getWorldConsumerStorageHash } from "./getWorldConsumerStorageHash";
+import chalk from "chalk";
 
-const emptyTrieRoot = "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421";
+const emptyStorageHash = "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421";
 
-export async function getDeployedBytecode({ client, address }: { client: Client; address: Address }) {
-  const code = await withCache(() => getCode(client, { address }), {
-    cacheKey: `getCode:${client.uid}:${address.toLowerCase()}`,
-  });
-  if (!code) return;
+export async function getDeployedBytecode({
+  client,
+  address,
+  debugLabel,
+  allowedStorage,
+  blockscoutUrl,
+}: {
+  client: Client;
+  address: Address;
+  debugLabel: string;
+  allowedStorage: ("empty" | { worldConsumer: Address })[];
+  blockscoutUrl: string;
+}) {
+  const initCode = await withCache(
+    () =>
+      fetch(`${blockscoutUrl}/api/v2/smart-contracts/${address.toLowerCase()}`)
+        .then((res) => res.json())
+        .then((data) => data.creation_bytecode),
+    {
+      cacheKey: `${blockscoutUrl}/api/v2/smart-contracts/${address.toLowerCase()}`,
+    },
+  );
+  if (!isHex(initCode)) return;
 
-  const { stdout } = await withCache(() => execa({ input: code })`cast disassemble`, {
-    cacheKey: `cast disassemble:${keccak256(code)}`,
+  async function getStorageHash() {
+    const { storageHash } = await withCache(() => getProof(client, { address, storageKeys: [] }), {
+      cacheKey: `getProof:${client.uid}:${address.toLowerCase()}`,
+    });
+    return storageHash;
+  }
+
+  const isAllowed = await (async (): Promise<boolean> => {
+    for (const mode of allowedStorage) {
+      if (mode === "empty") {
+        const storageHash = await getStorageHash();
+        if (storageHash === emptyStorageHash) {
+          return true;
+        }
+      } else if ("worldConsumer" in mode) {
+        const storageHash = await getStorageHash();
+        if (storageHash === getWorldConsumerStorageHash(mode.worldConsumer)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  })();
+
+  if (!isAllowed) {
+    console.warn(
+      // eslint-disable-next-line max-len
+      `${chalk.bgYellowBright(chalk.black(" Warning! "))} ${debugLabel} (${address}) is expected to be stateless, but has unexpected storage. It'll be deployed using its original constructor arguments, but may be missing some of its internal state.`,
+    );
+  }
+
+  const { stdout } = await withCache(() => execa({ input: initCode })`cast disassemble`, {
+    cacheKey: `cast disassemble:${keccak256(initCode)}`,
   });
 
   const matches = stdout.matchAll(/([0-9a-f]+): PUSH20 (0x[0-9a-f]{40})/g);
@@ -31,15 +82,13 @@ export async function getDeployedBytecode({ client, address }: { client: Client;
       continue;
     }
 
-    const { storageHash } = await withCache(() => getProof(client, { address: value, storageKeys: [] }), {
-      cacheKey: `getProof:${client.uid}:${address.toLowerCase()}`,
+    const reference = await getDeployedBytecode({
+      client,
+      address: value,
+      debugLabel: `address at bytecode offset ${offset}`,
+      allowedStorage: ["empty"],
+      blockscoutUrl,
     });
-    // if contract storage is used, it's probably not a public library
-    if (storageHash !== emptyTrieRoot) {
-      continue;
-    }
-
-    const reference = await getDeployedBytecode({ client, address: value });
     if (!reference) continue;
 
     libraries.push({ offset, reference });
@@ -47,7 +96,7 @@ export async function getDeployedBytecode({ client, address }: { client: Client;
 
   return {
     address,
-    code,
+    initCode,
     libraries,
   } satisfies DeployedBytecode;
 }
