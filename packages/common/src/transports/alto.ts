@@ -30,7 +30,7 @@ export function alto<const altoTransport extends Transport>(transports?: AltoOpt
             method: "pimlico_sendUserOperationNow",
           })) as AltoSendUserOperationResultuest;
           console.log("pimlico_sendUserOperationNow", result);
-          return result;
+          return result.userOpHash;
         }
 
         return await altoRequest(req);
