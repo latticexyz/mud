@@ -2,11 +2,14 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, createClient, fallback, http, keccak256, stringToHex, webSocket } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { userOpExecutor } from "./quarry/transports/userOpExecutor";
-import { wiresaw } from "@latticexyz/common/internal";
+import { wiresaw, alto } from "@latticexyz/common/internal";
 
 export function getBundlerTransport(chain: Chain) {
   if ("wiresaw" in chain.rpcUrls) {
     return wiresaw();
+  }
+  if ("alto" in chain.rpcUrls) {
+    return alto();
   }
 
   // TODO: bundler websocket
