@@ -15,7 +15,7 @@ export function getBundlerTransport(chain: Chain) {
     return http(bundlerHttpUrl);
   }
 
-  if (chain.id === 31337) {
+  if (chain.id === 31337 || chain.testnet) {
     return userOpExecutor({
       executor: createClient({
         chain,
