@@ -16,7 +16,7 @@ import {
   UserOperation,
 } from "viem/account-abstraction";
 import { bigIntMax } from "../../utils";
-import { entryPointGasSimulationsAbi } from "../entryPointGasSimulations";
+import { entryPointGasSimulationsAbi, entryPointSimulationsDeployedBytecode } from "../entryPointGasSimulations";
 
 type rpcMethod = getRpcMethod<BundlerRpcSchema, "eth_estimateUserOperationGas">;
 
@@ -36,7 +36,7 @@ export async function estimateUserOperationGas({
     callGasLimit: bigIntMax(gasSimulation.callGas * 2n, 9000n),
     paymasterVerificationGasLimit: gasSimulation.paymasterVerificationGas * 2n,
     paymasterPostOpGasLimit: gasSimulation.paymasterPostOpGas * 2n,
-    preVerificationGas: 20_000n,
+    preVerificationGas: 10_000_000n, // TODO: change this based on our alto config
   };
 
   return formatUserOperationRequest({
@@ -80,11 +80,12 @@ async function simulateGas({ request, userOp }: SimulateGasOptions): Promise<Sim
     },
     "pending",
     {
+      [entryPoint07Address]: { code: entryPointSimulationsDeployedBytecode },
       ...senderBalanceOverride,
     },
   ];
   const encodedSimulationResult: Hex = await request({
-    method: "wiresaw_callEntryPointSimulations",
+    method: "eth_call",
     params: simulationParams,
   });
 

@@ -1,5 +1,6 @@
 import { Chain, EIP1193RequestFn, Hex, http, Transport } from "viem";
 import { chainTransport } from "./chainTransport";
+import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 
 type AltoSendUserOperationResultuest = {
   txHash: Hex;
@@ -23,6 +24,14 @@ export function alto<const altoTransport extends Transport>(transports?: AltoOpt
       ...rest,
       // TODO: type `request` so we don't have to cast
       async request(req): ReturnType<EIP1193RequestFn> {
+        if (req.method === "eth_estimateUserOperationGas") {
+          console.log("estimating user operation gas via alto", req);
+          return await estimateUserOperationGas({
+            request: altoRequest,
+            params: req.params as never,
+          });
+        }
+
         if (req.method === "eth_sendUserOperation") {
           console.log("sending user operation via pimlico_sendUserOperationNow", req);
           const result = (await altoRequest({
