@@ -11,14 +11,15 @@ type AltoOptions<transport extends Transport> = {
   /** alto-compatible transport */
   altoTransport: transport;
   /** fallback transport for all other RPC methods */
-  fallbackDefaultTransport?: Transport;
+  fallbackDefaultTransport: Transport;
 };
 
 export function alto<const altoTransport extends Transport>(transports?: AltoOptions<altoTransport>): altoTransport {
   return ((opts) => {
-    const { altoTransport } = transports ?? getDefaultTransports(opts.chain);
+    const { altoTransport, fallbackDefaultTransport } = transports ?? getDefaultTransports(opts.chain);
 
     const { request: altoRequest, ...rest } = altoTransport(opts);
+    const { request: defaultRequest } = fallbackDefaultTransport(opts);
 
     return {
       ...rest,
@@ -27,7 +28,7 @@ export function alto<const altoTransport extends Transport>(transports?: AltoOpt
         if (req.method === "eth_estimateUserOperationGas") {
           console.log("estimating user operation gas via alto", req);
           return await estimateUserOperationGas({
-            request: altoRequest,
+            request: defaultRequest,
             params: req.params as never,
           });
         }
@@ -57,9 +58,13 @@ function getDefaultTransports(chain?: Chain): AltoOptions<Transport> {
   if (!altoTransport) {
     throw new Error("Provided chain does not support alto");
   }
+  const fallbackDefaultTransport = http();
+  if (!fallbackDefaultTransport) {
+    throw new Error("Failed to create fallback http transport");
+  }
 
   return {
     altoTransport,
-    fallbackDefaultTransport: http(),
+    fallbackDefaultTransport,
   };
 }
