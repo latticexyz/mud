@@ -7,18 +7,17 @@ import { mudTables } from "@latticexyz/store-sync";
 import { createRecordHandler } from "./createRecordHandler";
 import { wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
-import { DeployedBytecode } from "./common";
-import { DeployedSystem } from "../deploy/common";
+import { DeployedBytecode, PlanStep } from "./common";
 import { ensureContract, ensureDeployer, getContractAddress, waitForTransactions } from "@latticexyz/common/internal";
 
 export type StoreRecord = Extract<StoreLog, { eventName: "Store_SetRecord" }>["args"];
 
 export async function executeMirrorPlan({
   planFilename,
-  to: { client, world: worldAddress },
+  to: { client, world: worldAddress, block: deployBlock },
 }: {
   planFilename: string;
-  to: { client: Client<Transport, Chain | undefined, Account>; world: Address };
+  to: { client: Client<Transport, Chain | undefined, Account>; world: Address; block?: bigint };
 }) {
   let totalSystems = 0;
   let totalRecords = 0;
@@ -39,49 +38,53 @@ export async function executeMirrorPlan({
   // TODO: prompt to continue
   await wait(5_000);
 
-  const worldDeploy = await getWorldDeploy(client, worldAddress);
+  const worldDeploy = await getWorldDeploy(client, worldAddress, deployBlock);
   debug("found world deploy at", worldDeploy.address);
 
   // TODO: lift into CLI to allow overriding?
   const deployerAddress = await ensureDeployer(client);
   debug("deploying systems via", deployerAddress);
 
-  const systems: { system: DeployedSystem; address: Address; previousAddress: Address }[] = [];
+  const deploySystemSteps: Extract<PlanStep, { step: "deploySystem" }>[] = [];
   for await (const step of readPlan(planFilename)) {
-    await (async () => {
-      if (step.step !== "deploySystem") return;
+    if (step.step === "deploySystem") {
+      deploySystemSteps.push(step);
+    }
+  }
 
-      async function deploy(bytecode: DeployedBytecode) {
-        let initCode = bytecode.initCode;
-        for (const lib of bytecode.libraries) {
-          debug("deploying referenced library");
-          initCode = spliceHex(initCode, lib.offset, 20, await deploy(lib.reference));
-        }
-        const address = getContractAddress({
-          deployerAddress,
-          bytecode: initCode,
-        });
+  async function deploy(bytecode: DeployedBytecode) {
+    let initCode = bytecode.initCode;
+    for (const lib of bytecode.libraries) {
+      debug("deploying referenced library");
+      initCode = spliceHex(initCode, lib.offset, 20, await deploy(lib.reference));
+    }
+    const address = getContractAddress({
+      deployerAddress,
+      bytecode: initCode,
+    });
 
-        await withCache(
-          async () => {
-            const hashes = await ensureContract({ client, deployerAddress, bytecode: initCode });
-            return waitForTransactions({ client, hashes, debugLabel: "contract deploy" });
-          },
-          { cacheKey: `deploy:${address}` },
-        );
+    await withCache(
+      async () => {
+        const hashes = await ensureContract({ client, deployerAddress, bytecode: initCode });
+        return waitForTransactions({ client, hashes, debugLabel: "contract deploy" });
+      },
+      { cacheKey: `deploy:${address}` },
+    );
 
-        return address;
-      }
+    return address;
+  }
 
+  const systems = await Promise.all(
+    deploySystemSteps.map(async (step) => {
       debug(`deploying ${resourceToLabel(step.system)} system`);
       const address = await deploy(step.bytecode);
-      systems.push({
+      return {
         system: step.system,
         address,
         previousAddress: step.bytecode.address,
-      });
-    })();
-  }
+      };
+    }),
+  );
 
   const systemReplacements = new Map(
     systems.map((system) => [

@@ -22,6 +22,7 @@ export async function mirror({
   to: {
     client: Client<Transport, Chain | undefined, Account>;
     world: Address;
+    block?: bigint;
   };
 }) {
   // TODO: check for world balance, warn

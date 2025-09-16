@@ -44,6 +44,10 @@ const options = {
     desc: "Target world address to mirror data to.",
     required: true,
   },
+  toBlock: {
+    type: "number",
+    desc: "Block number of target world deploy.",
+  },
   toRpc: {
     type: "string",
     desc: "RPC URL of target chain to mirror to.",
@@ -140,6 +144,7 @@ const commandModule: CommandModule<Options, Options> = {
       to: {
         client: toClient,
         world: toWorld,
+        block: opts.toBlock != null ? BigInt(opts.toBlock) : undefined,
       },
     });
   },
