@@ -12,6 +12,7 @@ import { mkdir, rm } from "fs/promises";
 import { mirrorPlansDirectory } from "./common";
 import { getSystems } from "../deploy/getSystems";
 import { getDeployedBytecode } from "./getDeployedBytecode";
+import { debug } from "./debug";
 
 // TODO: attempt to create world the same way as it was originally created, thus preserving world address
 // TODO: set up table to track migrated records with original metadata (block number/timestamp) and for lazy migrations
@@ -39,7 +40,7 @@ export async function createMirrorPlan({
   const makePlan = (async () => {
     const worldDeploy = await getWorldDeploy(from.client, from.world, from.block);
 
-    console.log("getting systems");
+    debug("getting systems");
     const systems = await getSystems({
       client: from.client,
       worldDeploy,
@@ -47,7 +48,7 @@ export async function createMirrorPlan({
       chainId: fromChainId,
     });
 
-    console.log("getting bytecode for", systems.length, "systems");
+    debug("getting bytecode for", systems.length, "systems");
     const systemsWithBytecode = await Promise.all(
       systems.map(async (system) => {
         const bytecode = await getDeployedBytecode({
@@ -85,13 +86,13 @@ export async function createMirrorPlan({
           chainId: fromChainId,
         }),
       );
-      console.log("got", logs.length, "logs for", resourceToLabel(table));
+      debug("got", logs.length, "logs for", resourceToLabel(table));
       for (const log of logs) {
         plan.write({ step: "setRecord", record: log.args });
       }
       count += logs.length;
     }
-    console.log("got", count, "total record logs");
+    debug("got", count, "total record logs");
   })();
 
   try {

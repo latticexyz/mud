@@ -1,11 +1,15 @@
-import { Account, Address, Chain, Client, Transport, concatHex } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, concatHex, withCache } from "viem";
 import { readPlan } from "./readPlan";
-import { resourceToHex, resourceToLabel } from "@latticexyz/common";
+import { hexToResource, resourceToHex, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { StoreLog } from "@latticexyz/store";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { mudTables } from "@latticexyz/store-sync";
 import { createRecordHandler } from "./createRecordHandler";
 import { wait } from "@latticexyz/common/utils";
+import { debug } from "./debug";
+import { DeployedBytecode } from "./common";
+import { DeployedSystem } from "../deploy/common";
+import { ensureContract, ensureDeployer, getContractAddress, waitForTransactions } from "@latticexyz/common/internal";
 
 export type StoreRecord = Extract<StoreLog, { eventName: "Store_SetRecord" }>["args"];
 
@@ -22,7 +26,6 @@ export async function executeMirrorPlan({
   for await (const step of readPlan(planFilename)) {
     if (step.step === "deploySystem") {
       totalSystems += 1;
-      console.log(step);
     }
     if (step.step === "setRecord") {
       totalRecords += 1;
@@ -37,16 +40,69 @@ export async function executeMirrorPlan({
   await wait(5_000);
 
   const worldDeploy = await getWorldDeploy(client, worldAddress);
-  console.log("found world deploy at", worldDeploy.address);
+  debug("found world deploy at", worldDeploy.address);
 
+  // TODO: lift into CLI to allow overriding?
+  const deployerAddress = await ensureDeployer(client);
+  debug("deploying systems via", deployerAddress);
+
+  const systems: { system: DeployedSystem; address: Address; previousAddress: Address }[] = [];
   for await (const step of readPlan(planFilename)) {
     await (async () => {
       if (step.step !== "deploySystem") return;
 
-      console.log("deploying system", resourceToLabel(step.system));
-      // TODO:
-      return;
+      async function deploy(bytecode: DeployedBytecode) {
+        let initCode = bytecode.initCode;
+        for (const lib of bytecode.libraries) {
+          debug("deploying referenced library");
+          initCode = spliceHex(initCode, lib.offset, 20, await deploy(lib.reference));
+        }
+        const address = getContractAddress({
+          deployerAddress,
+          bytecode: initCode,
+        });
+
+        await withCache(
+          async () => {
+            const hashes = await ensureContract({ client, deployerAddress, bytecode: initCode });
+            return waitForTransactions({ client, hashes, debugLabel: "contract deploy" });
+          },
+          { cacheKey: `deploy:${address}` },
+        );
+
+        return address;
+      }
+
+      debug(`deploying ${resourceToLabel(step.system)} system`);
+      const address = await deploy(step.bytecode);
+      systems.push({
+        system: step.system,
+        address,
+        previousAddress: step.bytecode.address,
+      });
     })();
+  }
+
+  const systemReplacements = new Map(
+    systems.map((system) => [
+      system.previousAddress.toLowerCase().replace(/^0x/, ""),
+      {
+        value: system.address.toLowerCase().replace(/^0x/, ""),
+        debugLabel: `${resourceToLabel(system.system)} system address`,
+      },
+    ]),
+  );
+  const systemReplacementsPattern = new RegExp(Array.from(systemReplacements.keys()).join("|"), "ig");
+
+  function replaceSystems(data: Hex, debugLabel: string): Hex {
+    return data.replaceAll(systemReplacementsPattern, (match) => {
+      const replacement = systemReplacements.get(match);
+      // this should never happen, this is here just in case I messed up the logic
+      if (!replacement) throw new Error(`No replacement for match: ${match}`);
+
+      debug("replacing", replacement.debugLabel, "in", debugLabel, `(0x${match} => 0x${replacement.value})`);
+      return replacement.value;
+    }) as never;
   }
 
   const recordHandler = createRecordHandler({
@@ -59,6 +115,12 @@ export async function executeMirrorPlan({
   for await (const step of readPlan(planFilename)) {
     await (async () => {
       if (step.step !== "setRecord") return;
+
+      // Update system addresses if found in record
+      const tableLabel = resourceToLabel(hexToResource(step.record.tableId));
+      step.record.keyTuple = step.record.keyTuple.map((key) => replaceSystems(key, `key of ${tableLabel}`));
+      step.record.staticData = replaceSystems(step.record.staticData, `static data of ${tableLabel}`);
+      step.record.dynamicData = replaceSystems(step.record.dynamicData, `dynamic data of ${tableLabel}`);
 
       // Defer updating root namespace owner so we can set all records
       // before reverting it to the original owner.
