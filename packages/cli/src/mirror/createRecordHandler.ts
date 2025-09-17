@@ -17,6 +17,7 @@ import { readContract, waitForTransactionReceipt } from "viem/actions";
 import chalk from "chalk";
 import { StoreRecord } from "./executeMirrorPlan";
 import { debug } from "./debug";
+import { LibZip } from "solady";
 
 export function createRecordHandler({
   client,
@@ -127,8 +128,8 @@ Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 1
     });
 
     const changedRecords = records.filter((record, i) => {
-      const recordEncoded = encodeAbiParameters(tableRecordAbi, [record]);
-      const existingRecordEncoded = encodeAbiParameters(tableRecordAbi, [existingRecords[i]]);
+      const recordEncoded = encodeAbiParameters([tableRecordAbiItem], [record]);
+      const existingRecordEncoded = encodeAbiParameters([tableRecordAbiItem], [existingRecords[i]]);
       if (recordEncoded === existingRecordEncoded) return false;
       // console.log("record changed in", record.tableId);
       // console.log("  ", recordEncoded);
@@ -139,12 +140,24 @@ Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 1
       return;
     }
 
+    const calldata = encodeAbiParameters(
+      [{ type: "bytes32" }, tableRecordsAbiItem],
+      [changedRecords[0].tableId, changedRecords],
+    );
     const args = encodeSystemCall({
       systemId: batchStoreConfig.systems.BatchStoreSystem.systemId,
       abi: batchStoreSystemAbi,
-      functionName: "_setTableRecords",
-      args: [changedRecords[0].tableId, changedRecords],
+      functionName: "_setTableRecords_flz",
+      args: [LibZip.flzCompress(calldata) as Hex],
     });
+    // console.log(
+    //   "flz compression",
+    //   size(calldata),
+    //   "=>",
+    //   size(LibZip.flzCompress(calldata) as Hex),
+    //   " = ",
+    //   size(LibZip.flzCompress(calldata) as Hex) / size(calldata),
+    // );
     const hash = await writeContract(client, {
       chain: client.chain ?? null,
       address: worldAddress,
@@ -159,35 +172,59 @@ Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 1
   return { set, finalize };
 }
 
-const tableRecordAbi = [
-  {
-    name: "record",
-    type: "tuple",
-    internalType: "struct TableRecord",
-    components: [
-      {
-        name: "keyTuple",
-        type: "bytes32[]",
-        internalType: "bytes32[]",
-      },
-      {
-        name: "staticData",
-        type: "bytes",
-        internalType: "bytes",
-      },
-      {
-        name: "encodedLengths",
-        type: "bytes32",
-        internalType: "EncodedLengths",
-      },
-      {
-        name: "dynamicData",
-        type: "bytes",
-        internalType: "bytes",
-      },
-    ],
-  },
-] as const;
+const tableRecordAbiItem = {
+  type: "tuple",
+  internalType: "struct TableRecord",
+  components: [
+    {
+      name: "keyTuple",
+      type: "bytes32[]",
+      internalType: "bytes32[]",
+    },
+    {
+      name: "staticData",
+      type: "bytes",
+      internalType: "bytes",
+    },
+    {
+      name: "encodedLengths",
+      type: "bytes32",
+      internalType: "EncodedLengths",
+    },
+    {
+      name: "dynamicData",
+      type: "bytes",
+      internalType: "bytes",
+    },
+  ],
+} as const;
+
+const tableRecordsAbiItem = {
+  type: "tuple[]",
+  internalType: "struct TableRecord[]",
+  components: [
+    {
+      name: "keyTuple",
+      type: "bytes32[]",
+      internalType: "bytes32[]",
+    },
+    {
+      name: "staticData",
+      type: "bytes",
+      internalType: "bytes",
+    },
+    {
+      name: "encodedLengths",
+      type: "bytes32",
+      internalType: "EncodedLengths",
+    },
+    {
+      name: "dynamicData",
+      type: "bytes",
+      internalType: "bytes",
+    },
+  ],
+};
 
 const batchStoreSystemAbi = [
   {
@@ -243,6 +280,19 @@ const batchStoreSystemAbi = [
             internalType: "bytes",
           },
         ],
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "_setTableRecords_flz",
+    inputs: [
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
       },
     ],
     outputs: [],

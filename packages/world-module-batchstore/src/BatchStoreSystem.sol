@@ -9,6 +9,9 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { TableRecord } from "./common.sol";
+import { LibZip } from "solady/utils/LibZip.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
 contract BatchStoreSystem is System {
   function getTableRecords(
@@ -61,7 +64,7 @@ contract BatchStoreSystem is System {
     }
   }
 
-  function _setTableRecords(ResourceId tableId, TableRecord[] memory records) external {
+  function _setTableRecords(ResourceId tableId, TableRecord[] memory records) public {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
     FieldLayout fieldLayout = StoreCore.getFieldLayout(tableId);
@@ -86,5 +89,13 @@ contract BatchStoreSystem is System {
     for (uint256 i = 0; i < keyTuples.length; i++) {
       StoreCore.deleteRecord(tableId, keyTuples[i], fieldLayout);
     }
+  }
+
+  function _setTableRecords_flz(bytes calldata data) external {
+    (ResourceId tableId, TableRecord[] memory records) = abi.decode(
+      LibZip.flzDecompress(data),
+      (ResourceId, TableRecord[])
+    );
+    _setTableRecords(tableId, records);
   }
 }

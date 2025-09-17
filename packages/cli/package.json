@@ -69,6 +69,7 @@
     "p-retry": "^5.1.2",
     "path": "^0.12.7",
     "rxjs": "7.5.5",
+    "solady": "^0.1.26",
     "throttle-debounce": "^5.0.0",
     "toposort": "^2.0.2",
     "viem": "2.35.1",

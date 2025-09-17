@@ -62,6 +62,10 @@ library BatchStoreSystemLib {
     return CallWrapper(self.toResourceId(), address(0))._deleteTableRecords(tableId, keyTuples);
   }
 
+  function _setTableRecords_flz(BatchStoreSystemType self, bytes memory data) internal {
+    return CallWrapper(self.toResourceId(), address(0))._setTableRecords_flz(data);
+  }
+
   function getTableRecords(
     CallWrapper memory self,
     ResourceId tableId,
@@ -139,6 +143,16 @@ library BatchStoreSystemLib {
       : _world().callFrom(self.from, self.systemId, systemCall);
   }
 
+  function _setTableRecords_flz(CallWrapper memory self, bytes memory data) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert BatchStoreSystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(__setTableRecords_flz_bytes._setTableRecords_flz, (data));
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
   function setTableRecords(RootCallWrapper memory self, ResourceId tableId, TableRecord[] memory records) internal {
     bytes memory systemCall = abi.encodeCall(
       _setTableRecords_ResourceId_TableRecordArray.setTableRecords,
@@ -168,6 +182,11 @@ library BatchStoreSystemLib {
       __deleteTableRecords_ResourceId_bytes32ArrayArray._deleteTableRecords,
       (tableId, keyTuples)
     );
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function _setTableRecords_flz(RootCallWrapper memory self, bytes memory data) internal {
+    bytes memory systemCall = abi.encodeCall(__setTableRecords_flz_bytes._setTableRecords_flz, (data));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
@@ -227,6 +246,10 @@ interface __setTableRecords_ResourceId_TableRecordArray {
 
 interface __deleteTableRecords_ResourceId_bytes32ArrayArray {
   function _deleteTableRecords(ResourceId tableId, bytes32[][] memory keyTuples) external;
+}
+
+interface __setTableRecords_flz_bytes {
+  function _setTableRecords_flz(bytes memory data) external;
 }
 
 using BatchStoreSystemLib for BatchStoreSystemType global;
