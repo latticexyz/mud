@@ -7,4 +7,4 @@ export type storeEventsAbi = typeof storeEventsAbi;
 export type StoreEventsAbi = typeof storeEventsAbi;
 export type StoreEventsAbiItem = (typeof storeEventsAbi)[number];
 
-export type StoreSetRecordEventAbiItem = StoreEventsAbiItem & { readonly name: "Store_SetRecord" };
+export type StoreSetRecordEventAbiItem = Extract<StoreEventsAbiItem, { name: "Store_SetRecord" }>;

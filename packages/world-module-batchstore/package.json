@@ -44,7 +44,8 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/world": "workspace:*"
+    "@latticexyz/world": "workspace:*",
+    "solady": "^0.1.26"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",

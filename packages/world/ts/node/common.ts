@@ -4,7 +4,8 @@ import { Abi, Hex } from "viem";
 export const contractSizeLimit = parseInt("6000", 16);
 
 // relative to project root dir (`rootDir`)
-export const systemsManifestFilename = ".mud/local/systems.json";
+export const mudDataDirectory = ".mud";
+export const systemsManifestFilename = `${mudDataDirectory}/local/systems.json`;
 
 export type ReferenceIdentifier = {
   /**

@@ -15,6 +15,7 @@ export {
 
 export { storeEventsAbi } from "../storeEventsAbi";
 export type { StoreEventsAbi, StoreEventsAbiItem } from "../storeEventsAbi";
+export type { StoreLog } from "../storeLog";
 
 export { defineStore } from "../config/v2/store";
 export type { StoreInput } from "../config/v2/input";
