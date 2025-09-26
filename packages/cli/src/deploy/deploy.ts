@@ -71,7 +71,15 @@ export async function deploy({
   deployerAddress: initialDeployerAddress,
   indexerUrl,
   chainId,
-}: DeployOptions): Promise<WorldDeploy> {
+}: DeployOptions): Promise<
+  WorldDeploy & {
+    /** Addresses of the deployed contracts */
+    readonly contracts: readonly {
+      readonly label: string;
+      readonly address: Address;
+    }[];
+  }
+> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   const worldDeploy = existingWorldAddress
@@ -105,7 +113,7 @@ export async function deploy({
   }
 
   const libraryMap = getLibraryMap(libraries);
-  await ensureContractsDeployed({
+  const deployedContracts = await ensureContractsDeployed({
     ...commonDeployOptions,
     deployerAddress,
     contracts: [
@@ -203,5 +211,11 @@ export async function deploy({
   });
 
   debug("deploy complete");
-  return worldDeploy;
+  return {
+    ...worldDeploy,
+    contracts: deployedContracts.map(({ contract, deployedAddress }) => ({
+      label: contract.debugLabel ?? "unknown",
+      address: deployedAddress,
+    })),
+  };
 }

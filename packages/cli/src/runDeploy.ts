@@ -158,7 +158,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const automine = await enableAutomine(client);
 
   const startTime = Date.now();
-  const worldDeploy = await deploy({
+  const deployResult = await deploy({
     config,
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
@@ -176,7 +176,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
       config.deploy.postDeployScript,
-      worldDeploy.address,
+      deployResult.address,
       rpc,
       profile,
       opts.forgeScriptOptions,
@@ -190,8 +190,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   const deploymentInfo = {
-    worldAddress: worldDeploy.address,
-    blockNumber: Number(worldDeploy.deployBlock),
+    worldAddress: deployResult.address,
+    blockNumber: Number(deployResult.deployBlock),
+    contracts: deployResult.contracts,
   };
 
   if (opts.saveDeployment) {
@@ -219,9 +220,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     );
   }
 
-  console.log(deploymentInfo);
+  console.log({ ...deploymentInfo, contracts: undefined });
 
-  return worldDeploy;
+  return deployResult;
 }
 
 function getWorldDeployBlock({
