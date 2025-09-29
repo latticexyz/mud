@@ -220,7 +220,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     );
   }
 
-  console.log({ ...deploymentInfo, contracts: undefined });
+  console.log({ worldAddress: deploymentInfo.worldAddress, blockNumber: deploymentInfo.blockNumber });
 
   return deployResult;
 }
