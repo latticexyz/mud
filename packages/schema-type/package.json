@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.2.23",
+  "version": "2.2.24",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
