@@ -18,7 +18,7 @@ jobs:
     name: Test create-mud project
     strategy:
       matrix:
-        os: [depot-ubuntu-22.04-16]
+        os: [ubuntu-latest]
         template: [vanilla, react, react-ecs, phaser, threejs]
 
     runs-on: ${{ matrix.os }}

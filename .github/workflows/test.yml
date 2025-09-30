@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     name: Run tests
-    runs-on: depot-ubuntu-22.04-16
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:12.1-alpine
