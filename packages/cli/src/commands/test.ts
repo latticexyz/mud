@@ -46,7 +46,6 @@ const commandModule: CommandModule<typeof testOptions, TestOptions> = {
       (
         await runDeploy({
           ...opts,
-          saveDeployment: opts.saveDeployment,
           rpc: forkRpc,
         })
       ).address;
