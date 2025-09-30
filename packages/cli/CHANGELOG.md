@@ -1,5 +1,28 @@
 # Change Log
 
+## 2.2.24
+
+### Patch Changes
+
+- 0e49b51: The `mud deploy` command now includes the addresses of all deployed contracts and libraries in the deployment file. Previously, it only included the world address.
+
+  The `mud test` command now includes an optional 'saveDeployment' flag to enable the deployment info from the test run to be saved to a file.
+
+- Updated dependencies [0e49b51]
+  - @latticexyz/common@2.2.24
+  - @latticexyz/block-logs-stream@2.2.24
+  - @latticexyz/config@2.2.24
+  - @latticexyz/protocol-parser@2.2.24
+  - @latticexyz/store@2.2.24
+  - @latticexyz/store-sync@2.2.24
+  - @latticexyz/world@2.2.24
+  - @latticexyz/world-module-callwithsignature@2.2.24
+  - @latticexyz/world-module-metadata@2.2.24
+  - @latticexyz/abi-ts@2.2.24
+  - @latticexyz/gas-report@2.2.24
+  - @latticexyz/schema-type@2.2.24
+  - @latticexyz/utils@2.2.24
+
 ## 2.2.23
 
 ### Patch Changes

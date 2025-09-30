@@ -1,5 +1,7 @@
 # @latticexyz/id.place
 
+## 2.2.24
+
 ## 2.2.23
 
 ### Patch Changes

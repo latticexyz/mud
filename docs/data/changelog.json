@@ -1,5 +1,75 @@
 [
   {
+    "version": "2.2.24",
+    "date": "2025-09-30T20:36:36.861Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSQL queries in the tables viewer are now validated before execution, with errors highlighted and described directly in the editor.",
+          "type": 0,
+          "commitHash": "6031ec8e7f3b47a789c4c31750f9cfe8c2ccfdf2",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): validate sql queries (#3793)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFormatting is now preserved when re-running SQL queries.",
+          "type": 0,
+          "commitHash": "1f509ee224cadd4254e7bbb7a268b519f65e4495",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): preserve sql query formatting (#3810)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nCaching is now disabled for API routes.",
+          "type": 0,
+          "commitHash": "bd97268cd2037f6372211e05367605636b1ee78e",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): disable caching for API routes (#3807)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe `mud deploy` command now includes the addresses of all deployed contracts and libraries in the deployment file. Previously, it only included the world address.\n\nThe `mud test` command now includes an optional 'saveDeployment' flag to enable the deployment info from the test run to be saved to a file.",
+          "type": 0,
+          "commitHash": "0e49b51ba934438e49c7f098e78d6e3ddf7567fb",
+          "authorName": "Dhvani Patel",
+          "authorEmail": "dhvani.patel@uwaterloo.ca",
+          "title": "feat(cli): save deployed contracts info (#3816)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.23",
     "date": "2025-08-25T02:48:07.555Z",
     "changes": {

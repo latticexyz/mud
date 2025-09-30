@@ -1,5 +1,13 @@
 # @latticexyz/store-consumer
 
+## 2.2.24
+
+### Patch Changes
+
+- @latticexyz/store@2.2.24
+- @latticexyz/world@2.2.24
+- @latticexyz/schema-type@2.2.24
+
 ## 2.2.23
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @latticexyz/explorer
 
+## 2.2.24
+
+### Patch Changes
+
+- 6031ec8: SQL queries in the tables viewer are now validated before execution, with errors highlighted and described directly in the editor.
+- 1f509ee: Formatting is now preserved when re-running SQL queries.
+- bd97268: Caching is now disabled for API routes.
+- Updated dependencies [0e49b51]
+  - @latticexyz/common@2.2.24
+  - @latticexyz/block-logs-stream@2.2.24
+  - @latticexyz/config@2.2.24
+  - @latticexyz/protocol-parser@2.2.24
+  - @latticexyz/store@2.2.24
+  - @latticexyz/store-indexer@2.2.24
+  - @latticexyz/store-sync@2.2.24
+  - @latticexyz/world@2.2.24
+  - @latticexyz/schema-type@2.2.24
+
 ## 2.2.23
 
 ### Patch Changes

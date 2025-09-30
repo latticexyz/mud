@@ -1,3 +1,29 @@
+## Version 2.2.24
+
+Release date: Tue Sep 30 2025
+
+### Patch changes
+
+**[fix(explorer): validate sql queries (#3793)](https://github.com/latticexyz/mud/commit/6031ec8e7f3b47a789c4c31750f9cfe8c2ccfdf2)** (@latticexyz/explorer)
+
+SQL queries in the tables viewer are now validated before execution, with errors highlighted and described directly in the editor.
+
+**[fix(explorer): preserve sql query formatting (#3810)](https://github.com/latticexyz/mud/commit/1f509ee224cadd4254e7bbb7a268b519f65e4495)** (@latticexyz/explorer)
+
+Formatting is now preserved when re-running SQL queries.
+
+**[fix(explorer): disable caching for API routes (#3807)](https://github.com/latticexyz/mud/commit/bd97268cd2037f6372211e05367605636b1ee78e)** (@latticexyz/explorer)
+
+Caching is now disabled for API routes.
+
+**[feat(cli): save deployed contracts info (#3816)](https://github.com/latticexyz/mud/commit/0e49b51ba934438e49c7f098e78d6e3ddf7567fb)** (@latticexyz/cli, @latticexyz/common)
+
+The `mud deploy` command now includes the addresses of all deployed contracts and libraries in the deployment file. Previously, it only included the world address.
+
+The `mud test` command now includes an optional 'saveDeployment' flag to enable the deployment info from the test run to be saved to a file.
+
+---
+
 ## Version 2.2.23
 
 Release date: Mon Aug 25 2025

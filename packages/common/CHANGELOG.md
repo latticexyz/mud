@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.24
+
+### Patch Changes
+
+- 0e49b51: The `mud deploy` command now includes the addresses of all deployed contracts and libraries in the deployment file. Previously, it only included the world address.
+
+  The `mud test` command now includes an optional 'saveDeployment' flag to enable the deployment info from the test run to be saved to a file.
+
+  - @latticexyz/schema-type@2.2.24
+
 ## 2.2.23
 
 ### Patch Changes
