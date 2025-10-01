@@ -1,11 +1,13 @@
-import { parse, visit } from "@solidity-parser/parser";
-import type { SourceUnit, ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { findContractNode } from "./findContractNode";
+import { findContractOrInterfaceNode } from "./findContractOrInterfaceNode";
 import { QualifiedSymbol } from "./contractToInterface";
 import { findSymbolImport } from "./findSymbolImport";
 import { resolveRemapping } from "./resolveRemapping";
+import { Parser } from "@nomicfoundation/slang/parser";
+import { assertNonterminalNode, Cursor, Query } from "@nomicfoundation/slang/cst";
+import { ContractDefinition, InterfaceDefinition } from "@nomicfoundation/slang/ast";
+import { LanguageFacts } from "@nomicfoundation/slang/utils";
 
 interface InheritanceInfo {
   baseContracts: string[];
@@ -42,34 +44,36 @@ export async function createInheritanceResolver(
       const source = await readFile(filePath, "utf8");
 
       // Try to parse the source
-      let ast: SourceUnit;
-      try {
-        ast = parse(source);
-      } catch (parseError) {
-        // If parsing fails, log the error and skip this file
-        console.warn(`Warning: Failed to parse ${filePath} for inheritance resolution:`, parseError);
+      const version = LanguageFacts.inferLanguageVersions(source).at(-1);
+      const parser = Parser.create(version ?? LanguageFacts.latestVersion());
+      const parserResult = parser.parseFileContents(source);
+      if (!parserResult.isValid()) {
+        const errorMessage = parserResult
+          .errors()
+          .map((error) => error.message)
+          .join("\n");
+        console.warn(`Warning: Failed to parse ${filePath} for inheritance resolution:`, errorMessage);
         return undefined;
       }
+      const root = parserResult.createTreeCursor();
 
       // If targetContractName is specified, find that specific contract
       // Otherwise, process all contracts in the file
-      const contractsToProcess: ContractDefinition[] = [];
+      const contractsToProcess: Cursor[] = [];
 
       if (targetContractName) {
-        const contractNode = findContractNode(ast, targetContractName);
-        if (contractNode) {
-          contractsToProcess.push(contractNode);
+        const contractCursor = findContractOrInterfaceNode(root, targetContractName);
+        if (contractCursor) {
+          contractsToProcess.push(contractCursor);
         }
       } else {
-        visit(ast, {
-          ContractDefinition(node) {
-            contractsToProcess.push(node);
-          },
-        });
+        for (const result of root.query([Query.create(`@contract ([ContractDefinition] | [InterfaceDefinition])`)])) {
+          contractsToProcess.push(result.captures.contract?.[0]);
+        }
       }
 
       // Process each contract
-      for (const contractNode of contractsToProcess) {
+      for (const contractCursor of contractsToProcess) {
         const info: InheritanceInfo = {
           baseContracts: [],
           baseContractImports: new Map(),
@@ -77,38 +81,50 @@ export async function createInheritanceResolver(
           filePath: normalizedPath,
         };
 
+        const contractNode = contractCursor.node;
+        assertNonterminalNode(contractNode);
+        const contract =
+          contractNode.kind === "ContractDefinition"
+            ? new ContractDefinition(contractNode)
+            : new InterfaceDefinition(contractNode);
+        const contractName = contract.name.unparse();
+
         // Extract base contracts
-        if (contractNode.baseContracts) {
-          for (const base of contractNode.baseContracts) {
-            info.baseContracts.push(base.baseName.namePath);
-          }
+        for (const result of contractCursor.query([
+          Query.create(`
+            [InheritanceType type_name: [IdentifierPath @baseName [Identifier]]]
+          `),
+        ])) {
+          const baseName = result.captures.baseName?.[0].node.unparse();
+          info.baseContracts.push(baseName);
         }
 
         // Extract symbols defined in this contract/interface
-        visit(contractNode, {
-          StructDefinition(node) {
-            if (node.name) {
-              info.symbols.set(node.name, { type: "struct", contract: contractNode.name });
-            }
-          },
-          EnumDefinition(node) {
-            if (node.name) {
-              info.symbols.set(node.name, { type: "enum", contract: contractNode.name });
-            }
-          },
-          CustomErrorDefinition(node) {
-            if (node.name) {
-              info.symbols.set(node.name, { type: "error", contract: contractNode.name });
-            }
-          },
-        });
+        for (const result of contractCursor.query([
+          Query.create(`[StructDefinition @name [Identifier]]`),
+          Query.create(`[EnumDefinition @name [Identifier]]`),
+          Query.create(`[ErrorDefinition @name [Identifier]]`),
+        ])) {
+          const name = result.captures.name?.[0].node.unparse();
+          switch (result.queryIndex) {
+            case 0:
+              info.symbols.set(name, { type: "struct", contract: contractName });
+              break;
+            case 1:
+              info.symbols.set(name, { type: "enum", contract: contractName });
+              break;
+            case 2:
+              info.symbols.set(name, { type: "error", contract: contractName });
+              break;
+          }
+        }
 
-        resolvedContracts.set(contractNode.name, info);
+        resolvedContracts.set(contractName, info);
 
         // Recursively process base contracts
         for (const baseName of info.baseContracts) {
           // First check if it's imported
-          const importInfo = findSymbolImport(ast, baseName);
+          const importInfo = findSymbolImport(root, baseName);
           if (importInfo) {
             // Store the original import path
             info.baseContractImports.set(baseName, importInfo.path);

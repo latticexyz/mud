@@ -1,8 +1,19 @@
-import { parse, visit } from "@solidity-parser/parser";
-import type { SourceUnit, TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
 import { MUDError } from "../../errors";
-import { findContractNode } from "./findContractNode";
+import { findContractOrInterfaceNode } from "./findContractOrInterfaceNode";
 import { SymbolImport, findSymbolImport } from "./findSymbolImport";
+import { Parser } from "@nomicfoundation/slang/parser";
+import { assertNonterminalNode, Cursor, Query, TerminalNode } from "@nomicfoundation/slang/cst";
+import {
+  ArrayTypeName,
+  ErrorDefinition,
+  ErrorParametersDeclaration,
+  FunctionDefinition,
+  IdentifierPath,
+  MemberAccessExpression,
+  ParametersDeclaration,
+  TypeName,
+} from "@nomicfoundation/slang/ast";
+import { LanguageFacts } from "@nomicfoundation/slang/utils";
 
 export interface ContractInterfaceFunction {
   name: string;
@@ -39,13 +50,18 @@ export function contractToInterface(
   symbolImports: SymbolImport[];
   qualifiedSymbols: Map<string, QualifiedSymbol>;
 } {
-  let ast: SourceUnit;
-  try {
-    ast = parse(source);
-  } catch (error) {
-    throw new MUDError(`Failed to parse contract ${contractName}: ${error}`);
+  const version = LanguageFacts.inferLanguageVersions(source).at(-1);
+  const parser = Parser.create(version ?? LanguageFacts.latestVersion());
+  const parserResult = parser.parseFileContents(source);
+  if (!parserResult.isValid()) {
+    const errorMessage = parserResult
+      .errors()
+      .map((error) => error.message)
+      .join("\n");
+    throw new MUDError(`Failed to parse contract ${contractName}: ${errorMessage}`);
   }
-  const contractNode = findContractNode(ast, contractName);
+  const root = parserResult.createTreeCursor();
+  const contractNode = findContractOrInterfaceNode(root, contractName);
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
@@ -55,55 +71,76 @@ export function contractToInterface(
     throw new MUDError(`Contract not found: ${contractName}`);
   }
 
-  visit(contractNode, {
-    FunctionDefinition({
-      name,
-      visibility,
-      parameters,
-      stateMutability,
-      returnParameters,
-      isConstructor,
-      isFallback,
-      isReceiveEther,
-    }) {
-      try {
-        // skip constructor and fallbacks
-        if (isConstructor || isFallback || isReceiveEther) return;
-        // forbid default visibility (this check might be unnecessary, modern solidity already disallows this)
-        if (visibility === "default") throw new MUDError(`Visibility is not specified`);
+  for (const match of contractNode.query([
+    Query.create(`
+      @function [FunctionDefinition [FunctionName [Identifier]]]
+    `),
+    Query.create(`
+      @error [ErrorDefinition]
+    `),
+  ])) {
+    if (match.captures["function"]) {
+      // Functions
+      const funcNode = match.captures["function"]?.[0].node;
+      assertNonterminalNode(funcNode);
+      const funcDef = new FunctionDefinition(funcNode);
+      const name = funcDef.name.cst.unparse().trim();
 
-        if (visibility === "external" || visibility === "public") {
-          functions.push({
-            name: name === null ? "" : name,
-            parameters: parameters.map(parseParameter),
-            stateMutability: stateMutability || "",
-            returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
-          });
-
-          for (const { typeName } of parameters.concat(returnParameters ?? [])) {
-            const symbols = typeNameToSymbols(typeName);
-            symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, findInheritedSymbol, qualifiedSymbols));
-          }
+      let visibility = undefined;
+      let stateMutability = "";
+      for (const item of funcDef.attributes.items) {
+        const attribute = item.cst.unparse().trim();
+        switch (attribute) {
+          case "public":
+          case "private":
+          case "internal":
+          case "external":
+            visibility = attribute;
+            break;
+          case "view":
+          case "pure":
+          case "payable":
+            stateMutability = attribute;
+            break;
         }
-      } catch (error: unknown) {
-        if (error instanceof MUDError) {
-          error.message = `Function "${name}" in contract "${contractName}": ${error.message}`;
-        }
-        throw error;
       }
-    },
-    CustomErrorDefinition({ name, parameters }) {
-      errors.push({
+      if (visibility === undefined) throw new MUDError(`Visibility is not specified for function '${name}'`);
+      if (visibility !== "public" && visibility !== "external") {
+        continue;
+      }
+
+      functions.push({
         name,
-        parameters: parameters.map(parseParameter),
+        parameters: splatParameters(funcDef.parameters),
+        stateMutability,
+        returnParameters: splatParameters(funcDef.returns?.variables),
       });
 
-      for (const parameter of parameters) {
-        const symbols = typeNameToSymbols(parameter.typeName);
-        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols, findInheritedSymbol, qualifiedSymbols));
+      for (const { typeName } of funcDef.parameters.parameters.items.concat(
+        funcDef.returns?.variables.parameters.items ?? [],
+      )) {
+        const symbols = typeNameToSymbols(typeName);
+        symbolImports = symbolImports.concat(symbolsToImports(root, symbols, findInheritedSymbol, qualifiedSymbols));
       }
-    },
-  });
+    } else if (match.captures["error"]) {
+      // Custom errors
+      const errorNode = match.captures.error?.[0].node;
+      assertNonterminalNode(errorNode);
+      const errorDef = new ErrorDefinition(errorNode);
+      const name = errorDef.name.unparse().trim();
+      errors.push({
+        name,
+        parameters: splatParameters(errorDef.members),
+      });
+
+      for (const { typeName } of errorDef.members.parameters.items) {
+        const symbols = typeNameToSymbols(typeName);
+        symbolImports = symbolImports.concat(symbolsToImports(root, symbols, findInheritedSymbol, qualifiedSymbols));
+      }
+    }
+  }
+
+  symbolImports = deduplicateSymbolImports(symbolImports);
 
   return {
     functions,
@@ -113,85 +150,33 @@ export function contractToInterface(
   };
 }
 
-function parseParameter({ name, typeName, storageLocation }: VariableDeclaration): string {
-  let typedNameWithLocation = "";
-
-  const { name: flattenedTypeName, stateMutability } = flattenTypeName(typeName);
-  // type name (e.g. uint256)
-  typedNameWithLocation += flattenedTypeName;
-  // optional mutability (e.g. address payable)
-  if (stateMutability !== null) {
-    typedNameWithLocation += ` ${stateMutability}`;
-  }
-  // location, when relevant (e.g. string memory)
-  if (storageLocation !== null) {
-    typedNameWithLocation += ` ${storageLocation}`;
-  }
-  // optional variable name
-  if (name !== null) {
-    typedNameWithLocation += ` ${name}`;
-  }
-
-  return typedNameWithLocation;
-}
-
-function flattenTypeName(typeName: TypeName | null): { name: string; stateMutability: string | null } {
-  if (typeName === null) {
-    return {
-      name: "",
-      stateMutability: null,
-    };
-  }
-  if (typeName.type === "ElementaryTypeName") {
-    return {
-      name: typeName.name,
-      stateMutability: typeName.stateMutability,
-    };
-  } else if (typeName.type === "UserDefinedTypeName") {
-    return {
-      name: typeName.namePath,
-      stateMutability: null,
-    };
-  } else if (typeName.type === "ArrayTypeName") {
-    let length = "";
-    if (typeName.length?.type === "NumberLiteral") {
-      length = typeName.length.number;
-    } else if (typeName.length?.type === "Identifier") {
-      length = typeName.length.name;
-    }
-
-    const { name, stateMutability } = flattenTypeName(typeName.baseTypeName);
-    return {
-      name: `${name}[${length}]`,
-      stateMutability,
-    };
-  } else {
-    // TODO function types are unsupported but could be useful
-    throw new MUDError(`Invalid typeName.type ${typeName.type}`);
-  }
+function splatParameters(parameters: ParametersDeclaration | ErrorParametersDeclaration | undefined): string[] {
+  return parameters?.parameters.items.map((parameter) => parameter.cst.unparse().trim()) ?? [];
 }
 
 // Get symbols that need to be imported for given typeName
-function typeNameToSymbols(typeName: TypeName | null): string[] {
-  if (typeName?.type === "UserDefinedTypeName") {
-    // split is needed to get a library, if types are internal to it
-    const symbol = typeName.namePath.split(".")[0];
-    return [symbol];
-  } else if (typeName?.type === "ArrayTypeName") {
-    const symbols = typeNameToSymbols(typeName.baseTypeName);
-    // array types can also use symbols (constants) for length
-    if (typeName.length?.type === "Identifier") {
-      const innerTypeName = typeName.length.name;
-      symbols.push(innerTypeName.split(".")[0]);
+function typeNameToSymbols(typeName: TypeName): string[] {
+  const typeVariant = typeName.variant;
+  if (typeVariant instanceof IdentifierPath) {
+    return [typeVariant.items[0].unparse()];
+  } else if (typeVariant instanceof ArrayTypeName) {
+    const symbols = typeNameToSymbols(typeVariant.operand);
+    const indexVariant = typeVariant.index?.variant;
+    if (indexVariant instanceof TerminalNode) {
+      symbols.push(indexVariant.unparse());
+    } else if (indexVariant instanceof MemberAccessExpression) {
+      const memberOperandVariant = indexVariant.operand.variant;
+      if (memberOperandVariant instanceof TerminalNode) {
+        symbols.push(memberOperandVariant.unparse());
+      }
     }
     return symbols;
-  } else {
-    return [];
   }
+  return [];
 }
 
 function symbolsToImports(
-  ast: SourceUnit,
+  root: Cursor,
   symbols: string[],
   findInheritedSymbol?: (symbol: string) => QualifiedSymbol | undefined,
   qualifiedSymbols?: Map<string, QualifiedSymbol>,
@@ -200,7 +185,7 @@ function symbolsToImports(
 
   for (const symbol of symbols) {
     // First check explicit imports
-    const explicitImport = findSymbolImport(ast, symbol);
+    const explicitImport = findSymbolImport(root, symbol);
     if (explicitImport) {
       imports.push(explicitImport);
       continue;
@@ -225,6 +210,10 @@ function symbolsToImports(
     }
   }
 
+  return imports;
+}
+
+function deduplicateSymbolImports(imports: SymbolImport[]): SymbolImport[] {
   // Deduplicate imports
   const uniqueImports = new Map<string, SymbolImport>();
   for (const imp of imports) {
