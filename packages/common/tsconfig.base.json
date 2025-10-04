@@ -13,13 +13,14 @@
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
-    "declaration": true,
     "esModuleInterop": true,
     "noErrorTruncation": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     // TODO: enable this
     // "noUncheckedIndexedAccess": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true
   }
 }
