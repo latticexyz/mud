@@ -10,7 +10,7 @@ export type GetAllowanceParams = {
 };
 
 export async function getAllowance({ client, userAddress }: GetAllowanceParams): Promise<null | bigint> {
-  const paymaster = getPaymaster(client.chain);
+  const paymaster = getPaymaster(client.chain, undefined);
   if (paymaster?.type !== "quarry") return null;
 
   return await getAction(

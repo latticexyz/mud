@@ -1,6 +1,7 @@
 import { Account, Address, Chain, Client, LocalAccount, RpcSchema, Transport } from "viem";
 import { smartAccountActions } from "permissionless";
 import { callFrom, sendUserOperationFrom } from "@latticexyz/world/internal";
+import { EntryKitConfig } from "./config/output";
 import { createBundlerClient } from "./createBundlerClient";
 import { SessionClient } from "./common";
 import { SmartAccount } from "viem/account-abstraction";
@@ -11,11 +12,13 @@ export async function getSessionClient({
   sessionAccount,
   sessionSigner,
   worldAddress,
+  paymasterOverride,
 }: {
   userAddress: Address;
   sessionAccount: SmartAccount;
   sessionSigner: LocalAccount;
   worldAddress: Address;
+  paymasterOverride: EntryKitConfig["paymasterOverride"];
 }): Promise<SessionClient> {
   const client = sessionAccount.client;
   if (!clientHasChain(client)) {
@@ -26,6 +29,7 @@ export async function getSessionClient({
     transport: getBundlerTransport(client.chain),
     client,
     account: sessionAccount,
+    paymaster: paymasterOverride,
   });
 
   const sessionClient = bundlerClient

@@ -10,7 +10,7 @@ export type GetSpenderParams = {
 };
 
 export async function getSpender({ client, userAddress, sessionAddress }: GetSpenderParams) {
-  const paymaster = getPaymaster(client.chain);
+  const paymaster = getPaymaster(client.chain, undefined);
   if (paymaster?.type !== "quarry") return null;
 
   const record = await getRecord(client, {
