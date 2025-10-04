@@ -7,7 +7,7 @@
     "build": "mud build",
     "clean": "forge clean && shx rm -rf src/**/codegen",
     "deploy:local": "mud deploy",
-    "test": "mud test",
+    "test": "mud test && mud test --skip-build --configPath=mud.config.customworld.ts",
     "test:ci": "pnpm run test"
   },
   "devDependencies": {
