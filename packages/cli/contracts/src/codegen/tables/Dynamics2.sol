@@ -91,6 +91,28 @@ library Dynamics2 {
   }
 
   /**
+   * @notice Get u64 slice.
+   */
+  function getU64Slice(bytes32 key, uint256 startIndex, uint256 endIndex) internal view returns (uint64[] memory u64) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 8 * startIndex, 8 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
+  }
+
+  /**
+   * @notice Get u64 slice.
+   */
+  function _getU64Slice(bytes32 key, uint256 startIndex, uint256 endIndex) internal view returns (uint64[] memory u64) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 8 * startIndex, 8 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
+  }
+
+  /**
    * @notice Set u64.
    */
   function setU64(bytes32 key, uint64[] memory u64) internal {

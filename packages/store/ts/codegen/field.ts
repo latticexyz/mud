@@ -59,6 +59,35 @@ export function renderFieldMethods(options: RenderTableOptions): string {
           `,
         ),
       );
+      if (field.isDynamic && field.arrayElement) {
+        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+          renderWithStore(
+            storeArgument,
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+              /**
+               * @notice Get ${field.name}${_commentSuffix} slice.
+               */
+              function ${_methodNamePrefix}get${_methodNameSuffix}Slice(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+                "uint256 startIndex",
+                "uint256 endIndex",
+              ])}) internal view returns (${_typedFieldName}) {
+                ${_keyTupleDefinition}
+                bytes memory _blob = ${_store}.getDynamicFieldSlice(
+                  _tableId,
+                  _keyTuple,
+                  ${schemaIndex - options.staticFields.length},
+                  ${field.arrayElement?.staticByteLength}*startIndex,
+                  ${field.arrayElement?.staticByteLength}*endIndex
+                );
+                return ${renderDecodeFieldSingle(field)};
+              }
+            `,
+          ),
+        );
+      }
     }
 
     result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
