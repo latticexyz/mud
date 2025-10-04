@@ -8,35 +8,48 @@ import { World } from "@latticexyz/world";
 import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
 import callWithSignatureModule from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureModule.sol/CallWithSignatureModule.json" with { type: "json" };
+import batchStoreModule from "@latticexyz/world-module-batchstore/out/BatchStoreModule.sol/BatchStoreModule.json" with { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { excludeCallWithSignatureModule } from "./compat/excludeUnstableCallWithSignatureModule";
 import { moduleArtifactPathFromName } from "./compat/moduleArtifactPathFromName";
 
 const callWithSignatureModuleArtifact = getContractArtifact(callWithSignatureModule);
+const batchStoreModuleArtifact = getContractArtifact(batchStoreModule);
+
+// metadata module is installed inside `ensureResourceTags`
+const defaultModules: Module[] = [
+  {
+    // optional for now
+    // TODO: figure out approach to install on existing worlds where deployer may not own root namespace
+    optional: true,
+    name: "CallWithSignatureModule",
+    installStrategy: "root",
+    installData: "0x",
+    prepareDeploy: createPrepareDeploy(
+      callWithSignatureModuleArtifact.bytecode,
+      callWithSignatureModuleArtifact.placeholders,
+    ),
+    deployedBytecodeSize: callWithSignatureModuleArtifact.deployedBytecodeSize,
+    abi: callWithSignatureModuleArtifact.abi,
+  },
+  {
+    // optional for now
+    // TODO: figure out approach to install on existing worlds where deployer may not own root namespace
+    optional: true,
+    name: "BatchStoreModule",
+    installStrategy: "root",
+    installData: "0x",
+    prepareDeploy: createPrepareDeploy(batchStoreModuleArtifact.bytecode, batchStoreModuleArtifact.placeholders),
+    deployedBytecodeSize: batchStoreModuleArtifact.deployedBytecodeSize,
+    abi: batchStoreModuleArtifact.abi,
+  },
+];
 
 export async function configToModules<config extends World>(
   config: config,
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
-  // metadata module is installed inside `ensureResourceTags`
-  const defaultModules: Module[] = [
-    {
-      // optional for now
-      // TODO: figure out approach to install on existing worlds where deployer may not own root namespace
-      optional: true,
-      name: "CallWithSignatureModule",
-      installStrategy: "root",
-      installData: "0x",
-      prepareDeploy: createPrepareDeploy(
-        callWithSignatureModuleArtifact.bytecode,
-        callWithSignatureModuleArtifact.placeholders,
-      ),
-      deployedBytecodeSize: callWithSignatureModuleArtifact.deployedBytecodeSize,
-      abi: callWithSignatureModuleArtifact.abi,
-    },
-  ];
-
   const modules = await Promise.all(
     config.modules
       .filter(excludeCallWithSignatureModule)
