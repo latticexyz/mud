@@ -93,9 +93,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, tableId.toString(), address(this))
     );
-    startGasReport("AccessControl: requireAccess (this address)");
     AccessControl.requireAccess(tableId, address(this));
-    endGasReport();
   }
 
   /// forge-config: default.allow_internal_expect_revert = true
