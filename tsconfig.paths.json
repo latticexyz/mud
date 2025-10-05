@@ -5,7 +5,7 @@
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/exports/index.ts"],
       "@latticexyz/cli": ["./packages/cli/src/index.ts"],
       "@latticexyz/common": ["./packages/common/src/index.ts"],
-      "@latticexyz/common/actions": ["./packages/common/src/actions/index.ts"],
+      "@latticexyz/common/actions": ["./packages/common/src/exports/actions.ts"],
       "@latticexyz/common/chains": ["./packages/common/src/chains/index.ts"],
       "@latticexyz/common/codegen": ["./packages/common/src/codegen/index.ts"],
       "@latticexyz/common/errors": ["./packages/common/src/errors/index.ts"],

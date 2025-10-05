@@ -5,7 +5,7 @@ export default defineConfig((opts) => ({
   ...baseConfig(opts),
   entry: {
     index: "src/index.ts",
-    actions: "src/actions/index.ts",
+    actions: "src/exports/actions.ts",
     chains: "src/chains/index.ts",
     codegen: "src/codegen/index.ts",
     errors: "src/errors/index.ts",
