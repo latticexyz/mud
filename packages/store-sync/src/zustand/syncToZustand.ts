@@ -25,6 +25,7 @@ export type SyncToZustandResult<config extends StoreConfig, extraTables extends 
   stopSync: () => void;
 };
 
+/** @deprecated Zustand support is deprecated in favor of Stash, a more performant MUD state library. Use `syncToStash` instead. */
 export async function syncToZustand<config extends StoreConfig, extraTables extends Tables = {}>({
   config,
   tables: extraTables = {} as extraTables,

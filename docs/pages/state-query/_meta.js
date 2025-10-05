@@ -1,3 +1,4 @@
 export default {
-  typescript: "TypeScript",
+  stash: "Stash",
+  recs: "RECS",
 };

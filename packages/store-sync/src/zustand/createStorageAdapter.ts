@@ -19,6 +19,7 @@ export type CreateStorageAdapterOptions<tables extends Tables> = {
   store: ZustandStore<tables>;
 };
 
+/** @deprecated Zustand support is deprecated in favor of Stash, a more performant MUD state library. */
 export function createStorageAdapter<tables extends Tables>({
   store,
 }: CreateStorageAdapterOptions<tables>): StorageAdapter {
