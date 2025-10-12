@@ -7,12 +7,13 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
-import { UNLIMITED_DELEGATION } from "../src/constants.sol";
+import { UNLIMITED_DELEGATION, ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
+import { Balances } from "../src/codegen/tables/Balances.sol";
 import { SystemCallData, SystemCallFromData } from "../src/modules/init/types.sol";
 
 import { createWorld } from "./createWorld.sol";
@@ -59,6 +60,7 @@ contract BatchCallTest is Test, GasReporter {
   function setUp() public {
     world = createWorld();
     world.registerNamespace(systemId.getNamespaceId());
+    StoreSwitch.setStoreAddress(address(world));
   }
 
   function testBatchCall() public {
@@ -174,5 +176,23 @@ contract BatchCallTest is Test, GasReporter {
 
     assertEq(abi.decode(returnDatas[0], (address)), delegatee, "wrong delegatee returned");
     assertEq(abi.decode(returnDatas[1], (address)), delegator, "wrong delegator returned");
+  }
+
+  function testBatchCallWithValue() public {
+    // Register a new system
+    TestSystem system = new TestSystem();
+    world.registerSystem(systemId, system, true);
+
+    // Send value with the system call
+    vm.deal(address(this), 1 ether);
+    SystemCallData[] memory systemCalls = new SystemCallData[](1);
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.msgSender, ()));
+    world.batchCall{ value: 100 }(systemCalls);
+
+    // Expect the system's balance to be 100
+    assertEq(Balances.get(systemId.getNamespaceId()), 100, "system namespace");
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0, "root namespace");
+
+    // TODO: add a test for sending different balance to different systems
   }
 }
