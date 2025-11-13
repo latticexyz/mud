@@ -42,5 +42,5 @@ export const pyrope = {
     },
   },
   iconUrls: ["https://lattice.xyz/brand/color/pyrope.svg"],
-  indexerUrl: "https://indexer.mud.pyropechain.com",
+  indexerUrl: "https://pyrope-dozer.onquarry.com",
 } as const satisfies MUDChain;
