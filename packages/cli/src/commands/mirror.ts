@@ -53,6 +53,10 @@ const options = {
     desc: "RPC URL of target chain to mirror to.",
     required: true,
   },
+  planFile: {
+    type: "string",
+    desc: "Path to existing plan file to use instead of creating a new one.",
+  },
 } as const;
 
 type Options = InferredOptionTypes<typeof options>;
@@ -146,6 +150,7 @@ const commandModule: CommandModule<Options, Options> = {
         world: toWorld,
         block: opts.toBlock != null ? BigInt(opts.toBlock) : undefined,
       },
+      planFile: opts.planFile,
     });
   },
 };
