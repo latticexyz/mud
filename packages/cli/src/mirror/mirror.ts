@@ -116,6 +116,11 @@ export async function mirror({
   const estimatedTotalTxs = deploymentTxCount + estimatedRecordTxs;
   const calldataGB = totalCalldata / (1024 * 1024 * 1024);
 
+  const blockTimeSeconds = 2;
+  const estimatedTimeSeconds = estimatedTotalTxs * blockTimeSeconds;
+  const estimatedTimeHours = estimatedTimeSeconds / 3600;
+  const estimatedTimeDays = estimatedTimeHours / 24;
+
   console.log(`plan has ${stepCount.toLocaleString()} steps`);
   console.log(
     `  - ${systemCount.toLocaleString()} systems (${deploymentTxCount.toLocaleString()} txs including libraries)`,
@@ -125,6 +130,9 @@ export async function mirror({
   );
   console.log(`  - estimated total: ~${estimatedTotalTxs.toLocaleString()} txs`);
   console.log(`  - estimated calldata: ${calldataGB.toFixed(2)} GB`);
+  console.log(
+    `  - estimated time (@ ${blockTimeSeconds}s/tx): ${estimatedTimeDays >= 1 ? `${estimatedTimeDays.toFixed(1)} days` : `${estimatedTimeHours.toFixed(1)} hours`}`,
+  );
 
   console.log("executing plan at", path.relative(rootDir, planFilename));
   await executeMirrorPlan({ planFilename, to });
