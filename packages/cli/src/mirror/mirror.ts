@@ -61,6 +61,7 @@ export async function mirror({
   let systemCount = 0;
   let recordCount = 0;
   let deploymentTxCount = 0;
+  let totalCalldata = 0;
 
   function countDeployments(bytecode: DeployedBytecode): number {
     let count = 1;
@@ -70,19 +71,50 @@ export async function mirror({
     return count;
   }
 
+  function sumInitCodeSize(bytecode: DeployedBytecode): number {
+    let size = (bytecode.initCode.length - 2) / 2;
+    for (const lib of bytecode.libraries) {
+      size += sumInitCodeSize(lib.reference);
+    }
+    return size;
+  }
+
+  function getRecordSize(record: {
+    tableId: string;
+    keyTuple: readonly string[];
+    staticData: string;
+    encodedLengths: string;
+    dynamicData: string;
+  }): number {
+    // tableId (32 bytes)
+    let size = 32;
+    // keyTuple length prefix (32 bytes) + each key (32 bytes each)
+    size += 32 + record.keyTuple.length * 32;
+    // staticData (length prefix + data)
+    size += 32 + (record.staticData.length - 2) / 2;
+    // encodedLengths (32 bytes)
+    size += 32;
+    // dynamicData (length prefix + data)
+    size += 32 + (record.dynamicData.length - 2) / 2;
+    return size;
+  }
+
   for await (const step of readPlan(planFilename)) {
     stepCount++;
     if (step.step === "deploySystem") {
       systemCount++;
       deploymentTxCount += countDeployments(step.bytecode);
+      totalCalldata += sumInitCodeSize(step.bytecode);
     } else if (step.step === "setRecord") {
       recordCount++;
+      totalCalldata += getRecordSize(step.record);
     }
   }
 
   const batchSize = 250;
   const estimatedRecordTxs = Math.ceil(recordCount / batchSize);
   const estimatedTotalTxs = deploymentTxCount + estimatedRecordTxs;
+  const calldataGB = totalCalldata / (1024 * 1024 * 1024);
 
   console.log(`plan has ${stepCount.toLocaleString()} steps`);
   console.log(
@@ -92,6 +124,7 @@ export async function mirror({
     `  - ${recordCount.toLocaleString()} records (~${estimatedRecordTxs.toLocaleString()} txs in batches of ${batchSize})`,
   );
   console.log(`  - estimated total: ~${estimatedTotalTxs.toLocaleString()} txs`);
+  console.log(`  - estimated calldata: ${calldataGB.toFixed(2)} GB`);
 
   console.log("executing plan at", path.relative(rootDir, planFilename));
   await executeMirrorPlan({ planFilename, to });
