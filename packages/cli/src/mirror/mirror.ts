@@ -1,10 +1,11 @@
 import path from "node:path";
 import fs from "node:fs";
-import { Account, Address, Chain, Client, Transport } from "viem";
+import { Account, Address, Chain, Client, Transport, encodeAbiParameters, Hex, zeroHash } from "viem";
 import { createMirrorPlan } from "./createMirrorPlan";
 import { executeMirrorPlan } from "./executeMirrorPlan";
 import { readPlan } from "./readPlan";
-import { DeployedBytecode } from "./common";
+import { DeployedBytecode, PlanStep } from "./common";
+import { LibZip } from "solady";
 
 // TODO: attempt to create world the same way as it was originally created, thus preserving world address
 // TODO: set up table to track migrated records with original metadata (block number/timestamp) and for lazy migrations
@@ -57,11 +58,24 @@ export async function mirror({
     console.log("plan created at", path.relative(rootDir, planFilename));
   }
 
+  const tableRecordsAbiItem = {
+    type: "tuple[]",
+    internalType: "struct TableRecord[]",
+    components: [
+      { name: "keyTuple", type: "bytes32[]", internalType: "bytes32[]" },
+      { name: "staticData", type: "bytes", internalType: "bytes" },
+      { name: "encodedLengths", type: "bytes32", internalType: "EncodedLengths" },
+      { name: "dynamicData", type: "bytes", internalType: "bytes" },
+    ],
+  } as const;
+
   let stepCount = 0;
   let systemCount = 0;
   let recordCount = 0;
   let deploymentTxCount = 0;
   let totalCalldata = 0;
+
+  const allRecords: Extract<PlanStep, { step: "setRecord" }>["record"][] = [];
 
   function countDeployments(bytecode: DeployedBytecode): number {
     let count = 1;
@@ -86,19 +100,15 @@ export async function mirror({
     encodedLengths: string;
     dynamicData: string;
   }): number {
-    // tableId (32 bytes)
     let size = 32;
-    // keyTuple length prefix (32 bytes) + each key (32 bytes each)
     size += 32 + record.keyTuple.length * 32;
-    // staticData (length prefix + data)
     size += 32 + (record.staticData.length - 2) / 2;
-    // encodedLengths (32 bytes)
     size += 32;
-    // dynamicData (length prefix + data)
     size += 32 + (record.dynamicData.length - 2) / 2;
     return size;
   }
 
+  console.log("loading all records from plan...");
   for await (const step of readPlan(planFilename)) {
     stepCount++;
     if (step.step === "deploySystem") {
@@ -108,10 +118,61 @@ export async function mirror({
     } else if (step.step === "setRecord") {
       recordCount++;
       totalCalldata += getRecordSize(step.record);
+      allRecords.push(step.record);
     }
   }
 
-  const batchSize = 250;
+  function estimateBatchGas(records: Extract<PlanStep, { step: "setRecord" }>["record"][]): number {
+    const normalizedRecords = records.map((record) => ({
+      ...record,
+      encodedLengths: record.encodedLengths === "0x00" ? zeroHash : record.encodedLengths,
+    }));
+    const calldata = encodeAbiParameters(
+      [{ type: "bytes32" }, tableRecordsAbiItem],
+      [records[0].tableId, normalizedRecords],
+    );
+    const compressed = LibZip.flzCompress(calldata) as Hex;
+    const compressedSize = (compressed.length - 2) / 2;
+
+    const decompressionGas = compressedSize * 10;
+    const storageGas = records.length * 22000;
+    const overheadGas = 50000;
+
+    return decompressionGas + storageGas + overheadGas;
+  }
+
+  console.log("calculating optimal batch size based on actual compression...");
+  const targetGasLimit = 50_000_000;
+  let optimalBatchSize = 250;
+
+  const recordsByTable = new Map<string, Extract<PlanStep, { step: "setRecord" }>["record"][]>();
+  for (const record of allRecords) {
+    const tableRecords = recordsByTable.get(record.tableId) ?? [];
+    tableRecords.push(record);
+    recordsByTable.set(record.tableId, tableRecords);
+  }
+
+  const largestTable = Array.from(recordsByTable.values()).reduce(
+    (max, curr) => (curr.length > max.length ? curr : max),
+    [],
+  );
+
+  if (largestTable.length >= 100) {
+    for (let size = 100; size <= 500; size += 50) {
+      if (size > largestTable.length) break;
+      const batch = largestTable.slice(0, size);
+      const estimatedGas = estimateBatchGas(batch);
+      console.log(`  batch size ${size}: ${estimatedGas.toLocaleString()} gas`);
+      if (estimatedGas > targetGasLimit) {
+        optimalBatchSize = size - 50;
+        break;
+      }
+      optimalBatchSize = size;
+    }
+    console.log(`optimal batch size: ${optimalBatchSize}`);
+  }
+
+  const batchSize = optimalBatchSize;
   const estimatedRecordTxs = Math.ceil(recordCount / batchSize);
   const estimatedTotalTxs = deploymentTxCount + estimatedRecordTxs;
   const calldataGB = totalCalldata / (1024 * 1024 * 1024);
