@@ -195,6 +195,8 @@ export async function mirror({
     `  - estimated time (@ ${blockTimeSeconds}s/tx): ${estimatedTimeDays >= 1 ? `${estimatedTimeDays.toFixed(1)} days` : `${estimatedTimeHours.toFixed(1)} hours`}`,
   );
 
-  console.log("executing plan at", path.relative(rootDir, planFilename));
-  await executeMirrorPlan({ planFilename, to });
+  if (planFile) {
+    console.log("executing plan at", path.relative(rootDir, planFilename));
+    await executeMirrorPlan({ planFilename, to });
+  }
 }
