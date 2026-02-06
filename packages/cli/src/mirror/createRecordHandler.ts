@@ -23,12 +23,12 @@ export function createRecordHandler({
   client,
   worldAddress,
   totalRecords,
-  batchSize = 250,
+  batchSize,
 }: {
   client: Client<Transport, Chain | undefined, Account>;
   worldAddress: Address;
   totalRecords: number;
-  batchSize?: number;
+  batchSize: number;
 }) {
   const records: StoreRecord[] = [];
   const status = {
@@ -102,7 +102,7 @@ ${" ".repeat(progressBarFilled)}~${estimatedTime.toFixed(1)} hours
         console.log(
           `Records confirmed: ${status.confirmed.toLocaleString()} / ${totalRecords.toLocaleString()}
 Gas used: ${status.gasUsed.toLocaleString()} / ~${estimatedGas.toLocaleString()} (${receipt.gasUsed.toLocaleString()} used last batch)
-Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 100000n)).toFixed(3)} ETH
+Estimated L2 cost at 50 wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 50n)).toFixed(3)} ETH
 `,
         );
       });

@@ -1,11 +1,10 @@
 import path from "node:path";
 import fs from "node:fs";
-import { Account, Address, Chain, Client, Transport, encodeAbiParameters, Hex, zeroHash } from "viem";
+import { Account, Address, Chain, Client, Transport } from "viem";
 import { createMirrorPlan } from "./createMirrorPlan";
 import { executeMirrorPlan } from "./executeMirrorPlan";
 import { readPlan } from "./readPlan";
 import { DeployedBytecode, PlanStep } from "./common";
-import { LibZip } from "solady";
 
 // TODO: attempt to create world the same way as it was originally created, thus preserving world address
 // TODO: set up table to track migrated records with original metadata (block number/timestamp) and for lazy migrations
@@ -30,8 +29,8 @@ export async function mirror({
     world: Address;
     block?: bigint;
   };
+  batchSize: number;
   planFile?: string;
-  batchSize?: number;
 }) {
   // TODO: check for world balance, warn
   // TODO: deploy world
@@ -59,17 +58,6 @@ export async function mirror({
     planFilename = await createMirrorPlan({ rootDir, from });
     console.log("plan created at", path.relative(rootDir, planFilename));
   }
-
-  const tableRecordsAbiItem = {
-    type: "tuple[]",
-    internalType: "struct TableRecord[]",
-    components: [
-      { name: "keyTuple", type: "bytes32[]", internalType: "bytes32[]" },
-      { name: "staticData", type: "bytes", internalType: "bytes" },
-      { name: "encodedLengths", type: "bytes32", internalType: "EncodedLengths" },
-      { name: "dynamicData", type: "bytes", internalType: "bytes" },
-    ],
-  } as const;
 
   let stepCount = 0;
   let systemCount = 0;
@@ -124,28 +112,7 @@ export async function mirror({
     }
   }
 
-  function estimateBatchGas(records: Extract<PlanStep, { step: "setRecord" }>["record"][]): number {
-    const normalizedRecords = records.map((record) => ({
-      ...record,
-      encodedLengths: record.encodedLengths === "0x00" ? zeroHash : record.encodedLengths,
-    }));
-    const calldata = encodeAbiParameters(
-      [{ type: "bytes32" }, tableRecordsAbiItem],
-      [records[0].tableId, normalizedRecords],
-    );
-    const compressed = LibZip.flzCompress(calldata) as Hex;
-    const compressedSize = (compressed.length - 2) / 2;
-
-    const decompressionGas = compressedSize * 10;
-    const storageGas = records.length * 22000;
-    const overheadGas = 50000;
-
-    return decompressionGas + storageGas + overheadGas;
-  }
-
   console.log("calculating optimal batch size based on actual compression...");
-  const targetGasLimit = 50_000_000;
-  let optimalBatchSize = 250;
 
   const recordsByTable = new Map<string, Extract<PlanStep, { step: "setRecord" }>["record"][]>();
   for (const record of allRecords) {
@@ -154,27 +121,7 @@ export async function mirror({
     recordsByTable.set(record.tableId, tableRecords);
   }
 
-  const largestTable = Array.from(recordsByTable.values()).reduce(
-    (max, curr) => (curr.length > max.length ? curr : max),
-    [],
-  );
-
-  if (largestTable.length >= 100) {
-    for (let size = 100; size <= 500; size += 50) {
-      if (size > largestTable.length) break;
-      const batch = largestTable.slice(0, size);
-      const estimatedGas = estimateBatchGas(batch);
-      console.log(`  batch size ${size}: ${estimatedGas.toLocaleString()} gas`);
-      if (estimatedGas > targetGasLimit) {
-        optimalBatchSize = size - 50;
-        break;
-      }
-      optimalBatchSize = size;
-    }
-    console.log(`optimal batch size: ${optimalBatchSize}`);
-  }
-
-  const estimatedRecordTxs = Math.ceil(recordCount / (batchSize ?? optimalBatchSize));
+  const estimatedRecordTxs = Math.ceil(recordCount / batchSize);
   const estimatedTotalTxs = deploymentTxCount + estimatedRecordTxs;
   const calldataGB = totalCalldata / (1024 * 1024 * 1024);
 
@@ -188,7 +135,7 @@ export async function mirror({
     `  - ${systemCount.toLocaleString()} systems (${deploymentTxCount.toLocaleString()} txs including libraries)`,
   );
   console.log(
-    `  - ${recordCount.toLocaleString()} records (~${estimatedRecordTxs.toLocaleString()} txs in batches of ${batchSize ?? optimalBatchSize})`,
+    `  - ${recordCount.toLocaleString()} records (~${estimatedRecordTxs.toLocaleString()} txs in batches of ${batchSize})`,
   );
   console.log(`  - estimated total: ~${estimatedTotalTxs.toLocaleString()} txs`);
   console.log(`  - estimated calldata: ${calldataGB.toFixed(2)} GB`);

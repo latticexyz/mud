@@ -60,6 +60,7 @@ const options = {
   batchSize: {
     type: "number",
     desc: "Number of records to batch together when setting records (defaults to optimal size based on gas estimation).",
+    default: 250,
   },
 } as const;
 
@@ -133,9 +134,9 @@ const commandModule: CommandModule<Options, Options> = {
     console.log(
       chalk.bgBlue(
         chalk.whiteBright(`
- Mirroring MUD data 
-   from world ${fromWorld} on chain ${fromChainId} 
-   to world ${toWorld} on chain ${toChainId} 
+ Mirroring MUD data
+   from world ${fromWorld} on chain ${fromChainId}
+   to world ${toWorld} on chain ${toChainId}
 `),
       ),
     );

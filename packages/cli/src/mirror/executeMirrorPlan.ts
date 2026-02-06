@@ -19,7 +19,7 @@ export async function executeMirrorPlan({
 }: {
   planFilename: string;
   to: { client: Client<Transport, Chain | undefined, Account>; world: Address; block?: bigint };
-  batchSize?: number;
+  batchSize: number;
 }) {
   let totalSystems = 0;
   let totalRecords = 0;
