@@ -108,6 +108,8 @@ export async function executeMirrorPlan({
     }) as never;
   }
 
+  console.log(`deployed ${systems.length.toLocaleString()} systems`);
+
   const recordHandler = createRecordHandler({
     client,
     worldAddress: worldDeploy.address,
