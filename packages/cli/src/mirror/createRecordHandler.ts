@@ -166,6 +166,7 @@ Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 1
       abi: worldCallAbi,
       functionName: "call",
       args,
+      maxPriorityFeePerGas: 10n,
     });
     debug("set", changedRecords.length, "records", `(tx: ${hash})`);
     return hash;
