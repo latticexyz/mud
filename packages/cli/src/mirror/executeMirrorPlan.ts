@@ -15,9 +15,11 @@ export type StoreRecord = Extract<StoreLog, { eventName: "Store_SetRecord" }>["a
 export async function executeMirrorPlan({
   planFilename,
   to: { client, world: worldAddress, block: deployBlock },
+  batchSize,
 }: {
   planFilename: string;
   to: { client: Client<Transport, Chain | undefined, Account>; world: Address; block?: bigint };
+  batchSize?: number;
 }) {
   let totalSystems = 0;
   let totalRecords = 0;
@@ -114,6 +116,7 @@ export async function executeMirrorPlan({
     client,
     worldAddress: worldDeploy.address,
     totalRecords,
+    batchSize,
   });
   const deferredRecords: StoreRecord[] = [];
 

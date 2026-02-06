@@ -23,12 +23,13 @@ export function createRecordHandler({
   client,
   worldAddress,
   totalRecords,
+  batchSize = 250,
 }: {
   client: Client<Transport, Chain | undefined, Account>;
   worldAddress: Address;
   totalRecords: number;
+  batchSize?: number;
 }) {
-  const batchSize = 250;
   const records: StoreRecord[] = [];
   const status = {
     submitted: 0,
@@ -158,6 +159,7 @@ Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 1
     //   " = ",
     //   size(LibZip.flzCompress(calldata) as Hex) / size(calldata),
     // );
+    debug("setting", changedRecords.length, "records for table", changedRecords[0].tableId);
     const hash = await writeContract(client, {
       chain: client.chain ?? null,
       address: worldAddress,

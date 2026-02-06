@@ -15,6 +15,7 @@ export async function mirror({
   from,
   to,
   planFile,
+  batchSize,
 }: {
   rootDir: string;
   from: {
@@ -30,6 +31,7 @@ export async function mirror({
     block?: bigint;
   };
   planFile?: string;
+  batchSize?: number;
 }) {
   // TODO: check for world balance, warn
   // TODO: deploy world
@@ -172,8 +174,7 @@ export async function mirror({
     console.log(`optimal batch size: ${optimalBatchSize}`);
   }
 
-  const batchSize = optimalBatchSize;
-  const estimatedRecordTxs = Math.ceil(recordCount / batchSize);
+  const estimatedRecordTxs = Math.ceil(recordCount / (batchSize ?? optimalBatchSize));
   const estimatedTotalTxs = deploymentTxCount + estimatedRecordTxs;
   const calldataGB = totalCalldata / (1024 * 1024 * 1024);
 
@@ -187,7 +188,7 @@ export async function mirror({
     `  - ${systemCount.toLocaleString()} systems (${deploymentTxCount.toLocaleString()} txs including libraries)`,
   );
   console.log(
-    `  - ${recordCount.toLocaleString()} records (~${estimatedRecordTxs.toLocaleString()} txs in batches of ${batchSize})`,
+    `  - ${recordCount.toLocaleString()} records (~${estimatedRecordTxs.toLocaleString()} txs in batches of ${batchSize ?? optimalBatchSize})`,
   );
   console.log(`  - estimated total: ~${estimatedTotalTxs.toLocaleString()} txs`);
   console.log(`  - estimated calldata: ${calldataGB.toFixed(2)} GB`);
@@ -197,6 +198,6 @@ export async function mirror({
 
   if (planFile) {
     console.log("executing plan at", path.relative(rootDir, planFilename));
-    await executeMirrorPlan({ planFilename, to });
+    await executeMirrorPlan({ planFilename, to, batchSize });
   }
 }

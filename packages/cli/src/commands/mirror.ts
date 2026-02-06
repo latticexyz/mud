@@ -57,6 +57,10 @@ const options = {
     type: "string",
     desc: "Path to existing plan file to use instead of creating a new one.",
   },
+  batchSize: {
+    type: "number",
+    desc: "Number of records to batch together when setting records (defaults to optimal size based on gas estimation).",
+  },
 } as const;
 
 type Options = InferredOptionTypes<typeof options>;
@@ -151,6 +155,7 @@ const commandModule: CommandModule<Options, Options> = {
         block: opts.toBlock != null ? BigInt(opts.toBlock) : undefined,
       },
       planFile: opts.planFile,
+      batchSize: opts.batchSize,
     });
   },
 };
