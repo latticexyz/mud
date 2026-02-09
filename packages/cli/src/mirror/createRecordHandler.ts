@@ -112,64 +112,80 @@ Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 1
   }
 
   async function setRecords(records: StoreRecord[]) {
-    const existingRecords = decodeFunctionResult({
-      abi: batchStoreSystemAbi,
-      functionName: "getTableRecords",
-      data: await readContract(client, {
-        address: worldAddress,
-        abi: worldCallAbi,
-        functionName: "call",
-        args: encodeSystemCall({
-          systemId: batchStoreConfig.systems.BatchStoreSystem.systemId,
+    async function setRecordsWithRetry(records: StoreRecord[], attempt = 0): Promise<Hex | undefined> {
+      const chunkSize = Math.max(1, Math.floor(records.length / Math.pow(2, attempt)));
+
+      if (chunkSize < records.length) {
+        debug(`splitting batch of ${records.length} records into chunks of ${chunkSize}`);
+        const hashes: Hex[] = [];
+        for (let i = 0; i < records.length; i += chunkSize) {
+          const chunk = records.slice(i, i + chunkSize);
+          const hash = await setRecordsWithRetry(chunk, 0);
+          if (hash) hashes.push(hash);
+        }
+        return hashes[hashes.length - 1];
+      }
+
+      try {
+        debug("getting existing records for table", records[0].tableId, "to avoid unnecessary writes");
+        const existingRecords = decodeFunctionResult({
           abi: batchStoreSystemAbi,
           functionName: "getTableRecords",
-          args: [records[0].tableId, records.map((record) => record.keyTuple)],
-        }),
-      }),
-    });
+          data: await readContract(client, {
+            address: worldAddress,
+            abi: worldCallAbi,
+            functionName: "call",
+            args: encodeSystemCall({
+              systemId: batchStoreConfig.systems.BatchStoreSystem.systemId,
+              abi: batchStoreSystemAbi,
+              functionName: "getTableRecords",
+              args: [records[0].tableId, records.map((record) => record.keyTuple)],
+            }),
+          }),
+        });
+        debug("got", existingRecords.length, "existing records for table", records[0].tableId);
 
-    const changedRecords = records.filter((record, i) => {
-      const recordEncoded = encodeAbiParameters([tableRecordAbiItem], [record]);
-      const existingRecordEncoded = encodeAbiParameters([tableRecordAbiItem], [existingRecords[i]]);
-      if (recordEncoded === existingRecordEncoded) return false;
-      // console.log("record changed in", record.tableId);
-      // console.log("  ", recordEncoded);
-      // console.log("  ", existingRecordEncoded);
-      return true;
-    });
-    if (!changedRecords.length) {
-      return;
+        const changedRecords = records.filter((record, i) => {
+          const recordEncoded = encodeAbiParameters([tableRecordAbiItem], [record]);
+          const existingRecordEncoded = encodeAbiParameters([tableRecordAbiItem], [existingRecords[i]]);
+          if (recordEncoded === existingRecordEncoded) return false;
+          return true;
+        });
+        if (!changedRecords.length) {
+          return;
+        }
+
+        const calldata = encodeAbiParameters(
+          [{ type: "bytes32" }, tableRecordsAbiItem],
+          [changedRecords[0].tableId, changedRecords],
+        );
+        const args = encodeSystemCall({
+          systemId: batchStoreConfig.systems.BatchStoreSystem.systemId,
+          abi: batchStoreSystemAbi,
+          functionName: "_setTableRecords_flz",
+          args: [LibZip.flzCompress(calldata) as Hex],
+        });
+        debug("setting", changedRecords.length, "records for table", changedRecords[0].tableId);
+        const hash = await writeContract(client, {
+          chain: client.chain ?? null,
+          address: worldAddress,
+          abi: worldCallAbi,
+          functionName: "call",
+          args,
+          maxPriorityFeePerGas: 10n,
+        });
+        debug("set", changedRecords.length, "records", `(tx: ${hash})`);
+        return hash;
+      } catch (error) {
+        if (attempt < 5 && records.length > 1) {
+          debug(`batch of ${records.length} records failed, retrying with smaller batch (attempt ${attempt + 1})`);
+          return setRecordsWithRetry(records, attempt + 1);
+        }
+        throw error;
+      }
     }
 
-    const calldata = encodeAbiParameters(
-      [{ type: "bytes32" }, tableRecordsAbiItem],
-      [changedRecords[0].tableId, changedRecords],
-    );
-    const args = encodeSystemCall({
-      systemId: batchStoreConfig.systems.BatchStoreSystem.systemId,
-      abi: batchStoreSystemAbi,
-      functionName: "_setTableRecords_flz",
-      args: [LibZip.flzCompress(calldata) as Hex],
-    });
-    // console.log(
-    //   "flz compression",
-    //   size(calldata),
-    //   "=>",
-    //   size(LibZip.flzCompress(calldata) as Hex),
-    //   " = ",
-    //   size(LibZip.flzCompress(calldata) as Hex) / size(calldata),
-    // );
-    debug("setting", changedRecords.length, "records for table", changedRecords[0].tableId);
-    const hash = await writeContract(client, {
-      chain: client.chain ?? null,
-      address: worldAddress,
-      abi: worldCallAbi,
-      functionName: "call",
-      args,
-      maxPriorityFeePerGas: 10n,
-    });
-    debug("set", changedRecords.length, "records", `(tx: ${hash})`);
-    return hash;
+    return setRecordsWithRetry(records);
   }
 
   return { set, finalize };
