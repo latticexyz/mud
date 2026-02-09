@@ -89,23 +89,27 @@ ${" ".repeat(progressBarFilled)}~${estimatedTime.toFixed(1)} hours
     );
 
     if (hash) {
-      waitForTransactionReceipt(client, { hash }).then((receipt) => {
-        if (receipt.status === "reverted") {
-          console.error("Could not submit records", batch, receipt);
-          return;
-        }
+      waitForTransactionReceipt(client, { hash })
+        .then((receipt) => {
+          if (receipt.status === "reverted") {
+            console.error("Could not submit records", batch, receipt);
+            return;
+          }
 
-        status.confirmed += batch.length;
-        status.gasUsed += Number(receipt.gasUsed);
+          status.confirmed += batch.length;
+          status.gasUsed += Number(receipt.gasUsed);
 
-        const estimatedGas = Math.ceil((status.gasUsed / status.confirmed) * totalRecords);
-        console.log(
-          `Records confirmed: ${status.confirmed.toLocaleString()} / ${totalRecords.toLocaleString()}
+          const estimatedGas = Math.ceil((status.gasUsed / status.confirmed) * totalRecords);
+          console.log(
+            `Records confirmed: ${status.confirmed.toLocaleString()} / ${totalRecords.toLocaleString()}
 Gas used: ${status.gasUsed.toLocaleString()} / ~${estimatedGas.toLocaleString()} (${receipt.gasUsed.toLocaleString()} used last batch)
 Estimated L2 cost at 100k wei: ${parseFloat(formatEther(BigInt(estimatedGas) * 100000n)).toFixed(3)} ETH
 `,
-        );
-      });
+          );
+        })
+        .catch((error) => {
+          debug("error waiting for transaction receipt", hash, error);
+        });
     }
 
     return hash;
