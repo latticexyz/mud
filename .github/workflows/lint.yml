@@ -9,7 +9,7 @@ on:
 jobs:
   lint:
     name: Run lint
-    runs-on: depot-ubuntu-22.04-16
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3

@@ -14,6 +14,7 @@ const testOptions = {
       "Address of an existing world contract. If provided, deployment is skipped and the RPC provided in the foundry.toml is used for fork testing.",
   },
   forgeOptions: { type: "string", description: "Options to pass to forge test" },
+  saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: false },
 } as const satisfies Record<string, Options>;
 
 type TestOptions = InferredOptionTypes<typeof testOptions>;
@@ -45,7 +46,6 @@ const commandModule: CommandModule<typeof testOptions, TestOptions> = {
       (
         await runDeploy({
           ...opts,
-          saveDeployment: false,
           rpc: forkRpc,
         })
       ).address;

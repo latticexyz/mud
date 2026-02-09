@@ -11,6 +11,12 @@ export type Contract = {
   salt?: Hex;
 };
 
+export type EnsureContractResult = {
+  contract: Contract;
+  deployedAddress: Hex;
+  txHash: readonly Hex[];
+};
+
 export async function ensureContract({
   client,
   deployerAddress,
@@ -21,7 +27,7 @@ export async function ensureContract({
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
-} & Contract): Promise<readonly Hex[]> {
+} & Contract): Promise<EnsureContractResult> {
   if (bytecode.includes("__$")) {
     throw new Error(`Found unlinked public library in ${debugLabel} bytecode`);
   }
@@ -31,7 +37,11 @@ export async function ensureContract({
   const contractCode = await getCode(client, { address, blockTag: "pending" });
   if (contractCode) {
     debug("found", debugLabel, "at", address);
-    return [];
+    return {
+      contract: { bytecode, deployedBytecodeSize, debugLabel, salt },
+      deployedAddress: address,
+      txHash: [],
+    };
   }
 
   if (deployedBytecodeSize != null) {
@@ -52,11 +62,15 @@ export async function ensureContract({
   }
 
   debug("deploying", debugLabel, "at", address);
-  return [
-    await sendTransaction(client, {
-      chain: client.chain ?? null,
-      to: deployerAddress,
-      data: concatHex([salt, bytecode]),
-    }),
-  ];
+  return {
+    contract: { bytecode, deployedBytecodeSize, debugLabel, salt },
+    deployedAddress: address,
+    txHash: [
+      await sendTransaction(client, {
+        chain: client.chain ?? null,
+        to: deployerAddress,
+        data: concatHex([salt, bytecode]),
+      }),
+    ],
+  };
 }
