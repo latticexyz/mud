@@ -61,6 +61,7 @@ export async function mirror({
 
   let stepCount = 0;
   let systemCount = 0;
+  let hookCount = 0;
   let recordCount = 0;
   let deploymentTxCount = 0;
   let totalCalldata = 0;
@@ -105,6 +106,10 @@ export async function mirror({
       systemCount++;
       deploymentTxCount += countDeployments(step.bytecode);
       totalCalldata += sumInitCodeSize(step.bytecode);
+    } else if (step.step === "deployHook") {
+      hookCount++;
+      deploymentTxCount += countDeployments(step.bytecode);
+      totalCalldata += sumInitCodeSize(step.bytecode);
     } else if (step.step === "setRecord") {
       recordCount++;
       totalCalldata += getRecordSize(step.record);
@@ -132,8 +137,10 @@ export async function mirror({
 
   console.log(`plan has ${stepCount.toLocaleString()} steps`);
   console.log(
-    `  - ${systemCount.toLocaleString()} systems (${deploymentTxCount.toLocaleString()} txs including libraries)`,
+    `  - ${(systemCount + hookCount).toLocaleString()} systems/hooks (${deploymentTxCount.toLocaleString()} txs including libraries)`,
   );
+  console.log(`    * ${systemCount.toLocaleString()} systems`);
+  console.log(`    * ${hookCount.toLocaleString()} hooks`);
   console.log(
     `  - ${recordCount.toLocaleString()} records (~${estimatedRecordTxs.toLocaleString()} txs in batches of ${batchSize})`,
   );

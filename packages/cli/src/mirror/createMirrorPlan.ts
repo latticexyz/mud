@@ -1,4 +1,4 @@
-import { Address, Client } from "viem";
+import { Address, Client, Hex, isAddress } from "viem";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getChainId } from "viem/actions";
 import { getTables } from "../deploy/getTables";
@@ -13,6 +13,7 @@ import { mirrorPlansDirectory } from "./common";
 import { getSystems } from "../deploy/getSystems";
 import { getDeployedBytecode } from "./getDeployedBytecode";
 import { debug } from "./debug";
+import worldConfig from "@latticexyz/world/mud.config";
 
 // TODO: attempt to create world the same way as it was originally created, thus preserving world address
 // TODO: set up table to track migrated records with original metadata (block number/timestamp) and for lazy migrations
@@ -73,6 +74,8 @@ export async function createMirrorPlan({
       chainId: fromChainId,
     });
 
+    const hookAddresses = new Set<Address>();
+
     // TODO: sort tables so that the insert order is correct (e.g. namespaces first)
 
     let count = 0;
@@ -88,11 +91,37 @@ export async function createMirrorPlan({
       );
       debug("got", logs.length, "logs for", resourceToLabel(table));
       for (const log of logs) {
+        if (log.args.tableId === worldConfig.namespaces.world.tables.SystemHooks.tableId) {
+          for (const hookAddress of extractHookAddresses(log.args.dynamicData)) {
+            hookAddresses.add(hookAddress);
+          }
+        }
         plan.write({ step: "setRecord", record: log.args });
       }
       count += logs.length;
     }
     debug("got", count, "total record logs");
+
+    if (hookAddresses.size > 0) {
+      debug("getting bytecode for", hookAddresses.size, "system hooks");
+      const hooksWithBytecode = await Promise.all(
+        Array.from(hookAddresses).map(async (hookAddress) => {
+          const bytecode = await getDeployedBytecode({
+            client: from.client,
+            address: hookAddress,
+            debugLabel: `system hook ${hookAddress}`,
+            allowedStorage: ["empty", { worldConsumer: worldDeploy.address }],
+            blockscoutUrl: from.blockscout,
+          });
+          return { hookAddress, bytecode };
+        }),
+      );
+
+      for (const { hookAddress, bytecode } of hooksWithBytecode) {
+        if (!bytecode) continue;
+        plan.write({ step: "deployHook", hookAddress, bytecode });
+      }
+    }
   })();
 
   try {
@@ -107,4 +136,25 @@ export async function createMirrorPlan({
     await rm(planFilename, { force: true });
     throw error;
   }
+}
+
+function extractHookAddresses(dynamicData: Hex): Address[] {
+  if (dynamicData === "0x") return [];
+
+  const bytes = dynamicData.slice(2);
+  const hookSize = 21 * 2; // bytes21 encoded as hex chars
+  if (bytes.length % hookSize !== 0) {
+    debug("unexpected SystemHooks value length:", bytes.length);
+    return [];
+  }
+
+  const addresses: Address[] = [];
+  for (let offset = 0; offset < bytes.length; offset += hookSize) {
+    const hook = bytes.slice(offset, offset + hookSize);
+    const address = `0x${hook.slice(0, 40)}`;
+    if (isAddress(address, { strict: false })) {
+      addresses.push(address as Address);
+    }
+  }
+  return addresses;
 }

@@ -25,7 +25,7 @@ export async function executeMirrorPlan({
   let totalRecords = 0;
 
   for await (const step of readPlan(planFilename)) {
-    if (step.step === "deploySystem") {
+    if (step.step === "deploySystem" || step.step === "deployHook") {
       totalSystems += 1;
     }
     if (step.step === "setRecord") {
@@ -48,9 +48,12 @@ export async function executeMirrorPlan({
   debug("deploying systems via", deployerAddress);
 
   const deploySystemSteps: Extract<PlanStep, { step: "deploySystem" }>[] = [];
+  const deployHookSteps: Extract<PlanStep, { step: "deployHook" }>[] = [];
   for await (const step of readPlan(planFilename)) {
     if (step.step === "deploySystem") {
       deploySystemSteps.push(step);
+    } else if (step.step === "deployHook") {
+      deployHookSteps.push(step);
     }
   }
 
@@ -67,8 +70,8 @@ export async function executeMirrorPlan({
 
     await withCache(
       async () => {
-        const hashes = await ensureContract({ client, deployerAddress, bytecode: initCode });
-        return waitForTransactions({ client, hashes, debugLabel: "contract deploy" });
+        const result = await ensureContract({ client, deployerAddress, bytecode: initCode });
+        return waitForTransactions({ client, hashes: result.txHash, debugLabel: "contract deploy" });
       },
       { cacheKey: `deploy:${address}` },
     );
@@ -88,20 +91,43 @@ export async function executeMirrorPlan({
     }),
   );
 
-  const systemReplacements = new Map(
-    systems.map((system) => [
-      system.previousAddress.toLowerCase().replace(/^0x/, ""),
-      {
-        value: system.address.toLowerCase().replace(/^0x/, ""),
-        debugLabel: `${resourceToLabel(system.system)} system address`,
-      },
-    ]),
+  const hooks = await Promise.all(
+    deployHookSteps.map(async (step) => {
+      debug(`deploying system hook at source address ${step.hookAddress}`);
+      const address = await deploy(step.bytecode);
+      return {
+        address,
+        previousAddress: step.hookAddress,
+      };
+    }),
   );
-  const systemReplacementsPattern = new RegExp(Array.from(systemReplacements.keys()).join("|"), "ig");
+
+  const addressReplacements = new Map<string, { value: string; debugLabel: string }>(
+    systems.map(
+      (system) =>
+        [
+          system.previousAddress.toLowerCase().replace(/^0x/, ""),
+          {
+            value: system.address.toLowerCase().replace(/^0x/, ""),
+            debugLabel: `${resourceToLabel(system.system)} system address`,
+          },
+        ] as const,
+    ),
+  );
+  for (const hook of hooks) {
+    addressReplacements.set(hook.previousAddress.toLowerCase().replace(/^0x/, ""), {
+      value: hook.address.toLowerCase().replace(/^0x/, ""),
+      debugLabel: `system hook address`,
+    });
+  }
+
+  const addressReplacementsPattern =
+    addressReplacements.size > 0 ? new RegExp(Array.from(addressReplacements.keys()).join("|"), "ig") : undefined;
 
   function replaceSystems(data: Hex, debugLabel: string): Hex {
-    return data.replaceAll(systemReplacementsPattern, (match) => {
-      const replacement = systemReplacements.get(match);
+    if (!addressReplacementsPattern) return data;
+    return data.replaceAll(addressReplacementsPattern, (match) => {
+      const replacement = addressReplacements.get(match);
       // this should never happen, this is here just in case I messed up the logic
       if (!replacement) throw new Error(`No replacement for match: ${match}`);
 
@@ -110,7 +136,7 @@ export async function executeMirrorPlan({
     }) as never;
   }
 
-  console.log(`deployed ${systems.length.toLocaleString()} systems`);
+  console.log(`deployed ${(systems.length + hooks.length).toLocaleString()} systems/hooks`);
 
   const recordHandler = createRecordHandler({
     client,

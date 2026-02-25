@@ -7,6 +7,7 @@ export const mirrorPlansDirectory = `${mudDataDirectory}/mirror-plans`;
 
 export type PlanStep =
   | { step: "deploySystem"; system: DeployedSystem; bytecode: DeployedBytecode }
+  | { step: "deployHook"; hookAddress: Address; bytecode: DeployedBytecode }
   | { step: "setRecord"; record: Extract<StoreLog, { eventName: "Store_SetRecord" }>["args"] };
 
 export type DeployedBytecode = {
