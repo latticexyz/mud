@@ -21,7 +21,7 @@ export type Props = StepContentProps & {
 export function Session({ isActive, isExpanded, connector, userClient, registerSpender, registerDelegation }: Props) {
   const sessionClient = useShowQueryError(useSessionClient(userClient.account.address));
   const setup = useShowMutationError(useSetupSession({ userClient, connector }));
-  const hasSession = !registerDelegation && !registerDelegation;
+  const hasSession = !registerSpender && !registerDelegation;
   const { data: prerequisites } = usePrerequisites(userClient.account.address);
   const { hasAllowance, hasGasBalance, hasQuarryGasBalance } = prerequisites ?? {};
 
