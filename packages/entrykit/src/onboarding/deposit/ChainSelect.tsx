@@ -11,6 +11,7 @@ import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { Input } from "../../ui/Input";
 import { ChainIcon } from "./ChainIcon";
 import { useRelay } from "./useRelay";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { useShowQueryError } from "../../errors/useShowQueryError";
 import { useChainBalances } from "./useChainBalances";
 import { Balance } from "../../ui/Balance";
@@ -31,6 +32,7 @@ export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
   const { chains, switchChain } = useSwitchChain();
+  const { chainId: destinationChainId } = useEntryKitConfig();
   const relay = useRelay();
   const relayChains = relay.data?.chains;
 
@@ -43,8 +45,8 @@ export function ChainSelect({ value, onChange }: Props) {
           relayChain,
         } satisfies ChainWithRelay;
       })
-      .filter((c) => c.relayChain);
-  }, [chains, relayChains]);
+      .filter((c) => c.id === destinationChainId || c.relayChain);
+  }, [chains, relayChains, destinationChainId]);
 
   const selectedChain = sourceChains.find((c) => c.id === value)!;
   const { data: chainsBalances, isLoading } = useShowQueryError(useChainBalances({ chains: sourceChains }));
