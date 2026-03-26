@@ -17,8 +17,8 @@
     <img alt="" src="https://github.com/latticexyz/mud/actions/workflows/test.yml/badge.svg?branch=main&event=push">
   </a>
   &nbsp;
-  <a aria-label="docs status" href="https://github.com/latticexyz/mud/actions/workflows/docs.yml">
-    <img alt="" src="https://github.com/latticexyz/mud/actions/workflows/docs.yml/badge.svg?branch=main&event=push">
+  <a aria-label="build status" href="https://github.com/latticexyz/mud/actions/workflows/build.yml">
+    <img alt="" src="https://github.com/latticexyz/mud/actions/workflows/build.yml/badge.svg">
   </a>
 </p>
 
