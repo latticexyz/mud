@@ -66,6 +66,39 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
+export type FollowBlockTag = "latest" | "safe" | "finalized" | "pending";
+
+export type PreconfirmedLogsOptions =
+  | {
+      /**
+       * Stream preconfirmed logs from a wiresaw-compatible websocket endpoint.
+       * Defaults to `chain.rpcUrls.wiresaw.webSocket[0]`.
+       */
+      type: "wiresaw";
+      url?: string;
+    }
+  | {
+      /**
+       * Poll preconfirmed logs from a Flashblocks-aware HTTP endpoint with
+       * `eth_getLogs({ fromBlock: "pending", toBlock: "pending" })`.
+       *
+       * If `url` is omitted, this uses `chain.rpcUrls.flashblocks.http[0]` when
+       * available, or the provided `publicClient` when configured explicitly.
+       */
+      type: "flashblocks-http";
+      url?: string;
+      pollingInterval?: number;
+    }
+  | {
+      /**
+       * Stream preconfirmed logs from a Flashblocks websocket endpoint with
+       * `eth_subscribe(["pendingLogs", ...])`.
+       * Defaults to `chain.rpcUrls.flashblocks.webSocket[0]`.
+       */
+      type: "flashblocks-ws";
+      url?: string;
+    };
+
 export type SyncOptions = GetRpcClientOptions & {
   /**
    * MUD Store/World contract address
@@ -80,9 +113,22 @@ export type SyncOptions = GetRpcClientOptions & {
    * */
   tableIds?: Hex[];
   /**
-   * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
+   * Optional block tag to follow for the latest block number. Defaults to
+   * `latest`. It's recommended to use `safe` for indexers.
+   *
+   * When set to `pending`, MUD will use a preconfirmed live-log source when one
+   * is configured or detected, and keep numeric RPC sync pinned to `latest`.
    */
-  followBlockTag?: "latest" | "safe" | "finalized";
+  followBlockTag?: FollowBlockTag;
+  /**
+   * Optional preconfirmed/live-log source.
+   *
+   * When omitted, MUD auto-detects `wiresaw` from `chain.rpcUrls.wiresaw` and
+   * Flashblocks from `chain.rpcUrls.flashblocks` when following `pending`.
+   *
+   * Set to `false` to disable preconfirmed log detection entirely.
+   */
+  preconfirmedLogs?: PreconfirmedLogsOptions | false;
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */

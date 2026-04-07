@@ -17,7 +17,6 @@ import {
   timer,
 } from "rxjs";
 import { StorageAdapterBlock, StoreEventsLog, SyncFilter } from "./common";
-import { watchLogs } from "./watchLogs";
 import { Hex } from "viem";
 import { fromEventSource } from "./fromEventSource";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
@@ -27,17 +26,18 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { bigIntMax, groupBy, isDefined } from "@latticexyz/common/utils";
 import { getRpcClient, GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 import { debug as parentDebug } from "./debug";
+import { ResolvedPreconfirmedLogsOptions, createLiveLogStream } from "./createLiveLogStream";
 
 const debug = parentDebug.extend("createPreconfirmedBlockStream");
 
 type PreconfirmedBlockStreamOptions = GetRpcClientOptions & {
   fromBlock: bigint;
-  preconfirmedLogsUrl: string;
+  preconfirmedLogs: ResolvedPreconfirmedLogsOptions;
   indexerUrl?: string;
   chainId: number;
   address?: Hex;
   filters: SyncFilter[];
-  latestBlockNumber$: Observable<bigint>;
+  syncBlockNumber$: Observable<bigint>;
   maxBlockRange?: bigint;
 };
 
@@ -88,11 +88,11 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
       attempt++;
     }),
     switchMap(() =>
-      watchLogs({
+      createLiveLogStream({
         ...opts,
-        url: opts.preconfirmedLogsUrl,
         fromBlock: processedLatestBlockNumber + 1n,
-      }).logs$.pipe(
+        preconfirmedLogs: opts.preconfirmedLogs,
+      }).pipe(
         catchError((e) => {
           debug("Error in preconfirmed logs stream, recreating", e);
           recreatePreconfirmedStream$.next();
@@ -244,7 +244,7 @@ function createLatestBlockStream({
   chainId,
   address,
   filters,
-  latestBlockNumber$,
+  syncBlockNumber$,
   maxBlockRange,
   ...opts
 }: PreconfirmedBlockStreamOptions): Observable<StorageAdapterBlock> {
@@ -272,7 +272,7 @@ function createLatestBlockStream({
     : throwError(() => new Error("No indexer URL provided"));
 
   let lastBlockNumberProcessed = 0n;
-  const ethRpcBlocks$ = combineLatest([of(fromBlock), latestBlockNumber$]).pipe(
+  const ethRpcBlocks$ = combineLatest([of(fromBlock), syncBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({

@@ -6,7 +6,8 @@ import { logSort } from "@latticexyz/common";
 import { debug as parentDebug, error as parentError } from "./debug";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import WebSocket from "isomorphic-ws";
-import { deferred, uuid } from "@latticexyz/utils";
+import { deferred } from "../../utils/src/deferred";
+import { uuid } from "../../utils/src/uuid";
 
 const debug = parentDebug.extend("watchLogs");
 const debugError = parentError.extend("watchLogs");

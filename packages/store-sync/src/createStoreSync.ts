@@ -3,6 +3,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
 import { entryPoint07Abi } from "viem/account-abstraction";
 import {
+  FollowBlockTag,
   StorageAdapter,
   StorageAdapterBlock,
   StoreEventsLog,
@@ -49,6 +50,7 @@ import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
 import { createPreconfirmedBlockStream } from "./createPreconfirmedBlockStream";
+import { getEffectiveFollowBlockTag, getSyncBlockTag, resolvePreconfirmedLogs } from "./createLiveLogStream";
 
 /**
  * High level approach to syncing state with `createStoreSync`
@@ -125,6 +127,13 @@ export async function createStoreSync({
   })();
 
   const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
+  const preconfirmedLogs = resolvePreconfirmedLogs({
+    ...opts,
+    followBlockTag,
+    preconfirmedLogs: opts.preconfirmedLogs,
+  });
+  const syncBlockTag = getSyncBlockTag(followBlockTag);
+  const effectiveFollowBlockTag = getEffectiveFollowBlockTag(followBlockTag, preconfirmedLogs);
 
   const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
     onProgress?.({
@@ -233,52 +242,69 @@ export async function createStoreSync({
     }),
   );
 
-  let latestBlockNumber: bigint | null = null;
+  function createSharedBlockStream(blockTag: FollowBlockTag): ReturnType<typeof createBlockStream<FollowBlockTag>> {
+    return defer(() => {
+      debug("creating block stream for", blockTag);
+      return createBlockStream({ ...opts, blockTag });
+    }).pipe(
+      // TODO: detect network online and reset this
+      retry({
+        delay: (error, retryCount) => {
+          const backoff = Math.min(4_000, 2 ** retryCount * 50);
+          return timer(backoff);
+        },
+        resetOnSuccess: true,
+      }),
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnError: true,
+        resetOnComplete: false,
+        resetOnRefCountZero: true,
+      }),
+    );
+  }
 
-  const latestBlock$ = defer(() => {
-    debug("creating block stream");
-    return createBlockStream({ ...opts, blockTag: followBlockTag });
-  }).pipe(
-    // TODO: detect network online and reset this
-    retry({
-      delay: (error, retryCount) => {
-        const backoff = Math.min(4_000, 2 ** retryCount * 50);
-        return timer(backoff);
-      },
-      resetOnSuccess: true,
-    }),
-    share({
-      connector: () => new ReplaySubject(1),
-      resetOnError: true,
-      resetOnComplete: false,
-      resetOnRefCountZero: true,
-    }),
-  );
+  const latestBlock$ = createSharedBlockStream(effectiveFollowBlockTag);
+  const syncBlock$ = syncBlockTag === effectiveFollowBlockTag ? latestBlock$ : createSharedBlockStream(syncBlockTag);
 
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
+    filter((blockNumber): blockNumber is bigint => blockNumber != null),
     tap((blockNumber) => {
-      latestBlockNumber = blockNumber;
-      debug("on block number", blockNumber, "for", followBlockTag, "block tag");
+      debug("on block number", blockNumber, "for", effectiveFollowBlockTag, "block tag");
     }),
     shareReplay(1),
   );
 
+  let syncBlockNumber: bigint | null = null;
+  const syncBlockNumber$ = syncBlock$.pipe(
+    map((block) => block.number),
+    filter((blockNumber): blockNumber is bigint => blockNumber != null),
+    tap((blockNumber) => {
+      syncBlockNumber = blockNumber;
+      debug("on sync block number", blockNumber, "for", syncBlockTag, "block tag");
+    }),
+    shareReplay(1),
+  );
+
+  if (followBlockTag === "pending" && effectiveFollowBlockTag !== "pending") {
+    debug("no preconfirmed live log source configured, following latest blocks instead of pending");
+  }
+
   let lastBlockNumberProcessed: bigint | null = null;
   let caughtUp = false;
 
-  const preconfirmedLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
-  const storedPreconfirmedLogs$ = preconfirmedLogsWebSocketUrl
+  const storedPreconfirmedLogs$ = preconfirmedLogs
     ? startBlock$.pipe(
         switchMap((startBlock) =>
           createPreconfirmedBlockStream({
             ...opts,
             fromBlock: startBlock,
-            preconfirmedLogsUrl: preconfirmedLogsWebSocketUrl,
+            preconfirmedLogs,
             chainId,
             filters,
             address,
-            latestBlockNumber$,
+            syncBlockNumber$,
             indexerUrl,
           }),
         ),
@@ -287,8 +313,7 @@ export async function createStoreSync({
           return block;
         }),
       )
-    : throwError(() => new Error("No preconfirmed logs WebSocket RPC URL provided"));
-
+    : throwError(() => new Error("No preconfirmed logs RPC URL provided"));
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
         mergeMap((startBlock) => {
@@ -316,7 +341,7 @@ export async function createStoreSync({
       )
     : throwError(() => new Error("No indexer URL provided"));
 
-  const storedEthRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const storedEthRpcLogs$ = combineLatest([startBlock$, syncBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
@@ -347,21 +372,21 @@ export async function createStoreSync({
       debug("falling back to streaming logs from ETH RPC");
       return storedEthRpcLogs$;
     }),
-    // subscribe to `latestBlockNumber$` so the sync progress is updated
+    // subscribe to `syncBlockNumber$` so the sync progress is updated
     // but don't merge/emit anything
-    mergeWith(latestBlockNumber$.pipe(ignoreElements())),
+    mergeWith(syncBlockNumber$.pipe(ignoreElements())),
     tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
 
-      if (!caughtUp && startBlock != null && latestBlockNumber != null) {
-        if (lastBlockNumberProcessed < latestBlockNumber) {
-          const totalBlocks = latestBlockNumber - startBlock;
+      if (!caughtUp && startBlock != null && syncBlockNumber != null) {
+        if (lastBlockNumberProcessed < syncBlockNumber) {
+          const totalBlocks = syncBlockNumber - startBlock;
           const processedBlocks = lastBlockNumberProcessed - startBlock;
           onProgress?.({
             step: SyncStep.RPC,
             percentage: Number((processedBlocks * 1000n) / totalBlocks) / 10,
-            latestBlockNumber,
+            latestBlockNumber: syncBlockNumber,
             lastBlockNumberProcessed,
             message: "Hydrating from RPC",
           });
@@ -370,7 +395,7 @@ export async function createStoreSync({
           onProgress?.({
             step: SyncStep.LIVE,
             percentage: 100,
-            latestBlockNumber,
+            latestBlockNumber: syncBlockNumber,
             lastBlockNumberProcessed,
             message: "All caught up!",
           });
