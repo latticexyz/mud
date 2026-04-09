@@ -229,7 +229,9 @@ export function createPreconfirmedBlockStream(opts: PreconfirmedBlockStreamOptio
         block.blockNumber,
         "not recreating preconfirmed stream",
       );
-      return;
+      // Keep block progress advancing even when all logs were already processed
+      // from the preconfirmed stream, or when the latest block has no logs.
+      return { blockNumber: block.blockNumber, logs: [] };
     }),
     filter(isDefined),
   );
