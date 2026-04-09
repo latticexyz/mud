@@ -9,6 +9,14 @@ import { defaultClientConfig } from "./common";
 import { getPaymaster } from "./getPaymaster";
 import { cachedFeesPerGas } from "./actions/cachedFeesPerGas";
 
+const cachedFeeChainIds = new Set([
+  690, // Redstone
+  17069, // Garnet
+  695569, // Pyrope
+  55377, // DUST testnet
+  55378, // DUST mainnet
+]);
+
 export function createBundlerClient<
   transport extends Transport,
   chain extends Chain = Chain,
@@ -54,10 +62,12 @@ function createFeeEstimator(client: Client): undefined | (() => Promise<Estimate
     return async () => ({ maxFeePerGas: 100_000n, maxPriorityFeePerGas: 0n });
   }
 
-  // do our own fee calculation for redstone, garnet, pyrope chains
-  // to avoid the default RPC call to `eth_getBlockByNumber`
+  // Cache viem's default EIP-1559 fee estimation on chains where fee RPC latency
+  // is a material part of AA preparation time.
+  // This still uses viem's normal fee logic, but avoids repeating the public RPC
+  // `eth_getBlockByNumber` + `eth_maxPriorityFeePerGas` calls on every action.
   // https://github.com/wevm/viem/blob/3aa882692d2c4af3f5e9cc152099e07cde28e551/src/actions/public/estimateFeesPerGas.ts#L132
-  if ([690, 17069, 695569].includes(client.chain.id)) {
+  if (cachedFeeChainIds.has(client.chain.id)) {
     return cachedFeesPerGas(client);
   }
 }
