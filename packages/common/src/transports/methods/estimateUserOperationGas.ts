@@ -33,7 +33,7 @@ export async function estimateUserOperationGas({
   const gasSimulation = await simulateGas({ userOp, request });
   const gasLimits = {
     verificationGasLimit: gasSimulation.verificationGas * 2n,
-    callGasLimit: bigIntMax(gasSimulation.callGas * 2n, 9000n),
+    callGasLimit: bigIntMax(gasSimulation.callGas * 3n, 9000n),
     paymasterVerificationGasLimit: gasSimulation.paymasterVerificationGas * 2n,
     paymasterPostOpGasLimit: gasSimulation.paymasterPostOpGas * 2n,
     preVerificationGas: 10_000_000n, // TODO: change this based on our alto config
