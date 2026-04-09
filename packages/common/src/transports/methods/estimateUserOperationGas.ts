@@ -31,9 +31,12 @@ export async function estimateUserOperationGas({
 }: EstimateUserOperationGasOptions): Promise<rpcMethod["ReturnType"]> {
   const userOp = formatUserOperation(params[0]);
   const gasSimulation = await simulateGas({ userOp, request });
+
+  const callGasBuffer = 350_000n;
+
   const gasLimits = {
     verificationGasLimit: gasSimulation.verificationGas * 2n,
-    callGasLimit: bigIntMax(gasSimulation.callGas * 3n, 9000n),
+    callGasLimit: bigIntMax(gasSimulation.callGas * 2n + callGasBuffer, 9_000n),
     paymasterVerificationGasLimit: gasSimulation.paymasterVerificationGas * 2n,
     paymasterPostOpGasLimit: gasSimulation.paymasterPostOpGas * 2n,
     preVerificationGas: 10_000_000n, // TODO: change this based on our alto config
