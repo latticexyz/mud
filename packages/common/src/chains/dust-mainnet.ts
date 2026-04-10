@@ -34,12 +34,12 @@ export const dustMainnet = {
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://explorer.dustproject.org/",
+      url: "https://explorer.dustproject.org",
     },
     // worldsExplorer: {
     //   name: "MUD Worlds Explorer",
     //   url: "https://explorer.mud.dev/pyrope/worlds",
     // },
   },
-  indexerUrl: "https://indexer.alpha.dustproject.org/",
+  indexerUrl: "https://indexer.alpha.dustproject.org",
 } as const satisfies MUDChain;
