@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { config } from "dotenv";
 import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
@@ -11,6 +12,9 @@ import { validateChainId } from "../common";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const packageRoot = path.join(__dirname, "..", "..");
+
+config({ path: path.join(packageRoot, ".env") });
+config({ path: path.join(packageRoot, ".env.local") });
 
 const argv = yargs(process.argv.slice(2))
   .options({

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.2.21",
+  "version": "2.2.23",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -43,13 +43,12 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "abitype": "1.0.6"
+    "abitype": "1.0.9"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
-    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "viem": "2.23.2"
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
+    "viem": "2.35.1"
   },
   "peerDependencies": {
     "viem": "2.x"

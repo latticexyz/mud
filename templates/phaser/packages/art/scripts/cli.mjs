@@ -5,7 +5,7 @@ import chalk from "chalk";
 const { yellowBright, redBright, white, magentaBright, greenBright } = chalk;
 import texturePacker from "free-tex-packer-core";
 
-import appInfo from "../package.json" assert { type: "json" };
+import appInfo from "../package.json" with { type: "json" };
 
 function isExists(path) {
   return existsSync(path);

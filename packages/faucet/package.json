@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/faucet",
-  "version": "2.2.21",
+  "version": "2.2.23",
   "description": "Faucet API for Lattice testnet",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "viem": "2.23.2"
+    "viem": "2.35.1"
   },
   "peerDependencies": {
     "viem": "2.x"

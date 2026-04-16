@@ -4,7 +4,7 @@ import { validateChainId } from "../../../../common";
 import { getClient } from "../utils/getClient";
 import { getIndexerUrl } from "../utils/getIndexerUrl";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export type SystemAbisResponse = {
   abis: {

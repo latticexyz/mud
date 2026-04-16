@@ -1,5 +1,32 @@
 # @latticexyz/store-consumer
 
+## 2.2.23
+
+### Patch Changes
+
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
+## 2.2.22
+
+### Patch Changes
+
+- Updated dependencies [6008573]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [fb2745a]
+- Updated dependencies [03af917]
+- Updated dependencies [d83a0fd]
+  - @latticexyz/world@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

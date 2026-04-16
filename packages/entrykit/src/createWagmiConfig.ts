@@ -1,11 +1,12 @@
 import { Chain, Transport } from "viem";
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { Config, CreateConfigParameters, createConfig } from "wagmi";
-import { getWallets } from "./getWallets";
+import { Config, CreateConfigParameters, CreateConnectorFn, createConfig } from "wagmi";
+import { getDefaultConfig } from "connectkit";
+import { getDefaultConnectors } from "./getDefaultConnectors";
 
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport> = Record<chains[number]["id"], Transport>,
+  connectorFns extends readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
 > = {
   readonly chainId: number;
   readonly chains: chains;
@@ -16,22 +17,24 @@ export type CreateWagmiConfigOptions<
   // TODO: make optional and hide wallet options if so?
   readonly walletConnectProjectId: string;
   readonly appName: string;
-} & Pick<CreateConfigParameters<chains, transports>, "pollingInterval">;
+} & Pick<CreateConfigParameters<chains, transports, connectorFns>, "pollingInterval" | "connectors">;
 
 export function createWagmiConfig<
   const chains extends readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport>,
->(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
-  const wallets = getWallets(config);
-  const connectors = connectorsForWallets(wallets, {
-    appName: config.appName,
-    projectId: config.walletConnectProjectId,
-  });
+  const connectorFns extends readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
+>(config: CreateWagmiConfigOptions<chains, transports, connectorFns>): Config<chains, transports, connectorFns> {
+  const connectors = config.connectors ?? getDefaultConnectors(config);
 
-  return createConfig({
-    connectors,
+  const configParams = getDefaultConfig({
     chains: config.chains,
     transports: config.transports,
     pollingInterval: config.pollingInterval,
-  }) as never;
+    appName: config.appName,
+    walletConnectProjectId: config.walletConnectProjectId,
+    enableFamily: false,
+    connectors,
+  });
+
+  return createConfig(configParams) as never;
 }

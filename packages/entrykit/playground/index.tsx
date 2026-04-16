@@ -1,4 +1,3 @@
-import "./polyfills";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { WagmiProvider } from "wagmi";

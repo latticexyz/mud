@@ -32,6 +32,10 @@ import {
   throwError,
   mergeWith,
   ignoreElements,
+  switchMap,
+  ReplaySubject,
+  timer,
+  retry,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -41,10 +45,33 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
-import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
 import packageJson from "../package.json";
+import { createPreconfirmedBlockStream } from "./createPreconfirmedBlockStream";
+
+/**
+ * High level approach to syncing state with `createStoreSync`
+ *
+ * If preconfirmed logs are not available:
+ * - Initialize snapshot
+ * - Initialize log stream from latest block
+ *   - Catch up logs between snapshot and latest block
+ *   - Attempt to stream logs from indexer
+ *   - On failure, fallback to streaming logs from RPC
+ * - Release initial, catchup and ongoing stream to subscribers
+ *
+ * If preconfirmed logs are available:
+ * - Initialize from snapshot
+ * - Open a preconfirmed log stream
+ *   - On error recreate the stream
+ * - Open a fallback log stream (indexer or RPC)
+ * - Catch up logs between snapshot and latest block
+ * - Cache processed log indices from preconfirmed logs stream
+ * - On every new block from the fallback logs stream
+ *   - Verify that all logs have already been processed in the preconfirmed logs stream
+ *   - If missing logs are found, pass the block with missing logs to subscribers and reconnect the preconfirmed logs stream
+ */
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -72,6 +99,7 @@ export async function createStoreSync({
   maxBlockRange,
   initialState,
   initialBlockLogs,
+  enableHydrationChunking = true,
   ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
@@ -155,26 +183,31 @@ export async function createStoreSync({
         message: "Hydrating from snapshot",
       });
 
-      // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
-      // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
-      //
-      // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
-      const chunkSize = Math.max(100, Math.floor(logs.length / 50));
-      const chunks = Array.from(chunk(logs, chunkSize));
-      for (const [i, chunk] of chunks.entries()) {
-        await storageAdapter({ blockNumber, logs: chunk });
-        onProgress?.({
-          step: SyncStep.SNAPSHOT,
-          percentage: ((i + 1) / chunks.length) * 100,
-          latestBlockNumber: 0n,
-          lastBlockNumberProcessed: blockNumber,
-          message: "Hydrating from snapshot",
-        });
-
-        // RECS is a synchronous API so hydrating in a loop like this blocks downstream render cycles
-        // that would display the percentage climbing up to 100.
-        // We wait for idle callback here to give rendering a chance to complete.
-        await waitForIdle();
+      if (enableHydrationChunking) {
+        // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
+        // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
+        //
+        // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
+        const chunkSize = Math.max(100, Math.floor(logs.length / 50));
+        const chunks = Array.from(chunk(logs, chunkSize));
+        for (const [i, chunk] of chunks.entries()) {
+          debug(`hydrating chunk ${i}/${chunks.length}`);
+          await storageAdapter({ blockNumber, logs: chunk });
+          onProgress?.({
+            step: SyncStep.SNAPSHOT,
+            percentage: ((i + 1) / chunks.length) * 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: blockNumber,
+            message: "Hydrating from snapshot",
+          });
+          // RECS is a synchronous API so hydrating in a loop like this blocks downstream render cycles
+          // that would display the percentage climbing up to 100.
+          // We wait for idle callback here to give rendering a chance to complete.
+          await waitForIdle();
+        }
+      } else {
+        debug("hydrating all logs without chunking");
+        await storageAdapter({ blockNumber, logs });
       }
 
       onProgress?.({
@@ -201,7 +234,27 @@ export async function createStoreSync({
   );
 
   let latestBlockNumber: bigint | null = null;
-  const latestBlock$ = createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(shareReplay(1));
+
+  const latestBlock$ = defer(() => {
+    debug("creating block stream");
+    return createBlockStream({ ...opts, blockTag: followBlockTag });
+  }).pipe(
+    // TODO: detect network online and reset this
+    retry({
+      delay: (error, retryCount) => {
+        const backoff = Math.min(4_000, 2 ** retryCount * 50);
+        return timer(backoff);
+      },
+      resetOnSuccess: true,
+    }),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnError: true,
+      resetOnComplete: false,
+      resetOnRefCountZero: true,
+    }),
+  );
+
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
@@ -214,20 +267,27 @@ export async function createStoreSync({
   let lastBlockNumberProcessed: bigint | null = null;
   let caughtUp = false;
 
-  const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
-  const storedPendingLogs$ = pendingLogsWebSocketUrl
+  const preconfirmedLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
+  const storedPreconfirmedLogs$ = preconfirmedLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        switchMap((startBlock) =>
+          createPreconfirmedBlockStream({
+            ...opts,
+            fromBlock: startBlock,
+            preconfirmedLogsUrl: preconfirmedLogsWebSocketUrl,
+            chainId,
+            filters,
+            address,
+            latestBlockNumber$,
+            indexerUrl,
+          }),
+        ),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;
         }),
-        mergeWith(
-          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
-          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
-        ),
       )
-    : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
+    : throwError(() => new Error("No preconfirmed logs WebSocket RPC URL provided"));
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
@@ -276,9 +336,9 @@ export async function createStoreSync({
     }),
   );
 
-  const storedBlock$ = storedPendingLogs$.pipe(
+  const storedBlock$ = storedPreconfirmedLogs$.pipe(
     catchError((error) => {
-      debug("failed to stream logs from pending log RPC:", error.message);
+      debug("failed to stream logs from preconfirmed log RPC:", error.message);
       debug("falling back to streaming logs from indexer");
       return storedIndexerLogs$;
     }),

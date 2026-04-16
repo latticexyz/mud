@@ -33,15 +33,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [query, setQuery] = useSQLQueryState();
 
   const validateQuery = useQueryValidator(table);
-  const {
-    data: tableData,
-    refetch,
-    isRefetching: isTableDataRefetching,
-  } = useTableDataQuery({
-    table,
-    query,
-    isLiveQuery,
-  });
+  const { data: tableData, refetch, isRefetching: isTableDataRefetching } = useTableDataQuery({ table, isLiveQuery });
   const isRefetching = isTableDataRefetching && isUserTriggeredRefetch;
   useMonacoSuggestions(table);
 
@@ -84,6 +76,17 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
     form.reset({ query });
   }, [query, form]);
 
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.addAction({
+        id: "executeSQL",
+        label: "Execute SQL command",
+        keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
+        run: () => handleSubmit(),
+      });
+    }
+  }, [handleSubmit]);
+
   const updateHeight = () => {
     if (editorRef.current) {
       const contentHeight = Math.min(200, editorRef.current.getContentHeight());
@@ -112,19 +115,22 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
               <div ref={containerRef} className="min-h-[21px] w-full">
                 <Editor
                   width="100%"
-                  theme="hc-black"
+                  theme="vs-dark"
                   value={decodeURIComponent(field.value)}
                   options={monacoOptions}
                   language="sql"
-                  onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
-                  onMount={(editor) => {
+                  onChange={(value) => field.onChange(value ?? "")}
+                  onMount={(editor, monaco) => {
                     editorRef.current = editor;
-                    editor.addAction({
-                      id: "executeSQL",
-                      label: "Execute SQL command",
-                      keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
-                      run: () => handleSubmit(),
+                    monaco.editor.defineTheme("custom-vs-dark", {
+                      base: "vs-dark",
+                      inherit: true,
+                      rules: [{ token: "string.sql", foreground: "#C5947C" }],
+                      colors: {
+                        "editor.background": "#000000",
+                      },
                     });
+                    monaco.editor.setTheme("custom-vs-dark");
 
                     updateHeight();
                     editor.onDidContentSizeChange(updateHeight);

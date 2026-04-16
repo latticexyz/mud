@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+
+## 2.2.22
+
+### Patch Changes
+
+- 725f1ae: Bumped Viem and Wagmi versions in templates.
+
 ## 2.2.21
 
 ## 2.2.20

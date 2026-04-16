@@ -23,8 +23,7 @@
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
     "@types/node": "^20",
-    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#60acb7aaadcce2d68e52986a0a66fe79f07d138f",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
     "shx": "^0.3.4",

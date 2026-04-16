@@ -3,43 +3,43 @@
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testApprove",
     "name": "world_approve",
-    "gasUsed": 71092
+    "gasUsed": 71110
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testBurn",
     "name": "world_burn",
-    "gasUsed": 70708
+    "gasUsed": 70714
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testMint",
     "name": "world_mint",
-    "gasUsed": 109495
+    "gasUsed": 109501
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testTransfer",
     "name": "world_transfer",
-    "gasUsed": 82440
+    "gasUsed": 82458
   },
   {
     "file": "test/ERC20BaseTest.t.sol:ERC20Test",
     "test": "testTransferFrom",
     "name": "world_transferFrom",
-    "gasUsed": 99468
+    "gasUsed": 99486
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testApprove",
     "name": "world_approve",
-    "gasUsed": 71092
+    "gasUsed": 71110
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testBurn",
     "name": "world_burn",
-    "gasUsed": 70709
+    "gasUsed": 70715
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
@@ -51,19 +51,19 @@
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testMint",
     "name": "world_mint",
-    "gasUsed": 109473
+    "gasUsed": 109479
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testTransfer",
     "name": "world_transfer",
-    "gasUsed": 82485
+    "gasUsed": 82503
   },
   {
     "file": "test/ERC20Burnable.t.sol:ERC20BurnableTest",
     "test": "testTransferFrom",
     "name": "world_transferFrom",
-    "gasUsed": 99491
+    "gasUsed": 99509
   },
   {
     "file": "test/ERC20Module.t.sol:ERC20ModuleTest",
@@ -75,19 +75,19 @@
     "file": "test/ERC20Pausable.t.sol:ERC20PausableTest",
     "test": "testApprove",
     "name": "world_approve",
-    "gasUsed": 71093
+    "gasUsed": 71111
   },
   {
     "file": "test/ERC20Pausable.t.sol:ERC20PausableTest",
     "test": "testBurn",
     "name": "world_burn",
-    "gasUsed": 75392
+    "gasUsed": 75398
   },
   {
     "file": "test/ERC20Pausable.t.sol:ERC20PausableTest",
     "test": "testMint",
     "name": "world_mint",
-    "gasUsed": 114157
+    "gasUsed": 114163
   },
   {
     "file": "test/ERC20Pausable.t.sol:ERC20PausableTest",
@@ -105,12 +105,12 @@
     "file": "test/ERC20Pausable.t.sol:ERC20PausableTest",
     "test": "testTransfer",
     "name": "world_transfer",
-    "gasUsed": 87169
+    "gasUsed": 87187
   },
   {
     "file": "test/ERC20Pausable.t.sol:ERC20PausableTest",
     "test": "testTransferFrom",
     "name": "world_transferFrom",
-    "gasUsed": 104177
+    "gasUsed": 104195
   }
 ]

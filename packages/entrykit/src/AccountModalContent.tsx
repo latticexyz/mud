@@ -6,13 +6,19 @@ import { useRef } from "react";
 
 export function AccountModalContent() {
   const { chainId } = useEntryKitConfig();
-  const userClient = useConnectorClient({ chainId });
-  const { address: userAddress } = useAccount();
+  const { address: userAddress, connector } = useAccount();
+  const userClient = useConnectorClient({ chainId, connector });
   const initialUserAddress = useRef(userAddress);
 
   if (userClient.status !== "success") {
     return <ConnectWallet />;
   }
 
-  return <ConnectedSteps userClient={userClient.data} initialUserAddress={initialUserAddress.current} />;
+  return (
+    <ConnectedSteps
+      connector={connector!}
+      userClient={userClient.data}
+      initialUserAddress={initialUserAddress.current}
+    />
+  );
 }

@@ -1,14 +1,17 @@
 import { ReactNode } from "react";
-import { parseEther } from "viem";
+
+export type StepContentProps = {
+  isActive: boolean;
+  isExpanded: boolean;
+  isFocused: boolean;
+  setFocused: (isFocused: boolean) => void;
+};
 
 export type Step = {
   id: string;
   isComplete: boolean;
-  content: (props: { isActive: boolean; isExpanded: boolean }) => ReactNode;
+  content: (props: StepContentProps) => ReactNode;
 };
-
-// TODO: move to chain config?
-export const minGasBalance = parseEther("0.01");
 
 export type RelayChain = {
   bridgeUrl: string;

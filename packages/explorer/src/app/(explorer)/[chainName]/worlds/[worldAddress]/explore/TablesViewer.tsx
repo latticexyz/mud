@@ -10,7 +10,7 @@ import {
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
-import { getKeySchema } from "@latticexyz/protocol-parser/internal";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   OnChangeFn,
@@ -31,10 +31,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { useIndexerForChainId } from "../../../../hooks/useIndexerForChainId";
+import { useReadOnly } from "../../../../hooks/useReadOnly";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { ExportButton } from "./ExportButton";
+import { defaultColumn } from "./TableColumn/defaultColumn";
 import { PAGE_SIZE_OPTIONS } from "./consts";
-import { defaultColumn } from "./defaultColumn";
 import { usePaginationState } from "./hooks/usePaginationState";
 import { useSQLQueryState } from "./hooks/useSQLQueryState";
 import { getLimitOffset } from "./utils/getLimitOffset";
@@ -46,7 +47,11 @@ const initialRows: TData["rows"] = [];
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
+    readOnly: boolean;
+    blockHeight?: number;
     tableConfig?: TableType;
+    valueSchema?: ReturnType<typeof getValueSchema>;
+    keySchema?: ReturnType<typeof getKeySchema>;
   }
 }
 
@@ -58,12 +63,13 @@ type Props = {
 
 export function TablesViewer({ table, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
+  const isReadOnly = useReadOnly();
   const indexer = useIndexerForChainId(chainId);
   const [query, setQuery] = useSQLQueryState();
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [pagination, setPagination] = usePaginationState();
-  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
+  const { data: tableData, isPending, isFetching, isError, error } = useTableDataQuery({ table, isLiveQuery });
   const isLoading = isPending || (isFetching && !isLiveQuery);
 
   const handlePaginationChange: OnChangeFn<PaginationState> = useCallback(
@@ -137,7 +143,11 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
       pagination,
     },
     meta: {
+      blockHeight: tableData?.blockHeight,
       tableConfig: table,
+      valueSchema: table ? getValueSchema(table) : undefined,
+      keySchema: table ? getKeySchema(table) : undefined,
+      readOnly: isReadOnly,
     },
   });
 
@@ -183,7 +193,7 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={header.id} className="px-4">
                           {header.isPlaceholder
                             ? null
                             : flexRender(header.column.columnDef.header, header.getContext())}
@@ -205,7 +215,9 @@ export function TablesViewer({ table, isLiveQuery }: Props) {
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <TableCell key={cell.id} className="px-2 py-0">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
                       );
                     })}
                   </TableRow>

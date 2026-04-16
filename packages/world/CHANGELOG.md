@@ -1,5 +1,57 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- 94cac74: Correctly resolve remappings when going through the inheritance chain during worldgen.
+- a8c404b: Support expectRevert and unusual nameless arguments in system libraries.
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+- 122945e: Support using inherited symbols when generating System interfaces and libraries.
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/common@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+
+## 2.2.22
+
+### Patch Changes
+
+- 6008573: Added a `sendUserOperationFrom` Viem action decorator to automatically route user operation calls through `callFrom`.
+- 6a26a04: Fixed a bug related to `batchCall` in `sendUserOperationFrom`.
+- f6d87ed: Fix static array arguments in system libraries.
+- fb2745a: Support generating libraries for systems without function registration.
+- 03af917: `mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+  ```solidity
+  import {System} from "@latticexyz/world/src/System.sol";
+
+  contract EntityProgram is System {
+    ...
+  }
+  ```
+
+  If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+- d83a0fd: Adds support for functions with missing argument names in system libraries.
+- Updated dependencies [88ddd0c]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/schema-type@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

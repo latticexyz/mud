@@ -7,14 +7,19 @@ import { PositionValue } from "./codegen/tables/PositionValue.sol";
 import { AddressValue } from "./codegen/tables/AddressValue.sol";
 import { ASystemThing, Position } from "./ASystemTypes.sol";
 import { THREE } from "./ASystemConstants.sol";
+import { ISomeInterface } from "./ISomeInterface.sol";
 
-contract ASystem is System {
+contract ASystem is ISomeInterface, System {
   function setValue(ASystemThing memory value) external {
     Value.set(value.a);
   }
 
   function setValue(uint256 value) external {
     Value.set(value);
+  }
+
+  function setValue(InheritedStruct memory value) external {
+    Value.set(value.a);
   }
 
   function setPosition(Position memory position) external {
@@ -45,6 +50,27 @@ contract ASystem is System {
     return addr;
   }
 
+  function setWithNamelessParameters(
+    address payable,
+    bytes calldata b,
+    bytes calldata,
+    string[] memory
+  ) external returns (address payable, bytes calldata, string[] memory) {
+    address addr = _msgSender();
+    AddressValue.set(addr);
+    return (payable(addr), b, new string[](0));
+  }
+
+  function getValueWithRevert() external pure returns (uint256) {
+    revert("reverted successfully");
+  }
+
+  function setAddressWithRevert() external returns (address) {
+    address addr = _msgSender();
+    AddressValue.set(addr);
+    revert("reverted successfully");
+  }
+
   function setValuesStaticArray(uint256[1] memory values) external {
     Value.set(values[0]);
   }
@@ -58,10 +84,10 @@ contract ASystem is System {
   }
 
   /*
-  // TODO: support this case
-  // (see flattenTypeName in contractToInterface.ts)
-  function setValuesStaticArray(uint256[1 - 0 * 2 + THREE] memory values) external {
+    // TODO: support this case
+    // (see flattenTypeName in contractToInterface.ts)
+    function setValuesStaticArray(uint256[1 - 0 * 2 + THREE] memory values) external {
     Value.set(values[3]);
-  }
-  */
+    }
+    */
 }

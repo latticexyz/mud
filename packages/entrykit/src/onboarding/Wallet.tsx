@@ -5,10 +5,9 @@ import { Button } from "../ui/Button";
 import { useAccountModal } from "../useAccountModal";
 import { Hex } from "viem";
 import { useShowMutationError } from "../errors/useShowMutationError";
+import { StepContentProps } from "./common";
 
-export type Props = {
-  isActive: boolean;
-  isExpanded: boolean;
+export type Props = StepContentProps & {
   userAddress: Hex;
 };
 
@@ -18,7 +17,6 @@ export function Wallet({ isActive, isExpanded, userAddress }: Props) {
   const { closeAccountModal } = useAccountModal();
 
   // TODO: render ENS avatar if available?
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-4">

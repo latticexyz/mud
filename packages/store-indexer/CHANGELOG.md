@@ -1,5 +1,54 @@
 # @latticexyz/store-indexer
 
+## 2.2.23
+
+### Patch Changes
+
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- Updated dependencies [84b8926]
+- Updated dependencies [a7ce36b]
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [e76d725]
+- Updated dependencies [e9e21c9]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/store-sync@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+
+## 2.2.22
+
+### Patch Changes
+
+- 582f718: The local SQLite indexer now automatically converts camelCase column names to snake_case to comply with the SQL API.
+- 6bb6a79: Added experimental SQL API endpoint `/q` to the SQLite indexer. This is only intended for local development purposes and should not be used in production.
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [490159e]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [6897086]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

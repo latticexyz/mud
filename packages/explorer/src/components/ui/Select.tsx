@@ -1,9 +1,33 @@
 "use client";
 
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { cva } from "class-variance-authority";
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { cn } from "../../utils";
+
+const selectTriggerVariants = cva(
+  cn(
+    "flex items-center justify-between",
+    "rounded-md border border-input bg-background ring-offset-background",
+    "placeholder:text-muted-foreground",
+    "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+    "disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+  ),
+  {
+    variants: {
+      size: {
+        default: "h-12 w-full px-3 py-2 text-sm",
+        sm: "h-9 w-full px-3 py-1 text-sm",
+        lg: "h-11 w-full px-4 py-2 text-base",
+        icon: "h-10 w-10 p-2",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  },
+);
 
 const Select = SelectPrimitive.Root;
 
@@ -13,19 +37,9 @@ const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex h-10 w-full items-center justify-between px-3 py-2 text-sm",
-      "rounded-md border border-input bg-background ring-offset-background",
-      "placeholder:text-muted-foreground",
-      "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      className,
-    )}
-    {...props}
-  >
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & { size?: "default" | "sm" | "lg" | "icon" }
+>(({ className, children, size, ...props }, ref) => (
+  <SelectPrimitive.Trigger ref={ref} className={cn(selectTriggerVariants({ size, className }))} {...props}>
     {children}
     <SelectPrimitive.Icon asChild>
       <ChevronDown className="h-4 w-4 opacity-50" />

@@ -1,5 +1,91 @@
 # Change Log
 
+## 2.2.23
+
+### Patch Changes
+
+- cd0fa57: Bumped to viem v2.35.1, wagmi v2.16.5, abitype v1.0.9.
+- b803eb1: Bumped forge-std version and removed ds-test dependency (not needed in current forge-std versions)
+- Updated dependencies [84b8926]
+- Updated dependencies [a7ce36b]
+- Updated dependencies [94cac74]
+- Updated dependencies [a8c404b]
+- Updated dependencies [e76d725]
+- Updated dependencies [e9e21c9]
+- Updated dependencies [cd0fa57]
+- Updated dependencies [b803eb1]
+- Updated dependencies [122945e]
+  - @latticexyz/store-sync@2.2.23
+  - @latticexyz/common@2.2.23
+  - @latticexyz/world@2.2.23
+  - @latticexyz/store@2.2.23
+  - @latticexyz/world-module-metadata@2.2.23
+  - @latticexyz/block-logs-stream@2.2.23
+  - @latticexyz/config@2.2.23
+  - @latticexyz/protocol-parser@2.2.23
+  - @latticexyz/schema-type@2.2.23
+  - @latticexyz/gas-report@2.2.23
+  - @latticexyz/world-module-callwithsignature@2.2.23
+  - @latticexyz/abi-ts@2.2.23
+  - @latticexyz/utils@2.2.23
+
+## 2.2.22
+
+### Patch Changes
+
+- 03af917: `mud` CLI commands will now recognize systems if they inherit directly from the base `System` imported from `@latticexyz/world/src/System.sol`, allowing you to write systems without a `System` suffix.
+
+  ```solidity
+  import {System} from "@latticexyz/world/src/System.sol";
+
+  contract EntityProgram is System {
+    ...
+  }
+  ```
+
+  If you have contracts that inherit from the base `System` that aren't meant to be deployed, you can mark them as `abstract contract` or [disable the system's deploy via config](https://mud.dev/config/reference).
+
+- 8fad4be: Updated JSON imports to use `with` annotation instead of `assert`.
+- ab837ce: CLI will no longer deploy abstract systems and contracts without bytecode.
+- Updated dependencies [cd146eb]
+- Updated dependencies [291a54a]
+- Updated dependencies [6008573]
+- Updated dependencies [3baa3fd]
+- Updated dependencies [91837e3]
+- Updated dependencies [88ddd0c]
+- Updated dependencies [6344ced]
+- Updated dependencies [490159e]
+- Updated dependencies [1e9047e]
+- Updated dependencies [7902888]
+- Updated dependencies [6a26a04]
+- Updated dependencies [f6d87ed]
+- Updated dependencies [26d2e3a]
+- Updated dependencies [fb2745a]
+- Updated dependencies [6508c1d]
+- Updated dependencies [23b0c9a]
+- Updated dependencies [a3918e0]
+- Updated dependencies [2048adf]
+- Updated dependencies [03af917]
+- Updated dependencies [405a600]
+- Updated dependencies [db94eb2]
+- Updated dependencies [8fad4be]
+- Updated dependencies [ab837ce]
+- Updated dependencies [d83a0fd]
+- Updated dependencies [6897086]
+  - @latticexyz/store-sync@2.2.22
+  - @latticexyz/world@2.2.22
+  - @latticexyz/common@2.2.22
+  - @latticexyz/world-module-metadata@2.2.22
+  - @latticexyz/world-module-callwithsignature@2.2.22
+  - @latticexyz/block-logs-stream@2.2.22
+  - @latticexyz/config@2.2.22
+  - @latticexyz/protocol-parser@2.2.22
+  - @latticexyz/store@2.2.22
+  - @latticexyz/abi-ts@2.2.22
+  - @latticexyz/gas-report@2.2.22
+  - @latticexyz/schema-type@2.2.22
+  - @latticexyz/utils@2.2.22
+
 ## 2.2.21
 
 ### Patch Changes

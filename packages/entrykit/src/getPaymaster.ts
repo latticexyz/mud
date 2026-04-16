@@ -3,6 +3,7 @@ import { Chain, Hex } from "viem";
 export type Paymaster = {
   readonly type: "simple" | "quarry";
   readonly address: Hex;
+  readonly canSponsor?: boolean;
 };
 
 export function getPaymaster(chain: Chain): Paymaster | undefined {
@@ -13,6 +14,7 @@ export function getPaymaster(chain: Chain): Paymaster | undefined {
       return {
         type: "quarry",
         address: contracts.quarryPaymaster.address,
+        canSponsor: !!chain.rpcUrls.quarrySponsor?.http?.[0],
       };
     }
   }

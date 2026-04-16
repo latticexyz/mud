@@ -1,23 +1,15 @@
-import { useAccount } from "wagmi";
 import { Button } from "./ui/Button";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useModal } from "connectkit";
 import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useConnect, useConnectors } from "wagmi";
+import { IdPlaceConnector, isIdPlaceConnector } from "@latticexyz/id.place/internal";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 
 export function ConnectWallet() {
-  const userAccount = useAccount();
-  const { openConnectModal, connectModalOpen } = useConnectModal();
-  const [hasAutoOpened, setHasAutoOpened] = useState(false);
-
-  // automatically open connect modal once
-  // TODO: remove this once we have more than "connect wallet" as an option
-  useEffect(() => {
-    if (!connectModalOpen && !hasAutoOpened) {
-      openConnectModal?.();
-      setHasAutoOpened(true);
-    }
-  }, [connectModalOpen, hasAutoOpened, openConnectModal]);
+  const connectors = useConnectors();
+  const porto = connectors.find(isIdPlaceConnector);
 
   // TODO: show error states?
 
@@ -30,17 +22,74 @@ export function ConnectWallet() {
         <AppInfo />
       </div>
       <div className="self-center flex flex-col gap-2 w-60">
-        <Button
-          key="create"
-          variant="secondary"
-          className="self-auto flex justify-center"
-          disabled={userAccount.status === "connecting"}
-          onClick={openConnectModal}
-          autoFocus
-        >
-          Connect wallet
-        </Button>
+        {porto ? <AccountButton connector={porto} /> : <WalletButton />}
       </div>
     </div>
+  );
+}
+
+function AccountButton({ connector }: { connector: IdPlaceConnector }) {
+  const { setOpen } = useModal();
+  const { connect, isPending, error } = useConnect();
+  const { chainId } = useEntryKitConfig();
+
+  if (error) {
+    console.error("connect error", error);
+  }
+
+  return (
+    <>
+      <Button
+        key="signin"
+        variant="secondary"
+        className="self-auto flex justify-center"
+        pending={isPending}
+        onClick={() =>
+          connect({
+            connector,
+            // need to provide both `chainId` and `capabilities` to the
+            // Porto connector so a fresh browser instance reusing a synced passkey
+            // can be bound to the correct chain ID for the account
+            chainId,
+            capabilities: {},
+          })
+        }
+        autoFocus
+      >
+        Sign in
+      </Button>
+      <button
+        className="text-sm self-center transition text-neutral-500 hover:text-white p-2"
+        onClick={() => setOpen(true)}
+      >
+        Already have a wallet?
+      </button>
+    </>
+  );
+}
+
+function WalletButton() {
+  const { open, setOpen } = useModal();
+  const hasAutoOpenedRef = useRef(false);
+
+  useEffect(() => {
+    if (!open && !hasAutoOpenedRef.current) {
+      setOpen(true);
+      hasAutoOpenedRef.current = true;
+    }
+  }, [open, setOpen]);
+
+  return (
+    <>
+      <Button
+        key="create"
+        variant="secondary"
+        className="self-auto flex justify-center"
+        onClick={() => setOpen(true)}
+        autoFocus
+      >
+        Connect wallet
+      </Button>
+    </>
   );
 }

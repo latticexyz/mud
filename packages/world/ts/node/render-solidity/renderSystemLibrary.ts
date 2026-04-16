@@ -4,6 +4,7 @@ import {
   renderedSolidityHeader,
   renderImports,
   ContractInterfaceFunction,
+  applyTypeQualifiers,
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
@@ -21,12 +22,14 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
+    typeQualifiers,
   } = options;
 
   const functions = functionsInput.map((func) => ({
     ...func,
-    // Format parameters (add auxiliary argument names, replace calldata location)
-    parameters: formatParams(func.parameters),
+    // Format parameters (add auxiliary argument names, replace calldata location, apply type qualifiers)
+    parameters: formatParams("__auxArg", applyTypeQualifiers(func.parameters, typeQualifiers)),
+    returnParameters: formatParams("__auxRet", applyTypeQualifiers(func.returnParameters, typeQualifiers)),
     // Remove `payable` from stateMutability for library functions
     stateMutability: func.stateMutability.replace("payable", ""),
   }));
@@ -65,7 +68,13 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   ];
 
   const callingFromRootSystemErrorName = `${libraryName}_CallingFromRootSystem`;
-  const errors = [{ name: callingFromRootSystemErrorName, parameters: [] }, ...systemErrors];
+  const errors = [
+    { name: callingFromRootSystemErrorName, parameters: [] },
+    ...systemErrors.map((error) => ({
+      ...error,
+      parameters: applyTypeQualifiers(error.parameters, typeQualifiers),
+    })),
+  ];
 
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
@@ -289,6 +298,7 @@ function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
   const { name, parameters } = contractFunction;
   const paramTypes = parameters
     .map((param) => param.split(" ")[0])
+    .map((type) => type.replace(".", "_"))
     .map((type) => type.replace("[]", "Array"))
     // Static arrays may contain multiple disallowed symbols, for name uniqueness toHex is easier than escaping
     .map((type) => type.replace(/\[.+\]/, (match) => stringToHex(match)))
@@ -308,7 +318,10 @@ function renderAbiDecode(expression: string, returnParameters: string[]) {
   const returnTypes = returnParameters.map((param) => param.split(" ")[0]).join(", ");
   return `
     bytes memory result = ${expression};
-    return abi.decode(result, (${returnTypes}));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (${returnTypes}));
+    }
   `;
 }
 
@@ -318,15 +331,15 @@ function renderReturnParameters(returnParameters: string[]) {
   return `returns (${renderArguments(returnParameters)})`;
 }
 
-function formatParams(params: string[]) {
+function formatParams(auxPrefix: string, params: string[]) {
   // Use auxiliary argument names for arguments without names
   let auxCount = 0;
 
   return params
-    .map((arg) => arg.replace(/ calldata /, " memory "))
+    .map((arg) => arg.replace(/ calldata( |$)/, " memory$1"))
     .map((arg) => {
       const items = arg.split(" ");
-      const needsAux = items.length === 1 || (items.length === 2 && items[1] === "memory");
-      return needsAux ? `${arg} __aux${auxCount++}` : arg;
+      const needsAux = items.length === 1 || (items.length === 2 && ["memory", "payable"].includes(items[1]));
+      return needsAux ? `${arg} ${auxPrefix}${auxCount++}` : arg;
     });
 }

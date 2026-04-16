@@ -15,3 +15,7 @@ export function formatBalance(wei: bigint) {
 export function isPromiseFulfilled<T>(result: Partial<PromiseSettledResult<T>>): result is PromiseFulfilledResult<T> {
   return result.status === "fulfilled";
 }
+
+export function capitalize(string: string) {
+  return string[0]?.toUpperCase() + string.slice(1);
+}

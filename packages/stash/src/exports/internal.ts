@@ -20,3 +20,5 @@ export * from "../actions/setRecords";
 export * from "../actions/subscribeQuery";
 export * from "../actions/subscribeStash";
 export * from "../actions/subscribeTable";
+export * from "../actions/registerDerivedTable";
+export * from "../actions/registerIndex";

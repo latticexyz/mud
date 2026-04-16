@@ -1,0 +1,31 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+<rect width="60" height="60" fill="#F34242"/>
+<path opacity="0.75" d="M20 25L20 20L25 20L25 25L20 25Z" fill="white"/>
+<path d="M20 30L20 25L25 25L25 30L20 30Z" fill="white"/>
+<path d="M20 35L20 30L25 30L25 35L20 35Z" fill="white"/>
+<path opacity="0.75" d="M20 40L20 35L25 35L25 40L20 40Z" fill="white"/>
+<path opacity="0.75" d="M35 25L35 20L40 20L40 25L35 25Z" fill="white"/>
+<path d="M35 30L35 25L40 25L40 30L35 30Z" fill="white"/>
+<path d="M35 35L35 30L40 30L40 35L35 35Z" fill="white"/>
+<path opacity="0.75" d="M35 40L35 35L40 35L40 40L35 40Z" fill="white"/>
+<path d="M30 40H25V35H30V40Z" fill="white"/>
+<path d="M35 40H30V35H35V40Z" fill="white"/>
+<path d="M30 25H25V20H30V25Z" fill="white"/>
+<path d="M35 25H30V20H35V25Z" fill="white"/>
+<path d="M25 10V15H30V10H25Z" fill="white" fill-opacity="0.25"/>
+<path d="M30 45V40H35V45H30Z" fill="white" fill-opacity="0.75"/>
+<path d="M45 30L40 30L40 35L45 35L45 30Z" fill="white" fill-opacity="0.75"/>
+<path d="M15 30L20 30L20 35L15 35L15 30Z" fill="white" fill-opacity="0.75"/>
+<path d="M30 15V20H35V15H30Z" fill="white" fill-opacity="0.75"/>
+<path d="M30 10V15H35V10H30Z" fill="white" fill-opacity="0.25"/>
+<path d="M25 50V45H30V50H25Z" fill="white" fill-opacity="0.25"/>
+<path d="M30 50V45H35V50H30Z" fill="white" fill-opacity="0.25"/>
+<path d="M50 25L45 25L45 30L50 30L50 25Z" fill="white" fill-opacity="0.25"/>
+<path d="M50 30L45 30L45 35L50 35L50 30Z" fill="white" fill-opacity="0.25"/>
+<path d="M10 30L15 30L15 35L10 35L10 30Z" fill="white" fill-opacity="0.25"/>
+<path d="M10 25L15 25L15 30L10 30L10 25Z" fill="white" fill-opacity="0.25"/>
+<path d="M25 15V20H30V15H25Z" fill="white" fill-opacity="0.75"/>
+<path d="M25 45V40H30V45H25Z" fill="white" fill-opacity="0.75"/>
+<path d="M45 25L40 25L40 30L45 30L45 25Z" fill="white" fill-opacity="0.75"/>
+<path d="M15 25L20 25L20 30L15 30L15 25Z" fill="white" fill-opacity="0.75"/>
+</svg>

@@ -69,7 +69,7 @@ export function AccountButton() {
             "hover:bg-orange-400",
             "active:bg-orange-600",
           )}
-          aria-busy={accountModalOpen}
+          aria-busy={accountModalOpen || prereqs.isPending}
           onClick={openAccountModal}
         >
           <span className="pointer-events-none inline-grid place-items-center -ml-3">

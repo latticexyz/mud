@@ -110,6 +110,13 @@ export type SyncOptions = GetRpcClientOptions & {
     blockNumber: bigint;
     logs: readonly StorageAdapterLog[];
   };
+  /**
+   * Optional flag to define the chunking behavior during the initial hydration. Defaults to `true`.
+   * Chunking is useful to avoid blocking the main thread for too long, but it can lead to updates that happened in the same block being split across multiple chunks.
+   * If chunking is enabled, clients should account for this by waiting for full hydration before using the update stream.
+   * If atomicity of updates is important and blocking the main thread is not an issue, set this to `false`.
+   */
+  enableHydrationChunking?: boolean;
 };
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;

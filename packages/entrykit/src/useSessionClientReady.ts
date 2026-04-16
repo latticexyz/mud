@@ -16,7 +16,9 @@ export function useSessionClientReady(): UseQueryResult<SessionClient | undefine
   const prerequisites = usePrerequisites(userAddress);
   const sessionClient = useSessionClient(userAddress);
 
-  if (!userClient.isSuccess) return { ...userClient, data: undefined } as never;
-  if (!prerequisites.isSuccess || !prerequisites.data.complete) return { ...prerequisites, data: undefined } as never;
+  if (!prerequisites.isSuccess || !prerequisites.data.complete) {
+    return { ...prerequisites, data: undefined } as never;
+  }
+
   return sessionClient;
 }

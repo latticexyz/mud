@@ -21,6 +21,7 @@ export function useSetBalance() {
       await setBalance({ ...(client as TestClient), mode: "anvil" }, params);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["balance"] }),
+        queryClient.invalidateQueries({ queryKey: ["getFunds"] }),
         queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
       ]);
 

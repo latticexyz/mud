@@ -42,7 +42,7 @@ library RootSystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setValueInA(thing);
   }
 
-  function getValueFromA(RootSystemType self) internal view returns (uint256) {
+  function getValueFromA(RootSystemType self) internal view returns (uint256 __auxRet0) {
     return CallWrapper(self.toResourceId(), address(0)).getValueFromA();
   }
 
@@ -56,7 +56,7 @@ library RootSystemLib {
       : _world().callFrom(self.from, self.systemId, systemCall);
   }
 
-  function getValueFromA(CallWrapper memory self) internal view returns (uint256) {
+  function getValueFromA(CallWrapper memory self) internal view returns (uint256 __auxRet0) {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
 
@@ -68,7 +68,10 @@ library RootSystemLib {
     if (!success) revertWithBytes(returnData);
 
     bytes memory result = abi.decode(returnData, (bytes));
-    return abi.decode(result, (uint256));
+    // skip decoding an empty result, which can happen after expectRevert
+    if (result.length != 0) {
+      return abi.decode(result, (uint256));
+    }
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {

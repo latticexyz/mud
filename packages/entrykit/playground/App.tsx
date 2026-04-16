@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { UserWrite } from "./UserWrite";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectKitButton } from "connectkit";
 import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
+import { useConnections } from "wagmi";
 
 export function App() {
   const { openAccountModal } = useAccountModal();
+  const connections = useConnections();
 
   const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:entryKitPlayground:openModalOnMount", false);
 
@@ -29,7 +31,7 @@ export function App() {
         </label>
       </div>
       <div>
-        <ConnectButton />
+        <ConnectKitButton />
       </div>
       <div>
         <UserWrite />
@@ -37,6 +39,7 @@ export function App() {
       <div>
         <SessionWrite />
       </div>
+      <div>connections: {connections.map((c) => c.connector.name).join(", ")}</div>
     </div>
   );
 }

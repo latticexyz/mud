@@ -1,32 +1,33 @@
 import { useParams } from "next/navigation";
 import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useSQLQueryState } from "../[chainName]/worlds/[worldAddress]/explore/hooks/useSQLQueryState";
 import { useChain } from "../hooks/useChain";
 import { useIndexerForChainId } from "../hooks/useIndexerForChainId";
 import { DozerResponse } from "../types";
 
 type Props = {
   table: Table | undefined;
-  query: string | undefined;
   isLiveQuery: boolean;
 };
 
-export type TDataRow = Record<string, unknown>;
+export type TDataRow = Record<string, string | boolean | undefined>;
 export type TData = {
   columns: string[];
   rows: TDataRow[];
   queryDuration: number;
+  blockHeight: number;
 };
 
-export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
+export function useTableDataQuery({ table, isLiveQuery }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const [query] = useSQLQueryState();
   const indexer = useIndexerForChainId(chainId);
-  const decodedQuery = decodeURIComponent(query ?? "");
 
-  return useQuery<DozerResponse & { queryDuration: number }, Error, TData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
+  return useQuery<DozerResponse & { queryDuration: number; blockHeight: number }, Error, TData | undefined>({
+    queryKey: ["tableData", chainName, worldAddress, query],
     queryFn: async () => {
       const startTime = performance.now();
       const response = await fetch(indexer.url, {
@@ -37,21 +38,22 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         body: stringify([
           {
             address: worldAddress as Hex,
-            query: decodedQuery,
+            query,
           },
         ]),
       });
 
       const data = await response.json();
-      const queryDuration = performance.now() - startTime;
-
       if (!response.ok) {
         throw new Error(data.msg || "Network response was not ok");
       }
 
-      return { ...data, queryDuration };
+      const queryDuration = performance.now() - startTime;
+      const blockHeight = data.block_height;
+
+      return { ...data, queryDuration, blockHeight };
     },
-    select: (data: DozerResponse & { queryDuration: number }): TData | undefined => {
+    select: (data: DozerResponse & { queryDuration: number; blockHeight: number }): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
       const result = data.result[0];
@@ -80,9 +82,9 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         columns,
         rows,
         queryDuration: data.queryDuration,
+        blockHeight: data.blockHeight,
       };
     },
-    placeholderData: keepPreviousData,
     retry: false,
     enabled: !!table && !!query,
     refetchInterval: (query) => {

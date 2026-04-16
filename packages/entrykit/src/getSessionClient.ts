@@ -44,7 +44,6 @@ export async function getSessionClient({
         publicClient: client,
       }),
     )
-
     // TODO: add observer once we conditionally fetch receipts while bridge is open
     .extend(() => ({ userAddress, worldAddress, internal_signer: sessionSigner }));
 

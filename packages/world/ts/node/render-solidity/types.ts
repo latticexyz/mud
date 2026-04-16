@@ -25,4 +25,6 @@ export interface RenderSystemLibraryOptions {
   storeImportPath: string;
   /** Path for world package imports */
   worldImportPath: string;
+  /** Map of symbols to their qualified names (e.g., "SomeStruct" -> "IParentContract.SomeStruct") */
+  typeQualifiers?: Map<string, string>;
 }

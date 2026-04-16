@@ -4,7 +4,7 @@ import path from "path";
 import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
-import localPackageJson from "../../package.json" assert { type: "json" };
+import localPackageJson from "../../package.json" with { type: "json" };
 import { globSync } from "glob";
 import { mudPackages } from "../mudPackages";
 
