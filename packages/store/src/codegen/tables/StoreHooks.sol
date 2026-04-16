@@ -108,6 +108,66 @@ library StoreHooks {
   }
 
   /**
+   * @notice Get hooks slice.
+   */
+  function getHooksSlice(
+    ResourceId tableId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory hooks) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
+   * @notice Get hooks slice.
+   */
+  function _getHooksSlice(
+    ResourceId tableId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory hooks) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
+   * @notice Get hooks slice.
+   */
+  function getSlice(
+    ResourceId tableId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory hooks) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
+   * @notice Get hooks slice.
+   */
+  function _getSlice(
+    ResourceId tableId,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes21[] memory hooks) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 21 * startIndex, 21 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /**
    * @notice Set hooks.
    */
   function setHooks(ResourceId tableId, bytes21[] memory hooks) internal {

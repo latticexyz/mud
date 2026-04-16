@@ -95,6 +95,36 @@ library Dynamics1 {
   }
 
   /**
+   * @notice Get staticB32 slice.
+   */
+  function getStaticB32Slice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[1] memory staticB32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get staticB32 slice.
+   */
+  function _getStaticB32Slice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bytes32[1] memory staticB32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 32 * startIndex, 32 * endIndex);
+    return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
    * @notice Set staticB32.
    */
   function setStaticB32(bytes32 key, bytes32[1] memory staticB32) internal {
@@ -206,6 +236,36 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
+    return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
+  }
+
+  /**
+   * @notice Get staticI32 slice.
+   */
+  function getStaticI32Slice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (int32[2] memory staticI32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, 4 * startIndex, 4 * endIndex);
+    return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
+  }
+
+  /**
+   * @notice Get staticI32 slice.
+   */
+  function _getStaticI32Slice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (int32[2] memory staticI32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, 4 * startIndex, 4 * endIndex);
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
@@ -325,6 +385,36 @@ library Dynamics1 {
   }
 
   /**
+   * @notice Get staticU128 slice.
+   */
+  function getStaticU128Slice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (uint128[3] memory staticU128) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, 16 * startIndex, 16 * endIndex);
+    return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
+  }
+
+  /**
+   * @notice Get staticU128 slice.
+   */
+  function _getStaticU128Slice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (uint128[3] memory staticU128) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, 16 * startIndex, 16 * endIndex);
+    return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
+  }
+
+  /**
    * @notice Set staticU128.
    */
   function setStaticU128(bytes32 key, uint128[3] memory staticU128) internal {
@@ -440,6 +530,36 @@ library Dynamics1 {
   }
 
   /**
+   * @notice Get staticAddrs slice.
+   */
+  function getStaticAddrsSlice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (address[4] memory staticAddrs) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 3, 20 * startIndex, 20 * endIndex);
+    return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
+  /**
+   * @notice Get staticAddrs slice.
+   */
+  function _getStaticAddrsSlice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (address[4] memory staticAddrs) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 3, 20 * startIndex, 20 * endIndex);
+    return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
+  /**
    * @notice Set staticAddrs.
    */
   function setStaticAddrs(bytes32 key, address[4] memory staticAddrs) internal {
@@ -551,6 +671,36 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 4);
+    return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
+  }
+
+  /**
+   * @notice Get staticBools slice.
+   */
+  function getStaticBoolsSlice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bool[5] memory staticBools) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 4, 1 * startIndex, 1 * endIndex);
+    return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
+  }
+
+  /**
+   * @notice Get staticBools slice.
+   */
+  function _getStaticBoolsSlice(
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (bool[5] memory staticBools) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 4, 1 * startIndex, 1 * endIndex);
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 

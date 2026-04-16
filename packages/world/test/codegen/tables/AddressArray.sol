@@ -102,6 +102,70 @@ library AddressArray {
   }
 
   /**
+   * @notice Get value slice.
+   */
+  function getValueSlice(
+    ResourceId _tableId,
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (address[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 20 * startIndex, 20 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function _getValueSlice(
+    ResourceId _tableId,
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (address[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 20 * startIndex, 20 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function getSlice(
+    ResourceId _tableId,
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (address[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, 20 * startIndex, 20 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
+  /**
+   * @notice Get value slice.
+   */
+  function _getSlice(
+    ResourceId _tableId,
+    bytes32 key,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal view returns (address[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 20 * startIndex, 20 * endIndex);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
+  /**
    * @notice Set value.
    */
   function setValue(ResourceId _tableId, bytes32 key, address[] memory value) internal {
