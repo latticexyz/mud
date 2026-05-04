@@ -1,2 +1,9 @@
 packages:
   - packages/*
+allowBuilds:
+  '@foundry-rs/anvil': true
+  '@foundry-rs/forge': true
+  bufferutil: true
+  esbuild: true
+  keccak: true
+  utf-8-validate: true

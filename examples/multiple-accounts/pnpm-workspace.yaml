@@ -1,2 +1,9 @@
 packages:
   - packages/*
+allowBuilds:
+  '@foundry-rs/anvil': true
+  '@foundry-rs/forge': true
+  esbuild: true
+# Older published @latticexyz/store-sync versions resolve `clarinet` from a git tarball;
+# pnpm 11 blocks exotic subdeps by default.
+blockExoticSubdeps: false

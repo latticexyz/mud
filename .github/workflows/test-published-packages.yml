@@ -31,6 +31,9 @@ jobs:
         uses: ./.github/actions/setup-prerequisites
 
       - name: Test
+        env:
+          # Allow resolving freshly published packages (pnpm 11 defaults this to 1 day).
+          pnpm_config_minimum_release_age: 0
         run: |
           pnpm create mud@${{ inputs.tag-or-version }} --name project --template ${{ matrix.template }}
           pnpm --dir project install

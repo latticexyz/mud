@@ -103,9 +103,9 @@
   "peerDependencies": {
     "viem": "2.x"
   },
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@11.0.4",
   "engines": {
     "node": "20.x",
-    "pnpm": "^9"
+    "pnpm": "^11"
   }
 }

@@ -6,3 +6,19 @@ packages:
   - test/puppet-modules
   - test/system-libraries
   - test/ts-benchmarks
+# turbo 1.9.3's postinstall replaces its bin/turbo JS shim with a Mach-O binary;
+# pnpm 11's default node-wrapped shim then fails to exec it. Symlinking sidesteps that.
+preferSymlinkedExecutables: true
+packageManagerStrict: false
+allowBuilds:
+  '@foundry-rs/anvil': true
+  '@foundry-rs/chisel': true
+  '@foundry-rs/forge': true
+  '@sentry/profiling-node': true
+  '@tailwindcss/oxide': true
+  better-sqlite3: true
+  bufferutil: true
+  esbuild: true
+  keccak: true
+  turbo: true
+  utf-8-validate: true

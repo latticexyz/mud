@@ -1,2 +1,6 @@
 packages:
   - packages/*
+allowBuilds:
+  '@foundry-rs/anvil': true
+  '@foundry-rs/forge': true
+  esbuild: true
