@@ -152,7 +152,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       })
     : undefined;
 
-  console.log("Deploying from", client.account.address);
+  console.log("Deploying from", client.account.address, "on chain", chainId);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
   const automine = await enableAutomine(client);
