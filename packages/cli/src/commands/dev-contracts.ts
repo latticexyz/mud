@@ -56,6 +56,8 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
       );
 
       rpc = "http://127.0.0.1:8545";
+    } else if (!rpc.includes("127.0.0.1") && !rpc.includes("localhost")) {
+      console.log(chalk.yellow("Warning: dev-contracts is intended for local development. Deploying to a non-local chain may cause unexpected failures."));
     }
 
     // Watch for changes
